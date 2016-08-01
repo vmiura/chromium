@@ -1,5 +1,9 @@
 module cc.mojom;
 
 interface Compositor {
-  CreateCompositor();
+  CreateCompositor(CompositorClient client);
+};
+
+interface CompositorClient {
+  OnCompositorCreated();
 };

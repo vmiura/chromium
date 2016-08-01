@@ -67,7 +67,8 @@ GpuChannelHost::GpuChannelHost(
     : factory_(factory),
       channel_id_(channel_id),
       gpu_info_(gpu_info),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+      compositor_client_binding_(this) {
   next_image_id_.GetNext();
   next_route_id_.GetNext();
   next_stream_id_.GetNext();
@@ -86,7 +87,9 @@ void GpuChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
 
   channel_->GetRemoteAssociatedInterface<cc::mojom::Compositor>(&compositor_);
 
-  compositor_->CreateCompositor();
+  cc::mojom::CompositorClientPtr client_ptr;
+  compositor_client_binding_.Bind(mojo::GetProxy(&client_ptr));
+  compositor_->CreateCompositor(std::move(client_ptr));
 
   sync_filter_ = channel_->CreateSyncMessageFilter();
 
@@ -130,6 +133,10 @@ bool GpuChannelHost::Send(IPC::Message* msg) {
 
   bool result = sync_filter_->Send(message.release());
   return result;
+}
+
+void GpuChannelHost::OnCompositorCreated() {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(

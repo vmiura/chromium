@@ -27,6 +27,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/message_filter.h"
 #include "ipc/message_router.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "ui/events/latency_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -61,6 +62,7 @@ class GPU_EXPORT GpuChannelHostFactory {
 // IO thread.
 class GPU_EXPORT GpuChannelHost
     : public IPC::Sender,
+      public cc::mojom::CompositorClient,
       public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
   // Must be called on the main thread (as defined by the factory).
@@ -84,6 +86,9 @@ class GPU_EXPORT GpuChannelHost
 
   // IPC::Sender implementation:
   bool Send(IPC::Message* msg) override;
+
+  // cc::mojom::CompositorClient implementation:
+  void OnCompositorCreated() override;
 
   // Set an ordering barrier.  AsyncFlushes any pending barriers on other
   // routes. Combines multiple OrderingBarriers into a single AsyncFlush.
@@ -265,6 +270,7 @@ class GPU_EXPORT GpuChannelHost
   base::AtomicSequenceNumber next_stream_id_;
 
   cc::mojom::CompositorAssociatedPtr compositor_;
+  mojo::Binding<cc::mojom::CompositorClient> compositor_client_binding_;
 
   // Protects channel_ and stream_flush_info_.
   mutable base::Lock context_lock_;

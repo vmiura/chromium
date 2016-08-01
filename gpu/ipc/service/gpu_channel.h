@@ -81,7 +81,7 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
   virtual IPC::ChannelHandle Init(base::WaitableEvent* shutdown_event);
 
   // cc::mojom::Compositor implementation.
-  void CreateCompositor() override;
+  void CreateCompositor(cc::mojom::CompositorClientPtr client) override;
 
   void SetUnhandledMessageListener(IPC::Listener* listener);
 
@@ -241,6 +241,7 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
   std::unique_ptr<IPC::SyncChannel> channel_;
 
   mojo::AssociatedBinding<cc::mojom::Compositor> compositor_binding_;
+  cc::mojom::CompositorClientPtr compositor_client_;
 
   IPC::Listener* unhandled_message_listener_;
 
