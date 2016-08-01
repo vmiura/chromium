@@ -1,0 +1,5 @@
+module cc.mojom;
+
+interface Compositor {
+  CreateCompositor();
+};

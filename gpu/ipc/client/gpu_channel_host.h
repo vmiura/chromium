@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_stream_constants.h"
@@ -262,6 +263,8 @@ class GPU_EXPORT GpuChannelHost
 
   // Stream IDs are allocated in sequence.
   base::AtomicSequenceNumber next_stream_id_;
+
+  cc::mojom::CompositorAssociatedPtr compositor_;
 
   // Protects channel_ and stream_flush_info_.
   mutable base::Lock context_lock_;
