@@ -20,12 +20,15 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_stream_constants.h"
 #include "gpu/ipc/service/gpu_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_memory_manager.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/message_router.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
@@ -53,9 +56,9 @@ class GpuWatchdog;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
 // process. On the renderer side there's a corresponding GpuChannelHost.
-class GPU_EXPORT GpuChannel
-    : public IPC::Listener,
-      public IPC::Sender {
+class GPU_EXPORT GpuChannel : public IPC::Listener,
+                              public IPC::Sender,
+                              public cc::mojom::Compositor {
  public:
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,
@@ -76,6 +79,9 @@ class GPU_EXPORT GpuChannel
   // Initializes the IPC channel. Caller takes ownership of the client FD in
   // the returned handle and is responsible for closing it.
   virtual IPC::ChannelHandle Init(base::WaitableEvent* shutdown_event);
+
+  // cc::mojom::Compositor implementation.
+  void CreateCompositor() override;
 
   void SetUnhandledMessageListener(IPC::Listener* listener);
 
@@ -183,6 +189,8 @@ class GPU_EXPORT GpuChannel
  private:
   friend class TestGpuChannel;
 
+  void BindCompositorRequest(cc::mojom::CompositorAssociatedRequest request);
+
   bool OnControlMessageReceived(const IPC::Message& msg);
 
   void HandleMessage(const scoped_refptr<GpuChannelMessageQueue>& queue);
@@ -231,6 +239,8 @@ class GPU_EXPORT GpuChannel
   SyncPointManager* const sync_point_manager_;
 
   std::unique_ptr<IPC::SyncChannel> channel_;
+
+  mojo::AssociatedBinding<cc::mojom::Compositor> compositor_binding_;
 
   IPC::Listener* unhandled_message_listener_;
 

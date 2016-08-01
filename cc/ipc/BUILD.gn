@@ -36,6 +36,12 @@ component("ipc") {
   ]
 }
 
+mojom("gpu_interfaces") {
+  sources = [
+    "compositor.mojom",
+  ]
+}
+
 mojom("interfaces") {
   sources = [
     "begin_frame_args.mojom",

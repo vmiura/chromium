@@ -590,6 +590,7 @@ GpuChannel::GpuChannel(GpuChannelManager* gpu_channel_manager,
                        bool allow_real_time_streams)
     : gpu_channel_manager_(gpu_channel_manager),
       sync_point_manager_(sync_point_manager),
+      compositor_binding_(this),
       unhandled_message_listener_(nullptr),
       preempting_flag_(preempting_flag),
       preempted_flag_(preempted_flag),
@@ -640,7 +641,14 @@ IPC::ChannelHandle GpuChannel::Init(base::WaitableEvent* shutdown_event) {
 
   channel_->AddFilter(filter_.get());
 
+  channel_->AddAssociatedInterface(
+      base::Bind(&GpuChannel::BindCompositorRequest, base::Unretained(this)));
+
   return client_handle;
+}
+
+void GpuChannel::CreateCompositor() {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
 }
 
 void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
@@ -731,6 +739,11 @@ bool GpuChannel::AddRoute(int32_t route_id,
 void GpuChannel::RemoveRoute(int32_t route_id) {
   router_.RemoveRoute(route_id);
   RemoveRouteFromStream(route_id);
+}
+
+void GpuChannel::BindCompositorRequest(
+    cc::mojom::CompositorAssociatedRequest request) {
+  compositor_binding_.Bind(std::move(request));
 }
 
 bool GpuChannel::OnControlMessageReceived(const IPC::Message& msg) {

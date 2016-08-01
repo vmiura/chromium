@@ -84,6 +84,10 @@ void GpuChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
                                       nullptr, io_task_runner.get(), true,
                                       shutdown_event);
 
+  channel_->GetRemoteAssociatedInterface<cc::mojom::Compositor>(&compositor_);
+
+  compositor_->CreateCompositor();
+
   sync_filter_ = channel_->CreateSyncMessageFilter();
 
   channel_filter_ = new MessageFilter();
