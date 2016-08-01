@@ -647,8 +647,10 @@ IPC::ChannelHandle GpuChannel::Init(base::WaitableEvent* shutdown_event) {
   return client_handle;
 }
 
-void GpuChannel::CreateCompositor() {
+void GpuChannel::CreateCompositor(cc::mojom::CompositorClientPtr client) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+  compositor_client_ = std::move(client);
+  compositor_client_->OnCompositorCreated();
 }
 
 void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
