@@ -535,6 +535,8 @@ component("cc") {
     "trees/scoped_abort_remaining_swap_promises.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
+    "trees/simple_proxy.cc",
+    "trees/simple_proxy.h",
     "trees/single_thread_proxy.cc",
     "trees/single_thread_proxy.h",
     "trees/swap_promise_monitor.cc",
