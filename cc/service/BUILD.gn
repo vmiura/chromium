@@ -21,7 +21,7 @@ component("service") {
   ]
   deps = [
     "//base",
-    "//cc/ipc:gpu_interfaces",
+    "//cc/ipc:interfaces",
     "//gpu/ipc/service",
   ]
 

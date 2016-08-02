@@ -18,6 +18,7 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   ~CompositorProxy() override;
 
   // cc::mojom::CompositorClient implementation.
+  void OnBeginMainFrame(const BeginFrameArgs& args) override;
   void OnCompositorCreated() override;
 
  private:

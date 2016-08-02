@@ -119,6 +119,8 @@ void Service::CreateOutputSurface() {
 
 void Service::SetNeedsBeginMainFrame() {
   // TODO(hackathon): Implement this.
+  cc::BeginFrameArgs args;
+  compositor_client_->OnBeginMainFrame(args);
 }
 
 }  // namespace cc
