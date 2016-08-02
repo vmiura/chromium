@@ -85,13 +85,14 @@ void GpuChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
                                       nullptr, io_task_runner.get(), true,
                                       shutdown_event);
 
-  channel_->GetRemoteAssociatedInterface<cc::mojom::Compositor>(&compositor_);
+  channel_->GetRemoteAssociatedInterface(&compositor_factory_);
 
   cc::mojom::CompositorClientPtr client_ptr;
   compositor_client_binding_.Bind(mojo::GetProxy(&client_ptr));
   // TODO(hackathon): Create a class that emcompasses this (like
   // "ContextProvider" for a gl context.
-  compositor_->CreateCompositor(0, std::move(client_ptr));
+  compositor_factory_->CreateCompositor(mojo::GetProxy(&compositor_),
+                                        std::move(client_ptr));
 
   sync_filter_ = channel_->CreateSyncMessageFilter();
 

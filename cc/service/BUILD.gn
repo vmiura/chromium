@@ -5,6 +5,8 @@
 component("service") {
   output_name = "cc_service"
   sources = [
+    "compositor_channel.cc",
+    "compositor_channel.h",
     "service.cc",
     "service.h",
     "service_export.h",
@@ -19,6 +21,8 @@ component("service") {
   ]
   deps = [
     "//base",
+    "//cc/ipc:gpu_interfaces",
+    "//gpu/ipc/service",
   ]
 
   if (is_android && !is_debug) {

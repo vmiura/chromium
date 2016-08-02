@@ -20,10 +20,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
-#include "cc/ipc/compositor.mojom.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_stream_constants.h"
-#include "gpu/ipc/common/service_compositor.h"
 #include "gpu/ipc/service/gpu_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_memory_manager.h"
 #include "ipc/ipc_sync_channel.h"
@@ -57,9 +55,7 @@ class GpuWatchdog;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
 // process. On the renderer side there's a corresponding GpuChannelHost.
-class GPU_EXPORT GpuChannel : public IPC::Listener,
-                              public IPC::Sender,
-                              public cc::mojom::Compositor {
+class GPU_EXPORT GpuChannel : public IPC::Listener, public IPC::Sender {
  public:
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,
@@ -81,9 +77,15 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
   // the returned handle and is responsible for closing it.
   virtual IPC::ChannelHandle Init(base::WaitableEvent* shutdown_event);
 
-  // cc::mojom::Compositor implementation.
-  void CreateCompositor(int32_t id,
-                        cc::mojom::CompositorClientPtr client) override;
+  // Template helper to add an interface factory to this channel.
+  template <typename Interface>
+  using AssociatedInterfaceFactory =
+      base::Callback<void(mojo::AssociatedInterfaceRequest<Interface>)>;
+  template <typename Interface>
+  void AddAssociatedInterface(
+      const AssociatedInterfaceFactory<Interface>& factory) {
+    channel_->AddAssociatedInterface(factory);
+  }
 
   void SetUnhandledMessageListener(IPC::Listener* listener);
 
@@ -191,8 +193,6 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
  private:
   friend class TestGpuChannel;
 
-  void BindCompositorRequest(cc::mojom::CompositorAssociatedRequest request);
-
   bool OnControlMessageReceived(const IPC::Message& msg);
 
   void HandleMessage(const scoped_refptr<GpuChannelMessageQueue>& queue);
@@ -242,8 +242,6 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
 
   std::unique_ptr<IPC::SyncChannel> channel_;
 
-  mojo::AssociatedBinding<cc::mojom::Compositor> compositor_binding_;
-
   IPC::Listener* unhandled_message_listener_;
 
   // Uniquely identifies the channel within this GPU process.
@@ -286,15 +284,6 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
 
   // Map of route id to stream id;
   base::hash_map<int32_t, int32_t> routes_to_streams_;
-
-  struct ServiceCompositorData {
-    ServiceCompositorData();
-    ~ServiceCompositorData();
-
-    std::unique_ptr<ServiceCompositor> compositor;
-    cc::mojom::CompositorClientPtr client;
-  };
-  std::unordered_map<int32_t, ServiceCompositorData> service_compositor_map_;
 
   // Can view command buffers be created on this channel.
   const bool allow_view_command_buffers_;

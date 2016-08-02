@@ -71,16 +71,16 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
-Service::Service(int id,
+Service::Service(cc::mojom::CompositorRequest request,
+                 cc::mojom::CompositorClientPtr client,
                  SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
                  TaskGraphRunner* task_graph_runner)
-    : id_(id),
-      client_(new ClientImpl(this)),
+    : client_(new ClientImpl(this)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       scheduler_(client_.get(),
                  SchedulerSettings(),
-                 id,
+                 0 /* id */,
                  task_runner_.get(),
                  nullptr /* begin_frame_source */,
                  base::MakeUnique<CompositorTimingHistory>(
@@ -99,12 +99,15 @@ Service::Service(int id,
                  task_graph_runner,
                  main_thread_animation_host_lol_->CreateImplInstance(
                      false /* supports_impl_scrolling */),
-                 id) {
-  LOG(ERROR) << "Service compositor " << this << " for " << id_;
+                 0 /* id */),
+      compositor_client_(std::move(client)),
+      binding_(this, std::move(request)) {
+  LOG(ERROR) << "Service compositor " << this;
+  compositor_client_->OnCompositorCreated(0);
 }
 
 Service::~Service() {
-  LOG(ERROR) << "~Service compositor " << this << " for " << id_;
+  LOG(ERROR) << "~Service compositor " << this;
 }
 
 void Service::CreateOutputSurface() {
@@ -112,6 +115,10 @@ void Service::CreateOutputSurface() {
   // TODO(hackathon): Actually make a GL context and OutputSurface and give it
   // to LTHI::InitializeRenderer().
   scheduler_.DidCreateAndInitializeOutputSurface();
+}
+
+void Service::SetNeedsBeginMainFrame() {
+  // TODO(hackathon): Implement this.
 }
 
 }  // namespace cc

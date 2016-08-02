@@ -36,7 +36,6 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_messages.h"
-#include "gpu/ipc/common/service_compositor_factory.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -591,7 +590,6 @@ GpuChannel::GpuChannel(GpuChannelManager* gpu_channel_manager,
                        bool allow_real_time_streams)
     : gpu_channel_manager_(gpu_channel_manager),
       sync_point_manager_(sync_point_manager),
-      compositor_binding_(this),
       unhandled_message_listener_(nullptr),
       preempting_flag_(preempting_flag),
       preempted_flag_(preempted_flag),
@@ -642,20 +640,7 @@ IPC::ChannelHandle GpuChannel::Init(base::WaitableEvent* shutdown_event) {
 
   channel_->AddFilter(filter_.get());
 
-  channel_->AddAssociatedInterface(
-      base::Bind(&GpuChannel::BindCompositorRequest, base::Unretained(this)));
-
   return client_handle;
-}
-
-void GpuChannel::CreateCompositor(int32_t id,
-                                  cc::mojom::CompositorClientPtr client) {
-  fprintf(stderr, ">>>%s %d\n", __PRETTY_FUNCTION__, id);
-  ServiceCompositorData& data = service_compositor_map_[id];
-  data.client = std::move(client);
-  data.compositor = gpu_channel_manager_->service_compositor_factory()
-                        ->CreateServiceCompositor(id);
-  data.client->OnCompositorCreated(id);
 }
 
 void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
@@ -746,11 +731,6 @@ bool GpuChannel::AddRoute(int32_t route_id,
 void GpuChannel::RemoveRoute(int32_t route_id) {
   router_.RemoveRoute(route_id);
   RemoveRouteFromStream(route_id);
-}
-
-void GpuChannel::BindCompositorRequest(
-    cc::mojom::CompositorAssociatedRequest request) {
-  compositor_binding_.Bind(std::move(request));
 }
 
 bool GpuChannel::OnControlMessageReceived(const IPC::Message& msg) {
@@ -1087,8 +1067,5 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
     }
   }
 }
-
-GpuChannel::ServiceCompositorData::ServiceCompositorData() = default;
-GpuChannel::ServiceCompositorData::~ServiceCompositorData() = default;
 
 }  // namespace gpu
