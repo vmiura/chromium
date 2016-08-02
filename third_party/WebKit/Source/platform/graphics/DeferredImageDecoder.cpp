@@ -36,6 +36,9 @@
 #include "wtf/PtrUtil.h"
 #include <memory>
 
+// HACK(ericrk) - don't do this.
+#include "cc/tiles/image_decode_proxy.h"
+
 namespace blink {
 
 struct DeferredFrameData {
@@ -312,7 +315,14 @@ PassRefPtr<SkImage> DeferredImageDecoder::createFrameImageAtIndex(size_t index, 
     RefPtr<SkROBuffer> roBuffer = adoptRef(m_rwBuffer->newRBufferSnapshot());
     RefPtr<SegmentReader> segmentReader = SegmentReader::createFromSkROBuffer(roBuffer.release());
     DecodingImageGenerator* generator = new DecodingImageGenerator(m_frameGenerator, imageInfoFrom(decodedSize, knownToBeOpaque), segmentReader.release(), m_allDataReceived, index, m_frameData[index].m_uniqueID);
-    RefPtr<SkImage> image = fromSkSp(SkImage::MakeFromGenerator(generator)); // SkImage takes ownership of the generator.
+    RefPtr<SkImage> real_image = fromSkSp(SkImage::MakeFromGenerator(generator)); // SkImage takes ownership of the generator.
+
+    // TODO(ericrk): register real_image with the service.
+
+    // HACK - to test the service, we directly create proxy images.
+    cc::ProxyImageGenerator* proxy_generator = new cc::ProxyImageGenerator(generator->getInfo(), real_image->uniqueID(), cc::ImageDecodeProxy::Current());
+    RefPtr<SkImage> image = fromSkSp(SkImage::MakeFromGenerator(proxy_generator));
+
     if (!image)
         return nullptr;
 
