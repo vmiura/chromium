@@ -43,22 +43,20 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
 
   class SetImplThread {
    public:
+#if !DCHECK_IS_ON()
+    explicit SetImplThread(TaskRunnerProvider* p) = default;
+#else
     explicit SetImplThread(TaskRunnerProvider* p) : p_(p) {
-#if DCHECK_IS_ON()
       p_->SetCurrentThreadIsImplThread(true);
-#endif
     }
 
     ~SetImplThread() {
-#if DCHECK_IS_ON()
       p_->SetCurrentThreadIsImplThread(false);
-#endif
     }
-
-    TaskRunnerProvider* p() const { return p_; }
 
    private:
     TaskRunnerProvider* p_;
+#endif
   };
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
