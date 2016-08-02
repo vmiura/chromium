@@ -269,7 +269,10 @@ class GPU_EXPORT GpuChannelHost
   // Stream IDs are allocated in sequence.
   base::AtomicSequenceNumber next_stream_id_;
 
-  cc::mojom::CompositorAssociatedPtr compositor_;
+  cc::mojom::CompositorFactoryAssociatedPtr compositor_factory_;
+
+  // TODO(hackathon): These should be grouped in a separate wrapper class.
+  cc::mojom::CompositorPtr compositor_;
   mojo::Binding<cc::mojom::CompositorClient> compositor_client_binding_;
 
   // Protects channel_ and stream_flush_info_.

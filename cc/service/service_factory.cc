@@ -2,6 +2,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "cc/service/service.h"
+#include "gpu/ipc/service/gpu_channel.h"
 
 namespace cc {
 
@@ -13,11 +14,18 @@ ServiceFactory::ServiceFactory(
 
 ServiceFactory::~ServiceFactory() = default;
 
-std::unique_ptr<gpu::ServiceCompositor> ServiceFactory::CreateServiceCompositor(
-    int id) {
-  return base::MakeUnique<Service>(id, shared_bitmap_manager_,
-                                   gpu_memory_buffer_manager_,
-                                   &task_graph_runner_);
+void ServiceFactory::AddChannel(gpu::GpuChannel* channel) {
+  std::unique_ptr<CompositorChannel> compositor_channel(
+      new CompositorChannel(this, channel));
+  compositor_channels_.set(channel->client_id(), std::move(compositor_channel));
+}
+
+void ServiceFactory::RemoveChannel(int32_t client_id) {
+  compositor_channels_.erase(client_id);
+}
+
+void ServiceFactory::DestroyAllChannels() {
+  compositor_channels_.clear();
 }
 
 }  // namespace cc

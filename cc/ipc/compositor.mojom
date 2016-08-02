@@ -1,7 +1,11 @@
 module cc.mojom;
 
+interface CompositorFactory {
+  CreateCompositor(Compositor& compositor, CompositorClient client);
+};
+
 interface Compositor {
-  CreateCompositor(int32 id, CompositorClient client);
+  SetNeedsBeginMainFrame();
 };
 
 interface CompositorClient {

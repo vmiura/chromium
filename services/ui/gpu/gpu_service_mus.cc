@@ -219,7 +219,7 @@ void GpuServiceMus::InitializeOnGpuThread(IPC::ChannelHandle* channel_handle,
       gpu_preferences_, this, watchdog,
       base::ThreadTaskRunnerHandle::Get().get(), io_thread_.task_runner().get(),
       &shutdown_event_, owned_sync_point_manager_.get(),
-      gpu_memory_buffer_factory_.get(), nullptr));
+      gpu_memory_buffer_factory_.get()));
 
   media_service_.reset(new media::MediaService(gpu_channel_manager_.get()));
 

@@ -295,6 +295,7 @@ void GpuChildThread::DidCreateOffscreenContext(const GURL& active_url) {
 
 void GpuChildThread::DidDestroyChannel(int client_id) {
   media_service_->RemoveChannel(client_id);
+  service_compositor_factory_->RemoveChannel(client_id);
   Send(new GpuHostMsg_DestroyChannel(client_id));
 }
 
@@ -379,7 +380,7 @@ void GpuChildThread::OnInitialize(const gpu::GpuPreferences& gpu_preferences) {
       base::ThreadTaskRunnerHandle::Get().get(),
       ChildProcess::current()->io_task_runner(),
       ChildProcess::current()->GetShutDownEvent(), sync_point_manager,
-      gpu_memory_buffer_factory_, service_compositor_factory_.get()));
+      gpu_memory_buffer_factory_));
 
   media_service_.reset(new media::MediaService(gpu_channel_manager_.get()));
 
@@ -519,6 +520,9 @@ void GpuChildThread::OnEstablishChannel(const EstablishChannelParams& params) {
       params.client_id, params.client_tracing_id, params.preempts,
       params.allow_view_command_buffers, params.allow_real_time_streams);
   media_service_->AddChannel(params.client_id);
+  gpu::GpuChannel* gpu_channel =
+      gpu_channel_manager_->LookupChannel(params.client_id);
+  service_compositor_factory_->AddChannel(gpu_channel);
   Send(new GpuHostMsg_ChannelEstablished(channel_handle));
 }
 
@@ -556,6 +560,7 @@ void GpuChildThread::OnLoseAllContexts() {
   if (gpu_channel_manager_) {
     gpu_channel_manager_->DestroyAllChannels();
     media_service_->DestroyAllChannels();
+    service_compositor_factory_->DestroyAllChannels();
   }
 }
 
