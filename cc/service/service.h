@@ -37,6 +37,10 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
 
+  // ClientImpl access.
+  LayerTreeHostImpl* host_impl() { return &host_impl_; }
+  Scheduler* scheduler() { return &scheduler_; }
+
  private:
   class ClientImpl;
   std::unique_ptr<ClientImpl> client_;
