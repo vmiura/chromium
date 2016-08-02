@@ -14,6 +14,10 @@ CompositorProxy::CompositorProxy(
 
 CompositorProxy::~CompositorProxy() = default;
 
+void CompositorProxy::OnBeginMainFrame(const BeginFrameArgs& args) {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+}
+
 void CompositorProxy::OnCompositorCreated() {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
 }

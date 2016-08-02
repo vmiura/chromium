@@ -1,5 +1,7 @@
 module cc.mojom;
 
+import "cc/ipc/begin_frame_args.mojom";
+
 interface CompositorFactory {
   CreateCompositor(Compositor& compositor, CompositorClient client);
 };
@@ -9,5 +11,8 @@ interface Compositor {
 };
 
 interface CompositorClient {
+  OnBeginMainFrame(BeginFrameArgs args);
+
   OnCompositorCreated();
+
 };

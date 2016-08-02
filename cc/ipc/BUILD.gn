@@ -36,15 +36,10 @@ component("ipc") {
   ]
 }
 
-mojom("gpu_interfaces") {
-  sources = [
-    "compositor.mojom",
-  ]
-}
-
 mojom("interfaces") {
   sources = [
     "begin_frame_args.mojom",
+    "compositor.mojom",
     "compositor_frame.mojom",
     "compositor_frame_metadata.mojom",
     "filter_operation.mojom",
