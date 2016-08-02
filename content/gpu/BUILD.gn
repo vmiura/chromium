@@ -49,6 +49,7 @@ target(link_target_type, "gpu_sources") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//cc/service",
     "//components/tracing",
     "//content:export",
     "//content:export",

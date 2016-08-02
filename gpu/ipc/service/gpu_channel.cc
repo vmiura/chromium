@@ -36,6 +36,7 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/service_compositor_factory.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -647,10 +648,14 @@ IPC::ChannelHandle GpuChannel::Init(base::WaitableEvent* shutdown_event) {
   return client_handle;
 }
 
-void GpuChannel::CreateCompositor(cc::mojom::CompositorClientPtr client) {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-  compositor_client_ = std::move(client);
-  compositor_client_->OnCompositorCreated();
+void GpuChannel::CreateCompositor(int32_t id,
+                                  cc::mojom::CompositorClientPtr client) {
+  fprintf(stderr, ">>>%s %d\n", __PRETTY_FUNCTION__, id);
+  ServiceCompositorData& data = service_compositor_map_[id];
+  data.client = std::move(client);
+  data.compositor = gpu_channel_manager_->service_compositor_factory()
+                        ->CreateServiceCompositor(id);
+  data.client->OnCompositorCreated(id);
 }
 
 void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
@@ -1082,5 +1087,8 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
     }
   }
 }
+
+GpuChannel::ServiceCompositorData::ServiceCompositorData() = default;
+GpuChannel::ServiceCompositorData::~ServiceCompositorData() = default;
 
 }  // namespace gpu

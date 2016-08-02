@@ -30,6 +30,10 @@
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace cc {
+class ServiceFactory;
+}
+
 namespace gpu {
 class GpuMemoryBufferFactory;
 class SyncPointManager;
@@ -148,6 +152,7 @@ class GpuChildThread : public ChildThreadImpl,
   // Can be null if overridden by ContentGpuClient.
   std::unique_ptr<gpu::SyncPointManager> owned_sync_point_manager_;
 
+  std::unique_ptr<cc::ServiceFactory> service_compositor_factory_;
   std::unique_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
 
   std::unique_ptr<media::MediaService> media_service_;

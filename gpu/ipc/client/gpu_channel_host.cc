@@ -89,7 +89,9 @@ void GpuChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
 
   cc::mojom::CompositorClientPtr client_ptr;
   compositor_client_binding_.Bind(mojo::GetProxy(&client_ptr));
-  compositor_->CreateCompositor(std::move(client_ptr));
+  // TODO(hackathon): Create a class that emcompasses this (like
+  // "ContextProvider" for a gl context.
+  compositor_->CreateCompositor(0, std::move(client_ptr));
 
   sync_filter_ = channel_->CreateSyncMessageFilter();
 
@@ -135,8 +137,8 @@ bool GpuChannelHost::Send(IPC::Message* msg) {
   return result;
 }
 
-void GpuChannelHost::OnCompositorCreated() {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+void GpuChannelHost::OnCompositorCreated(int32_t id) {
+  fprintf(stderr, ">>>%s %d\n", __PRETTY_FUNCTION__, id);
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(

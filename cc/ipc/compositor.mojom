@@ -1,9 +1,9 @@
 module cc.mojom;
 
 interface Compositor {
-  CreateCompositor(CompositorClient client);
+  CreateCompositor(int32 id, CompositorClient client);
 };
 
 interface CompositorClient {
-  OnCompositorCreated();
+  OnCompositorCreated(int32 id);
 };

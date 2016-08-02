@@ -50,7 +50,8 @@ GpuChannelManager::GpuChannelManager(
     base::SingleThreadTaskRunner* io_task_runner,
     base::WaitableEvent* shutdown_event,
     SyncPointManager* sync_point_manager,
-    GpuMemoryBufferFactory* gpu_memory_buffer_factory)
+    GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+    ServiceCompositorFactory* service_compositor_factory)
     : task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       gpu_preferences_(gpu_preferences),
@@ -65,6 +66,7 @@ GpuChannelManager::GpuChannelManager(
       sync_point_client_waiter_(
           sync_point_manager->CreateSyncPointClientWaiter()),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
+      service_compositor_factory_(service_compositor_factory),
       exiting_for_lost_context_(false),
       weak_factory_(this) {
   DCHECK(task_runner);

@@ -39,6 +39,10 @@ class CC_EXPORT TaskRunnerProvider {
         new TaskRunnerProvider(main_task_runner, impl_task_runner));
   }
 
+  TaskRunnerProvider(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner);
+
   // TODO(vmpstr): Should these return scoped_refptr to task runners? Many
   // places turn them into scoped_refptrs. How many of them need to?
   base::SingleThreadTaskRunner* MainThreadTaskRunner() const;
@@ -61,10 +65,6 @@ class CC_EXPORT TaskRunnerProvider {
   }
 
  protected:
-  TaskRunnerProvider(
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner);
-
   friend class DebugScopedSetImplThread;
   friend class DebugScopedSetMainThread;
   friend class DebugScopedSetMainThreadBlocked;

@@ -23,6 +23,7 @@
 #include "cc/ipc/compositor.mojom.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_stream_constants.h"
+#include "gpu/ipc/common/service_compositor.h"
 #include "gpu/ipc/service/gpu_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_memory_manager.h"
 #include "ipc/ipc_sync_channel.h"
@@ -81,7 +82,8 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
   virtual IPC::ChannelHandle Init(base::WaitableEvent* shutdown_event);
 
   // cc::mojom::Compositor implementation.
-  void CreateCompositor(cc::mojom::CompositorClientPtr client) override;
+  void CreateCompositor(int32_t id,
+                        cc::mojom::CompositorClientPtr client) override;
 
   void SetUnhandledMessageListener(IPC::Listener* listener);
 
@@ -241,7 +243,6 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
   std::unique_ptr<IPC::SyncChannel> channel_;
 
   mojo::AssociatedBinding<cc::mojom::Compositor> compositor_binding_;
-  cc::mojom::CompositorClientPtr compositor_client_;
 
   IPC::Listener* unhandled_message_listener_;
 
@@ -285,6 +286,15 @@ class GPU_EXPORT GpuChannel : public IPC::Listener,
 
   // Map of route id to stream id;
   base::hash_map<int32_t, int32_t> routes_to_streams_;
+
+  struct ServiceCompositorData {
+    ServiceCompositorData();
+    ~ServiceCompositorData();
+
+    std::unique_ptr<ServiceCompositor> compositor;
+    cc::mojom::CompositorClientPtr client;
+  };
+  std::unordered_map<int32_t, ServiceCompositorData> service_compositor_map_;
 
   // Can view command buffers be created on this channel.
   const bool allow_view_command_buffers_;

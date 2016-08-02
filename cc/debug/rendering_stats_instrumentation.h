@@ -20,6 +20,7 @@ namespace cc {
 class CC_EXPORT RenderingStatsInstrumentation {
  public:
   static std::unique_ptr<RenderingStatsInstrumentation> Create();
+  RenderingStatsInstrumentation();
   virtual ~RenderingStatsInstrumentation();
 
   // Return copy of current impl thread rendering stats.
@@ -54,9 +55,6 @@ class CC_EXPORT RenderingStatsInstrumentation {
   void AddCommitToActivateDuration(
       base::TimeDelta commit_to_activate_duration,
       base::TimeDelta commit_to_activate_duration_estimate);
-
- protected:
-  RenderingStatsInstrumentation();
 
  private:
   RenderingStats impl_thread_rendering_stats_;
