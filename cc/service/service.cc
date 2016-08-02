@@ -100,7 +100,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->WillBeginImplFrame(args);
   }
   void ScheduledActionSendBeginMainFrame(const BeginFrameArgs& args) override {
-    // TODO(hackathon): back to main
+    owner_->compositor_client()->OnBeginMainFrame(args);
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
     bool forced_draw = false;
@@ -251,9 +251,7 @@ void Service::CreateOutputSurface() {
 }
 
 void Service::SetNeedsBeginMainFrame() {
-  // TODO(hackathon): Implement this.
-  cc::BeginFrameArgs args;
-  compositor_client_->OnBeginMainFrame(args);
+  client_->SetNeedsCommitOnImplThread();
 }
 
 }  // namespace cc

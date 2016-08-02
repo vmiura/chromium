@@ -36,6 +36,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void CreateOutputSurface();
   LayerTreeHostImpl* host_impl() { return &host_impl_; }
   Scheduler* scheduler() { return &scheduler_; }
+  cc::mojom::CompositorClientPtr& compositor_client() { return compositor_client_; }
 
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
