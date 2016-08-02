@@ -32,14 +32,13 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
           TaskGraphRunner* task_graph_runner);
   ~Service() override;
 
+  // ClientImpl access.
   void CreateOutputSurface();
+  LayerTreeHostImpl* host_impl() { return &host_impl_; }
+  Scheduler* scheduler() { return &scheduler_; }
 
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
-
-  // ClientImpl access.
-  LayerTreeHostImpl* host_impl() { return &host_impl_; }
-  Scheduler* scheduler() { return &scheduler_; }
 
  private:
   class ClientImpl;

@@ -1,11 +1,13 @@
 #include "cc/service/service.h"
 
+#include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/scheduler/compositor_timing_history.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
 
@@ -21,7 +23,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     // TODO(hackathon): back to main
   }
   void DidLoseOutputSurfaceOnImplThread() override {
-    // TODO(hackathon): back to main
+    owner_->scheduler()->DidLoseOutputSurface();
   }
   void CommitVSyncParameters(base::TimeTicks timebase,
                              base::TimeDelta interval) override {}
@@ -68,11 +70,10 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     // TODO(hackathon): back to main
   }
   bool IsInsideDraw() override {
-    // TODO(hackathon): implement.
-    return false;
+    return inside_draw_;
   }
   void RenewTreePriority() override {
-    // TODO(hackathon): implement.
+    // TODO(hackathon): Default priority fine for now?
   }
   void PostDelayedAnimationTaskOnImplThread(const base::Closure& task,
                                             base::TimeDelta delay) override {
@@ -102,15 +103,22 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     // TODO(hackathon): back to main
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
-    // TODO(hackathon): implement.
-    return DRAW_SUCCESS;
+    bool forced_draw = false;
+    return DrawAndSwapInternal(forced_draw);
   }
   DrawResult ScheduledActionDrawAndSwapForced() override {
-    // TODO(hackathon): implement.
-    return DRAW_SUCCESS;
+    bool forced_draw = false;
+    return DrawAndSwapInternal(forced_draw);
   }
   void ScheduledActionCommit() override {
-    // TODO(hackathon): implement.
+    owner_->host_impl()->BeginCommit();
+
+    // TODO(hackathon): Need main side to commit.
+    // blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
+    //    owner_->host_impl());
+
+    owner_->scheduler()->DidCommit();
+    owner_->host_impl()->CommitComplete();
   }
   void ScheduledActionActivateSyncTree() override {
     owner_->host_impl()->ActivateSyncTree();
@@ -132,8 +140,66 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   }
 
  private:
+  DrawResult DrawAndSwapInternal(bool forced_draw) {
+    base::AutoReset<bool> mark_inside(&inside_draw_, true);
+
+    if (owner_->host_impl()->pending_tree()) {
+      bool update_lcd_text = false;
+      owner_->host_impl()->pending_tree()->UpdateDrawProperties(
+          update_lcd_text);
+    }
+
+    // This method is called on a forced draw, regardless of whether we are able
+    // to produce a frame, as the calling site on main thread is blocked until
+    // its
+    // request completes, and we signal completion here. If CanDraw() is false,
+    // we
+    // will indicate success=false to the caller, but we must still signal
+    // completion to avoid deadlock.
+
+    // We guard PrepareToDraw() with CanDraw() because it always returns a valid
+    // frame, so can only be used when such a frame is possible. Since
+    // DrawLayers() depends on the result of PrepareToDraw(), it is guarded on
+    // CanDraw() as well.
+
+    LayerTreeHostImpl::FrameData frame;
+    bool draw_frame = false;
+
+    DrawResult result;
+    if (owner_->host_impl()->CanDraw()) {
+      result = owner_->host_impl()->PrepareToDraw(&frame);
+      draw_frame = forced_draw || result == DRAW_SUCCESS;
+    } else {
+      result = DRAW_ABORTED_CANT_DRAW;
+    }
+
+    if (draw_frame) {
+      owner_->host_impl()->DrawLayers(&frame);
+      result = DRAW_SUCCESS;
+    } else {
+      DCHECK_NE(DRAW_SUCCESS, result);
+    }
+    owner_->host_impl()->DidDrawAllLayers(frame);
+
+    bool start_ready_animations = draw_frame;
+    owner_->host_impl()->UpdateAnimationState(start_ready_animations);
+
+    if (draw_frame) {
+      if (owner_->host_impl()->SwapBuffers(frame))
+        owner_->scheduler()->DidSwapBuffers();
+    }
+
+    // TODO(hackathon): tell main side?
+    // channel_impl_->DidCommitAndDrawFrame();
+
+    DCHECK_NE(INVALID_RESULT, result);
+    return result;
+  }
+
   Service* const owner_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  bool inside_draw_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
