@@ -115,11 +115,13 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
     bool forced_draw = false;
-    return DrawAndSwapInternal(forced_draw);
+    base::AutoReset<bool> mark_inside(&inside_draw_, true);
+    return owner_->DrawAndSwap(forced_draw);
   }
   DrawResult ScheduledActionDrawAndSwapForced() override {
     bool forced_draw = false;
-    return DrawAndSwapInternal(forced_draw);
+    base::AutoReset<bool> mark_inside(&inside_draw_, true);
+    return owner_->DrawAndSwap(forced_draw);
   }
   void ScheduledActionCommit() override {
     owner_->host_impl()->BeginCommit();
@@ -151,65 +153,8 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   }
 
  private:
-  DrawResult DrawAndSwapInternal(bool forced_draw) {
-    base::AutoReset<bool> mark_inside(&inside_draw_, true);
-
-    if (owner_->host_impl()->pending_tree()) {
-      bool update_lcd_text = false;
-      owner_->host_impl()->pending_tree()->UpdateDrawProperties(
-          update_lcd_text);
-    }
-
-    // This method is called on a forced draw, regardless of whether we are able
-    // to produce a frame, as the calling site on main thread is blocked until
-    // its
-    // request completes, and we signal completion here. If CanDraw() is false,
-    // we
-    // will indicate success=false to the caller, but we must still signal
-    // completion to avoid deadlock.
-
-    // We guard PrepareToDraw() with CanDraw() because it always returns a valid
-    // frame, so can only be used when such a frame is possible. Since
-    // DrawLayers() depends on the result of PrepareToDraw(), it is guarded on
-    // CanDraw() as well.
-
-    LayerTreeHostImpl::FrameData frame;
-    bool draw_frame = false;
-
-    DrawResult result;
-    if (owner_->host_impl()->CanDraw()) {
-      result = owner_->host_impl()->PrepareToDraw(&frame);
-      draw_frame = forced_draw || result == DRAW_SUCCESS;
-    } else {
-      result = DRAW_ABORTED_CANT_DRAW;
-    }
-
-    if (draw_frame) {
-      owner_->host_impl()->DrawLayers(&frame);
-      result = DRAW_SUCCESS;
-    } else {
-      DCHECK_NE(DRAW_SUCCESS, result);
-    }
-    owner_->host_impl()->DidDrawAllLayers(frame);
-
-    bool start_ready_animations = draw_frame;
-    owner_->host_impl()->UpdateAnimationState(start_ready_animations);
-
-    if (draw_frame) {
-      if (owner_->host_impl()->SwapBuffers(frame))
-        owner_->scheduler()->DidSwapBuffers();
-    }
-
-    // TODO(hackathon): tell main side?
-    // channel_impl_->DidCommitAndDrawFrame();
-
-    DCHECK_NE(INVALID_RESULT, result);
-    return result;
-  }
-
   Service* const owner_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
   bool inside_draw_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientImpl);
@@ -330,6 +275,60 @@ void Service::CreateOutputSurface() {
   host_impl_.InitializeRenderer(output_surface_.get());
 
   scheduler_.DidCreateAndInitializeOutputSurface();
+}
+
+DrawResult Service::DrawAndSwap(bool forced_draw) {
+  if (host_impl_.pending_tree()) {
+    bool update_lcd_text = false;
+    host_impl_.pending_tree()->UpdateDrawProperties(
+        update_lcd_text);
+  }
+
+  // This method is called on a forced draw, regardless of whether we are able
+  // to produce a frame, as the calling site on main thread is blocked until
+  // its
+  // request completes, and we signal completion here. If CanDraw() is false,
+  // we
+  // will indicate success=false to the caller, but we must still signal
+  // completion to avoid deadlock.
+
+  // We guard PrepareToDraw() with CanDraw() because it always returns a valid
+  // frame, so can only be used when such a frame is possible. Since
+  // DrawLayers() depends on the result of PrepareToDraw(), it is guarded on
+  // CanDraw() as well.
+
+  LayerTreeHostImpl::FrameData frame;
+  bool draw_frame = false;
+
+  DrawResult result;
+  if (host_impl_.CanDraw()) {
+    result = host_impl_.PrepareToDraw(&frame);
+    draw_frame = forced_draw || result == DRAW_SUCCESS;
+  } else {
+    result = DRAW_ABORTED_CANT_DRAW;
+  }
+
+  if (draw_frame) {
+    host_impl_.DrawLayers(&frame);
+    result = DRAW_SUCCESS;
+  } else {
+    DCHECK_NE(DRAW_SUCCESS, result);
+  }
+  host_impl_.DidDrawAllLayers(frame);
+
+  bool start_ready_animations = draw_frame;
+  host_impl_.UpdateAnimationState(start_ready_animations);
+
+  if (draw_frame) {
+    if (host_impl_.SwapBuffers(frame))
+      scheduler_.DidSwapBuffers();
+  }
+
+  // TODO(hackathon): tell main side?
+  // channel_impl_->DidCommitAndDrawFrame();
+
+  DCHECK_NE(INVALID_RESULT, result);
+  return result;
 }
 
 void Service::SetNeedsBeginMainFrame() {
