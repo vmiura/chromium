@@ -44,7 +44,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   class SetImplThread {
    public:
 #if !DCHECK_IS_ON()
-    explicit SetImplThread(TaskRunnerProvider* p) = default;
+    explicit SetImplThread(TaskRunnerProvider* p) {}
 #else
     explicit SetImplThread(TaskRunnerProvider* p) : p_(p) {
       p_->SetCurrentThreadIsImplThread(true);
