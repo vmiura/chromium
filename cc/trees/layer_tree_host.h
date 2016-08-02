@@ -105,6 +105,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     ~InitParams();
   };
 
+  static std::unique_ptr<LayerTreeHost> CreateMojo(
+      InitParams* params);
+
   // The SharedBitmapManager will be used on the compositor thread.
   static std::unique_ptr<LayerTreeHost> CreateThreaded(
       scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner,
@@ -434,6 +437,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
  protected:
   LayerTreeHost(InitParams* params, CompositorMode mode);
+  void InitializeMojo(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      std::unique_ptr<BeginFrameSource> external_begin_frame_source);
   void InitializeThreaded(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner,

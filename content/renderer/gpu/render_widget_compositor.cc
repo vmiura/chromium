@@ -256,8 +256,7 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
     // Single-threaded layout tests.
     layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
   } else {
-    layer_tree_host_ = cc::LayerTreeHost::CreateThreaded(
-        compositor_deps_->GetCompositorImplThreadTaskRunner(), &params);
+    layer_tree_host_ = cc::LayerTreeHost::CreateMojo(&params);
   }
   DCHECK(layer_tree_host_);
 }

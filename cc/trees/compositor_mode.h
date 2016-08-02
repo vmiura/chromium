@@ -22,6 +22,9 @@ enum class CompositorMode {
 
   // The main and impl components will be run across the network.
   REMOTE,
+
+  // The impl component runs across mojo.
+  MOJO,
 };
 
 }  // namespace cc

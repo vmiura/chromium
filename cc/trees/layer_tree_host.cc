@@ -57,6 +57,7 @@
 #include "cc/trees/property_tree_builder.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/remote_channel_impl.h"
+#include "cc/trees/simple_proxy.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -143,6 +144,18 @@ LayerTreeHost::InitParams::InitParams() {
 }
 
 LayerTreeHost::InitParams::~InitParams() {
+}
+
+std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateMojo(
+    InitParams* params) {
+  DCHECK(params->main_task_runner.get());
+  DCHECK(params->settings);
+  std::unique_ptr<LayerTreeHost> layer_tree_host(
+      new LayerTreeHost(params, CompositorMode::MOJO));
+  layer_tree_host->InitializeMojo(
+      params->main_task_runner,
+      std::move(params->external_begin_frame_source));
+  return layer_tree_host;
 }
 
 std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateThreaded(
@@ -259,6 +272,17 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       debug_state_.RecordRenderingStats());
+}
+
+void LayerTreeHost::InitializeMojo(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    std::unique_ptr<BeginFrameSource> external_begin_frame_source) {
+  task_runner_provider_ =
+      TaskRunnerProvider::Create(main_task_runner, nullptr);
+  std::unique_ptr<SimpleProxy> proxy =
+      SimpleProxy::Create(this, compositor_channel_, task_runner_provider_.get());
+  InitializeProxy(std::move(proxy),
+                  std::move(external_begin_frame_source));
 }
 
 void LayerTreeHost::InitializeThreaded(
