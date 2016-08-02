@@ -45,6 +45,7 @@ class FakeCompositorDependencies : public CompositorDependencies {
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool AreImageDecodeTasksEnabled() override;
   bool IsThreadedAnimationEnabled() override;
+  cc::CompositorChannelHost* GetCompositorChannelHost() override;
 
  private:
   cc::TestSharedBitmapManager shared_bitmap_manager_;

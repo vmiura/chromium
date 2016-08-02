@@ -1638,6 +1638,10 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
   return is_threaded_animation_enabled_;
 }
 
+cc::CompositorChannelHost* RenderThreadImpl::GetCompositorChannelHost() {
+  return compositor_channel_.get();
+}
+
 void RenderThreadImpl::OnRAILModeChanged(v8::RAILMode rail_mode) {
   blink::mainThreadIsolate()->SetRAILMode(rail_mode);
   blink::setRAILModeOnWorkerThreadIsolates(rail_mode);

@@ -17,6 +17,7 @@ class SingleThreadTaskRunner;
 
 namespace cc {
 class BeginFrameSource;
+class CompositorChannelHost;
 class ContextProvider;
 class ImageSerializationProcessor;
 class SharedBitmapManager;
@@ -63,6 +64,7 @@ class CompositorDependencies {
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
   virtual bool AreImageDecodeTasksEnabled() = 0;
   virtual bool IsThreadedAnimationEnabled() = 0;
+  virtual cc::CompositorChannelHost* GetCompositorChannelHost() = 0;
 
   virtual ~CompositorDependencies() {}
 };

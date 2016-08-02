@@ -75,6 +75,10 @@ uint32_t StubContextFactory::AllocateSurfaceClientId() {
   return next_surface_id_namespace_++;
 }
 
+cc::CompositorChannelHost* StubContextFactory::GetCompositorChannelHost() {
+  return nullptr;
+}
+
 cc::SurfaceManager* StubContextFactory::GetSurfaceManager() {
   // NOTIMPLEMENTED();
   return nullptr;

@@ -338,6 +338,11 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
   return NULL;
 }
 
+cc::CompositorChannelHost*
+BrowserGpuChannelHostFactory::GetCompositorChannelHost() {
+  return compositor_channel_.get();
+}
+
 void BrowserGpuChannelHostFactory::GpuChannelEstablished() {
   DCHECK(IsMainThread());
   DCHECK(pending_request_.get());

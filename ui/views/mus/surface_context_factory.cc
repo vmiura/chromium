@@ -91,6 +91,10 @@ uint32_t SurfaceContextFactory::AllocateSurfaceClientId() {
   return next_surface_id_namespace_++;
 }
 
+cc::CompositorChannelHost* SurfaceContextFactory::GetCompositorChannelHost() {
+  return nullptr;
+}
+
 cc::SurfaceManager* SurfaceContextFactory::GetSurfaceManager() {
   // NOTIMPLEMENTED();
   return nullptr;

@@ -689,6 +689,11 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
   return next_surface_client_id_++;
 }
 
+cc::CompositorChannelHost*
+GpuProcessTransportFactory::GetCompositorChannelHost() {
+  return BrowserGpuChannelHostFactory::instance()->GetCompositorChannelHost();
+}
+
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,
                                                const gfx::Size& size) {
   PerCompositorDataMap::iterator it = per_compositor_data_.find(compositor);

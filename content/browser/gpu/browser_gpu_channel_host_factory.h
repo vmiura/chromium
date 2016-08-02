@@ -46,6 +46,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   void EstablishGpuChannel(CauseForGpuLaunch cause_for_gpu_launch,
                            const base::Closure& callback);
   gpu::GpuChannelHost* GetGpuChannel();
+  cc::CompositorChannelHost* GetCompositorChannelHost();
   int GetGpuChannelId() { return gpu_client_id_; }
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.

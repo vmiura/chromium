@@ -38,6 +38,7 @@ class SingleThreadTaskRunner;
 
 namespace cc {
 class AnimationTimeline;
+class CompositorChannelHost;
 class ContextProvider;
 class Layer;
 class LayerTreeDebugState;
@@ -130,6 +131,9 @@ class COMPOSITOR_EXPORT ContextFactory {
 
   // Allocate a new client ID for the display compositor.
   virtual uint32_t AllocateSurfaceClientId() = 0;
+
+  // Get the CompositorChannelHost.
+  virtual cc::CompositorChannelHost* GetCompositorChannelHost() = 0;
 
   // Gets the surface manager.
   virtual cc::SurfaceManager* GetSurfaceManager() = 0;

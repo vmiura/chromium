@@ -206,6 +206,7 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
   params.task_graph_runner = context_factory_->GetTaskGraphRunner();
   params.settings = &settings;
   params.main_task_runner = task_runner_;
+  params.compositor_channel = context_factory_->GetCompositorChannelHost();
   params.animation_host = cc::AnimationHost::CreateMainInstance();
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
   UMA_HISTOGRAM_TIMES("GPU.CreateBrowserCompositor",

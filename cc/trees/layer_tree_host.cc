@@ -220,6 +220,7 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
       needs_full_tree_sync_(true),
       needs_meta_info_recomputation_(true),
       client_(params->client),
+      compositor_channel_(params->compositor_channel),
       source_frame_number_(0),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
       output_surface_lost_(true),

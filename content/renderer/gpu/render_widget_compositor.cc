@@ -238,6 +238,7 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
       compositor_deps_->GetGpuMemoryBufferManager();
   params.settings = &settings;
   params.task_graph_runner = compositor_deps_->GetTaskGraphRunner();
+  params.compositor_channel = compositor_deps_->GetCompositorChannelHost();
   params.main_task_runner =
       compositor_deps_->GetCompositorMainThreadTaskRunner();
   if (settings.use_external_begin_frame_source) {
