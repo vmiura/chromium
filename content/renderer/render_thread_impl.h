@@ -607,9 +607,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // in the GPU process.
   std::unique_ptr<cc::CompositorChannelHost> compositor_channel_;
 
-  // TODO(hackathon): Move this to SimpleProxy.
-  std::unique_ptr<cc::CompositorProxy> compositor_;
-
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;

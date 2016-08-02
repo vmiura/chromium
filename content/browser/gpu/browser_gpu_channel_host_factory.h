@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/client/compositor_channel_host.h"
-#include "cc/client/compositor_proxy.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -71,7 +70,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   std::unique_ptr<base::WaitableEvent> shutdown_event_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
   std::unique_ptr<cc::CompositorChannelHost> compositor_channel_;
-  std::unique_ptr<cc::CompositorProxy> compositor_;
   std::unique_ptr<BrowserGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   int gpu_host_id_;
   scoped_refptr<EstablishRequest> pending_request_;

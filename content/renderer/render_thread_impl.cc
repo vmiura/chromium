@@ -1639,6 +1639,9 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
 }
 
 cc::CompositorChannelHost* RenderThreadImpl::GetCompositorChannelHost() {
+  // TODO(piman): hack!!
+  if (!compositor_channel_)
+    EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_RENDERER_SHARED_MAIN_THREAD_CONTEXT);
   return compositor_channel_.get();
 }
 
@@ -1808,8 +1811,6 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
                                     gpu_memory_buffer_manager());
 
     compositor_channel_ = cc::CompositorChannelHost::Create(gpu_channel_.get());
-
-    compositor_ = compositor_channel_->CreateCompositor();
   } else {
 #if defined(MOJO_SHELL_CLIENT) && defined(USE_AURA)
     gpu_channel_ = ui::GpuService::GetInstance()->EstablishGpuChannelSync();
