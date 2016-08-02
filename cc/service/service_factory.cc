@@ -8,9 +8,12 @@ namespace cc {
 
 ServiceFactory::ServiceFactory(
     SharedBitmapManager* shared_bitmap_manager,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager)
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gpu::ImageFactory* image_factory)
     : shared_bitmap_manager_(shared_bitmap_manager),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {}
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+      image_factory_(image_factory) {
+}
 
 ServiceFactory::~ServiceFactory() = default;
 

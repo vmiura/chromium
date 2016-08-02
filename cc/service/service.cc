@@ -4,10 +4,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
+#include "cc/output/texture_mailbox_deleter.h"
+#include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/compositor_timing_history.h"
+#include "cc/scheduler/delay_based_time_source.h"
 #include "cc/scheduler/scheduler.h"
+#include "cc/service/delegating_output_surface.h"
+#include "cc/service/display_output_surface.h"
+#include "cc/service/service_context_provider.h"
+#include "cc/surfaces/display.h"
+#include "cc/surfaces/display_scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/command_buffer/client/shared_memory_limits.h"
 
 namespace cc {
 
@@ -206,14 +216,22 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
 
 Service::Service(cc::mojom::CompositorRequest request,
                  cc::mojom::CompositorClientPtr client,
+                 int id,
                  SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                 gpu::ImageFactory* image_factory,
+                 SurfaceManager* surface_manager,
                  TaskGraphRunner* task_graph_runner)
-    : client_(new ClientImpl(this, base::ThreadTaskRunnerHandle::Get())),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      client_(new ClientImpl(this, task_runner_)),
+      shared_bitmap_manager_(shared_bitmap_manager),
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+      image_factory_(image_factory),
+      surface_manager_(surface_manager),
+      surface_id_allocator_(id),
       scheduler_(client_.get(),
                  SchedulerSettings(),
-                 0 /* id */,
+                 id,
                  task_runner_.get(),
                  nullptr /* begin_frame_source */,
                  base::MakeUnique<CompositorTimingHistory>(
@@ -232,21 +250,84 @@ Service::Service(cc::mojom::CompositorRequest request,
                  task_graph_runner,
                  main_thread_animation_host_lol_->CreateImplInstance(
                      false /* supports_impl_scrolling */),
-                 0 /* id */),
+                 id),
       compositor_client_(std::move(client)),
       binding_(this, std::move(request)) {
   LOG(ERROR) << "Service compositor " << this;
+  surface_manager_->RegisterSurfaceClientId(
+      surface_id_allocator_.client_id());
+  scheduler_.SetVisible(true);
+
   compositor_client_->OnCompositorCreated();
 }
 
 Service::~Service() {
   LOG(ERROR) << "~Service compositor " << this;
+
+  scheduler_.SetVisible(false);
+  scheduler_.DidLoseOutputSurface();
+  host_impl_.ReleaseOutputSurface();
+  output_surface_.reset();
+
+  surface_manager_->InvalidateSurfaceClientId(
+      surface_id_allocator_.client_id());
 }
 
 void Service::CreateOutputSurface() {
-  LOG(ERROR) << "Service CreateOutputSurface";
-  // TODO(hackathon): Actually make a GL context and OutputSurface and give it
-  // to LTHI::InitializeRenderer().
+  const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
+  LOG(ERROR) << "Service CreateOutputSurface for root: " << root_compositor;
+  if (root_compositor) {
+    auto begin_frame_source = base::MakeUnique<DelayBasedBeginFrameSource>(
+        base::MakeUnique<DelayBasedTimeSource>(task_runner_.get()));
+
+    scoped_refptr<ServiceContextProvider> display_context_provider(
+        new ServiceContextProvider(widget_,
+                                   gpu_memory_buffer_manager_,
+                                   image_factory_,
+                                   gpu::SharedMemoryLimits(),
+                                   nullptr /* shared_context_provider */));
+
+    auto output_surface = base::MakeUnique<DisplayOutputSurface>(
+        std::move(display_context_provider));
+    auto display_scheduler = base::MakeUnique<DisplayScheduler>(
+        begin_frame_source.get(),
+        task_runner_.get(),
+        output_surface->capabilities().max_frames_pending);
+
+    display_.reset(new Display(
+        shared_bitmap_manager_,
+        gpu_memory_buffer_manager_,
+        RendererSettings(),
+        std::move(begin_frame_source),
+        std::move(output_surface),
+        std::move(display_scheduler),
+        base::MakeUnique<TextureMailboxDeleter>(task_runner_)));
+  }
+
+  scoped_refptr<ServiceContextProvider> compositor_context(
+      new ServiceContextProvider(gfx::kNullAcceleratedWidget,
+                                 gpu_memory_buffer_manager_,
+                                 image_factory_,
+                                 gpu::SharedMemoryLimits::ForMailboxContext(),
+                                 nullptr));
+  scoped_refptr<ServiceContextProvider> worker_context(
+      new ServiceContextProvider(gfx::kNullAcceleratedWidget,
+                                 gpu_memory_buffer_manager_,
+                                 image_factory_,
+                                 gpu::SharedMemoryLimits(),
+                                 compositor_context.get()));
+
+  // Keep the one in LTHI alive until InitializeRenderer() is complete.
+  auto local_output_surface = std::move(output_surface_);
+
+  output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
+      surface_manager_,
+      &surface_id_allocator_,
+      display_.get(),  // Will be null for non-root compositors.
+      std::move(compositor_context),
+      std::move(worker_context));
+  host_impl_.InitializeRenderer(output_surface_.get());
+
   scheduler_.DidCreateAndInitializeOutputSurface();
 }
 

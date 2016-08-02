@@ -7,8 +7,14 @@ component("service") {
   sources = [
     "compositor_channel.cc",
     "compositor_channel.h",
+    "delegating_output_surface.cc",
+    "delegating_output_surface.h",
+    "display_output_surface.cc",
+    "display_output_surface.h",
     "service.cc",
     "service.h",
+    "service_context_provider.cc",
+    "service_context_provider.h",
     "service_export.h",
     "service_factory.cc",
     "service_factory.h",
@@ -22,7 +28,10 @@ component("service") {
   deps = [
     "//base",
     "//cc/ipc:interfaces",
+    "//cc/surfaces",
+    "//gpu/command_buffer/client:gl_in_process_context",
     "//gpu/ipc/service",
+    "//gpu/skia_bindings",
   ]
 
   if (is_android && !is_debug) {

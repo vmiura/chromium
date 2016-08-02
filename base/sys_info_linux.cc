@@ -22,6 +22,12 @@ namespace {
 int64_t AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
+
+  // HACK TO AVOID SANDBOX. 2GB ok? ok.
+  // TODO(hackathon): We should query this value before the sandbox, and give it
+  // to GLES2Implementation instead of having it query it.
+  return 2147483648;
+
   if (pages == -1 || page_size == -1) {
     NOTREACHED();
     return 0;

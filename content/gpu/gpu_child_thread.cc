@@ -374,7 +374,9 @@ void GpuChildThread::OnInitialize(const gpu::GpuPreferences& gpu_preferences) {
   // IPC messages before the sandbox has been enabled and all other necessary
   // initialization has succeeded.
   service_compositor_factory_.reset(new cc::ServiceFactory(
-      shared_bitmap_manager(), gpu_memory_buffer_manager()));
+      shared_bitmap_manager(), gpu_memory_buffer_manager(),
+      gpu_memory_buffer_factory_ ?
+      gpu_memory_buffer_factory_->AsImageFactory() : nullptr));
   gpu_channel_manager_.reset(new gpu::GpuChannelManager(
       gpu_preferences_, this, watchdog_thread_.get(),
       base::ThreadTaskRunnerHandle::Get().get(),

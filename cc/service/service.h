@@ -10,25 +10,34 @@
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/service/service_export.h"
+#include "cc/surfaces/surface_id_allocator.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/task_runner_provider.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace gpu {
 class GpuMemoryBufferManager;
+class ImageFactory;
 }
 
 namespace cc {
 class AnimationHost;
+class Display;
 class SharedBitmapManager;
+class DelegatingOutputSurface;
+class SurfaceManager;
 class TaskGraphRunner;
 
 class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
  public:
   Service(cc::mojom::CompositorRequest request,
           cc::mojom::CompositorClientPtr client,
+          int id,
           SharedBitmapManager* shared_bitmap_manager,
           gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+          gpu::ImageFactory* image_factory,
+          SurfaceManager* surface_manager,
           TaskGraphRunner* task_graph_runner);
   ~Service() override;
 
@@ -43,6 +52,8 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void Commit(bool wait_for_activation, mojom::ContentFramePtr frame) override;
 
  private:
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
   class ClientImpl;
   std::unique_ptr<ClientImpl> client_;
 
@@ -64,7 +75,15 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
 #endif
   };
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  SharedBitmapManager* const shared_bitmap_manager_;
+  gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
+  gpu::ImageFactory* const image_factory_;
+  SurfaceManager* const surface_manager_;
+
+  // TODO(hackathon): Get a widget from the browser process.
+  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
+  SurfaceIdAllocator surface_id_allocator_;
+
   RenderingStatsInstrumentation rendering_stats_;
   Scheduler scheduler_;
   TaskRunnerProvider task_runner_provider_;
@@ -73,6 +92,12 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   LayerTreeHostImpl host_impl_;
   cc::mojom::CompositorClientPtr compositor_client_;
   mojo::StrongBinding<cc::mojom::Compositor> binding_;
+
+  // This is null for non-root service compositors.
+  std::unique_ptr<Display> display_;
+
+  // TODO(hackathon): Should be owned by LTHI but le sigh.
+  std::unique_ptr<DelegatingOutputSurface> output_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(Service);
 };

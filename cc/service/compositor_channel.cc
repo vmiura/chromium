@@ -24,8 +24,11 @@ void CompositorChannel::CreateCompositor(
     cc::mojom::CompositorRequest compositor,
     cc::mojom::CompositorClientPtr compositor_client) {
   new Service(std::move(compositor), std::move(compositor_client),
+              factory_->NextServiceCompositorId(),
               factory_->shared_bitmap_manager(),
               factory_->gpu_memory_buffer_manager(),
+              factory_->image_factory(),
+              factory_->surface_manager(),
               factory_->task_graph_runner());
 }
 
