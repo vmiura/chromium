@@ -16,7 +16,10 @@ BeginMainFrameAndCommitState::~BeginMainFrameAndCommitState() {}
 void BeginMainFrameAndCommitState::ToProtobuf(
     proto::BeginMainFrameAndCommitState* proto) const {
   proto->set_begin_frame_id(begin_frame_id);
+#if 0
+  // TODO(piman): hackathon
   begin_frame_args.ToProtobuf(proto->mutable_begin_frame_args());
+#endif
   scroll_info->ToProtobuf(proto->mutable_scroll_info());
   proto->set_memory_allocation_limit_bytes(memory_allocation_limit_bytes);
   proto->set_evicted_ui_resources(evicted_ui_resources);
@@ -25,7 +28,10 @@ void BeginMainFrameAndCommitState::ToProtobuf(
 void BeginMainFrameAndCommitState::FromProtobuf(
     const proto::BeginMainFrameAndCommitState& proto) {
   begin_frame_id = proto.begin_frame_id();
+#if 0
+  // TODO(piman): hackathon
   begin_frame_args.FromProtobuf(proto.begin_frame_args());
+#endif
   scroll_info.reset(new ScrollAndScaleSet());
   scroll_info->FromProtobuf(proto.scroll_info());
   memory_allocation_limit_bytes = proto.memory_allocation_limit_bytes();

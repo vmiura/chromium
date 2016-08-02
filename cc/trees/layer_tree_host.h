@@ -32,6 +32,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/top_controls_state.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/output/output_surface.h"
@@ -405,6 +406,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // expected input is a serialized remote LayerTreeHost. After deserializing
   // the protobuf, the normal commit-flow should continue.
   void FromProtobufForCommit(const proto::LayerTreeHost& proto);
+
+  void GetContentFrame(mojom::ContentFrame* proto);
 
   bool IsSingleThreaded() const;
   bool IsThreaded() const;

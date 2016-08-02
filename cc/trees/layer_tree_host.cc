@@ -37,6 +37,7 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/page_scale_animation.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
@@ -1676,6 +1677,10 @@ void LayerTreeHost::FromProtobufForCommit(const proto::LayerTreeHost& proto) {
 
 AnimationHost* LayerTreeHost::animation_host() const {
   return layer_tree_.animation_host();
+}
+
+void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
+  frame->source_frame = source_frame_number_;
 }
 
 }  // namespace cc

@@ -1,0 +1,5 @@
+module cc.mojom;
+
+struct ContentFrame {
+  uint32 source_frame;
+};

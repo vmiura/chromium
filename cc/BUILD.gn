@@ -5,6 +5,15 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+component("transport") {
+  sources = [
+    "output/begin_frame_args.cc",
+    "output/begin_frame_args.h",
+  ]
+  deps = [ "//base" ]
+  defines = [ "CC_TRANSPORT_IMPLEMENTATION=1" ]
+}
+
 component("cc") {
   sources = [
     "animation/animation.cc",
@@ -193,8 +202,6 @@ component("cc") {
     "layers/video_layer_impl.h",
     "layers/viewport.cc",
     "layers/viewport.h",
-    "output/begin_frame_args.cc",
-    "output/begin_frame_args.h",
     "output/bsp_tree.cc",
     "output/bsp_tree.h",
     "output/bsp_walk_action.cc",
@@ -561,12 +568,15 @@ component("cc") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
+    ":transport",
     "//cc/base",
     "//skia",
   ]
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//cc/client",
+    "//cc/ipc:compositor_interfaces",
     "//cc/proto",
     "//cc/surfaces:surface_id",
     "//gpu",

@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 
 namespace base {
 namespace trace_event {
@@ -42,7 +42,7 @@ namespace proto {
 class BeginFrameArgs;
 }
 
-struct CC_EXPORT BeginFrameArgs {
+struct CC_TRANSPORT_EXPORT BeginFrameArgs {
   enum BeginFrameArgsType {
     INVALID,
     NORMAL,
@@ -52,8 +52,10 @@ struct CC_EXPORT BeginFrameArgs {
     BEGIN_FRAME_ARGS_TYPE_MAX,
   };
   static const char* TypeToString(BeginFrameArgsType type);
+#if 0
   void BeginFrameArgsTypeToProtobuf(proto::BeginFrameArgs* proto) const;
   void BeginFrameArgsTypeFromProtobuf(const proto::BeginFrameArgs& proto);
+#endif
 
   // Creates an invalid set of values.
   BeginFrameArgs();
@@ -87,8 +89,10 @@ struct CC_EXPORT BeginFrameArgs {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
+#if 0
   void ToProtobuf(proto::BeginFrameArgs* proto) const;
   void FromProtobuf(const proto::BeginFrameArgs& proto);
+#endif
 
   base::TimeTicks frame_time;
   base::TimeTicks deadline;

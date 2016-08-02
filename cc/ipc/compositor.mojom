@@ -1,6 +1,11 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 module cc.mojom;
 
 import "cc/ipc/begin_frame_args.mojom";
+import "cc/ipc/content_frame.mojom";
 
 interface CompositorFactory {
   CreateCompositor(Compositor& compositor, CompositorClient client);
@@ -8,11 +13,10 @@ interface CompositorFactory {
 
 interface Compositor {
   SetNeedsBeginMainFrame();
+  Commit(bool wait_for_activation, ContentFrame frame);
 };
 
 interface CompositorClient {
-  OnBeginMainFrame(BeginFrameArgs args);
-
   OnCompositorCreated();
-
+  OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
 };

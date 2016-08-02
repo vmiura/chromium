@@ -14,12 +14,10 @@ component("client") {
 
   defines = [ "CC_CLIENT_IMPLEMENTATION=1" ]
 
-  public_deps = [
-    "//cc",
-  ]
   deps = [
     "//base",
-    "//cc/ipc:interfaces",
+    "//cc/ipc:compositor_interfaces",
+    "//cc:transport",
     "//gpu/ipc/client",
   ]
 

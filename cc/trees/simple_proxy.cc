@@ -13,6 +13,7 @@
 #include "cc/animation/animation_events.h"
 #include "cc/debug/benchmark_instrumentation.h"
 #include "cc/debug/devtools_instrumentation.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/swap_promise.h"
 #include "cc/trees/blocking_task_runner.h"
@@ -25,16 +26,19 @@ namespace cc {
 
 std::unique_ptr<SimpleProxy> SimpleProxy::Create(
     LayerTreeHost* layer_tree_host,
+    CompositorChannelHost* compositor_host,
     TaskRunnerProvider* task_runner_provider) {
   std::unique_ptr<SimpleProxy> proxy_main(
-      new SimpleProxy(layer_tree_host, task_runner_provider));
+      new SimpleProxy(layer_tree_host, compositor_host->CreateCompositor(), task_runner_provider));
   return proxy_main;
 }
 
 SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
-                     TaskRunnerProvider* task_runner_provider)
+                         std::unique_ptr<CompositorProxy> compositor,
+                         TaskRunnerProvider* task_runner_provider)
     : layer_tree_host_(layer_tree_host),
       task_runner_provider_(task_runner_provider),
+      compositor_(std::move(compositor)),
       layer_tree_host_id_(layer_tree_host->id()),
       commit_waits_for_activation_(false),
       started_(false),
@@ -43,12 +47,14 @@ SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
   TRACE_EVENT0("cc", "SimpleProxy::SimpleProxy");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
+  compositor_->set_delegate(this);
 }
 
 SimpleProxy::~SimpleProxy() {
   TRACE_EVENT0("cc", "SimpleProxy::~SimpleProxy");
   DCHECK(IsMainThread());
   DCHECK(!started_);
+  compositor_->set_delegate(nullptr);
 }
 
 #if 0
@@ -103,132 +109,6 @@ void SimpleProxy::DidInitializeOutputSurface(
 void SimpleProxy::DidCompletePageScaleAnimation() {
   DCHECK(IsMainThread());
   layer_tree_host_->DidCompletePageScaleAnimation();
-}
-
-void SimpleProxy::BeginMainFrame(
-    std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
-  benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
-      benchmark_instrumentation::kDoBeginFrame,
-      begin_main_frame_state->begin_frame_id);
-
-  base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
-
-  TRACE_EVENT_SYNTHETIC_DELAY_BEGIN("cc.BeginMainFrame");
-  DCHECK(IsMainThread());
-  DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
-
-  if (defer_commits_) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
-                         TRACE_EVENT_SCOPE_THREAD);
-    channel_main_->BeginMainFrameAbortedOnImpl(
-        CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT,
-        begin_main_frame_start_time);
-    return;
-  }
-
-  // If the commit finishes, LayerTreeHost will transfer its swap promises to
-  // LayerTreeImpl. The destructor of ScopedSwapPromiseChecker aborts the
-  // remaining swap promises.
-  ScopedAbortRemainingSwapPromises swap_promise_checker(layer_tree_host_);
-
-  final_pipeline_stage_ = max_requested_pipeline_stage_;
-  max_requested_pipeline_stage_ = NO_PIPELINE_STAGE;
-
-  if (!layer_tree_host_->visible()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
-    channel_main_->BeginMainFrameAbortedOnImpl(
-        CommitEarlyOutReason::ABORTED_NOT_VISIBLE, begin_main_frame_start_time);
-    return;
-  }
-
-  if (layer_tree_host_->output_surface_lost()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_OutputSurfaceLost",
-                         TRACE_EVENT_SCOPE_THREAD);
-    channel_main_->BeginMainFrameAbortedOnImpl(
-        CommitEarlyOutReason::ABORTED_OUTPUT_SURFACE_LOST,
-        begin_main_frame_start_time);
-    return;
-  }
-
-  current_pipeline_stage_ = ANIMATE_PIPELINE_STAGE;
-
-  layer_tree_host_->ApplyScrollAndScale(
-      begin_main_frame_state->scroll_info.get());
-
-  if (begin_main_frame_state->begin_frame_callbacks) {
-    for (auto& callback : *begin_main_frame_state->begin_frame_callbacks)
-      callback.Run();
-  }
-
-  layer_tree_host_->WillBeginMainFrame();
-
-  layer_tree_host_->BeginMainFrame(begin_main_frame_state->begin_frame_args);
-  layer_tree_host_->AnimateLayers(
-      begin_main_frame_state->begin_frame_args.frame_time);
-
-  // Recreate all UI resources if there were evicted UI resources when the impl
-  // thread initiated the commit.
-  if (begin_main_frame_state->evicted_ui_resources)
-    layer_tree_host_->RecreateUIResources();
-
-  layer_tree_host_->RequestMainFrameUpdate();
-  TRACE_EVENT_SYNTHETIC_DELAY_END("cc.BeginMainFrame");
-
-  bool can_cancel_this_commit = final_pipeline_stage_ < COMMIT_PIPELINE_STAGE &&
-                                !begin_main_frame_state->evicted_ui_resources;
-
-  current_pipeline_stage_ = UPDATE_LAYERS_PIPELINE_STAGE;
-  bool should_update_layers =
-      final_pipeline_stage_ >= UPDATE_LAYERS_PIPELINE_STAGE;
-  bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
-
-  layer_tree_host_->WillCommit();
-  devtools_instrumentation::ScopedCommitTrace commit_task(
-      layer_tree_host_->id());
-
-  current_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
-  if (!updated && can_cancel_this_commit) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoUpdates", TRACE_EVENT_SCOPE_THREAD);
-    channel_main_->BeginMainFrameAbortedOnImpl(
-        CommitEarlyOutReason::FINISHED_NO_UPDATES, begin_main_frame_start_time);
-
-    // Although the commit is internally aborted, this is because it has been
-    // detected to be a no-op.  From the perspective of an embedder, this commit
-    // went through, and input should no longer be throttled, etc.
-    current_pipeline_stage_ = NO_PIPELINE_STAGE;
-    layer_tree_host_->CommitComplete();
-    layer_tree_host_->DidBeginMainFrame();
-    layer_tree_host_->BreakSwapPromises(SwapPromise::COMMIT_NO_UPDATE);
-    return;
-  }
-
-  // Notify the impl thread that the main thread is ready to commit. This will
-  // begin the commit process, which is blocking from the main thread's
-  // point of view, but asynchronously performed on the impl thread,
-  // coordinated by the Scheduler.
-  {
-    TRACE_EVENT0("cc", "SimpleProxy::BeginMainFrame::commit");
-
-    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
-
-    // This CapturePostTasks should be destroyed before CommitComplete() is
-    // called since that goes out to the embedder, and we want the embedder
-    // to receive its callbacks before that.
-    BlockingTaskRunner::CapturePostTasks blocked(
-        task_runner_provider_->blocking_main_thread_task_runner());
-
-    bool hold_commit_for_activation = commit_waits_for_activation_;
-    commit_waits_for_activation_ = false;
-    CompletionEvent completion;
-    channel_main_->NotifyReadyToCommitOnImpl(&completion, layer_tree_host_,
-                                             begin_main_frame_start_time,
-                                             hold_commit_for_activation);
-    completion.Wait();
-  }
-
-  current_pipeline_stage_ = NO_PIPELINE_STAGE;
-  layer_tree_host_->CommitComplete();
-  layer_tree_host_->DidBeginMainFrame();
 }
 #endif
 
@@ -311,14 +191,12 @@ void SimpleProxy::SetDeferCommits(bool defer_commits) {
   else
     TRACE_EVENT_ASYNC_END0("cc", "SimpleProxy::SetDeferCommits", this);
 
-  // TODO(piman): hackathon ??
   if (!defer_commits_)
     SetNeedsBeginFrame();
 }
 
 bool SimpleProxy::CommitRequested() const {
   DCHECK(IsMainThread());
-  // TODO(piman): hackathon ??
   return begin_frame_requested_;
 }
 
@@ -388,19 +266,20 @@ void SimpleProxy::SetNeedsBeginFrame() {
   if (begin_frame_requested_)
     return;
   begin_frame_requested_ = true;
-  // TODO(piman): hackathon: Send message to request begin frame.
-
+  compositor_->SetNeedsBeginMainFrame();
 }
 
 bool SimpleProxy::IsMainThread() const {
   return task_runner_provider_->IsMainThread();
 }
 
-void SimpleProxy::BeginMainFrame(
-    std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
+void SimpleProxy::OnCompositorCreated() {}
+
+void SimpleProxy::OnBeginMainFrame(
+    uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) {
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
       benchmark_instrumentation::kDoBeginFrame,
-      begin_main_frame_state->begin_frame_id);
+      begin_frame_id);
 
   TRACE_EVENT_SYNTHETIC_DELAY_BEGIN("cc.BeginMainFrame");
   DCHECK(IsMainThread());
@@ -410,8 +289,6 @@ void SimpleProxy::BeginMainFrame(
   if (defer_commits_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
-    // TODO(piman): hackathon ??
-    NOTIMPLEMENTED();
     return;
   }
 
@@ -435,24 +312,24 @@ void SimpleProxy::BeginMainFrame(
     return;
   }
 
-  layer_tree_host_->ApplyScrollAndScale(
-      begin_main_frame_state->scroll_info.get());
+  // TODO(piman): hackathon
+  // layer_tree_host_->ApplyScrollAndScale(
+  //     begin_main_frame_state->scroll_info.get());
 
-  if (begin_main_frame_state->begin_frame_callbacks) {
-    for (auto& callback : *begin_main_frame_state->begin_frame_callbacks)
-      callback.Run();
-  }
+  // if (begin_main_frame_state->begin_frame_callbacks) {
+  //   for (auto& callback : *begin_main_frame_state->begin_frame_callbacks)
+  //     callback.Run();
+  // }
 
   layer_tree_host_->WillBeginMainFrame();
 
-  layer_tree_host_->BeginMainFrame(begin_main_frame_state->begin_frame_args);
-  layer_tree_host_->AnimateLayers(
-      begin_main_frame_state->begin_frame_args.frame_time);
+  layer_tree_host_->BeginMainFrame(begin_frame_args);
+  layer_tree_host_->AnimateLayers(begin_frame_args.frame_time);
 
   // Recreate all UI resources if there were evicted UI resources when the impl
   // thread initiated the commit.
-  if (begin_main_frame_state->evicted_ui_resources)
-    layer_tree_host_->RecreateUIResources();
+  // if (begin_main_frame_state->evicted_ui_resources)
+  //   layer_tree_host_->RecreateUIResources();
 
   layer_tree_host_->RequestMainFrameUpdate();
   TRACE_EVENT_SYNTHETIC_DELAY_END("cc.BeginMainFrame");
@@ -491,11 +368,12 @@ void SimpleProxy::BeginMainFrame(
     BlockingTaskRunner::CapturePostTasks blocked(
         task_runner_provider_->blocking_main_thread_task_runner());
 
-    // TODO(piman): bool hold_commit_for_activation = commit_waits_for_activation_;
+    bool hold_commit_for_activation = commit_waits_for_activation_;
     commit_waits_for_activation_ = false;
-    // TODO(piman): hackathon ??
-    // Send sync message to commit the ContentFrame
-    NOTIMPLEMENTED();
+
+    mojom::ContentFramePtr frame = mojom::ContentFrame::New();
+    layer_tree_host_->GetContentFrame(frame.get());
+    compositor_->Commit(hold_commit_for_activation, std::move(frame));
   }
 
   layer_tree_host_->CommitComplete();

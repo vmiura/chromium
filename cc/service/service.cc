@@ -254,4 +254,9 @@ void Service::SetNeedsBeginMainFrame() {
   client_->SetNeedsCommitOnImplThread();
 }
 
+void Service::Commit(bool wait_for_activation, mojom::ContentFramePtr frame) {
+  // TODO(piman): hackathon implement this
+  NOTIMPLEMENTED();
+}
+
 }  // namespace cc

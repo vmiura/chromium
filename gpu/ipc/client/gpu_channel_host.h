@@ -38,6 +38,10 @@ namespace IPC {
 class SyncMessageFilter;
 }
 
+namespace cc {
+struct BeginFrameArgs;
+}
+
 namespace gpu {
 class GpuMemoryBufferManager;
 }

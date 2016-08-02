@@ -40,6 +40,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
 
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
+  void Commit(bool wait_for_activation, mojom::ContentFramePtr frame) override;
 
  private:
   class ClientImpl;

@@ -10,16 +10,19 @@ CompositorProxy::CompositorProxy(
     cc::mojom::CompositorPtr compositor,
     cc::mojom::CompositorClientRequest compositor_client_request)
     : compositor_(std::move(compositor)),
-      binding_(this, std::move(compositor_client_request)) {}
+      binding_(this, std::move(compositor_client_request)),
+      delegate_(nullptr) {}
 
 CompositorProxy::~CompositorProxy() = default;
 
-void CompositorProxy::OnBeginMainFrame(const BeginFrameArgs& args) {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+void CompositorProxy::OnCompositorCreated() {
+  if (delegate_)
+    delegate_->OnCompositorCreated();
 }
 
-void CompositorProxy::OnCompositorCreated() {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+void CompositorProxy::OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& args) {
+  if (delegate_)
+    delegate_->OnBeginMainFrame(begin_frame_id, args);
 }
 
 }  // namespace cc

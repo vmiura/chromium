@@ -7,7 +7,10 @@
 
 #include "base/macros.h"
 #include "cc/base/cc_export.h"
+#include "cc/client/compositor_channel_host.h"
+#include "cc/client/compositor_proxy.h"
 #include "cc/input/top_controls_state.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/trees/channel_main.h"
@@ -26,19 +29,18 @@ class LayerTreeMutator;
 // This class aggregates all interactions that the impl side of the compositor
 // needs to have with the main side.
 // The class is created and lives on the main thread.
-class CC_EXPORT SimpleProxy : public Proxy {
+class CC_EXPORT SimpleProxy : public Proxy, public CompositorProxyDelegate {
  public:
   static std::unique_ptr<SimpleProxy> Create(
       LayerTreeHost* layer_tree_host,
+      CompositorChannelHost* compositor_host,
       TaskRunnerProvider* task_runner_provider);
 
   ~SimpleProxy() override;
 
-  void BeginMainFrame(
-      std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state);
-
  protected:
   SimpleProxy(LayerTreeHost* layer_tree_host,
+      std::unique_ptr<CompositorProxy> compositor,
       TaskRunnerProvider* task_runner_provider);
 
  private:
@@ -69,12 +71,18 @@ class CC_EXPORT SimpleProxy : public Proxy {
   void UpdateTopControlsState(TopControlsState constraints,
                               TopControlsState current,
                               bool animate) override;
+
+  // CompositorProxyDelegate implementation
+  void OnCompositorCreated() override;
+  void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
+
   bool IsMainThread() const;
 
   void SetNeedsBeginFrame();
 
   LayerTreeHost* layer_tree_host_;
   TaskRunnerProvider* task_runner_provider_;
+  std::unique_ptr<CompositorProxy> compositor_;
 
   const int layer_tree_host_id_;
 

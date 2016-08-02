@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_argument.h"
+#include "cc/base/cc_export.h"
 #include "cc/output/begin_frame_args.h"
 
 #define BEGINFRAMETRACKER_FROM_HERE FROM_HERE_WITH_EXPLICIT_FUNCTION("")

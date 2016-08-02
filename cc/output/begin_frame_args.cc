@@ -6,7 +6,9 @@
 
 #include "base/trace_event/trace_event_argument.h"
 #include "cc/proto/base_conversions.h"
+#if 0
 #include "cc/proto/begin_main_frame_and_commit_state.pb.h"
+#endif 
 
 namespace cc {
 
@@ -25,6 +27,7 @@ const char* BeginFrameArgs::TypeToString(BeginFrameArgsType type) {
   return "???";
 }
 
+#if 0
 void BeginFrameArgs::BeginFrameArgsTypeToProtobuf(
     proto::BeginFrameArgs* proto) const {
   switch (type) {
@@ -62,6 +65,7 @@ void BeginFrameArgs::BeginFrameArgsTypeFromProtobuf(
   }
   NOTREACHED();
 }
+#endif
 
 BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks()),
@@ -118,6 +122,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
   state->SetBoolean("on_critical_path", on_critical_path);
 }
 
+#if 0
 void BeginFrameArgs::ToProtobuf(proto::BeginFrameArgs* proto) const {
   proto->set_frame_time(TimeTicksToProto(frame_time));
   proto->set_deadline(TimeTicksToProto(deadline));
@@ -133,6 +138,7 @@ void BeginFrameArgs::FromProtobuf(const proto::BeginFrameArgs& proto) {
   BeginFrameArgsTypeFromProtobuf(proto);
   on_critical_path = proto.on_critical_path();
 }
+#endif
 
 // This is a hard-coded deadline adjustment that assumes 60Hz, to be used in
 // cases where a good estimated draw time is not known. Using 1/3 of the vsync
