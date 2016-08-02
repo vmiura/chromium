@@ -9,5 +9,5 @@ interface Compositor {
 };
 
 interface CompositorClient {
-  OnCompositorCreated(int32 id);
+  OnCompositorCreated();
 };

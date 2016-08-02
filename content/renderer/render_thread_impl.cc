@@ -40,7 +40,6 @@
 #include "cc/base/switches.h"
 #include "cc/blink/web_external_bitmap_impl.h"
 #include "cc/blink/web_layer_impl.h"
-#include "cc/output/buffer_to_texture_target_map.h"
 #include "cc/output/copy_output_request.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/vulkan_in_process_context_provider.h"
@@ -1775,6 +1774,8 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
     if (!gpu_channel_->IsLost())
       return gpu_channel_;
 
+    compositor_channel_.reset();
+
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
     gpu_channel_ = nullptr;
@@ -1801,6 +1802,10 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
         gpu::GpuChannelHost::Create(this, client_id, gpu_info, channel_handle,
                                     ChildProcess::current()->GetShutDownEvent(),
                                     gpu_memory_buffer_manager());
+
+    compositor_channel_ = cc::CompositorChannelHost::Create(gpu_channel_.get());
+
+    compositor_ = compositor_channel_->CreateCompositor();
   } else {
 #if defined(MOJO_SHELL_CLIENT) && defined(USE_AURA)
     gpu_channel_ = ui::GpuService::GetInstance()->EstablishGpuChannelSync();

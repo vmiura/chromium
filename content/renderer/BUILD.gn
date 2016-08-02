@@ -38,6 +38,7 @@ target(link_target_type, "renderer") {
     "//base:i18n",
     "//cc",
     "//cc/blink",
+    "//cc/client",
     "//cc/ipc",
     "//cc/proto",
     "//cc/surfaces",
