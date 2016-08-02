@@ -6,9 +6,12 @@ module cc.mojom;
 
 import "cc/ipc/begin_frame_args.mojom";
 import "cc/ipc/content_frame.mojom";
+import "gpu/ipc/common/surface_handle.mojom";
 
 interface CompositorFactory {
-  CreateCompositor(Compositor& compositor, CompositorClient client);
+  CreateCompositor(gpu.mojom.SurfaceHandle widget,
+                  Compositor& compositor,
+                  CompositorClient client);
 };
 
 interface Compositor {

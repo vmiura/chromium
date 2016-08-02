@@ -108,6 +108,9 @@ SingleThreadProxy::~SingleThreadProxy() {
   DCHECK(!layer_tree_host_impl_);
 }
 
+void SingleThreadProxy::InitializeCompositor(
+    std::unique_ptr<CompositorProxy> compositor) {}
+
 void SingleThreadProxy::FinishAllRendering() {
   TRACE_EVENT0("cc", "SingleThreadProxy::FinishAllRendering");
   DCHECK(task_runner_provider_->IsMainThread());

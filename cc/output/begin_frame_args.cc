@@ -5,10 +5,6 @@
 #include "cc/output/begin_frame_args.h"
 
 #include "base/trace_event/trace_event_argument.h"
-#include "cc/proto/base_conversions.h"
-#if 0
-#include "cc/proto/begin_main_frame_and_commit_state.pb.h"
-#endif 
 
 namespace cc {
 

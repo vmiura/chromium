@@ -22,7 +22,7 @@ class CC_CLIENT_EXPORT CompositorChannelHost {
 
   ~CompositorChannelHost();
 
-  std::unique_ptr<CompositorProxy> CreateCompositor();
+  std::unique_ptr<CompositorProxy> CreateCompositor(gpu::SurfaceHandle handle);
 
  private:
   CompositorChannelHost(gpu::GpuChannelHost* host);

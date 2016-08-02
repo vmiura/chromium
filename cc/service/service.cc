@@ -123,7 +123,6 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->WillBeginImplFrame(args);
   }
   void ScheduledActionSendBeginMainFrame(const BeginFrameArgs& args) override {
-    // TODO(hackathon): begin_frame_id.
     owner_->compositor_client()->OnBeginMainFrame(0, args);
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
@@ -174,7 +173,8 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
-Service::Service(cc::mojom::CompositorRequest request,
+Service::Service(const gpu::SurfaceHandle& handle,
+                 cc::mojom::CompositorRequest request,
                  cc::mojom::CompositorClientPtr client,
                  int id,
                  SharedBitmapManager* shared_bitmap_manager,
@@ -214,8 +214,7 @@ Service::Service(cc::mojom::CompositorRequest request,
       compositor_client_(std::move(client)),
       binding_(this, std::move(request)) {
   LOG(ERROR) << "Service compositor " << this;
-  surface_manager_->RegisterSurfaceClientId(
-      surface_id_allocator_.client_id());
+  surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   scheduler_.SetVisible(true);
   compositor_client_->OnCompositorCreated();
 }
@@ -240,17 +239,14 @@ void Service::CreateOutputSurface() {
         base::MakeUnique<DelayBasedTimeSource>(task_runner_.get()));
 
     scoped_refptr<ServiceContextProvider> display_context_provider(
-        new ServiceContextProvider(widget_,
-                                   gpu_memory_buffer_manager_,
-                                   image_factory_,
-                                   gpu::SharedMemoryLimits(),
+        new ServiceContextProvider(widget_, gpu_memory_buffer_manager_,
+                                   image_factory_, gpu::SharedMemoryLimits(),
                                    nullptr /* shared_context_provider */));
 
     auto output_surface = base::MakeUnique<DisplayOutputSurface>(
         std::move(display_context_provider));
     auto display_scheduler = base::MakeUnique<DisplayScheduler>(
-        begin_frame_source.get(),
-        task_runner_.get(),
+        begin_frame_source.get(), task_runner_.get(),
         output_surface->capabilities().max_frames_pending);
 
     display_.reset(new Display(
@@ -267,26 +263,21 @@ void Service::CreateOutputSurface() {
 
   scoped_refptr<ServiceContextProvider> compositor_context(
       new ServiceContextProvider(gfx::kNullAcceleratedWidget,
-                                 gpu_memory_buffer_manager_,
-                                 image_factory_,
+                                 gpu_memory_buffer_manager_, image_factory_,
                                  gpu::SharedMemoryLimits::ForMailboxContext(),
                                  nullptr));
   scoped_refptr<ServiceContextProvider> worker_context(
-      new ServiceContextProvider(gfx::kNullAcceleratedWidget,
-                                 gpu_memory_buffer_manager_,
-                                 image_factory_,
-                                 gpu::SharedMemoryLimits(),
-                                 compositor_context.get()));
+      new ServiceContextProvider(
+          gfx::kNullAcceleratedWidget, gpu_memory_buffer_manager_,
+          image_factory_, gpu::SharedMemoryLimits(), compositor_context.get()));
 
   // Keep the one in LTHI alive until InitializeRenderer() is complete.
   auto local_output_surface = std::move(output_surface_);
 
   output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
-      surface_manager_,
-      &surface_id_allocator_,
+      surface_manager_, &surface_id_allocator_,
       display_.get(),  // Will be null for non-root compositors.
-      std::move(compositor_context),
-      std::move(worker_context));
+      std::move(compositor_context), std::move(worker_context));
   host_impl_.InitializeRenderer(output_surface_.get());
 
   scheduler_.DidCreateAndInitializeOutputSurface();
@@ -295,8 +286,7 @@ void Service::CreateOutputSurface() {
 DrawResult Service::DrawAndSwap(bool forced_draw) {
   if (host_impl_.pending_tree()) {
     bool update_lcd_text = false;
-    host_impl_.pending_tree()->UpdateDrawProperties(
-        update_lcd_text);
+    host_impl_.pending_tree()->UpdateDrawProperties(update_lcd_text);
   }
 
   // This method is called on a forced draw, regardless of whether we are able

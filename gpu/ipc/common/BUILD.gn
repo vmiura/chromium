@@ -79,6 +79,7 @@ source_set("ipc_common_sources") {
     "gpu_surface_lookup.h",
     "memory_stats.cc",
     "memory_stats.h",
+    "surface_handle.h",
   ]
 
   configs += [
@@ -125,7 +126,12 @@ mojom("interfaces") {
     "gpu_info.mojom",
     "mailbox.mojom",
     "mailbox_holder.mojom",
+    "surface_handle.mojom",
     "sync_token.mojom",
+  ]
+
+  public_deps = [
+    "//ui/gfx/mojo",
   ]
 }
 

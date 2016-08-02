@@ -33,18 +33,13 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
  public:
   static std::unique_ptr<SimpleProxy> Create(
       LayerTreeHost* layer_tree_host,
-      CompositorChannelHost* compositor_host,
       TaskRunnerProvider* task_runner_provider);
 
   ~SimpleProxy() override;
 
- protected:
-  SimpleProxy(LayerTreeHost* layer_tree_host,
-      std::unique_ptr<CompositorProxy> compositor,
-      TaskRunnerProvider* task_runner_provider);
-
- private:
   // Proxy implementation.
+  void InitializeCompositor(
+      std::unique_ptr<CompositorProxy> compositor) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;
@@ -71,6 +66,10 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   void UpdateTopControlsState(TopControlsState constraints,
                               TopControlsState current,
                               bool animate) override;
+
+ protected:
+  SimpleProxy(LayerTreeHost* layer_tree_host,
+              TaskRunnerProvider* task_runner_provider);
 
   // mojom::CompositorClient implementation
   void OnCompositorCreated() override;

@@ -256,6 +256,9 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->DidBeginMainFrame();
 }
 
+void ProxyMain::InitializeCompositor(
+    std::unique_ptr<CompositorProxy> compositor) {}
+
 void ProxyMain::FinishAllRendering() {
   DCHECK(IsMainThread());
   DCHECK(!defer_commits_);

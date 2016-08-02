@@ -30,6 +30,9 @@ component("service") {
     "//cc/ipc:interfaces",
     "//cc/surfaces",
     "//gpu/command_buffer/client:gl_in_process_context",
+    "//gpu/command_buffer/client:gles2_c_lib",
+    "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/client:gles2_interface",
     "//gpu/ipc/service",
     "//gpu/skia_bindings",
   ]

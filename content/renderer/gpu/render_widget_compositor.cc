@@ -257,6 +257,7 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
     layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
   } else {
     layer_tree_host_ = cc::LayerTreeHost::CreateMojo(&params);
+    layer_tree_host_->SetSurfaceHandle(gpu::kNullSurfaceHandle);
   }
   DCHECK(layer_tree_host_);
 }

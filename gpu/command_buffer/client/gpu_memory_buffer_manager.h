@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "gpu/gpu_export.h"
-#include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/common/surface_handle.h"  // nogncheck
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 

@@ -57,7 +57,7 @@ class DeferredGpuCommandService
     {
       base::AutoLock lock(tasks_lock_);
       LOG(ERROR) << "NOTIMPLEMENTED ScheduleDelayedWork. Dropped |task|.";
-      //idle_tasks_.push(std::make_pair(base::Time::Now(), callback));
+      // idle_tasks_.push(std::make_pair(base::Time::Now(), callback));
     }
   }
   bool UseVirtualizedGLContexts() override { return true; }
@@ -72,8 +72,8 @@ class DeferredGpuCommandService
   scoped_refptr<gpu::gles2::FramebufferCompletenessCache>
   framebuffer_completeness_cache() override {
     if (!framebuffer_completeness_cache_.get()) {
-    framebuffer_completeness_cache_ =
-        make_scoped_refptr(new gpu::gles2::FramebufferCompletenessCache);
+      framebuffer_completeness_cache_ =
+          make_scoped_refptr(new gpu::gles2::FramebufferCompletenessCache);
     }
     return framebuffer_completeness_cache_;
   }
@@ -115,8 +115,7 @@ class DeferredGpuCommandService
   friend class base::RefCountedThreadSafe<DeferredGpuCommandService>;
 
   DeferredGpuCommandService()
-      : Service(gpu_preferences_),
-        sync_point_manager_(true) {}
+      : Service(gpu_preferences_), sync_point_manager_(true) {}
 
   ~DeferredGpuCommandService() override {
     base::AutoLock lock(tasks_lock_);
@@ -131,7 +130,7 @@ class DeferredGpuCommandService
   gpu::SyncPointManager sync_point_manager_;
   scoped_refptr<gpu::gles2::ShaderTranslatorCache> shader_translator_cache_;
   scoped_refptr<gpu::gles2::FramebufferCompletenessCache>
-  framebuffer_completeness_cache_;
+      framebuffer_completeness_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(DeferredGpuCommandService);
 };
@@ -158,8 +157,8 @@ std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext(
   const bool is_offscreen = widget == gfx::kNullAcceleratedWidget;
   return base::WrapUnique(gpu::GLInProcessContext::Create(
       DeferredGpuCommandService::GetInstance(), nullptr, is_offscreen, widget,
-      shared_context, attributes, limits,
-      gpu_memory_buffer_manager, image_factory));
+      shared_context, attributes, limits, gpu_memory_buffer_manager,
+      image_factory));
 }
 
 }  // namespace
@@ -172,9 +171,11 @@ ServiceContextProvider::ServiceContextProvider(
     ServiceContextProvider* shared_context)
     : attributes_(CreateAttributes()),
       context_(CreateTestInProcessContext(
-          attributes_, widget,
+          attributes_,
+          widget,
           gpu_memory_buffer_manager,
-          image_factory, limits,
+          image_factory,
+          limits,
           (shared_context ? shared_context->context_.get() : nullptr))) {}
 
 ServiceContextProvider::~ServiceContextProvider() = default;

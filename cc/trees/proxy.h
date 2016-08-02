@@ -25,6 +25,7 @@ class Vector2d;
 
 namespace cc {
 class BeginFrameSource;
+class CompositorProxy;
 class LayerTreeDebugState;
 class LayerTreeMutator;
 class OutputSurface;
@@ -35,6 +36,9 @@ struct RendererCapabilities;
 class CC_EXPORT Proxy {
  public:
   virtual ~Proxy() {}
+
+  virtual void InitializeCompositor(
+      std::unique_ptr<CompositorProxy> compositor) = 0;
 
   virtual void FinishAllRendering() = 0;
 

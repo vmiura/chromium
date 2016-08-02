@@ -43,6 +43,7 @@ mojom("compositor_interfaces") {
     "content_frame.mojom",
   ]
   public_deps = [
+    "//gpu/ipc/common:interfaces",
     "//mojo/common:common_custom_types",
   ]
 }

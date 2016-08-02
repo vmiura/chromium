@@ -46,8 +46,8 @@ void DisplayOutputSurface::SwapBuffers(CompositorFrame frame) {
 }
 
 uint32_t DisplayOutputSurface::GetFramebufferCopyTextureFormat() {
-  return static_cast<ServiceContextProvider*>(context_provider())->
-      GetCopyTextureInternalFormat();
+  return static_cast<ServiceContextProvider*>(context_provider())
+      ->GetCopyTextureInternalFormat();
 }
 
 }  // namespace cc

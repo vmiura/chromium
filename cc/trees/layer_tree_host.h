@@ -105,8 +105,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     ~InitParams();
   };
 
-  static std::unique_ptr<LayerTreeHost> CreateMojo(
-      InitParams* params);
+  static std::unique_ptr<LayerTreeHost> CreateMojo(InitParams* params);
 
   // The SharedBitmapManager will be used on the compositor thread.
   static std::unique_ptr<LayerTreeHost> CreateThreaded(
@@ -133,6 +132,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       InitParams* params);
 
   virtual ~LayerTreeHost();
+
+  void SetSurfaceHandle(gpu::SurfaceHandle handle);
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();

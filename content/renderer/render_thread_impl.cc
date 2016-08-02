@@ -1641,7 +1641,8 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
 cc::CompositorChannelHost* RenderThreadImpl::GetCompositorChannelHost() {
   // TODO(piman): hack!!
   if (!compositor_channel_)
-    EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_RENDERER_SHARED_MAIN_THREAD_CONTEXT);
+    EstablishGpuChannelSync(
+        CAUSE_FOR_GPU_LAUNCH_RENDERER_SHARED_MAIN_THREAD_CONTEXT);
   return compositor_channel_.get();
 }
 

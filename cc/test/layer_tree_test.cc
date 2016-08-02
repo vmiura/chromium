@@ -400,6 +400,8 @@ class LayerTreeHostForTesting : public LayerTreeHost {
           layer_tree_host->SetOutputSurfaceLostForTesting(false);
         }
         break;
+      case CompositorMode::MOJO:
+        break;
     }
     layer_tree_host->InitializeForTesting(
         std::move(task_runner_provider), std::move(proxy),

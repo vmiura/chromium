@@ -31,7 +31,8 @@ class TaskGraphRunner;
 
 class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
  public:
-  Service(cc::mojom::CompositorRequest request,
+  Service(const gpu::SurfaceHandle& handle,
+          cc::mojom::CompositorRequest request,
           cc::mojom::CompositorClientPtr client,
           int id,
           SharedBitmapManager* shared_bitmap_manager,

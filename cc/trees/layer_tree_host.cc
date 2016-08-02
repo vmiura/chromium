@@ -146,15 +146,13 @@ LayerTreeHost::InitParams::InitParams() {
 LayerTreeHost::InitParams::~InitParams() {
 }
 
-std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateMojo(
-    InitParams* params) {
+std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateMojo(InitParams* params) {
   DCHECK(params->main_task_runner.get());
   DCHECK(params->settings);
   std::unique_ptr<LayerTreeHost> layer_tree_host(
       new LayerTreeHost(params, CompositorMode::MOJO));
   layer_tree_host->InitializeMojo(
-      params->main_task_runner,
-      std::move(params->external_begin_frame_source));
+      params->main_task_runner, std::move(params->external_begin_frame_source));
   return layer_tree_host;
 }
 
@@ -277,12 +275,10 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
 void LayerTreeHost::InitializeMojo(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     std::unique_ptr<BeginFrameSource> external_begin_frame_source) {
-  task_runner_provider_ =
-      TaskRunnerProvider::Create(main_task_runner, nullptr);
+  task_runner_provider_ = TaskRunnerProvider::Create(main_task_runner, nullptr);
   std::unique_ptr<SimpleProxy> proxy =
-      SimpleProxy::Create(this, compositor_channel_, task_runner_provider_.get());
-  InitializeProxy(std::move(proxy),
-                  std::move(external_begin_frame_source));
+      SimpleProxy::Create(this, task_runner_provider_.get());
+  InitializeProxy(std::move(proxy), std::move(external_begin_frame_source));
 }
 
 void LayerTreeHost::InitializeThreaded(
@@ -423,6 +419,10 @@ LayerTreeHost::~LayerTreeHost() {
     // will outlive them, and we must make good.
     root_layer_ = NULL;
   }
+}
+
+void LayerTreeHost::SetSurfaceHandle(gpu::SurfaceHandle handle) {
+  proxy_->InitializeCompositor(compositor_channel_->CreateCompositor(handle));
 }
 
 void LayerTreeHost::WillBeginMainFrame() {

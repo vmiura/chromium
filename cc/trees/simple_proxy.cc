@@ -26,19 +26,16 @@ namespace cc {
 
 std::unique_ptr<SimpleProxy> SimpleProxy::Create(
     LayerTreeHost* layer_tree_host,
-    CompositorChannelHost* compositor_host,
     TaskRunnerProvider* task_runner_provider) {
   std::unique_ptr<SimpleProxy> proxy_main(
-      new SimpleProxy(layer_tree_host, compositor_host->CreateCompositor(), task_runner_provider));
+      new SimpleProxy(layer_tree_host, task_runner_provider));
   return proxy_main;
 }
 
 SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
-                         std::unique_ptr<CompositorProxy> compositor,
                          TaskRunnerProvider* task_runner_provider)
     : layer_tree_host_(layer_tree_host),
       task_runner_provider_(task_runner_provider),
-      compositor_(std::move(compositor)),
       layer_tree_host_id_(layer_tree_host->id()),
       commit_waits_for_activation_(false),
       started_(false),
@@ -47,14 +44,14 @@ SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
   TRACE_EVENT0("cc", "SimpleProxy::SimpleProxy");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
-  compositor_->set_delegate(this);
 }
 
 SimpleProxy::~SimpleProxy() {
   TRACE_EVENT0("cc", "SimpleProxy::~SimpleProxy");
   DCHECK(IsMainThread());
   DCHECK(!started_);
-  compositor_->set_delegate(nullptr);
+  if (compositor_)
+    compositor_->set_delegate(nullptr);
 }
 
 #if 0
@@ -64,6 +61,12 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
   layer_tree_host_->SetAnimationEvents(std::move(events));
 }
 #endif
+
+void SimpleProxy::InitializeCompositor(
+    std::unique_ptr<CompositorProxy> compositor) {
+  compositor_ = std::move(compositor);
+  compositor_->set_delegate(this);
+}
 
 void SimpleProxy::FinishAllRendering() {
   DCHECK(IsMainThread());

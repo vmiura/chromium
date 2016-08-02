@@ -17,12 +17,13 @@ std::unique_ptr<CompositorChannelHost> CompositorChannelHost::Create(
   return base::WrapUnique(new CompositorChannelHost(host));
 }
 
-std::unique_ptr<CompositorProxy> CompositorChannelHost::CreateCompositor() {
+std::unique_ptr<CompositorProxy> CompositorChannelHost::CreateCompositor(
+    gpu::SurfaceHandle handle) {
   cc::mojom::CompositorPtr compositor;
   cc::mojom::CompositorClientPtr compositor_client;
   cc::mojom::CompositorClientRequest compositor_client_request =
       mojo::GetProxy(&compositor_client);
-  compositor_factory_->CreateCompositor(mojo::GetProxy(&compositor),
+  compositor_factory_->CreateCompositor(handle, mojo::GetProxy(&compositor),
                                         std::move(compositor_client));
   return base::MakeUnique<CompositorProxy>(
       std::move(compositor), std::move(compositor_client_request));
