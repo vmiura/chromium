@@ -469,6 +469,8 @@ component("cc") {
     "tiles/gpu_image_decode_controller.cc",
     "tiles/gpu_image_decode_controller.h",
     "tiles/image_decode_controller.h",
+    "tiles/image_decode_service.cc",
+    "tiles/image_decode_service.h",
     "tiles/mipmap_util.cc",
     "tiles/mipmap_util.h",
     "tiles/picture_layer_tiling.cc",
