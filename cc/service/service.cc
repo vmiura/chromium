@@ -110,7 +110,8 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->WillBeginImplFrame(args);
   }
   void ScheduledActionSendBeginMainFrame(const BeginFrameArgs& args) override {
-    owner_->compositor_client()->OnBeginMainFrame(args);
+    // TODO(hackathon): begin_frame_id.
+    owner_->compositor_client()->OnBeginMainFrame(0, args);
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
     bool forced_draw = false;
