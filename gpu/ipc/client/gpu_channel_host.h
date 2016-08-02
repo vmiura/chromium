@@ -88,7 +88,7 @@ class GPU_EXPORT GpuChannelHost
   bool Send(IPC::Message* msg) override;
 
   // cc::mojom::CompositorClient implementation:
-  void OnCompositorCreated() override;
+  void OnCompositorCreated(int32_t id) override;
 
   // Set an ordering barrier.  AsyncFlushes any pending barriers on other
   // routes. Combines multiple OrderingBarriers into a single AsyncFlush.

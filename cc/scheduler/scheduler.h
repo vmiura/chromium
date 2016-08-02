@@ -62,6 +62,12 @@ class CC_EXPORT Scheduler : public BeginFrameObserverBase {
       BeginFrameSource* begin_frame_source,
       std::unique_ptr<CompositorTimingHistory> compositor_timing_history);
 
+  Scheduler(SchedulerClient* client,
+            const SchedulerSettings& scheduler_settings,
+            int layer_tree_host_id,
+            base::SingleThreadTaskRunner* task_runner,
+            BeginFrameSource* begin_frame_source,
+            std::unique_ptr<CompositorTimingHistory> compositor_timing_history);
   ~Scheduler() override;
 
   // BeginFrameObserverBase
@@ -140,13 +146,6 @@ class CC_EXPORT Scheduler : public BeginFrameObserverBase {
   }
 
  protected:
-  Scheduler(SchedulerClient* client,
-            const SchedulerSettings& scheduler_settings,
-            int layer_tree_host_id,
-            base::SingleThreadTaskRunner* task_runner,
-            BeginFrameSource* begin_frame_source,
-            std::unique_ptr<CompositorTimingHistory> compositor_timing_history);
-
   // Virtual for testing.
   virtual base::TimeTicks Now() const;
 

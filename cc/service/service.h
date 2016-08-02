@@ -1,0 +1,73 @@
+#ifndef CC_SERVICE_SERVICE_H_
+#define CC_SERVICE_SERVICE_H_
+
+#include <memory>
+
+#include "base/compiler_specific.h"
+#include "base/memory/ref_counted.h"
+#include "base/single_thread_task_runner.h"
+#include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/scheduler/scheduler.h"
+#include "cc/service/service_export.h"
+#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/task_runner_provider.h"
+#include "gpu/ipc/common/service_compositor.h"
+
+namespace gpu {
+class GpuMemoryBufferManager;
+}
+
+namespace cc {
+class AnimationHost;
+class SharedBitmapManager;
+class TaskGraphRunner;
+
+class CC_SERVICE_EXPORT Service
+    : NON_EXPORTED_BASE(public gpu::ServiceCompositor) {
+ public:
+  explicit Service(int id,
+                   SharedBitmapManager* shared_bitmap_manager,
+                   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                   TaskGraphRunner* task_graph_runner);
+  ~Service() override;
+
+  void CreateOutputSurface();
+
+ private:
+  const int id_;
+
+  class ClientImpl;
+  std::unique_ptr<ClientImpl> client_;
+
+  class SetImplThread {
+   public:
+    explicit SetImplThread(TaskRunnerProvider* p) : p_(p) {
+#if DCHECK_IS_ON()
+      p_->SetCurrentThreadIsImplThread(true);
+#endif
+    }
+
+    ~SetImplThread() {
+#if DCHECK_IS_ON()
+      p_->SetCurrentThreadIsImplThread(false);
+#endif
+    }
+
+   private:
+    TaskRunnerProvider* p_;
+  };
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  RenderingStatsInstrumentation rendering_stats_;
+  Scheduler scheduler_;
+  TaskRunnerProvider task_runner_provider_;
+  SetImplThread its_the_impl_thread_i_promise_;
+  std::unique_ptr<AnimationHost> main_thread_animation_host_lol_;
+  LayerTreeHostImpl host_impl_;
+
+  DISALLOW_COPY_AND_ASSIGN(Service);
+};
+
+}  // namespace cc
+
+#endif  // CC_SERVICE_SERVICE_H_

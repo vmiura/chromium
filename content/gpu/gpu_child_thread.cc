@@ -14,7 +14,10 @@
 #include "base/threading/thread_local.h"
 #include "base/threading/worker_pool.h"
 #include "build/build_config.h"
+#include "cc/service/service_factory.h"
+#include "content/child/child_gpu_memory_buffer_manager.h"
 #include "content/child/child_process.h"
+#include "content/child/child_shared_bitmap_manager.h"
 #include "content/child/thread_safe_sender.h"
 #include "content/common/establish_channel_params.h"
 #include "content/common/gpu_host_messages.h"
@@ -369,12 +372,14 @@ void GpuChildThread::OnInitialize(const gpu::GpuPreferences& gpu_preferences) {
   // Defer creation of the render thread. This is to prevent it from handling
   // IPC messages before the sandbox has been enabled and all other necessary
   // initialization has succeeded.
-  gpu_channel_manager_.reset(
-      new gpu::GpuChannelManager(gpu_preferences_, this, watchdog_thread_.get(),
-                            base::ThreadTaskRunnerHandle::Get().get(),
-                            ChildProcess::current()->io_task_runner(),
-                            ChildProcess::current()->GetShutDownEvent(),
-                            sync_point_manager, gpu_memory_buffer_factory_));
+  service_compositor_factory_.reset(new cc::ServiceFactory(
+      shared_bitmap_manager(), gpu_memory_buffer_manager()));
+  gpu_channel_manager_.reset(new gpu::GpuChannelManager(
+      gpu_preferences_, this, watchdog_thread_.get(),
+      base::ThreadTaskRunnerHandle::Get().get(),
+      ChildProcess::current()->io_task_runner(),
+      ChildProcess::current()->GetShutDownEvent(), sync_point_manager,
+      gpu_memory_buffer_factory_, service_compositor_factory_.get()));
 
   media_service_.reset(new media::MediaService(gpu_channel_manager_.get()));
 

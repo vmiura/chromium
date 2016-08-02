@@ -57,6 +57,7 @@ class GpuChannel;
 class GpuChannelManagerDelegate;
 class GpuMemoryBufferFactory;
 class GpuWatchdog;
+class ServiceCompositorFactory;
 
 // A GpuChannelManager is a thread responsible for issuing rendering commands
 // managing the lifetimes of GPU channels and forwarding IPC requests from the
@@ -70,7 +71,8 @@ class GPU_EXPORT GpuChannelManager {
                     base::SingleThreadTaskRunner* io_task_runner,
                     base::WaitableEvent* shutdown_event,
                     SyncPointManager* sync_point_manager,
-                    GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+                    GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+                    ServiceCompositorFactory* service_compositor_factory);
   virtual ~GpuChannelManager();
 
   GpuChannelManagerDelegate* delegate() const { return delegate_; }
@@ -114,6 +116,10 @@ class GPU_EXPORT GpuChannelManager {
 
   GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_;
+  }
+
+  ServiceCompositorFactory* service_compositor_factory() {
+    return service_compositor_factory_;
   }
 
   // Returns the maximum order number for unprocessed IPC messages across all
@@ -191,6 +197,7 @@ class GPU_EXPORT GpuChannelManager {
       framebuffer_completeness_cache_;
   scoped_refptr<gl::GLSurface> default_offscreen_surface_;
   GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  ServiceCompositorFactory* const service_compositor_factory_;
 #if defined(OS_ANDROID)
   // Last time we know the GPU was powered on. Global for tracking across all
   // transport surfaces.

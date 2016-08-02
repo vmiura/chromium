@@ -159,6 +159,16 @@ class CC_EXPORT LayerTreeHostImpl
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<AnimationHost> animation_host,
       int id);
+  LayerTreeHostImpl(
+      const LayerTreeSettings& settings,
+      LayerTreeHostImplClient* client,
+      TaskRunnerProvider* task_runner_provider,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      SharedBitmapManager* shared_bitmap_manager,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      TaskGraphRunner* task_graph_runner,
+      std::unique_ptr<AnimationHost> animation_host,
+      int id);
   ~LayerTreeHostImpl() override;
 
   // InputHandler implementation
@@ -622,17 +632,6 @@ class CC_EXPORT LayerTreeHostImpl
   LayerTreeMutator* mutator() { return mutator_.get(); }
 
  protected:
-  LayerTreeHostImpl(
-      const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* client,
-      TaskRunnerProvider* task_runner_provider,
-      RenderingStatsInstrumentation* rendering_stats_instrumentation,
-      SharedBitmapManager* shared_bitmap_manager,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      TaskGraphRunner* task_graph_runner,
-      std::unique_ptr<AnimationHost> animation_host,
-      int id);
-
   // Virtual for testing.
   virtual bool AnimateLayers(base::TimeTicks monotonic_time);
 
