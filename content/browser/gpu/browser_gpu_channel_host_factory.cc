@@ -261,6 +261,8 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   shutdown_event_->Signal();
   if (gpu_channel_) {
     gpu_channel_->DestroyChannel();
+    compositor_.reset();
+    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 }
@@ -308,6 +310,8 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     DCHECK(!pending_request_.get());
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
+    compositor_.reset();
+    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 
@@ -350,6 +354,9 @@ void BrowserGpuChannelHostFactory::GpuChannelEstablished() {
         this, gpu_client_id_, pending_request_->gpu_info(),
         pending_request_->channel_handle(), shutdown_event_.get(),
         gpu_memory_buffer_manager_.get());
+    compositor_channel_ = cc::CompositorChannelHost::Create(gpu_channel_.get());
+    // TODO(hackathon): Move this to SimpleProxy.
+    compositor_ = compositor_channel_->CreateCompositor();
   }
   gpu_host_id_ = pending_request_->gpu_host_id();
   pending_request_ = NULL;

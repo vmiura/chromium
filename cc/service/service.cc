@@ -103,7 +103,7 @@ Service::Service(cc::mojom::CompositorRequest request,
       compositor_client_(std::move(client)),
       binding_(this, std::move(request)) {
   LOG(ERROR) << "Service compositor " << this;
-  compositor_client_->OnCompositorCreated(0);
+  compositor_client_->OnCompositorCreated();
 }
 
 Service::~Service() {

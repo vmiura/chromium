@@ -67,8 +67,7 @@ GpuChannelHost::GpuChannelHost(
     : factory_(factory),
       channel_id_(channel_id),
       gpu_info_(gpu_info),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      compositor_client_binding_(this) {
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
   next_image_id_.GetNext();
   next_route_id_.GetNext();
   next_stream_id_.GetNext();
@@ -84,15 +83,6 @@ void GpuChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
   channel_ = IPC::SyncChannel::Create(channel_handle, IPC::Channel::MODE_CLIENT,
                                       nullptr, io_task_runner.get(), true,
                                       shutdown_event);
-
-  channel_->GetRemoteAssociatedInterface(&compositor_factory_);
-
-  cc::mojom::CompositorClientPtr client_ptr;
-  compositor_client_binding_.Bind(mojo::GetProxy(&client_ptr));
-  // TODO(hackathon): Create a class that emcompasses this (like
-  // "ContextProvider" for a gl context.
-  compositor_factory_->CreateCompositor(mojo::GetProxy(&compositor_),
-                                        std::move(client_ptr));
 
   sync_filter_ = channel_->CreateSyncMessageFilter();
 
@@ -136,10 +126,6 @@ bool GpuChannelHost::Send(IPC::Message* msg) {
 
   bool result = sync_filter_->Send(message.release());
   return result;
-}
-
-void GpuChannelHost::OnCompositorCreated(int32_t id) {
-  fprintf(stderr, ">>>%s %d\n", __PRETTY_FUNCTION__, id);
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(

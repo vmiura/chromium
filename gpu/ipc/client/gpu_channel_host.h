@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
-#include "cc/ipc/compositor.mojom.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_stream_constants.h"
@@ -62,7 +61,6 @@ class GPU_EXPORT GpuChannelHostFactory {
 // IO thread.
 class GPU_EXPORT GpuChannelHost
     : public IPC::Sender,
-      public cc::mojom::CompositorClient,
       public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
   // Must be called on the main thread (as defined by the factory).
@@ -87,8 +85,12 @@ class GPU_EXPORT GpuChannelHost
   // IPC::Sender implementation:
   bool Send(IPC::Message* msg) override;
 
-  // cc::mojom::CompositorClient implementation:
-  void OnCompositorCreated(int32_t id) override;
+  // Template helper to request a remote associated interface.
+  template <typename Interface>
+  void GetRemoteAssociatedInterface(
+      mojo::AssociatedInterfacePtr<Interface>* proxy) {
+    channel_->GetRemoteAssociatedInterface(proxy);
+  }
 
   // Set an ordering barrier.  AsyncFlushes any pending barriers on other
   // routes. Combines multiple OrderingBarriers into a single AsyncFlush.
@@ -268,12 +270,6 @@ class GPU_EXPORT GpuChannelHost
 
   // Stream IDs are allocated in sequence.
   base::AtomicSequenceNumber next_stream_id_;
-
-  cc::mojom::CompositorFactoryAssociatedPtr compositor_factory_;
-
-  // TODO(hackathon): These should be grouped in a separate wrapper class.
-  cc::mojom::CompositorPtr compositor_;
-  mojo::Binding<cc::mojom::CompositorClient> compositor_client_binding_;
 
   // Protects channel_ and stream_flush_info_.
   mutable base::Lock context_lock_;

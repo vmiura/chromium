@@ -22,6 +22,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "cc/client/compositor_channel_host.h"
+#include "cc/client/compositor_proxy.h"
+#include "cc/output/buffer_to_texture_target_map.h"
 #include "components/scheduler/renderer/renderer_scheduler.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/content_export.h"
@@ -598,6 +601,13 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // The channel from the renderer process to the GPU process.
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+
+  // The channel from the renderer process to the compositor service
+  // in the GPU process.
+  std::unique_ptr<cc::CompositorChannelHost> compositor_channel_;
+
+  // TODO(hackathon): Move this to SimpleProxy.
+  std::unique_ptr<cc::CompositorProxy> compositor_;
 
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.
