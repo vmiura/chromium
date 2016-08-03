@@ -2,6 +2,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "cc/service/service.h"
+#include "cc/service/service_context_provider.h"
 #include "gpu/ipc/service/gpu_channel.h"
 
 namespace cc {
@@ -12,7 +13,9 @@ ServiceFactory::ServiceFactory(
     gpu::ImageFactory* image_factory)
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      image_factory_(image_factory) {}
+      image_factory_(image_factory) {
+  ServiceContextProvider::SetupThread();
+}
 
 ServiceFactory::~ServiceFactory() = default;
 

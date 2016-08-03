@@ -31,6 +31,7 @@ namespace cc {
 
 class ServiceContextProvider : public ContextProvider {
  public:
+  static void SetupThread();
   explicit ServiceContextProvider(
       gfx::AcceleratedWidget widget,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,

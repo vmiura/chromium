@@ -9,6 +9,8 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "cc/resources/platform_color.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gl_in_process_context.h"
@@ -47,18 +49,12 @@ class DeferredGpuCommandService
 
   // gpu::InProcessCommandBuffer::Service implementation.
   void ScheduleTask(const base::Closure& task) override {
-    {
-      base::AutoLock lock(tasks_lock_);
-      tasks_.push(task);
-    }
-    RunTasks();
+    task_runner_->PostTask(FROM_HERE, task);
   }
+
   void ScheduleDelayedWork(const base::Closure& task) override {
-    {
-      base::AutoLock lock(tasks_lock_);
-      LOG(ERROR) << "NOTIMPLEMENTED ScheduleDelayedWork. Dropped |task|.";
-      // idle_tasks_.push(std::make_pair(base::Time::Now(), callback));
-    }
+    task_runner_->PostDelayedTask(FROM_HERE, task,
+                                   base::TimeDelta::FromMilliseconds(2));
   }
   bool UseVirtualizedGLContexts() override { return true; }
   scoped_refptr<gpu::gles2::ShaderTranslatorCache> shader_translator_cache()
@@ -81,29 +77,6 @@ class DeferredGpuCommandService
     return &sync_point_manager_;
   }
 
-  void RunTasks() {
-    TRACE_EVENT0("android_webview", "DeferredGpuCommandService::RunTasks");
-    bool has_more_tasks;
-    {
-      base::AutoLock lock(tasks_lock_);
-      has_more_tasks = tasks_.size() > 0;
-    }
-
-    while (has_more_tasks) {
-      base::Closure task;
-      {
-        base::AutoLock lock(tasks_lock_);
-        task = tasks_.front();
-        tasks_.pop();
-      }
-      task.Run();
-      {
-        base::AutoLock lock(tasks_lock_);
-        has_more_tasks = tasks_.size() > 0;
-      }
-    }
-  }
-
   void AddRef() const override {
     base::RefCountedThreadSafe<DeferredGpuCommandService>::AddRef();
   }
@@ -115,12 +88,14 @@ class DeferredGpuCommandService
   friend class base::RefCountedThreadSafe<DeferredGpuCommandService>;
 
   DeferredGpuCommandService()
-      : sync_point_manager_(true) {}
+      : task_runner_(base::ThreadTaskRunnerHandle::Get()), sync_point_manager_(true) {}
 
   ~DeferredGpuCommandService() override {
     base::AutoLock lock(tasks_lock_);
     DCHECK(tasks_.empty());
   }
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::Lock tasks_lock_;
   std::queue<base::Closure> tasks_;
@@ -160,6 +135,10 @@ std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext(
 }
 
 }  // namespace
+
+void ServiceContextProvider::SetupThread() {
+  DeferredGpuCommandService::GetInstance();
+}
 
 ServiceContextProvider::ServiceContextProvider(
     gfx::AcceleratedWidget widget,
