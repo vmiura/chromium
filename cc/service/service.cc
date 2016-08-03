@@ -331,6 +331,7 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
 void Service::InsertHackyGreenLayer() {
   // TODO(hackathon): Some made up stuff, we should get these from a commit.
   static int layer_id = 1;
+  host_impl_.SetViewportSize(gfx::Size(100, 100));
   auto* pending_tree = host_impl_.pending_tree();
   auto green_layer =
       SolidColorLayerImpl::Create(pending_tree, layer_id++);
@@ -546,7 +547,7 @@ void Service::ScheduledActionCommit() {
   DCHECK(commit_callback_);
   host_impl_.BeginCommit();
 
-  FinishCommit();
+  //FinishCommit();
   InsertHackyGreenLayer();
   frame_for_commit_ = nullptr;
 
@@ -556,6 +557,7 @@ void Service::ScheduledActionCommit() {
     wait_for_activation_ = false;
   } else {
     commit_callback_.Run();
+    commit_callback_.Reset();
   }
 
   scheduler_.DidCommit();
