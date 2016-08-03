@@ -16,8 +16,13 @@
 #include "cc/service/service_context_provider.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/display_scheduler.h"
+#include "cc/trees/clip_node.h"
+#include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/property_tree.h"
+#include "cc/trees/scroll_node.h"
+#include "cc/trees/transform_node.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 
@@ -388,6 +393,10 @@ void Service::DidActivateSyncTree() {
   }
 }
 
+AdditionGroup<gfx::ScrollOffset> ScrollOffsetFromMojom(
+    const gfx::mojom::ScrollOffsetPtr& mojom) {
+  return AdditionGroup<gfx::ScrollOffset>(gfx::ScrollOffset(mojom->x, mojom->y));
+}
 
 void Service::FinishCommit() {
   mojom::ContentFrame* frame = frame_for_commit_.get();
@@ -460,11 +469,80 @@ void Service::FinishCommit() {
   }
 #endif
 
-#if 0
-  // TODO(hackathon): property trees
   // Setting property trees must happen before pushing the page scale.
-  sync_tree->SetPropertyTrees(&property_trees_);
-#endif
+  PropertyTrees* property_trees = sync_tree->property_trees();
+  {
+    auto& source = *frame->property_trees;
+    auto* dest = property_trees;
+    dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
+    dest->changed = source.changed;
+    dest->full_tree_damaged = source.full_tree_damaged;
+    dest->sequence_number = source.sequence_number;
+    dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
+  }
+  {
+    auto& source = *frame->property_trees->transform_tree;
+    auto* dest = &property_trees->transform_tree;
+    dest->source_to_parent_updates_allowed_ = source.source_to_parent_updates_allowed;
+    dest->page_scale_factor_ = source.page_scale_factor;
+    dest->device_scale_factor_ = source.device_scale_factor;
+    dest->device_transform_scale_factor_ = source.device_transform_scale_factor;
+    dest->nodes_affected_by_inner_viewport_bounds_delta_ = source.nodes_affected_by_inner_viewport_bounds_delta;
+    dest->nodes_affected_by_outer_viewport_bounds_delta_ = source.nodes_affected_by_outer_viewport_bounds_delta;
+    size_t vec_bytes = source.nodes.size();
+    DCHECK_EQ(vec_bytes % sizeof(TransformNode), 0u);  // TODO(hackathon): validate
+    dest->nodes_.resize(vec_bytes / sizeof(TransformNode));
+    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+
+    dest->cached_data_.resize(source.cached_data.size());
+    for (size_t i = 0; i < source.cached_data.size(); ++i) {
+      auto& src_data = *source.cached_data[i];
+      auto* dst_data = &dest->cached_data_[i];
+      dst_data->from_target = src_data.from_target;
+      dst_data->to_target = src_data.to_target;
+      dst_data->from_screen = src_data.from_screen;
+      dst_data->to_screen = src_data.to_screen;
+      dst_data->target_id = src_data.target_id;
+    }
+  }
+  {
+    auto& source = *frame->property_trees->effect_tree;
+    auto* dest = &property_trees->effect_tree;
+    dest->mask_replica_layer_ids_ = source.mask_replica_layer_ids;
+    size_t vec_bytes = source.nodes.size();
+    DCHECK_EQ(vec_bytes % sizeof(EffectNode), 0u);
+    dest->nodes_.resize(vec_bytes / sizeof(EffectNode));
+    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+  }
+  {
+    auto& source = *frame->property_trees->scroll_tree;
+    auto* dest = &property_trees->scroll_tree;
+    dest->currently_scrolling_node_id_ = source.currently_scrolling_node_id;
+    // Scroll offsets are done below.
+    size_t vec_bytes = source.nodes.size();
+    DCHECK_EQ(vec_bytes % sizeof(ScrollNode), 0u);
+    dest->nodes_.resize(vec_bytes / sizeof(ScrollNode));
+    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+  }
+  {
+    auto& source = *frame->property_trees->clip_tree;
+    auto* dest = &property_trees->clip_tree;
+    size_t vec_bytes = source.nodes.size();
+    DCHECK_EQ(vec_bytes % sizeof(ClipNode), 0u);
+    dest->nodes_.resize(vec_bytes / sizeof(ClipNode));
+    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+  }
+
+  // TODO(hackathon) : do this
+  // property_trees->effect_tree.PushCopyRequestsTo(&property_trees_.effect_tree);
+  property_trees->is_main_thread = false;
+  property_trees->is_active = sync_tree->IsActiveTree();
+  property_trees->transform_tree.set_source_to_parent_updates_allowed(false);
+  // The value of some effect node properties (like is_drawn) depends on
+  // whether we are on the active tree or not. So, we need to update the
+  // effect tree.
+  if (sync_tree->IsActiveTree())
+    property_trees->effect_tree.set_needs_update(true);
 
   sync_tree->PushPageScaleFromMainThread(
       frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
@@ -543,12 +621,22 @@ void Service::FinishCommit() {
 #endif
   }
 
-#if 0
-  // TODO(hackathon): scroll offsets
   // This must happen after synchronizing property trees and after pushing
   // properties, which updates the clobber_active_value flag.
-  sync_tree->UpdatePropertyTreeScrollOffset(&property_trees_);
-#endif
+
+  // TODO(hackathon): pending/active business seems really wrong...
+  ScrollTree::ScrollOffsetMap new_scroll_offset_map;
+  for (const auto& pair : frame->property_trees->scroll_tree->layer_id_to_scroll_offset_map) {
+    scoped_refptr<SyncedScrollOffset> synced = new SyncedScrollOffset;
+    synced->pending_base_ = ScrollOffsetFromMojom(pair.second->pending_base);
+    synced->active_base_ = ScrollOffsetFromMojom(pair.second->active_base);
+    synced->active_delta_ = ScrollOffsetFromMojom(pair.second->active_delta);
+    synced->reflected_delta_in_main_tree_ = ScrollOffsetFromMojom(pair.second->reflected_delta_in_main_tree);
+    synced->reflected_delta_in_pending_tree_ = ScrollOffsetFromMojom(pair.second->reflected_delta_in_pending_tree);
+    synced->clobber_active_value_ = pair.second->clobber_active_value;
+    new_scroll_offset_map[pair.first] = synced;
+  }
+  property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map, sync_tree);
 
 #if 0
   // TODO(hackathon): micro benchmarks

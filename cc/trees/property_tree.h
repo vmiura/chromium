@@ -36,6 +36,7 @@ class TreeNode;
 class CopyOutputRequest;
 class LayerTreeImpl;
 class ScrollState;
+class Service;
 struct ClipNode;
 struct EffectNode;
 struct ScrollAndScaleSet;
@@ -115,6 +116,7 @@ class CC_EXPORT PropertyTree {
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
+  friend class cc::Service;
   std::vector<T> nodes_;
 
   bool needs_update_;
@@ -267,6 +269,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
                               gfx::Transform* transform) const;
 
  private:
+  friend class cc::Service;
   // Returns true iff the node at |desc_id| is a descendant of the node at
   // |anc_id|.
   bool IsDescendant(int desc_id, int anc_id) const;
@@ -311,6 +314,7 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
   void ToProtobuf(proto::PropertyTree* proto) const;
   void FromProtobuf(const proto::PropertyTree& proto,
                     std::unordered_map<int, int>* node_id_to_index_map);
+  friend class cc::Service;
 };
 
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
@@ -357,6 +361,7 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
                     std::unordered_map<int, int>* node_id_to_index_map);
 
  private:
+  friend class cc::Service;
   void UpdateOpacities(EffectNode* node, EffectNode* parent_node);
   void UpdateIsDrawn(EffectNode* node, EffectNode* parent_node);
   void UpdateBackfaceVisibility(EffectNode* node, EffectNode* parent_node);
@@ -431,6 +436,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   }
 
  private:
+  friend class cc::Service;
   int currently_scrolling_node_id_;
   ScrollOffsetMap layer_id_to_scroll_offset_map_;
 
