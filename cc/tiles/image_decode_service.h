@@ -8,18 +8,22 @@
 #include "cc/base/cc_export.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/threading/simple_thread.h"
 
 #include <unordered_map>
+#include <vector>
+#include <deque>
 
 namespace cc {
 
 class CC_EXPORT ImageDecodeService {
  public:
-  ImageDecodeService();
-  ~ImageDecodeService();
-
   // TODO(hackathon): This shouldn't be a singleton.
   static ImageDecodeService* Current();
+
+  ImageDecodeService();
+  ~ImageDecodeService();
 
   // Blink accesses this to register things.
   void RegisterImage(sk_sp<SkImage> image);
@@ -28,11 +32,20 @@ class CC_EXPORT ImageDecodeService {
   // Mojo accesses this?
   void DecodeImage(uint32_t image_id, void* buffer);
 
+  // Called by the thread.
+  void ProcessQueue();
+
  private:
+  bool DoDecodeImage(uint32_t image_id, void* buffer);
   void OnImageDecoded(uint32_t image_id, bool succeeded);
 
   base::Lock lock_;
   std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
+
+  base::ConditionVariable requests_cv_;
+  std::deque<std::pair<uint32_t, void*>> image_decode_requests_;
+
+  std::vector<std::unique_ptr<base::SimpleThread>> threads_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageDecodeService);
 };
