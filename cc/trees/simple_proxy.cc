@@ -34,7 +34,8 @@ std::unique_ptr<SimpleProxy> SimpleProxy::Create(
 
 SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
                          TaskRunnerProvider* task_runner_provider)
-    : layer_tree_host_(layer_tree_host),
+    : needs_begin_frame_when_ready_(false),
+      layer_tree_host_(layer_tree_host),
       task_runner_provider_(task_runner_provider),
       layer_tree_host_id_(layer_tree_host->id()),
       commit_waits_for_activation_(false),
@@ -66,6 +67,10 @@ void SimpleProxy::InitializeCompositor(
     std::unique_ptr<CompositorProxy> compositor) {
   compositor_ = std::move(compositor);
   compositor_->set_delegate(this);
+  if (needs_begin_frame_when_ready_) {
+    needs_begin_frame_when_ready_ = false;
+    SetNeedsBeginFrame();
+  }
 }
 
 void SimpleProxy::FinishAllRendering() {
@@ -217,12 +222,18 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 
 void SimpleProxy::SetNeedsBeginFrame() {
   DCHECK(IsMainThread());
+  if (!compositor_) {
+    needs_begin_frame_when_ready_ = true;
+    return;
+  }
+
   if (defer_commits_)
     return;
   if (begin_frame_requested_)
     return;
   begin_frame_requested_ = true;
-  compositor_->SetNeedsBeginMainFrame();
+  if (compositor_)
+    compositor_->SetNeedsBeginMainFrame();
 }
 
 bool SimpleProxy::IsMainThread() const {

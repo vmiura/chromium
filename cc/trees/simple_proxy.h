@@ -83,6 +83,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
 
   void SetNeedsBeginFrame();
 
+  bool needs_begin_frame_when_ready_;
   LayerTreeHost* layer_tree_host_;
   TaskRunnerProvider* task_runner_provider_;
   std::unique_ptr<CompositorProxy> compositor_;
