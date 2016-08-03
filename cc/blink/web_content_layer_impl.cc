@@ -24,9 +24,7 @@ using cc::PictureLayer;
 namespace cc_blink {
 
 static bool UseCachedPictureRaster() {
-  static bool use = !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      cc::switches::kDisableCachedPictureRaster);
-  return use;
+  return false;
 }
 
 static blink::WebContentLayerClient::PaintingControlSetting
