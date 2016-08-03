@@ -16,21 +16,31 @@
 #include "cc/debug/picture_debug_util.h"
 #include "cc/debug/traced_display_item_list.h"
 #include "cc/debug/traced_value.h"
+#include "cc/playback/clip_display_item.h"
+#include "cc/playback/clip_path_display_item.h"
+#include "cc/playback/compositing_display_item.h"
 #include "cc/playback/display_item_list_settings.h"
 #include "cc/playback/display_item_proto_factory.h"
 #include "cc/playback/drawing_display_item.h"
+#include "cc/playback/filter_display_item.h"
+#include "cc/playback/float_clip_display_item.h"
 #include "cc/playback/largest_display_item.h"
+#include "cc/playback/transform_display_item.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/utils/SkPictureUtils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
 
+uint32_t DisplayItemList::s_next_id = 1;
+
 namespace {
+
 
 // We don't perform per-layer solid color analysis when there are too many skia
 // operations.
@@ -65,6 +75,65 @@ scoped_refptr<DisplayItemList> DisplayItemList::Create(
       !settings.use_cached_picture || DisplayItemsTracingEnabled()));
 }
 
+scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(SkStream* stream) {
+  DisplayItemListSettings settings;
+  // TODO: Also find id from stream.
+  scoped_refptr<DisplayItemList> display_item_list =
+      DisplayItemList::Create(gfx::Rect(), settings);
+  uint32_t num_items = stream->readU32();
+  for (uint32_t i = 0; i < num_items; ++i) {
+    int x = stream->readS32();
+    int y = stream->readS32();
+    int width = stream->readS32();
+    int height = stream->readS32();
+    gfx::Rect visual_rect(x, y, width, height);
+    DisplayItem::ItemType item_type =
+        static_cast<DisplayItem::ItemType>(stream->readU32());
+    switch(item_type) {
+      case DisplayItem::Clip:
+        ClipDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndClip:
+        EndClipDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::ClipPath:
+        ClipPathDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndClipPath:
+        EndClipPathDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::Compositing:
+        CompositingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndCompositing:
+        EndCompositingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::Drawing:
+        DrawingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::Filter:
+        FilterDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndFilter:
+        EndFilterDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::FloatClip:
+        FloatClipDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndFloatClip:
+        EndFloatClipDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::Transform:
+        TransformDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+      case DisplayItem::EndTransform:
+        EndTransformDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+        break;
+    }
+  }
+  return display_item_list;
+}
+
 scoped_refptr<DisplayItemList> DisplayItemList::CreateFromProto(
     const proto::DisplayItemList& proto,
     ClientPictureCache* client_picture_cache,
@@ -92,7 +161,8 @@ DisplayItemList::DisplayItemList(gfx::Rect layer_rect,
     : retain_individual_display_items_(retain_individual_display_items),
       approximate_op_count_(0),
       picture_memory_usage_(0),
-      inputs_(layer_rect, settings) {
+      inputs_(layer_rect, settings),
+      id_(s_next_id++) {
   if (inputs_.settings.use_cached_picture) {
     SkRTreeFactory factory;
     recorder_.reset(new SkPictureRecorder());
@@ -199,7 +269,7 @@ void DisplayItemList::Finalize() {
   // them to stick around post-Finalize. http://crbug.com/527245
   // This clears both the vector and the vector's capacity, since visual_rects_
   // won't be used anymore.
-  std::vector<gfx::Rect>().swap(inputs_.visual_rects);
+  // std::vector<gfx::Rect>().swap(inputs_.visual_rects);
 
   if (inputs_.settings.use_cached_picture) {
     // Convert to an SkPicture for faster rasterization.
@@ -328,6 +398,18 @@ void DisplayItemList::GetDiscardableImagesInRect(
     float raster_scale,
     std::vector<DrawImage>* images) {
   image_map_.GetDiscardableImagesInRect(rect, raster_scale, images);
+}
+
+void DisplayItemList::Serialize(SkWStream* stream) const {
+  stream->write32(inputs_.items.size());
+  DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
+  for (size_t i = 0; i < inputs_.items.size(); ++i) {
+    stream->write32(inputs_.visual_rects[i].x());
+    stream->write32(inputs_.visual_rects[i].y());
+    stream->write32(inputs_.visual_rects[i].width());
+    stream->write32(inputs_.visual_rects[i].height());
+    inputs_.items[i].Serialize(stream);
+  }
 }
 
 }  // namespace cc

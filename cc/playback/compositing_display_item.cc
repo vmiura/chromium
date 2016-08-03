@@ -9,6 +9,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event_argument.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "cc/proto/skia_conversions.h"
@@ -17,6 +18,7 @@
 #include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/include/core/SkFlattenableSerialization.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkXfermode.h"
 #include "ui/gfx/skia_util.h"
 
@@ -59,6 +61,20 @@ CompositingDisplayItem::CompositingDisplayItem(
   SetNew(alpha, xfermode, bounds.get(), std::move(filter),
          lcd_text_requires_opaque_layer);
 }
+
+void CompositingDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(Compositing);
+  stream->write8(alpha_);
+}
+
+void CompositingDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  uint8_t alpha = stream->readU8();
+  list->CreateAndAppendItem<CompositingDisplayItem>(
+      visual_rect, alpha, SkXfermode::kSrcOver_Mode, nullptr, nullptr, true);
+}
+
 
 CompositingDisplayItem::~CompositingDisplayItem() {
 }
@@ -156,6 +172,17 @@ void EndCompositingDisplayItem::AsValueInto(
       base::StringPrintf("EndCompositingDisplayItem visualRect: [%s]",
                          visual_rect.ToString().c_str()));
 }
+
+void EndCompositingDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(EndCompositing);
+}
+
+void EndCompositingDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<EndCompositingDisplayItem>(visual_rect);
+}
+
 
 size_t EndCompositingDisplayItem::ExternalMemoryUsage() const {
   return 0;

@@ -507,8 +507,7 @@ cc::LayerTreeSettings RenderWidgetCompositor::GenerateLayerTreeSettings(
   cc::ManagedMemoryPolicy current = settings.memory_policy_;
   settings.memory_policy_ = GetGpuMemoryPolicy(current);
 
-  settings.use_cached_picture_raster =
-      !cmd.HasSwitch(cc::switches::kDisableCachedPictureRaster);
+  settings.use_cached_picture_raster = false;
 
   if (cmd.HasSwitch(switches::kUseRemoteCompositing))
     settings.use_external_begin_frame_source = false;

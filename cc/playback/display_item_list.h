@@ -24,6 +24,8 @@
 
 class SkCanvas;
 class SkPictureRecorder;
+class SkStream;
+class SkWStream;
 
 namespace cc {
 class ClientPictureCache;
@@ -53,6 +55,8 @@ class CC_EXPORT DisplayItemList
       const proto::DisplayItemList& proto,
       ClientPictureCache* client_picture_cache,
       std::vector<uint32_t>* used_engine_picture_ids);
+
+  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
 
   // Creates a Protobuf representing the state of this DisplayItemList.
   void ToProtobuf(proto::DisplayItemList* proto);
@@ -120,6 +124,12 @@ class CC_EXPORT DisplayItemList
     return inputs_.items.end();
   }
 
+  void Serialize(SkWStream* stream) const;
+
+  uint32_t unique_id() const { return id_; }
+
+  size_t num_items() const { return inputs_.items.size(); }
+
  private:
   DisplayItemList(gfx::Rect layer_rect,
                   const DisplayItemListSettings& display_list_settings,
@@ -152,12 +162,17 @@ class CC_EXPORT DisplayItemList
     // because they are not needed while walking the |items| for raster.
     std::vector<gfx::Rect> visual_rects;
 
+
     const DisplayItemListSettings settings;
     gfx::Rect layer_rect;
     bool is_suitable_for_gpu_rasterization;
   };
 
   Inputs inputs_;
+
+  static uint32_t s_next_id;
+
+  uint32_t id_;
 
   friend class base::RefCountedThreadSafe<DisplayItemList>;
   FRIEND_TEST_ALL_PREFIXES(DisplayItemListTest, ApproximateMemoryUsage);

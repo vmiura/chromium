@@ -8,9 +8,11 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event_argument.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -56,6 +58,30 @@ void FloatClipDisplayItem::AsValueInto(
       clip_rect_.ToString().c_str(), visual_rect.ToString().c_str()));
 }
 
+void FloatClipDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(FloatClip);
+  float x = clip_rect_.x();
+  float y = clip_rect_.y();
+  float width = clip_rect_.width();
+  float height = clip_rect_.height();
+  stream->write(&x, sizeof(float));
+  stream->write(&y, sizeof(float));
+  stream->write(&width, sizeof(float));
+  stream->write(&height, sizeof(float));
+}
+
+void FloatClipDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  float x, y, w, h;
+  stream->read(&x, sizeof(float));
+  stream->read(&y, sizeof(float));
+  stream->read(&w, sizeof(float));
+  stream->read(&h, sizeof(float));
+  gfx::RectF clip_rect(x, y, w, h);
+  list->CreateAndAppendItem<FloatClipDisplayItem>(visual_rect, clip_rect);
+}
+
 size_t FloatClipDisplayItem::ExternalMemoryUsage() const {
   return 0;
 }
@@ -69,6 +95,17 @@ EndFloatClipDisplayItem::EndFloatClipDisplayItem(
 
 EndFloatClipDisplayItem::~EndFloatClipDisplayItem() {
 }
+
+void EndFloatClipDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(EndFloatClip);
+}
+
+void EndFloatClipDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<EndFloatClipDisplayItem>(visual_rect);
+}
+
 
 void EndFloatClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndFloatClip);

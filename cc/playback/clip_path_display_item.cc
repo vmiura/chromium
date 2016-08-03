@@ -9,9 +9,11 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event_argument.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/skia_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkStream.h"
 
 namespace cc {
 
@@ -65,6 +67,18 @@ void ClipPathDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   }
 }
 
+void ClipPathDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(ClipPath);
+}
+
+void ClipPathDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  SkPath path;
+  bool antialias = false;
+  list->CreateAndAppendItem<ClipPathDisplayItem>(visual_rect, path, SkRegion::Op(), antialias);
+}
+
 void ClipPathDisplayItem::Raster(SkCanvas* canvas,
                                  SkPicture::AbortCallback* callback) const {
   canvas->save();
@@ -111,6 +125,16 @@ void EndClipPathDisplayItem::AsValueInto(
   array->AppendString(
       base::StringPrintf("EndClipPathDisplayItem visualRect: [%s]",
                          visual_rect.ToString().c_str()));
+}
+
+void EndClipPathDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(EndClipPath);
+}
+
+void EndClipPathDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<EndClipPathDisplayItem>(visual_rect);
 }
 
 size_t EndClipPathDisplayItem::ExternalMemoryUsage() const {
