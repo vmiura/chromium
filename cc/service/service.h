@@ -8,6 +8,7 @@
 #include "base/single_thread_task_runner.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/ipc/compositor.mojom.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/service/service_export.h"
 #include "cc/surfaces/surface_id_allocator.h"
@@ -48,12 +49,14 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   cc::mojom::CompositorClientPtr& compositor_client() { return compositor_client_; }
   void CreateOutputSurface();
   DrawResult DrawAndSwap(bool forced_draw);
+  void DidActivateSyncTree();
+  void ScheduledActionCommit();
 
   void InsertHackyGreenLayer();
 
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
-  void Commit(bool wait_for_activation, mojom::ContentFramePtr frame) override;
+  void Commit(bool wait_for_activation, mojom::ContentFramePtr frame, const CommitCallback& callback) override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -96,6 +99,10 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   LayerTreeHostImpl host_impl_;
   cc::mojom::CompositorClientPtr compositor_client_;
   mojo::StrongBinding<cc::mojom::Compositor> binding_;
+  mojom::ContentFramePtr frame_for_commit_;
+  bool wait_for_activation_;
+  CommitCallback commit_callback_;
+  CommitCallback activation_callback_;
 
   // This is null for non-root service compositors.
   std::unique_ptr<Display> display_;

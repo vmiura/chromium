@@ -16,7 +16,7 @@ interface CompositorFactory {
 
 interface Compositor {
   SetNeedsBeginMainFrame();
-  Commit(bool wait_for_activation, ContentFrame frame);
+  [Sync] Commit(bool wait_for_activation, ContentFrame frame) => ();
 };
 
 interface CompositorClient {

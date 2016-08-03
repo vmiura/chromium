@@ -103,7 +103,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     task_runner_->PostDelayedTask(FROM_HERE, task, delay);
   }
   void DidActivateSyncTree() override {
-    // TODO(hackathon): send sync ipc reply back to main (?)
+    owner_->DidActivateSyncTree();
   }
   void WillPrepareTiles() override {
     owner_->scheduler()->WillPrepareTiles();
@@ -136,15 +136,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     return owner_->DrawAndSwap(forced_draw);
   }
   void ScheduledActionCommit() override {
-    owner_->host_impl()->BeginCommit();
-
-    // TODO(hackathon): Need main side to commit.
-    // blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
-    //    owner_->host_impl());
-    owner_->InsertHackyGreenLayer();
-
-    owner_->scheduler()->DidCommit();
-    owner_->host_impl()->CommitComplete();
+    owner_->ScheduledActionCommit();
   }
   void ScheduledActionActivateSyncTree() override {
     owner_->host_impl()->ActivateSyncTree();
@@ -213,7 +205,8 @@ Service::Service(const gpu::SurfaceHandle& handle,
                      false /* supports_impl_scrolling */),
                  id),
       compositor_client_(std::move(client)),
-      binding_(this, std::move(request)) {
+      binding_(this, std::move(request)),
+      wait_for_activation_(false) {
   LOG(ERROR) << "Service compositor " << this;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   scheduler_.SetVisible(true);
@@ -354,23 +347,52 @@ void Service::SetNeedsBeginMainFrame() {
 }
 
 void Service::Commit(bool wait_for_activation,
-                     mojom::ContentFramePtr frame) {
-  //DCHECK(!commit_completion_event_);
+                     mojom::ContentFramePtr frame,
+                     const CommitCallback& callback) {
+  DCHECK(!commit_callback_);
+  DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
+
+  frame_for_commit_ = std::move(frame);
+  wait_for_activation_ = wait_for_activation;
+  commit_callback_ = callback;
 
   scheduler_.NotifyBeginMainFrameStarted(
       base::TimeTicks() /* TODO(hackathon): main_thread_start_time */);
   host_impl_.ReadyToCommit();
 
-  // TODO(hackathon):
-  //commit_completion_event_ = completion;
-  //commit_completion_waits_for_activation_ = wait_for_activation;
-
   //DCHECK(!blocked_main_commit().layer_tree_host);
   //blocked_main_commit().layer_tree_host = layer_tree_host;
   scheduler_.NotifyReadyToCommit();
+}
 
+void Service::DidActivateSyncTree() {
+  if (!activation_callback_) {
+    activation_callback_.Run();
+    activation_callback_.Reset();
+  }
+}
+
+void Service::ScheduledActionCommit() {
+  DCHECK(commit_callback_);
+  host_impl()->BeginCommit();
+
+  // TODO(hackathon): Use frame_for_commit_ to commit.
+  // blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
+  //    owner_->host_impl());
+  InsertHackyGreenLayer();
+  frame_for_commit_ = nullptr;
+  if (wait_for_activation_) {
+    DCHECK(!activation_callback_);
+    std::swap(activation_callback_, commit_callback_);
+    wait_for_activation_ = false;
+  } else {
+    commit_callback_.Run();
+  }
+
+  scheduler()->DidCommit();
+  host_impl()->CommitComplete();
 }
 
 }  // namespace cc
