@@ -6,6 +6,7 @@ module cc.mojom;
 
 import "cc/ipc/begin_frame_args.mojom";
 import "cc/ipc/content_frame.mojom";
+import "cc/ipc/renderer_capabilities.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
@@ -28,4 +29,5 @@ interface CompositorClient {
   OnDidCompletePageScaleAnimation();
   OnDidCommitAndDrawFrame();
   OnDidCompleteSwapBuffers();
+  OnRendererCapabilities(RendererCapabilities capabilities);
 };

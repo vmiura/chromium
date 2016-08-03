@@ -9,6 +9,6 @@ sources = [
   "//cc/ipc/renderer_capabilities_struct_traits.cc",
 ]
 public_deps = [
-  "//cc",
+  "//cc:transport",
 ]
 type_mappings = [ "cc.mojom.RendererCapabilities=cc::RendererCapabilities" ]

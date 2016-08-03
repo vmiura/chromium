@@ -4,6 +4,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
+#include "cc/output/renderer_capabilities.h"
+#include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/compositor_timing_history.h"
@@ -43,7 +45,8 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
 
   // LayerTreeHostImplClient implementation.
   void UpdateRendererCapabilitiesOnImplThread() override {
-    // TODO(hackathon): back to main
+    owner_->compositor_client()->OnRendererCapabilities(
+        owner_->host_impl_.GetRendererCapabilities().MainThreadCapabilities());
   }
   void DidLoseOutputSurfaceOnImplThread() override {
     owner_->scheduler()->DidLoseOutputSurface();

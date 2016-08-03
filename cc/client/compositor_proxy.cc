@@ -45,4 +45,10 @@ void CompositorProxy::OnDidCompleteSwapBuffers() {
     delegate_->OnDidCompleteSwapBuffers();
 }
 
+void CompositorProxy::OnRendererCapabilities(
+    const cc::RendererCapabilities& capabilities) {
+  if (delegate_)
+    delegate_->OnRendererCapabilities(capabilities);
+}
+
 }  // namespace cc

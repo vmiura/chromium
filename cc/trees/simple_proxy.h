@@ -78,6 +78,8 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   void OnDidCompletePageScaleAnimation() override;
   void OnDidCommitAndDrawFrame() override;
   void OnDidCompleteSwapBuffers() override;
+  void OnRendererCapabilities(
+      const cc::RendererCapabilities& capabilities) override;
 
   bool IsMainThread() const;
 

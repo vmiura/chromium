@@ -6,7 +6,7 @@
 #define CC_RESOURCES_RESOURCE_FORMAT_H_
 
 #include "base/logging.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 // TODO(prashant.n): Including third_party/khronos/GLES2/gl2.h causes
@@ -30,15 +30,15 @@ enum ResourceFormat {
   RESOURCE_FORMAT_MAX = LUMINANCE_F16,
 };
 
-CC_EXPORT int BitsPerPixel(ResourceFormat format);
-CC_EXPORT GLenum GLDataType(ResourceFormat format);
-CC_EXPORT GLenum GLDataFormat(ResourceFormat format);
-CC_EXPORT GLenum GLInternalFormat(ResourceFormat format);
-CC_EXPORT GLenum GLCopyTextureInternalFormat(ResourceFormat format);
-CC_EXPORT gfx::BufferFormat BufferFormat(ResourceFormat format);
+CC_TRANSPORT_EXPORT int BitsPerPixel(ResourceFormat format);
+CC_TRANSPORT_EXPORT GLenum GLDataType(ResourceFormat format);
+CC_TRANSPORT_EXPORT GLenum GLDataFormat(ResourceFormat format);
+CC_TRANSPORT_EXPORT GLenum GLInternalFormat(ResourceFormat format);
+CC_TRANSPORT_EXPORT GLenum GLCopyTextureInternalFormat(ResourceFormat format);
+CC_TRANSPORT_EXPORT gfx::BufferFormat BufferFormat(ResourceFormat format);
 
-bool IsResourceFormatCompressed(ResourceFormat format);
-bool DoesResourceFormatSupportAlpha(ResourceFormat format);
+CC_TRANSPORT_EXPORT bool IsResourceFormatCompressed(ResourceFormat format);
+CC_TRANSPORT_EXPORT bool DoesResourceFormatSupportAlpha(ResourceFormat format);
 
 }  // namespace cc
 

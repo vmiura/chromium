@@ -26,6 +26,8 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   void OnDidCompletePageScaleAnimation() override;
   void OnDidCommitAndDrawFrame() override;
   void OnDidCompleteSwapBuffers() override;
+  void OnRendererCapabilities(
+      const cc::RendererCapabilities& capabilities) override;
 
   void SetNeedsBeginMainFrame() { compositor_->SetNeedsBeginMainFrame(); }
   void SetNeedsRedraw(const gfx::Rect& damage_rect) { compositor_->SetNeedsRedraw(damage_rect); }

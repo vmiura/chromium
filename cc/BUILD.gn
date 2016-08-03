@@ -9,8 +9,18 @@ component("transport") {
   sources = [
     "output/begin_frame_args.cc",
     "output/begin_frame_args.h",
+    "output/renderer_capabilities.cc",
+    "output/renderer_capabilities.h",
+    "resources/resource_format.cc",
+    "resources/resource_format.h",
+    "resources/resource_format_utils.cc",
+    "resources/resource_format_utils.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//skia/public/interfaces",
+  ]
   defines = [ "CC_TRANSPORT_IMPLEMENTATION=1" ]
 }
 
@@ -265,8 +275,6 @@ component("cc") {
     "output/render_surface_filters.h",
     "output/renderer.cc",
     "output/renderer.h",
-    "output/renderer_capabilities.cc",
-    "output/renderer_capabilities.h",
     "output/renderer_settings.cc",
     "output/renderer_settings.h",
     "output/shader.cc",
@@ -410,10 +418,6 @@ component("cc") {
     "resources/platform_color.h",
     "resources/release_callback.h",
     "resources/resource.h",
-    "resources/resource_format.cc",
-    "resources/resource_format.h",
-    "resources/resource_format_utils.cc",
-    "resources/resource_format_utils.h",
     "resources/resource_pool.cc",
     "resources/resource_pool.h",
     "resources/resource_provider.cc",

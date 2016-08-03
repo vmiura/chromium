@@ -25,7 +25,7 @@ class Task;
 
 typedef std::vector<std::unique_ptr<RenderPass>> RenderPassList;
 
-struct RendererCapabilitiesImpl {
+struct CC_EXPORT RendererCapabilitiesImpl {
   RendererCapabilitiesImpl();
   ~RendererCapabilitiesImpl();
 

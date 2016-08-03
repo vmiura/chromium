@@ -41,6 +41,8 @@ mojom("compositor_interfaces") {
     "begin_frame_args.mojom",
     "compositor.mojom",
     "content_frame.mojom",
+    "renderer_capabilities.mojom",
+    "resource_format.mojom",
   ]
   public_deps = [
     "//gpu/ipc/common:interfaces",
@@ -57,8 +59,6 @@ mojom("interfaces") {
     "quads.mojom",
     "render_pass.mojom",
     "render_pass_id.mojom",
-    "renderer_capabilities.mojom",
-    "resource_format.mojom",
     "returned_resource.mojom",
     "selection.mojom",
     "shared_quad_state.mojom",

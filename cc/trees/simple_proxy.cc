@@ -377,7 +377,10 @@ void SimpleProxy::OnDidCompleteSwapBuffers() {
   layer_tree_host_->DidCompleteSwapBuffers();
 }
 
-
+void SimpleProxy::OnRendererCapabilities(
+    const cc::RendererCapabilities& capabilities) {
+  renderer_capabilities_ = capabilities;
+}
 
 }  // namespace cc
 

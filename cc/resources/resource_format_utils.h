@@ -5,12 +5,14 @@
 #ifndef CC_RESOURCES_RESOURCE_FORMAT_UTILS_H_
 #define CC_RESOURCES_RESOURCE_FORMAT_UTILS_H_
 
+#include "cc/base/cc_transport_export.h"
 #include "cc/resources/resource_format.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace cc {
 
-SkColorType ResourceFormatToClosestSkColorType(ResourceFormat format);
+CC_TRANSPORT_EXPORT SkColorType
+ResourceFormatToClosestSkColorType(ResourceFormat format);
 
 }  // namespace cc
 
