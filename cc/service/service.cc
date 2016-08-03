@@ -340,6 +340,7 @@ void Service::InsertHackyGreenLayer() {
   auto* pending_tree = host_impl_.pending_tree();
   auto green_layer =
       SolidColorLayerImpl::Create(pending_tree, layer_id++);
+  green_layer->SetDrawsContent(true);
   green_layer->SetBackgroundColor(SK_ColorGREEN);
   green_layer->SetPosition(gfx::PointF(10, 10));
   green_layer->SetBounds(gfx::Size(80, 80));
