@@ -5,6 +5,7 @@
 #ifndef CC_IPC_TRANSFERABLE_RESOURCE_STRUCT_TRAITS_H_
 #define CC_IPC_TRANSFERABLE_RESOURCE_STRUCT_TRAITS_H_
 
+#include "cc/ipc/resource_format_enum_traits.h"
 #include "cc/ipc/transferable_resource.mojom.h"
 #include "cc/resources/transferable_resource.h"
 
@@ -16,9 +17,8 @@ struct StructTraits<cc::mojom::TransferableResource, cc::TransferableResource> {
     return resource.id;
   }
 
-  static cc::mojom::ResourceFormat format(
-      const cc::TransferableResource& resource) {
-    return static_cast<cc::mojom::ResourceFormat>(resource.format);
+  static cc::ResourceFormat format(const cc::TransferableResource& resource) {
+    return resource.format;
   }
 
   static uint32_t filter(const cc::TransferableResource& resource) {

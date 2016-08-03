@@ -4,18 +4,9 @@
 
 module cc.mojom;
 
+import "cc/ipc/resource_format.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
-
-enum ResourceFormat {
-  RGBA_8888,
-  RGBA_4444,
-  BGRA_8888,
-  ALPHA_8,
-  LUMINANCE_8,
-  RGB_565,
-  ETC1,
-};
 
 // See cc/resources/transferable_resource.h.
 struct TransferableResource {

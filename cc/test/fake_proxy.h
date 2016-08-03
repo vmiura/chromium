@@ -17,6 +17,8 @@ class FakeProxy : public Proxy {
 
   void SetLayerTreeHost(LayerTreeHost* host);
 
+  void InitializeCompositor(
+      std::unique_ptr<CompositorProxy> compositor) override {}
   void FinishAllRendering() override {}
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

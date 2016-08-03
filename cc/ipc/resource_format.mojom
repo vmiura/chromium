@@ -1,0 +1,17 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+enum ResourceFormat {
+  RGBA_8888,
+  RGBA_4444,
+  BGRA_8888,
+  ALPHA_8,
+  LUMINANCE_8,
+  RGB_565,
+  ETC1,
+  RED_8,
+  LUMINANCE_F16,
+};

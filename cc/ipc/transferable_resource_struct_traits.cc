@@ -18,7 +18,8 @@ bool StructTraits<cc::mojom::TransferableResource, cc::TransferableResource>::
       !data.ReadMailboxHolder(&out->mailbox_holder))
     return false;
   out->id = data.id();
-  out->format = static_cast<cc::ResourceFormat>(data.format());
+  if (!data.ReadFormat(&out->format))
+    return false;
   out->filter = data.filter();
   out->read_lock_fences_enabled = data.read_lock_fences_enabled();
   out->is_software = data.is_software();
