@@ -58,6 +58,9 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
   if (display_) {
     display_->SetSurfaceId(delegated_surface_id_,
                            frame.metadata.device_scale_factor);
+    gfx::Size frame_size =
+        frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
+    display_->Resize(frame_size);
   }
 
   factory_.SubmitCompositorFrame(

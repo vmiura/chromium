@@ -19,10 +19,7 @@ namespace cc {
 
 DisplayOutputSurface::DisplayOutputSurface(
     scoped_refptr<ServiceContextProvider> context_provider)
-    : OutputSurface(std::move(context_provider),
-                    nullptr,
-                    nullptr),
-      weak_ptrs_(this) {
+    : OutputSurface(std::move(context_provider), nullptr, nullptr) {
   capabilities_.adjust_deadline_for_parent = false;
   // TODO(hackathon): Get real value (from context provider?)
   capabilities_.flipped_output_surface = true;
@@ -42,25 +39,15 @@ void DisplayOutputSurface::SwapBuffers(CompositorFrame frame) {
     support->Swap();
   else
     support->PartialSwapBuffers(swap_rect);
-
-  const GLuint64 fence_sync = gl->InsertFenceSyncCHROMIUM();
-  gl->ShallowFlushCHROMIUM();
-  gpu::SyncToken sync_token;
-  gl->GenSyncTokenCHROMIUM(fence_sync, sync_token.GetData());
-  base::AutoReset<bool> set(&inside_swap_, true);
-  support->SignalSyncToken(sync_token,
-                           base::Bind(&DisplayOutputSurface::OnSwapComplete,
-                                      weak_ptrs_.GetWeakPtr()));
+  // TODO(hackathon): Needs to actually get back a swap complete signal from the
+  // command buffer and not flush here.
+  gl->Flush();
+  PostSwapBuffersComplete();
 }
 
 uint32_t DisplayOutputSurface::GetFramebufferCopyTextureFormat() {
   return static_cast<ServiceContextProvider*>(context_provider())->
       GetCopyTextureInternalFormat();
-}
-
-void DisplayOutputSurface::OnSwapComplete() {
-  DCHECK(!inside_swap_);
-  client_->DidSwapBuffersComplete();
 }
 
 }  // namespace cc
