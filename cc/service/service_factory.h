@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/threading/thread.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
 #include "cc/service/compositor_channel.h"
 #include "cc/service/service_export.h"
@@ -57,7 +56,6 @@ class CC_SERVICE_EXPORT ServiceFactory {
   int next_service_id_ = 1;
 
   SurfaceManager surface_manager_;
-  base::Thread compositor_thread_;
 };
 
 }  // namespace cc

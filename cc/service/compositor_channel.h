@@ -15,15 +15,12 @@ class GpuChannel;
 }
 
 namespace cc {
-class CompletionEvent;
+
 class ServiceFactory;
 
 class CompositorChannel : public cc::mojom::CompositorFactory {
  public:
-  CompositorChannel(
-      ServiceFactory* factory,
-      gpu::GpuChannel* channel,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_thread);
+  CompositorChannel(ServiceFactory* factory, gpu::GpuChannel* channel);
   ~CompositorChannel() override;
 
   // cc::mojom::Compositor implementation.
@@ -36,17 +33,11 @@ class CompositorChannel : public cc::mojom::CompositorFactory {
 
  private:
   void BindCompositorFactoryRequest(
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
       cc::mojom::CompositorFactoryAssociatedRequest request);
-  void BindOnCompositorThread(
-      cc::mojom::CompositorFactoryAssociatedRequest* request,
-      CompletionEvent* event);
 
   ServiceFactory* const factory_;
   gpu::GpuChannel* const channel_;
-  using CompositorBinding =
-      mojo::AssociatedBinding<cc::mojom::CompositorFactory>;
-  std::unique_ptr<CompositorBinding> binding_;
+  mojo::AssociatedBinding<cc::mojom::CompositorFactory> binding_;
   DISALLOW_COPY_AND_ASSIGN(CompositorChannel);
 };
 
