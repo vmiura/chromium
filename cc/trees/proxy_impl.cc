@@ -255,6 +255,9 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
     bool hold_commit_for_activation) {
+  // TODO(hackathon): What?
+  hold_commit_for_activation = false;
+
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!commit_completion_event_);
   DCHECK(IsImplThread() && IsMainThreadBlocked());

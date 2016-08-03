@@ -299,6 +299,9 @@ int GpuRasterizationMSAASampleCount() {
 }
 
 bool IsMainFrameBeforeActivationEnabled() {
+  // TODO(hackathon): Nope.
+  return false;
+
   if (base::SysInfo::NumberOfProcessors() < 4)
     return false;
 

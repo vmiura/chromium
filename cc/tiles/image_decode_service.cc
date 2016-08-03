@@ -89,10 +89,10 @@ void ImageDecodeService::ProcessRequestQueue() {
       base::AutoUnlock release(lock_);
       return DoDecodeImage(request.first, request.second);
     }();
-    //image_decode_results_.emplace_back(request.first, result);
-    //new_results_notifier_.Schedule();
-    // TODO(hackathon): remove
-    OnImageDecoded(request.first, result);
+    image_decode_results_.emplace_back(request.first, result);
+    // TODO(hackathon): This runs on the origin thread, so if the origin thread
+    // is blocked waiting for reply then rip.
+    new_results_notifier_.Schedule();
   }
 }
 
