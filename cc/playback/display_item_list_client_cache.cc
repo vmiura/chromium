@@ -10,17 +10,6 @@
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace cc {
-namespace {
-
-// Helper function to deserialize the content of |picture_data| into an
-// DisplayItemList.
-scoped_refptr<const DisplayItemList> DeserializeDisplayItemList(
-    const DisplayItemListData& display_item_list_data) {
-  SkMemoryStream stream(display_item_list_data.data);
-  return DisplayItemList::CreateFromStream(&stream);
-}
-
-}  // namespace
 
 DisplayItemListClientCache::DisplayItemListClientCache() = default;
 
@@ -37,7 +26,7 @@ void DisplayItemListClientCache::ApplyCacheUpdate(
   for (const DisplayItemListData& display_item_list_data : cache_update) {
     DCHECK(display_item_lists_.find(display_item_list_data.unique_id) == display_item_lists_.end());
     scoped_refptr<const DisplayItemList> deserialized_display_item_list =
-        DeserializeDisplayItemList(display_item_list_data);
+        DisplayItemList::CreateFromData(display_item_list_data.data);
 
     display_item_lists_[display_item_list_data.unique_id] = std::move(deserialized_display_item_list);
 

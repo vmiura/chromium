@@ -56,8 +56,6 @@ class CC_EXPORT DisplayItemList
       ClientPictureCache* client_picture_cache,
       std::vector<uint32_t>* used_engine_picture_ids);
 
-  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
-
   static scoped_refptr<DisplayItemList> CreateFromData(sk_sp<SkData> data);
 
   // Creates a Protobuf representing the state of this DisplayItemList.
@@ -126,8 +124,6 @@ class CC_EXPORT DisplayItemList
     return inputs_.items.end();
   }
 
-  void Serialize(SkWStream* stream) const;
-
   sk_sp<SkData> Serialize() const;
 
   uint32_t unique_id() const { return id_; }
@@ -141,6 +137,9 @@ class CC_EXPORT DisplayItemList
   ~DisplayItemList();
 
   void ProcessAppendedItem(const DisplayItem* item);
+
+  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
+  void SerializeToStream(SkWStream* stream) const;
 
   sk_sp<SkPicture> picture_;
 

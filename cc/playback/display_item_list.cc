@@ -408,7 +408,7 @@ void DisplayItemList::GetDiscardableImagesInRect(
   image_map_.GetDiscardableImagesInRect(rect, raster_scale, images);
 }
 
-void DisplayItemList::Serialize(SkWStream* stream) const {
+void DisplayItemList::SerializeToStream(SkWStream* stream) const {
   stream->write32(id_);
   stream->write32(inputs_.items.size());
   DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
@@ -423,7 +423,7 @@ void DisplayItemList::Serialize(SkWStream* stream) const {
 
 sk_sp<SkData> DisplayItemList::Serialize() const {
   SkDynamicMemoryWStream write_stream;
-  Serialize(&write_stream);
+  SerializeToStream(&write_stream);
   sk_sp<SkData> data(write_stream.copyToData());
   return data;
 }
