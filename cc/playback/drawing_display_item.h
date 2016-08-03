@@ -20,6 +20,7 @@ class SkPicture;
 
 namespace cc {
 class ClientPictureCache;
+class DisplayItemList;
 
 class CC_EXPORT DrawingDisplayItem : public DisplayItem {
  public:
@@ -40,6 +41,9 @@ class CC_EXPORT DrawingDisplayItem : public DisplayItem {
   size_t ExternalMemoryUsage() const override;
 
   int ApproximateOpCount() const;
+
+  void Serialize(SkWStream* stream) const override;
+  static void Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect);
 
   void CloneTo(DrawingDisplayItem* item) const;
 

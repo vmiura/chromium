@@ -15,6 +15,7 @@
 #include "cc/blimp/client_picture_cache.h"
 #include "cc/blimp/image_serialization_processor.h"
 #include "cc/debug/picture_debug_util.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -73,6 +74,21 @@ void DrawingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->mutable_drawing_item()->mutable_id()->set_unique_id(
       picture_->uniqueID());
 }
+
+void DrawingDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(Drawing);
+  DCHECK(picture_); // If this doesn't hold, don't serialize the type either.
+  // TODO: Pass an actual pixel serializer.
+  picture_->serialize(stream, nullptr);
+}
+
+void DrawingDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  sk_sp<SkPicture> picture = SkPicture::MakeFromStream(stream);
+  list->CreateAndAppendItem<DrawingDisplayItem>(visual_rect, std::move(picture));
+}
+
 
 sk_sp<const SkPicture> DrawingDisplayItem::GetPicture() const {
   return picture_;

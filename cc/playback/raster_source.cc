@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipStack.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
@@ -27,8 +28,21 @@ scoped_refptr<RasterSource> RasterSource::CreateFromRecordingSource(
   return make_scoped_refptr(new RasterSource(other, can_use_lcd_text));
 }
 
+static scoped_refptr<DisplayItemList> WriteAndReadDisplayList(scoped_refptr<DisplayItemList> input_list) {
+  if (!input_list)
+    return nullptr;
+  SkDynamicMemoryWStream write_stream;
+  input_list->Serialize(&write_stream);
+  sk_sp<SkData> data(write_stream.copyToData());
+  SkMemoryStream read_stream(data);
+  scoped_refptr<DisplayItemList> output_list = DisplayItemList::CreateFromStream(&read_stream);
+  output_list->Finalize();
+  DCHECK_EQ(input_list->num_items(), output_list->num_items());
+  return output_list;
+}
+
 RasterSource::RasterSource(const RecordingSource* other, bool can_use_lcd_text)
-    : display_list_(other->display_list_),
+    : display_list_(WriteAndReadDisplayList(other->display_list_)),
       painter_reported_memory_usage_(other->painter_reported_memory_usage_),
       background_color_(other->background_color_),
       requires_clear_(other->requires_clear_),

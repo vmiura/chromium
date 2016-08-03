@@ -11,10 +11,12 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event_argument.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "cc/proto/skia_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -60,6 +62,29 @@ void ClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
     SkRRectToProto(rrect, details->add_rounded_rects());
   }
   details->set_antialias(antialias_);
+}
+
+void ClipDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(Clip);
+  int x = clip_rect_.x();
+  int y = clip_rect_.y();
+  int width = clip_rect_.width();
+  int height = clip_rect_.height();
+  stream->write(&x, sizeof(int));
+  stream->write(&y, sizeof(int));
+  stream->write(&width, sizeof(int));
+  stream->write(&height, sizeof(int));
+  stream->writeBool(antialias_);
+}
+
+void ClipDisplayItem::Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect) {
+  int x = stream->readS32();
+  int y = stream->readS32();
+  int w = stream->readS32();
+  int h = stream->readS32();
+  gfx::Rect clip_rect(x, y, w, h);
+  bool antialias = stream->readBool();
+  list->CreateAndAppendItem<ClipDisplayItem>(visual_rect, clip_rect, std::vector<SkRRect>(), antialias);
 }
 
 void ClipDisplayItem::Raster(SkCanvas* canvas,
@@ -122,6 +147,14 @@ EndClipDisplayItem::~EndClipDisplayItem() {
 
 void EndClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndClip);
+}
+
+void EndClipDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(EndClip);
+}
+
+void EndClipDisplayItem::Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<EndClipDisplayItem>(visual_rect);
 }
 
 void EndClipDisplayItem::Raster(SkCanvas* canvas,

@@ -9,12 +9,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event_argument.h"
 #include "cc/output/render_surface_filters.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkXfermode.h"
 #include "ui/gfx/skia_util.h"
 
@@ -43,6 +45,17 @@ void FilterDisplayItem::SetNew(const FilterOperations& filters,
                                const gfx::RectF& bounds) {
   filters_ = filters;
   bounds_ = bounds;
+}
+
+void FilterDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(Filter);
+}
+
+void FilterDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<FilterDisplayItem>(visual_rect, FilterOperations(),
+                                               gfx::RectF());
 }
 
 void FilterDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
@@ -110,6 +123,17 @@ void EndFilterDisplayItem::AsValueInto(
       base::StringPrintf("EndFilterDisplayItem  visualRect: [%s]",
                          visual_rect.ToString().c_str()));
 }
+
+void EndFilterDisplayItem::Serialize(SkWStream* stream) const {
+  stream->write32(EndFilter);
+}
+
+void EndFilterDisplayItem::Deserialize(SkStream* stream,
+                                         DisplayItemList* list,
+                                         const gfx::Rect& visual_rect) {
+  list->CreateAndAppendItem<EndFilterDisplayItem>(visual_rect);
+}
+
 
 size_t EndFilterDisplayItem::ExternalMemoryUsage() const {
   return 0;

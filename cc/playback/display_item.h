@@ -24,6 +24,22 @@ class DisplayItem;
 
 class CC_EXPORT DisplayItem {
  public:
+
+  enum ItemType {
+    Clip = 1,
+    EndClip = 2,
+    ClipPath = 3,
+    EndClipPath = 4,
+    Compositing = 5,
+    EndCompositing = 6,
+    Drawing = 7,
+    Filter = 8,
+    EndFilter = 9,
+    FloatClip = 10,
+    EndFloatClip = 11,
+    Transform = 12,
+    EndTransform = 13,
+  };
   virtual ~DisplayItem() {}
 
   virtual void ToProtobuf(proto::DisplayItem* proto) const = 0;
@@ -32,6 +48,7 @@ class CC_EXPORT DisplayItem {
                       SkPicture::AbortCallback* callback) const = 0;
   virtual void AsValueInto(const gfx::Rect& visual_rect,
                            base::trace_event::TracedValue* array) const = 0;
+  virtual void Serialize(SkWStream* stream) const = 0;
   // For tracing.
   virtual size_t ExternalMemoryUsage() const = 0;
 
