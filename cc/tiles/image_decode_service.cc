@@ -88,8 +88,10 @@ void ImageDecodeService::ProcessRequestQueue() {
       base::AutoUnlock release(lock_);
       return DoDecodeImage(request.first, request.second);
     }();
-    image_decode_results_.emplace_back(request.first, result);
-    new_results_notifier_.Schedule();
+    //image_decode_results_.emplace_back(request.first, result);
+    //new_results_notifier_.Schedule();
+    // TODO(hackathon): remove
+    OnImageDecoded(request.first, result);
   }
 }
 
@@ -102,14 +104,14 @@ void ImageDecodeService::ProcessResultQueue() {
 }
 
 void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {
-  TRACE_EVENT1("cc", "ImageDecodeSerivce::DecodeImage", "image_id", image_id);
+  TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "image_id", image_id);
   base::AutoLock hold(lock_);
   image_decode_requests_.emplace_back(image_id, buffer);
   requests_cv_.Broadcast();
 }
 
 bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
-  TRACE_EVENT1("cc", "ImageDecodeSerivce::DoDecodeImage", "image_id", image_id);
+  TRACE_EVENT1("cc", "ImageDecodeService::DoDecodeImage", "image_id", image_id);
   sk_sp<SkImage> image = [this, image_id]() {
     base::AutoLock hold(lock_);
     DCHECK(image_map_.find(image_id) != image_map_.end());
