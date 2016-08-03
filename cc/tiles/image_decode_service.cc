@@ -47,6 +47,7 @@ ImageDecodeService::ImageDecodeService()
       new_results_notifier_(task_runner_.get(),
                             base::Bind(&ImageDecodeService::ProcessResultQueue,
                                        base::Unretained(this))) {
+  TRACE_EVENT0("cc", "ImageDecodeService::ImageDecodeService()");
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
   for (int i = 0; i < kNumThreads; ++i) {
