@@ -237,7 +237,7 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
       compositor_channel_(params->compositor_channel),
       source_frame_number_(0),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
-      output_surface_lost_(true),
+      output_surface_lost_(false /* HACKATHON: No OS here anymore. */),
       settings_(*params->settings),
       debug_state_(settings_.initial_debug_state),
       top_controls_shrink_blink_size_(false),

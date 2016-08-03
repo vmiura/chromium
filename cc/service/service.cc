@@ -19,7 +19,20 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 
+// TODO(hackathon): For Hacks.
+#include "cc/layers/solid_color_layer_impl.h"
+
 namespace cc {
+
+namespace {
+
+LayerTreeSettings CreateLayerTreeSettings() {
+  LayerTreeSettings settings;
+  settings.use_output_surface_begin_frame_source = true;
+  return settings;
+}
+
+}  // namespace
 
 class Service::ClientImpl : public LayerTreeHostImplClient,
                             public SchedulerClient {
@@ -129,6 +142,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     // TODO(hackathon): Need main side to commit.
     // blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
     //    owner_->host_impl());
+    owner_->InsertHackyGreenLayer();
 
     owner_->scheduler()->DidCommit();
     owner_->host_impl()->CommitComplete();
@@ -187,7 +201,7 @@ Service::Service(cc::mojom::CompositorRequest request,
       task_runner_provider_(task_runner_, nullptr),
       its_the_impl_thread_i_promise_(&task_runner_provider_),
       main_thread_animation_host_lol_(AnimationHost::CreateMainInstance()),
-      host_impl_(LayerTreeSettings(),
+      host_impl_(CreateLayerTreeSettings(),
                  client_.get(),
                  &task_runner_provider_,
                  &rendering_stats_,
@@ -203,7 +217,6 @@ Service::Service(cc::mojom::CompositorRequest request,
   surface_manager_->RegisterSurfaceClientId(
       surface_id_allocator_.client_id());
   scheduler_.SetVisible(true);
-
   compositor_client_->OnCompositorCreated();
 }
 
@@ -243,7 +256,9 @@ void Service::CreateOutputSurface() {
     display_.reset(new Display(
         shared_bitmap_manager_,
         gpu_memory_buffer_manager_,
-        RendererSettings(),
+        // btw, cc_unittests pixel tests expect default RendeererSettings to
+        // pass.
+        CreateLayerTreeSettings().renderer_settings,
         std::move(begin_frame_source),
         std::move(output_surface),
         std::move(display_scheduler),
@@ -331,13 +346,41 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
+void Service::InsertHackyGreenLayer() {
+  // TODO(hackathon): Some made up stuff, we should get these from a commit.
+  host_impl_.SetViewportSize(gfx::Size(100, 100));
+  auto* pending_tree = host_impl_.pending_tree();
+  auto green_layer =
+      SolidColorLayerImpl::Create(pending_tree, 1);
+  green_layer->SetBackgroundColor(SK_ColorGREEN);
+  green_layer->SetPosition(gfx::PointF(10, 10));
+  green_layer->SetBounds(gfx::Size(80, 80));
+  pending_tree->SetRootLayerForTesting(std::move(green_layer));
+  pending_tree->BuildPropertyTreesForTesting();
+}
+
 void Service::SetNeedsBeginMainFrame() {
   client_->SetNeedsCommitOnImplThread();
 }
 
-void Service::Commit(bool wait_for_activation, mojom::ContentFramePtr frame) {
-  // TODO(piman): hackathon implement this
-  NOTIMPLEMENTED();
+void Service::Commit(bool wait_for_activation,
+                     mojom::ContentFramePtr frame) {
+  //DCHECK(!commit_completion_event_);
+  //DCHECK(IsImplThread() && IsMainThreadBlocked());
+  DCHECK(scheduler_.CommitPending());
+
+  scheduler_.NotifyBeginMainFrameStarted(
+      base::TimeTicks() /* TODO(hackathon): main_thread_start_time */);
+  host_impl_.ReadyToCommit();
+
+  // TODO(hackathon):
+  //commit_completion_event_ = completion;
+  //commit_completion_waits_for_activation_ = wait_for_activation;
+
+  //DCHECK(!blocked_main_commit().layer_tree_host);
+  //blocked_main_commit().layer_tree_host = layer_tree_host;
+  scheduler_.NotifyReadyToCommit();
+
 }
 
 }  // namespace cc

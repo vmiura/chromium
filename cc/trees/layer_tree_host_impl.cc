@@ -4039,7 +4039,9 @@ bool LayerTreeHostImpl::SupportsImplScrolling() const {
 bool LayerTreeHostImpl::CommitToActiveTree() const {
   // In single threaded mode we skip the pending tree and commit directly to the
   // active tree.
-  return !task_runner_provider_->HasImplThread();
+  // HACKATHON: There's no impl thread, but we do have a pending and active
+  // tree in the GPU process.
+  return false; // !task_runner_provider_->HasImplThread();
 }
 
 }  // namespace cc

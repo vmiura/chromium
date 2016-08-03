@@ -304,13 +304,13 @@ void SimpleProxy::OnBeginMainFrame(
     return;
   }
 
-  if (layer_tree_host_->output_surface_lost()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_OutputSurfaceLost",
-                         TRACE_EVENT_SCOPE_THREAD);
-    // TODO(piman): hackathon ??
-    NOTREACHED();
-    return;
-  }
+  //if (layer_tree_host_->output_surface_lost()) {
+  //  TRACE_EVENT_INSTANT0("cc", "EarlyOut_OutputSurfaceLost",
+  //                       TRACE_EVENT_SCOPE_THREAD);
+  //  // TODO(piman): hackathon ??
+  //  NOTREACHED();
+  //  return;
+  //}
 
   // TODO(piman): hackathon
   // layer_tree_host_->ApplyScrollAndScale(

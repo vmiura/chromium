@@ -42,11 +42,13 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   ~Service() override;
 
   // ClientImpl access.
-  void CreateOutputSurface();
-  DrawResult DrawAndSwap(bool forced_draw);
   LayerTreeHostImpl* host_impl() { return &host_impl_; }
   Scheduler* scheduler() { return &scheduler_; }
   cc::mojom::CompositorClientPtr& compositor_client() { return compositor_client_; }
+  void CreateOutputSurface();
+  DrawResult DrawAndSwap(bool forced_draw);
+
+  void InsertHackyGreenLayer();
 
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;

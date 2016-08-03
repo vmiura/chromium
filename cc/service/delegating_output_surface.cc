@@ -72,8 +72,8 @@ bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
   surface_manager_->RegisterSurfaceFactoryClient(
       surface_id_allocator_->client_id(), this);
 
-  if (!OutputSurface::BindToClient(client))
-    return false;
+  bool bind = OutputSurface::BindToClient(client);
+  DCHECK(bind);
 
   // Avoid initializing GL context here, as this should be sharing the
   // Display's context.
