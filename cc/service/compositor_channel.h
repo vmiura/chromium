@@ -20,7 +20,8 @@ class ServiceFactory;
 
 class CompositorChannel : public cc::mojom::CompositorFactory {
  public:
-  CompositorChannel(ServiceFactory* factory, gpu::GpuChannel* channel);
+  CompositorChannel(ServiceFactory* factory, gpu::GpuChannel* channel,
+                    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
   ~CompositorChannel() override;
 
   // cc::mojom::Compositor implementation.
@@ -38,6 +39,7 @@ class CompositorChannel : public cc::mojom::CompositorFactory {
   ServiceFactory* const factory_;
   gpu::GpuChannel* const channel_;
   mojo::AssociatedBinding<cc::mojom::CompositorFactory> binding_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   DISALLOW_COPY_AND_ASSIGN(CompositorChannel);
 };
 
