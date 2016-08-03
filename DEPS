@@ -29,6 +29,7 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
+  'github_git': 'https://github.com',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling sfntly
   # and whatever else without interference from each other.
@@ -102,6 +103,7 @@ allowed_hosts = [
   'boringssl.googlesource.com',
   'pdfium.googlesource.com',
   'android.googlesource.com',
+  'github.com',
 ]
 
 deps = {
@@ -163,7 +165,7 @@ deps = {
    Var('chromium_git') + '/external/github.com/googlei18n/sfntly.git' + '@' + Var('sfntly_revision'),
 
   'src/third_party/skia':
-   Var('chromium_git') + '/skia.git' + '@' +  Var('skia_revision'),
+   Var('github_git') + '/ericrk/skia.git' + '@' +  Var('skia_revision'),
 
   'src/tools/page_cycler/acid3':
    Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + '6be0a66a1ebd7ebc5abc1b2f405a945f6d871521',
