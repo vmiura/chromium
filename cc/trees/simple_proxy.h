@@ -29,7 +29,7 @@ class LayerTreeMutator;
 // This class aggregates all interactions that the impl side of the compositor
 // needs to have with the main side.
 // The class is created and lives on the main thread.
-class CC_EXPORT SimpleProxy : public Proxy, public CompositorProxyDelegate {
+class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
  public:
   static std::unique_ptr<SimpleProxy> Create(
       LayerTreeHost* layer_tree_host,
@@ -72,7 +72,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public CompositorProxyDelegate {
                               TopControlsState current,
                               bool animate) override;
 
-  // CompositorProxyDelegate implementation
+  // mojom::CompositorClient implementation
   void OnCompositorCreated() override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
 

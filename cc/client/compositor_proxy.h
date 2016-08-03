@@ -11,20 +11,13 @@
 
 namespace cc {
 
-class CC_CLIENT_EXPORT CompositorProxyDelegate {
- public:
-  ~CompositorProxyDelegate() {}
-  virtual void OnCompositorCreated() = 0;
-  virtual void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) = 0;
-};
-
 class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
  public:
   CompositorProxy(cc::mojom::CompositorPtr compositor,
                   cc::mojom::CompositorClientRequest compositor_client_request);
   ~CompositorProxy() override;
 
-  void set_delegate(CompositorProxyDelegate* delegate) { delegate_ = delegate; }
+  void set_delegate(mojom::CompositorClient* delegate) { delegate_ = delegate; }
 
   // cc::mojom::CompositorClient implementation.
   void OnCompositorCreated() override;
@@ -36,7 +29,7 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
  private:
   cc::mojom::CompositorPtr compositor_;
   mojo::Binding<cc::mojom::CompositorClient> binding_;
-  CompositorProxyDelegate* delegate_;
+  mojom::CompositorClient* delegate_;
 };
 
 }  // namespace cc
