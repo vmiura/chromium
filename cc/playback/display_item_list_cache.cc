@@ -49,14 +49,11 @@ DisplayItemListCache::CalculateCacheUpdateAndFlush() {
 }
 
 void DisplayItemListCache::Put(const DisplayItemList* display_item_list) {
-  SkDynamicMemoryWStream stream;
-  display_item_list->Serialize(&stream);
-
   // Store the display_item_list data until it is sent to the client.
   display_item_lists_.insert(
       std::make_pair(display_item_list->unique_id(),
                      DisplayItemListData(display_item_list->unique_id(),
-                                     sk_sp<SkData>(stream.copyToData()))));
+                                         display_item_list->Serialize())));
 }
 
 }  // namespace cc
