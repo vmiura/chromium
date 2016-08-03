@@ -30,9 +30,9 @@ void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
   image_map_[image->uniqueID()] = std::move(image);
 }
 
-void ImageDecodeService::UnregisterImage(sk_sp<SkImage> image) {
+void ImageDecodeService::UnregisterImage(uint32_t image_id) {
   base::AutoLock hold(lock_);
-  image_map_.erase(image->uniqueID());
+  image_map_.erase(image_id);
 }
 
 void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {

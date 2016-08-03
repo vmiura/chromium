@@ -43,7 +43,7 @@ ProxyImageGenerator::ProxyImageGenerator(const SkImageInfo& info,
 ProxyImageGenerator::~ProxyImageGenerator() {
   // TODO(hackathon): Should scope this a different way probably - don't want to
   // have to send over IPC?
-  //cc::ImageDecodeService::Current()->UnregisterImage(unique_id_);
+  cc::ImageDecodeService::Current()->UnregisterImage(unique_id_);
 }
 
 bool ProxyImageGenerator::onGetPixels(const SkImageInfo& info,

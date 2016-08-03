@@ -23,7 +23,7 @@ class CC_EXPORT ImageDecodeService {
 
   // Blink accesses this to register things.
   void RegisterImage(sk_sp<SkImage> image);
-  void UnregisterImage(sk_sp<SkImage> image);
+  void UnregisterImage(uint32_t image_id);
 
   // Mojo accesses this?
   void DecodeImage(uint32_t image_id, void* buffer);
