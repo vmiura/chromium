@@ -6,6 +6,7 @@
 #include "cc/tiles/image_decode_proxy.h"
 #include "cc/resources/resource_format_utils.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace cc {
 namespace {
@@ -17,7 +18,7 @@ class ImageDecodeThread : public base::SimpleThread {
       : SimpleThread(prefix, options), service_(service) {}
 
   void Run() final {
-    service_->ProcessQueue();
+    service_->ProcessRequestQueue();
   }
 
  private:
@@ -40,7 +41,12 @@ ImageDecodeService* ImageDecodeService::Current() {
   return &service;
 }
 
-ImageDecodeService::ImageDecodeService() : requests_cv_(&lock_) {
+ImageDecodeService::ImageDecodeService()
+    : requests_cv_(&lock_),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      new_results_notifier_(task_runner_.get(),
+                            base::Bind(&ImageDecodeService::ProcessResultQueue,
+                                       base::Unretained(this))) {
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
   for (int i = 0; i < kNumThreads; ++i) {
@@ -64,7 +70,7 @@ void ImageDecodeService::UnregisterImage(uint32_t image_id) {
   image_map_.erase(image_id);
 }
 
-void ImageDecodeService::ProcessQueue() {
+void ImageDecodeService::ProcessRequestQueue() {
   base::AutoLock hold(lock_);
   for (;;) {
     if (image_decode_requests_.empty()) {
@@ -74,12 +80,20 @@ void ImageDecodeService::ProcessQueue() {
 
     auto request = image_decode_requests_.front();
     image_decode_requests_.pop_front();
-    {
+    bool result = [this, &request]() {
       base::AutoUnlock release(lock_);
-      bool result = DoDecodeImage(request.first, request.second);
-      OnImageDecoded(request.first, result);
-    }
+      return DoDecodeImage(request.first, request.second);
+    }();
+    image_decode_results_.emplace_back(request.first, result);
+    new_results_notifier_.Schedule();
   }
+}
+
+void ImageDecodeService::ProcessResultQueue() {
+  base::AutoLock hold(lock_);
+  for (auto result : image_decode_results_)
+    OnImageDecoded(result.first, result.second);
+  image_decode_results_.clear();
 }
 
 void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {
