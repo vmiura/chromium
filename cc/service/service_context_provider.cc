@@ -65,7 +65,7 @@ class DeferredGpuCommandService
       override {
     if (!shader_translator_cache_) {
       shader_translator_cache_ = make_scoped_refptr(
-          new gpu::gles2::ShaderTranslatorCache(gpu_preferences_));
+          new gpu::gles2::ShaderTranslatorCache(gpu_preferences()));
     }
     return shader_translator_cache_;
   }
@@ -115,14 +115,12 @@ class DeferredGpuCommandService
   friend class base::RefCountedThreadSafe<DeferredGpuCommandService>;
 
   DeferredGpuCommandService()
-      : Service(gpu_preferences_), sync_point_manager_(true) {}
+      : sync_point_manager_(true) {}
 
   ~DeferredGpuCommandService() override {
     base::AutoLock lock(tasks_lock_);
     DCHECK(tasks_.empty());
   }
-
-  gpu::GpuPreferences gpu_preferences_;
 
   base::Lock tasks_lock_;
   std::queue<base::Closure> tasks_;
