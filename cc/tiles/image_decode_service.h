@@ -10,6 +10,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/threading/simple_thread.h"
+#include "cc/base/unique_notifier.h"
 
 #include <unordered_map>
 #include <vector>
@@ -33,7 +34,9 @@ class CC_EXPORT ImageDecodeService {
   void DecodeImage(uint32_t image_id, void* buffer);
 
   // Called by the thread.
-  void ProcessQueue();
+  void ProcessRequestQueue();
+  // Call by origin thread.
+  void ProcessResultQueue();
 
  private:
   bool DoDecodeImage(uint32_t image_id, void* buffer);
@@ -44,8 +47,12 @@ class CC_EXPORT ImageDecodeService {
 
   base::ConditionVariable requests_cv_;
   std::deque<std::pair<uint32_t, void*>> image_decode_requests_;
+  std::deque<std::pair<uint32_t, bool>> image_decode_results_;
 
   std::vector<std::unique_ptr<base::SimpleThread>> threads_;
+  // TODO(hackathon): Hold on to this for lifetime issues?
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  UniqueNotifier new_results_notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageDecodeService);
 };
