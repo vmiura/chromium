@@ -24,8 +24,20 @@ namespace cc {
 
 scoped_refptr<RasterSource> RasterSource::CreateFromRecordingSource(
     const RecordingSource* other,
-    bool can_use_lcd_text) {
-  return make_scoped_refptr(new RasterSource(other, can_use_lcd_text));
+    bool can_use_lcd_text,
+    std::vector<DisplayItemListData> data,
+    uint32_t id) {
+  scoped_refptr<DisplayItemList> output_list;
+  for (auto data_item : data) {
+    if (data_item.unique_id != id)
+      continue;
+    output_list =
+      DisplayItemList::CreateFromData(data_item.data);
+    break;
+  }
+  scoped_refptr<RasterSource> raster_source =
+    make_scoped_refptr(new RasterSource(other, can_use_lcd_text, output_list));
+  return raster_source;
 }
 
 static scoped_refptr<DisplayItemList> WriteAndReadDisplayList(scoped_refptr<DisplayItemList> input_list) {
@@ -40,6 +52,24 @@ static scoped_refptr<DisplayItemList> WriteAndReadDisplayList(scoped_refptr<Disp
 
 RasterSource::RasterSource(const RecordingSource* other, bool can_use_lcd_text)
     : display_list_(WriteAndReadDisplayList(other->display_list_)),
+      painter_reported_memory_usage_(other->painter_reported_memory_usage_),
+      background_color_(other->background_color_),
+      requires_clear_(other->requires_clear_),
+      can_use_lcd_text_(can_use_lcd_text),
+      is_solid_color_(other->is_solid_color_),
+      solid_color_(other->solid_color_),
+      recorded_viewport_(other->recorded_viewport_),
+      size_(other->size_),
+      clear_canvas_with_debug_color_(other->clear_canvas_with_debug_color_),
+      slow_down_raster_scale_factor_for_debug_(
+          other->slow_down_raster_scale_factor_for_debug_),
+      should_attempt_to_use_distance_field_text_(false),
+      image_decode_controller_(nullptr) {
+}
+
+RasterSource::RasterSource(const RecordingSource* other, bool can_use_lcd_text,
+    scoped_refptr<DisplayItemList> list)
+    : display_list_(list),
       painter_reported_memory_usage_(other->painter_reported_memory_usage_),
       background_color_(other->background_color_),
       requires_clear_(other->requires_clear_),

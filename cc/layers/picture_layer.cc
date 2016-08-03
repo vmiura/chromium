@@ -44,6 +44,16 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id(), is_mask_);
 }
 
+void PictureLayer::SerializeAndPutDisplayItemList(
+    std::vector<DisplayItemListData>& data_vector) {
+  const DisplayItemList* display_list = recording_source_->GetDisplayItemList();
+  if (display_list) {
+    DisplayItemListData data(display_list->unique_id(),
+        display_list->Serialize());
+    data_vector.push_back(data);
+  }
+}
+
 void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   Layer::PushPropertiesTo(base_layer);
   TRACE_EVENT0("cc", "PictureLayer::PushPropertiesTo");
@@ -57,7 +67,8 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   // Preserve lcd text settings from the current raster source.
   bool can_use_lcd_text = layer_impl->RasterSourceUsesLCDText();
   scoped_refptr<RasterSource> raster_source =
-      recording_source_->CreateRasterSource(can_use_lcd_text);
+      recording_source_->CreateRasterSource(can_use_lcd_text,
+          base_layer->layer_tree_impl()->display_item_lists_data);
   layer_impl->set_gpu_raster_max_texture_size(
       layer_tree_host()->device_viewport_size());
   layer_impl->UpdateRasterSource(raster_source, &last_updated_invalidation_,
@@ -144,7 +155,8 @@ sk_sp<SkPicture> PictureLayer::GetPicture() const {
       update_source_frame_number_, RecordingSource::RECORD_NORMALLY);
 
   scoped_refptr<RasterSource> raster_source =
-      recording_source->CreateRasterSource(false);
+      recording_source->CreateRasterSource(false,
+          std::vector<DisplayItemListData>());
 
   return raster_source->GetFlattenedPicture();
 }

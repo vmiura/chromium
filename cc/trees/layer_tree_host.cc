@@ -257,6 +257,7 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       debug_state_.RecordRenderingStats());
+  display_item_list_cache_.reset(new DisplayItemListCache());
 }
 
 void LayerTreeHost::InitializeThreaded(
@@ -454,6 +455,10 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
 
   if (needs_full_tree_sync_)
     TreeSynchronizer::SynchronizeTrees(root_layer(), sync_tree);
+  for (auto* layer : GetLayerTree()->LayersThatShouldPushProperties()) {
+    layer->SerializeAndPutDisplayItemList(
+        sync_tree->display_item_lists_data);
+  }
 
   sync_tree->set_needs_full_tree_sync(needs_full_tree_sync_);
   needs_full_tree_sync_ = false;
@@ -1524,6 +1529,7 @@ void LayerTreeHost::ToProtobufForCommit(
   proto::PictureDataVectorToSkPicturesProto(pictures,
                                             proto->mutable_pictures());
 
+  DCHECK(display_item_list_cache_);
   proto->set_hud_layer_id(hud_layer_ ? hud_layer_->id() : Layer::INVALID_ID);
   debug_state_.ToProtobuf(proto->mutable_debug_state());
   SizeToProto(device_viewport_size_, proto->mutable_device_viewport_size());

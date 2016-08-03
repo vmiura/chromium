@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "cc/base/cc_export.h"
 #include "cc/base/invalidation_region.h"
+#include "cc/playback/display_item_list_data.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -65,9 +66,9 @@ class CC_EXPORT RecordingSource {
 
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect);
 
-  // These functions are virtual for testing.
   virtual scoped_refptr<RasterSource> CreateRasterSource(
-      bool can_use_lcd_text) const;
+      bool can_use_lcd_text, std::vector<DisplayItemListData> data) const;
+  // These functions are virtual for testing.
   virtual bool IsSuitableForGpuRasterization() const;
 
   gfx::Rect recorded_viewport() const { return recorded_viewport_; }

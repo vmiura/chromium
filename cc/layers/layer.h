@@ -27,6 +27,7 @@
 #include "cc/layers/layer_position_constraint.h"
 #include "cc/layers/paint_properties.h"
 #include "cc/output/filter_operations.h"
+#include "cc/playback/display_item_list_data.h"
 #include "cc/trees/layer_tree.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree.h"
@@ -344,6 +345,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   virtual void PushPropertiesTo(LayerImpl* layer);
 
+  virtual void SerializeAndPutDisplayItemList(std::vector<DisplayItemListData>&) {}
+  virtual void CollectDisplayItemListIds(std::vector<int>&) {}
   // Sets the type proto::LayerType that should be used for serialization
   // of the current layer by calling LayerNode::set_type(proto::LayerType).
   // TODO(nyquist): Start using a forward declared enum class when

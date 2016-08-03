@@ -448,6 +448,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void BuildLayerListForTesting();
 
+  std::vector<DisplayItemListData> display_item_lists_data;
+
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,

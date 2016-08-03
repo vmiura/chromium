@@ -28,6 +28,7 @@ class CC_EXPORT PictureLayer : public Layer {
   // Layer interface.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
+  void SerializeAndPutDisplayItemList(std::vector<DisplayItemListData>& data) override;
   void PushPropertiesTo(LayerImpl* layer) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
   bool Update() override;

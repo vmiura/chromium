@@ -216,9 +216,11 @@ const DisplayItemList* RecordingSource::GetDisplayItemList() {
 }
 
 scoped_refptr<RasterSource> RecordingSource::CreateRasterSource(
-    bool can_use_lcd_text) const {
+    bool can_use_lcd_text, std::vector<DisplayItemListData> data) const {
+  uint32_t id = display_list_ ? display_list_->unique_id() : 0;
   return scoped_refptr<RasterSource>(
-      RasterSource::CreateFromRecordingSource(this, can_use_lcd_text));
+      RasterSource::CreateFromRecordingSource(this, can_use_lcd_text,
+        data, id));
 }
 
 void RecordingSource::DetermineIfSolidColor() {

@@ -41,7 +41,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   static scoped_refptr<RasterSource> CreateFromRecordingSource(
       const RecordingSource* other,
-      bool can_use_lcd_text);
+      bool can_use_lcd_text,
+      std::vector<DisplayItemListData> data,
+      uint32_t id);
 
   // TODO(trchen): Deprecated.
   void PlaybackToCanvas(SkCanvas* canvas,
@@ -138,6 +140,8 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   RasterSource(const RecordingSource* other, bool can_use_lcd_text);
   RasterSource(const RasterSource* other, bool can_use_lcd_text);
+  RasterSource(const RecordingSource* other, bool can_use_lcd_text,
+      scoped_refptr<DisplayItemList> list);
   virtual ~RasterSource();
 
   // These members are const as this raster source may be in use on another

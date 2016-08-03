@@ -36,6 +36,7 @@
 #include "cc/output/output_surface.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/output/swap_promise.h"
+#include "cc/playback/display_item_list_cache.h"
 #include "cc/resources/resource_format.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/surfaces/surface_sequence.h"
@@ -585,6 +586,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   ImageSerializationProcessor* image_serialization_processor_;
   std::unique_ptr<EnginePictureCache> engine_picture_cache_;
   std::unique_ptr<ClientPictureCache> client_picture_cache_;
+  std::unique_ptr<DisplayItemListCache> display_item_list_cache_;
 
   std::vector<std::unique_ptr<SwapPromise>> swap_promise_list_;
   std::set<SwapPromiseMonitor*> swap_promise_monitor_;
