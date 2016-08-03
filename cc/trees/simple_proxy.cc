@@ -21,6 +21,7 @@
 #include "cc/trees/remote_channel_main.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/threaded_channel.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 namespace cc {
 
@@ -340,6 +341,7 @@ void SimpleProxy::OnBeginMainFrame(
 
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
     layer_tree_host_->GetContentFrame(frame.get());
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
     compositor_->Commit(hold_commit_for_activation, std::move(frame));
   }
 

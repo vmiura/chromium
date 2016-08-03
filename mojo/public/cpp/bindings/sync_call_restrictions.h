@@ -14,6 +14,10 @@
 #define ENABLE_SYNC_CALL_RESTRICTIONS 0
 #endif
 
+namespace cc {
+class SimpleProxy;
+}
+
 namespace ui {
 class GpuService;
 }
@@ -58,6 +62,7 @@ class SyncCallRestrictions {
   // implementation which weren't caught by sync call restrictions. Our blocking
   // calls to mus, however, are.
   friend class views::ClipboardMus;
+  friend class cc::SimpleProxy;  // TODO(hackathon): lol no problem here.
   // END USAGE THAT NEEDS TO BE FIXED.
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS
