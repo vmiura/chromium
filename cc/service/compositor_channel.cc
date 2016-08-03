@@ -46,7 +46,6 @@ void CompositorChannel::CreateCompositor(
     const gpu::SurfaceHandle& handle,
     cc::mojom::CompositorRequest compositor,
     cc::mojom::CompositorClientPtr compositor_client) {
-  LOG(ERROR) << "CreateCompositor";
   compositor_task_runner_->PostTask(
       FROM_HERE,
       base::Bind(&CreateServiceOnThread, handle, base::Passed(&compositor),
