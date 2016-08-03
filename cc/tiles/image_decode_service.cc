@@ -61,11 +61,15 @@ ImageDecodeService::ImageDecodeService()
 ImageDecodeService::~ImageDecodeService() = default;
 
 void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
+  TRACE_EVENT1("cc", "ImageDecodeService::RegisterImage", "image_id",
+               image->uniqueID());
   base::AutoLock hold(lock_);
   image_map_[image->uniqueID()] = std::move(image);
 }
 
 void ImageDecodeService::UnregisterImage(uint32_t image_id) {
+  TRACE_EVENT1("cc", "ImageDecodeService::UnregisterImage", "image_id",
+               image_id);
   base::AutoLock hold(lock_);
   image_map_.erase(image_id);
 }
@@ -90,6 +94,7 @@ void ImageDecodeService::ProcessRequestQueue() {
 }
 
 void ImageDecodeService::ProcessResultQueue() {
+  TRACE_EVENT0("cc", "ImageDecodeService::ProcessResultQueue");
   base::AutoLock hold(lock_);
   for (auto result : image_decode_results_)
     OnImageDecoded(result.first, result.second);
@@ -97,12 +102,14 @@ void ImageDecodeService::ProcessResultQueue() {
 }
 
 void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {
+  TRACE_EVENT1("cc", "ImageDecodeSerivce::DecodeImage", "image_id", image_id);
   base::AutoLock hold(lock_);
   image_decode_requests_.emplace_back(image_id, buffer);
   requests_cv_.Broadcast();
 }
 
 bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
+  TRACE_EVENT1("cc", "ImageDecodeSerivce::DoDecodeImage", "image_id", image_id);
   sk_sp<SkImage> image = [this, image_id]() {
     base::AutoLock hold(lock_);
     DCHECK(image_map_.find(image_id) != image_map_.end());
@@ -120,6 +127,8 @@ bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
 }
 
 void ImageDecodeService::OnImageDecoded(uint32_t image_id, bool succeeded) {
+  TRACE_EVENT1("cc", "ImageDecodeService::OnImageDecoded", "image_id",
+               image_id);
   // TODO(hackathon): Send IPC. Post to the origin thread?
   ImageDecodeProxy::Current()->OnImageDecodeCompleted(image_id, succeeded);
 }
