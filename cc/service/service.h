@@ -100,7 +100,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   cc::mojom::CompositorClientPtr compositor_client_;
   mojo::StrongBinding<cc::mojom::Compositor> binding_;
   mojom::ContentFramePtr frame_for_commit_;
-  bool wait_for_activation_;
+  bool wait_for_activation_ = false;
   CommitCallback commit_callback_;
   CommitCallback activation_callback_;
 

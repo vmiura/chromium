@@ -205,9 +205,9 @@ Service::Service(const gpu::SurfaceHandle& handle,
                      false /* supports_impl_scrolling */),
                  id),
       compositor_client_(std::move(client)),
-      binding_(this, std::move(request)),
-      wait_for_activation_(false) {
-  LOG(ERROR) << "Service compositor " << this;
+      binding_(this, std::move(request)) {
+  const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
+  LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   scheduler_.SetVisible(true);
   compositor_client_->OnCompositorCreated();
@@ -227,7 +227,6 @@ Service::~Service() {
 
 void Service::CreateOutputSurface() {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
-  LOG(ERROR) << "Service CreateOutputSurface for root: " << root_compositor;
   if (root_compositor) {
     auto begin_frame_source = base::MakeUnique<DelayBasedBeginFrameSource>(
         base::MakeUnique<DelayBasedTimeSource>(task_runner_.get()));
@@ -331,10 +330,11 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
 
 void Service::InsertHackyGreenLayer() {
   // TODO(hackathon): Some made up stuff, we should get these from a commit.
+  static int layer_id = 1;
   host_impl_.SetViewportSize(gfx::Size(100, 100));
   auto* pending_tree = host_impl_.pending_tree();
   auto green_layer =
-      SolidColorLayerImpl::Create(pending_tree, 1);
+      SolidColorLayerImpl::Create(pending_tree, layer_id++);
   green_layer->SetBackgroundColor(SK_ColorGREEN);
   green_layer->SetPosition(gfx::PointF(10, 10));
   green_layer->SetBounds(gfx::Size(80, 80));

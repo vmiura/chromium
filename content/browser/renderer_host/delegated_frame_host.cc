@@ -87,8 +87,9 @@ void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
   delegated_frame_evictor_->SetVisible(true);
 
   if (surface_id_.is_null() && !released_front_lock_.get()) {
-    if (compositor_)
-      released_front_lock_ = compositor_->GetCompositorLock();
+    // TODO(hackathon): We want to prevent drawing, but it never gets released.
+    //if (compositor_)
+    //  released_front_lock_ = compositor_->GetCompositorLock();
   }
 
   if (compositor_) {
