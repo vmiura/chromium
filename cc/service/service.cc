@@ -235,6 +235,8 @@ void Service::CreateOutputSurface() {
         new ServiceContextProvider(widget_, gpu_memory_buffer_manager_,
                                    image_factory_, gpu::SharedMemoryLimits(),
                                    nullptr /* shared_context_provider */));
+    if (!display_context_provider->BindToCurrentThread())
+      return;
 
     auto output_surface = base::MakeUnique<DisplayOutputSurface>(
         std::move(display_context_provider));
@@ -259,10 +261,14 @@ void Service::CreateOutputSurface() {
                                  gpu_memory_buffer_manager_, image_factory_,
                                  gpu::SharedMemoryLimits::ForMailboxContext(),
                                  nullptr));
+  if (!compositor_context->BindToCurrentThread())
+    return;
   scoped_refptr<ServiceContextProvider> worker_context(
       new ServiceContextProvider(
           gfx::kNullAcceleratedWidget, gpu_memory_buffer_manager_,
           image_factory_, gpu::SharedMemoryLimits(), compositor_context.get()));
+  if (!worker_context->BindToCurrentThread())
+    return;
 
   // Keep the one in LTHI alive until InitializeRenderer() is complete.
   auto local_output_surface = std::move(output_surface_);

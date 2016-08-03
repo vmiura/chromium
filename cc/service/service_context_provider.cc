@@ -158,7 +158,7 @@ ServiceContextProvider::ServiceContextProvider(
 ServiceContextProvider::~ServiceContextProvider() = default;
 
 bool ServiceContextProvider::BindToCurrentThread() {
-  return true;
+  return !!context_;
 }
 
 gpu::gles2::GLES2Interface* ServiceContextProvider::ContextGL() {
