@@ -331,7 +331,6 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
 void Service::InsertHackyGreenLayer() {
   // TODO(hackathon): Some made up stuff, we should get these from a commit.
   static int layer_id = 1;
-  host_impl_.SetViewportSize(gfx::Size(100, 100));
   auto* pending_tree = host_impl_.pending_tree();
   auto green_layer =
       SolidColorLayerImpl::Create(pending_tree, layer_id++);
@@ -388,9 +387,8 @@ void Service::FinishCommit() {
   // TODO(hackathon): layers
   if (frame->needs_full_tree_sync)
     TreeSynchronizer::SynchronizeTrees(root_layer(), sync_tree);
-#endif
-
   sync_tree->set_needs_full_tree_sync(frame->needs_full_tree_sync);
+#endif
 
 #if 0
   // TODO(hackathon): HUD
@@ -547,7 +545,7 @@ void Service::ScheduledActionCommit() {
   DCHECK(commit_callback_);
   host_impl_.BeginCommit();
 
-  //FinishCommit();
+  FinishCommit();
   InsertHackyGreenLayer();
   frame_for_commit_ = nullptr;
 
