@@ -423,6 +423,13 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   gfx::ScrollOffset ClampScrollOffsetToLimits(gfx::ScrollOffset offset,
                                               ScrollNode* scroll_node) const;
 
+  int currently_scrolling_node_id() const {
+    return currently_scrolling_node_id_;
+  }
+  const ScrollOffsetMap& layer_id_to_scroll_offset_map() const {
+    return layer_id_to_scroll_offset_map_;
+  }
+
  private:
   int currently_scrolling_node_id_;
   ScrollOffsetMap layer_id_to_scroll_offset_map_;

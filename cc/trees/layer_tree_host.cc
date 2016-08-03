@@ -49,7 +49,9 @@
 #include "cc/proto/layer_tree_host.pb.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/scheduler/begin_frame_source.h"
+#include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
+#include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_common.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -57,6 +59,7 @@
 #include "cc/trees/property_tree_builder.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/remote_channel_impl.h"
+#include "cc/trees/scroll_node.h"
 #include "cc/trees/simple_proxy.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
@@ -1807,8 +1810,76 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
       data->target_id = i.target_id;
       dest->cached_data.push_back(std::move(data));
     }
-    dest->nodes.resize(source.size() * sizeof(TransformNode));
+    size_t vec_bytes = source.nodes().size() * sizeof(TransformNode);
+    dest->nodes.resize(vec_bytes);
+    memcpy(dest->nodes.data(), source.nodes().data(), vec_bytes);
     frame->property_trees->transform_tree = std::move(dest);
+  }
+  {
+    auto& source = property_trees_.effect_tree;
+    auto dest = cc::mojom::EffectTree::New();
+    dest->mask_replica_layer_ids = source.mask_replica_layer_ids();
+    size_t vec_bytes = source.nodes().size() * sizeof(EffectNode);
+    dest->nodes.resize(vec_bytes);
+    memcpy(dest->nodes.data(), source.nodes().data(), vec_bytes);
+    frame->property_trees->effect_tree = std::move(dest);
+  }
+  {
+    auto& source = property_trees_.scroll_tree;
+    auto dest = cc::mojom::ScrollTree::New();
+    dest->currently_scrolling_node_id = source.currently_scrolling_node_id();
+    for (const auto& pair : source.layer_id_to_scroll_offset_map()) {
+      auto synced = cc::mojom::SyncedScrollOffset::New();
+      {
+        auto dest = gfx::mojom::ScrollOffset::New();
+        auto& source = pair.second->pending_base_.get();
+        dest->x = source.x();
+        dest->y = source.y();
+        synced->pending_base = std::move(dest);
+      }
+      {
+        auto dest = gfx::mojom::ScrollOffset::New();
+        auto& source = pair.second->active_base_.get();
+        dest->x = source.x();
+        dest->y = source.y();
+        synced->active_base = std::move(dest);
+      }
+      {
+        auto dest = gfx::mojom::ScrollOffset::New();
+        auto& source = pair.second->active_delta_.get();
+        dest->x = source.x();
+        dest->y = source.y();
+        synced->active_delta = std::move(dest);
+      }
+      {
+        auto dest = gfx::mojom::ScrollOffset::New();
+        auto& source = pair.second->reflected_delta_in_main_tree_.get();
+        dest->x = source.x();
+        dest->y = source.y();
+        synced->reflected_delta_in_main_tree = std::move(dest);
+      }
+      {
+        auto dest = gfx::mojom::ScrollOffset::New();
+        auto& source = pair.second->reflected_delta_in_pending_tree_.get();
+        dest->x = source.x();
+        dest->y = source.y();
+        synced->reflected_delta_in_pending_tree = std::move(dest);
+      }
+      synced->clobber_active_value = pair.second->clobber_active_value_;
+      dest->layer_id_to_scroll_offset_map[pair.first] = std::move(synced);
+    }
+    size_t vec_bytes = source.nodes().size() * sizeof(ScrollNode);
+    dest->nodes.resize(vec_bytes);
+    memcpy(dest->nodes.data(), source.nodes().data(), vec_bytes);
+    frame->property_trees->scroll_tree = std::move(dest);
+  }
+  {
+    auto& source = property_trees_.clip_tree;
+    auto dest = cc::mojom::ClipTree::New();
+    size_t vec_bytes = source.nodes().size() * sizeof(ClipNode);
+    dest->nodes.resize(vec_bytes);
+    memcpy(dest->nodes.data(), source.nodes().data(), vec_bytes);
+    frame->property_trees->clip_tree = std::move(dest);
   }
 
   frame->page_scale_factor = page_scale_factor_;

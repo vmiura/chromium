@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 
 namespace cc {
+class LayerTreeHost;  // HACKATHON: For serialization.
 
 // This class is the basic primitive used for impl-thread scrolling.  Its job is
 // to sanely resolve the case where both the main and impl thread are
@@ -115,6 +116,8 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
   bool clobber_active_value() const { return clobber_active_value_; }
 
  private:
+  friend class LayerTreeHost;  // HACKATHON: For serialization.
+
   // Value last committed to the pending tree.
   T pending_base_;
   // Value last committed to the active tree on the last activation.
