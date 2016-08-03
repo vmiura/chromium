@@ -75,6 +75,10 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   // mojom::CompositorClient implementation
   void OnCompositorCreated() override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
+  void OnBeginMainFrameNotExpectedSoon() override;
+  void OnDidCompletePageScaleAnimation() override;
+  void OnDidCommitAndDrawFrame() override;
+  void OnDidCompleteSwapBuffers() override;
 
   bool IsMainThread() const;
 

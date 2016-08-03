@@ -58,7 +58,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   }
   void DidSwapBuffersCompleteOnImplThread() override {
     owner_->scheduler()->DidSwapBuffersComplete();
-    // TODO(hackathon): back to main
+    owner_->compositor_client()->OnDidCompleteSwapBuffers();
   }
   void OnCanDrawStateChanged(bool can_draw) override {
     owner_->scheduler()->SetCanDraw(can_draw);
@@ -112,7 +112,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->scheduler()->DidPrepareTiles();
   }
   void DidCompletePageScaleAnimationOnImplThread() override {
-    // TODO(hackathon): back to main
+    owner_->compositor_client()->OnDidCompletePageScaleAnimation();
   }
   void OnDrawForOutputSurface(bool resourceless_software_draw) override {
     NOTREACHED(); // webivew only
@@ -163,7 +163,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->DidFinishImplFrame();
   }
   void SendBeginMainFrameNotExpectedSoon() override {
-    // TODO(hackathon): back to main.
+    owner_->compositor_client()->OnBeginMainFrameNotExpectedSoon();
   }
 
  private:
@@ -339,8 +339,7 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
       scheduler_.DidSwapBuffers();
   }
 
-  // TODO(hackathon): tell main side?
-  // channel_impl_->DidCommitAndDrawFrame();
+  compositor_client_->OnDidCommitAndDrawFrame();
 
   DCHECK_NE(INVALID_RESULT, result);
   return result;

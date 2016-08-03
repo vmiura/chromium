@@ -22,6 +22,10 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   // cc::mojom::CompositorClient implementation.
   void OnCompositorCreated() override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& args) override;
+  void OnBeginMainFrameNotExpectedSoon() override;
+  void OnDidCompletePageScaleAnimation() override;
+  void OnDidCommitAndDrawFrame() override;
+  void OnDidCompleteSwapBuffers() override;
 
   void SetNeedsBeginMainFrame() { compositor_->SetNeedsBeginMainFrame(); }
   void Commit(bool hold_commit_for_activation, mojom::ContentFramePtr frame) { compositor_->Commit(hold_commit_for_activation, std::move(frame)); }

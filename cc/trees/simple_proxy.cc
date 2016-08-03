@@ -58,57 +58,10 @@ SimpleProxy::~SimpleProxy() {
 }
 
 #if 0
-void SimpleProxy::DidCompleteSwapBuffers() {
-  DCHECK(IsMainThread());
-  layer_tree_host_->DidCompleteSwapBuffers();
-}
-
-void SimpleProxy::BeginMainFrameNotExpectedSoon() {
-  TRACE_EVENT0("cc", "SimpleProxy::BeginMainFrameNotExpectedSoon");
-  DCHECK(IsMainThread());
-  layer_tree_host_->BeginMainFrameNotExpectedSoon();
-}
-
-void SimpleProxy::DidCommitAndDrawFrame() {
-  DCHECK(IsMainThread());
-  layer_tree_host_->DidCommitAndDrawFrame();
-}
-
 void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
   TRACE_EVENT0("cc", "SimpleProxy::SetAnimationEvents");
   DCHECK(IsMainThread());
   layer_tree_host_->SetAnimationEvents(std::move(events));
-}
-
-void SimpleProxy::DidLoseOutputSurface() {
-  TRACE_EVENT0("cc", "SimpleProxy::DidLoseOutputSurface");
-  DCHECK(IsMainThread());
-  layer_tree_host_->DidLoseOutputSurface();
-}
-
-void SimpleProxy::RequestNewOutputSurface() {
-  TRACE_EVENT0("cc", "SimpleProxy::RequestNewOutputSurface");
-  DCHECK(IsMainThread());
-  layer_tree_host_->RequestNewOutputSurface();
-}
-
-void SimpleProxy::DidInitializeOutputSurface(
-    bool success,
-    const RendererCapabilities& capabilities) {
-  TRACE_EVENT0("cc", "SimpleProxy::DidInitializeOutputSurface");
-  DCHECK(IsMainThread());
-
-  if (!success) {
-    layer_tree_host_->DidFailToInitializeOutputSurface();
-    return;
-  }
-  renderer_capabilities_ = capabilities;
-  layer_tree_host_->DidInitializeOutputSurface();
-}
-
-void SimpleProxy::DidCompletePageScaleAnimation() {
-  DCHECK(IsMainThread());
-  layer_tree_host_->DidCompletePageScaleAnimation();
 }
 #endif
 
@@ -379,6 +332,29 @@ void SimpleProxy::OnBeginMainFrame(
   layer_tree_host_->CommitComplete();
   layer_tree_host_->DidBeginMainFrame();
 }
+
+void SimpleProxy::OnBeginMainFrameNotExpectedSoon() {
+  TRACE_EVENT0("cc", "SimpleProxy::BeginMainFrameNotExpectedSoon");
+  DCHECK(IsMainThread());
+  layer_tree_host_->BeginMainFrameNotExpectedSoon();
+}
+
+void SimpleProxy::OnDidCompletePageScaleAnimation() {
+  DCHECK(IsMainThread());
+  layer_tree_host_->DidCompletePageScaleAnimation();
+}
+
+void SimpleProxy::OnDidCommitAndDrawFrame() {
+  DCHECK(IsMainThread());
+  layer_tree_host_->DidCommitAndDrawFrame();
+}
+
+void SimpleProxy::OnDidCompleteSwapBuffers() {
+  DCHECK(IsMainThread());
+  layer_tree_host_->DidCompleteSwapBuffers();
+}
+
+
 
 }  // namespace cc
 

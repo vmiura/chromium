@@ -25,4 +25,24 @@ void CompositorProxy::OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrame
     delegate_->OnBeginMainFrame(begin_frame_id, args);
 }
 
+void CompositorProxy::OnBeginMainFrameNotExpectedSoon() {
+  if (delegate_)
+    delegate_->OnBeginMainFrameNotExpectedSoon();
+}
+
+void CompositorProxy::OnDidCompletePageScaleAnimation() {
+  if (delegate_)
+    delegate_->OnDidCompletePageScaleAnimation();
+}
+
+void CompositorProxy::OnDidCommitAndDrawFrame() {
+  if (delegate_)
+    delegate_->OnDidCommitAndDrawFrame();
+}
+
+void CompositorProxy::OnDidCompleteSwapBuffers() {
+  if (delegate_)
+    delegate_->OnDidCompleteSwapBuffers();
+}
+
 }  // namespace cc

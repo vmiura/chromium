@@ -19,4 +19,8 @@ interface Compositor {
 interface CompositorClient {
   OnCompositorCreated();
   OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
+  OnBeginMainFrameNotExpectedSoon();
+  OnDidCompletePageScaleAnimation();
+  OnDidCommitAndDrawFrame();
+  OnDidCompleteSwapBuffers();
 };
