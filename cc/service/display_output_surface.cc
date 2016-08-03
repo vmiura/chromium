@@ -22,7 +22,7 @@ DisplayOutputSurface::DisplayOutputSurface(
     : OutputSurface(std::move(context_provider), nullptr, nullptr) {
   capabilities_.adjust_deadline_for_parent = false;
   // TODO(hackathon): Get real value (from context provider?)
-  capabilities_.flipped_output_surface = true;
+  capabilities_.flipped_output_surface = false;
 }
 
 DisplayOutputSurface::~DisplayOutputSurface() = default;
