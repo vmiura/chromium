@@ -35,8 +35,7 @@ std::unique_ptr<SimpleProxy> SimpleProxy::Create(
 
 SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
                          TaskRunnerProvider* task_runner_provider)
-    : needs_begin_frame_when_ready_(false),
-      layer_tree_host_(layer_tree_host),
+    : layer_tree_host_(layer_tree_host),
       task_runner_provider_(task_runner_provider),
       layer_tree_host_id_(layer_tree_host->id()),
       commit_waits_for_activation_(false),
@@ -71,6 +70,10 @@ void SimpleProxy::InitializeCompositor(
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
     SetNeedsBeginFrame();
+  }
+  if (needs_redraw_when_ready_) {
+    needs_redraw_when_ready_ = false;
+    SetNeedsRedraw(needs_redraw_rect_when_ready_);
   }
 }
 
@@ -128,7 +131,12 @@ void SimpleProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsRedraw");
   DCHECK(IsMainThread());
   // TODO(piman): hackathon ??
-  NOTIMPLEMENTED();
+  if (!compositor_) {
+    needs_redraw_when_ready_ = true;
+    needs_redraw_rect_when_ready_ = damage_rect;
+    return;
+  }
+  compositor_->SetNeedsRedraw(damage_rect);
 }
 
 void SimpleProxy::SetNextCommitWaitsForActivation() {
@@ -233,8 +241,7 @@ void SimpleProxy::SetNeedsBeginFrame() {
   if (begin_frame_requested_)
     return;
   begin_frame_requested_ = true;
-  if (compositor_)
-    compositor_->SetNeedsBeginMainFrame();
+  compositor_->SetNeedsBeginMainFrame();
 }
 
 bool SimpleProxy::IsMainThread() const {

@@ -345,6 +345,11 @@ void Service::SetNeedsBeginMainFrame() {
   client_->SetNeedsCommitOnImplThread();
 }
 
+void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
+  host_impl_.SetViewportDamage(damage_rect);
+  scheduler_.SetNeedsRedraw();
+}
+
 void Service::Commit(bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {

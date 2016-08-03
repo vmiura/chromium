@@ -7,6 +7,7 @@ module cc.mojom;
 import "cc/ipc/begin_frame_args.mojom";
 import "cc/ipc/content_frame.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
 
 interface CompositorFactory {
   CreateCompositor(gpu.mojom.SurfaceHandle widget,
@@ -16,6 +17,7 @@ interface CompositorFactory {
 
 interface Compositor {
   SetNeedsBeginMainFrame();
+  SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   [Sync] Commit(bool wait_for_activation, ContentFrame frame) => ();
 };
 

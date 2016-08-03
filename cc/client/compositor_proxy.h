@@ -28,6 +28,7 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   void OnDidCompleteSwapBuffers() override;
 
   void SetNeedsBeginMainFrame() { compositor_->SetNeedsBeginMainFrame(); }
+  void SetNeedsRedraw(const gfx::Rect& damage_rect) { compositor_->SetNeedsRedraw(damage_rect); }
   void Commit(bool hold_commit_for_activation, mojom::ContentFramePtr frame) { compositor_->Commit(hold_commit_for_activation, std::move(frame)); }
 
  private:
