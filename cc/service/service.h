@@ -59,6 +59,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void Commit(bool wait_for_activation, mojom::ContentFramePtr frame, const CommitCallback& callback) override;
 
  private:
+  void FinishCommit();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   class ClientImpl;

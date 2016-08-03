@@ -1,5 +1,25 @@
 module cc.mojom;
 
+import "ui/gfx/geometry/mojo/geometry.mojom";
+
 struct ContentFrame {
   uint32 source_frame;
+  bool next_commit_forces_redraw;
+  bool needs_full_tree_sync;
+  bool has_transparent_background;
+  bool have_scroll_event_handlers;
+  uint32 background_color;  // SkColor
+  int32 overscroll_elasticity_layer;
+  int32 page_scale_layer;
+  int32 inner_viewport_scroll_layer;
+  int32 outer_viewport_scroll_layer;
+  float page_scale_factor;
+  float min_page_scale_factor;
+  float max_page_scale_factor;
+  gfx.mojom.Vector2dF elastic_overscroll;
+  bool has_gpu_rasterization_trigger;
+  bool content_is_suitable_for_gpu_rasterization;
+  gfx.mojom.Size device_viewport_size;
+  float device_scale_factor;
+  float painted_device_scale_factor;
 };

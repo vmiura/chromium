@@ -1704,7 +1704,158 @@ AnimationHost* LayerTreeHost::animation_host() const {
 }
 
 void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
+  bool is_new_trace;
+  TRACE_EVENT_IS_NEW_TRACE(&is_new_trace);
+  if (is_new_trace &&
+      frame_viewer_instrumentation::IsTracingLayerTreeSnapshots() &&
+      root_layer()) {
+    LayerTreeHostCommon::CallFunctionForEveryLayer(
+        this, [](Layer* layer) { layer->DidBeginTracing(); });
+  }
+
+  frame->next_commit_forces_redraw = next_commit_forces_redraw_;
+  next_commit_forces_redraw_ = false;
   frame->source_frame = source_frame_number_;
+
+#if 0
+  // TODO(hackathon): layers
+  if (needs_full_tree_sync_)
+    TreeSynchronizer::SynchronizeTrees(root_layer(), sync_tree);
+#endif
+  frame->needs_full_tree_sync = needs_full_tree_sync_;
+  needs_full_tree_sync_ = false;
+
+#if 0
+  // TODO(hackathon): HUD
+  if (hud_layer_.get()) {
+    LayerImpl* hud_impl = sync_tree->LayerById(hud_layer_->id());
+    sync_tree->set_hud_layer(static_cast<HeadsUpDisplayLayerImpl*>(hud_impl));
+  } else {
+    sync_tree->set_hud_layer(NULL);
+  }
+#endif
+
+  frame->background_color = background_color_;
+  frame->has_transparent_background = has_transparent_background_;
+  frame->have_scroll_event_handlers = have_scroll_event_handlers_;
+#if 0
+  // TODO(hackathon): event listener properties
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kTouchStartOrMove,
+      event_listener_properties(EventListenerClass::kTouchStartOrMove));
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kMouseWheel,
+      event_listener_properties(EventListenerClass::kMouseWheel));
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kTouchEndOrCancel,
+      event_listener_properties(EventListenerClass::kTouchEndOrCancel));
+#endif
+
+  if (page_scale_layer_.get() && inner_viewport_scroll_layer_.get()) {
+    frame->overscroll_elasticity_layer =
+        overscroll_elasticity_layer_ ? overscroll_elasticity_layer_->id()
+                                     : Layer::INVALID_ID,
+    frame->page_scale_layer = page_scale_layer_->id();
+    frame->inner_viewport_scroll_layer = inner_viewport_scroll_layer_->id();
+    frame->outer_viewport_scroll_layer =
+        outer_viewport_scroll_layer_.get() ? outer_viewport_scroll_layer_->id()
+                                           : Layer::INVALID_ID;
+    DCHECK(inner_viewport_scroll_layer_->IsContainerForFixedPositionLayers());
+  } else {
+    frame->overscroll_elasticity_layer = Layer::INVALID_ID;
+    frame->page_scale_layer = Layer::INVALID_ID;
+    frame->inner_viewport_scroll_layer = Layer::INVALID_ID;
+    frame->outer_viewport_scroll_layer = Layer::INVALID_ID;
+  }
+
+#if 0
+  // TODO(hackathon): selection
+  sync_tree->RegisterSelection(selection_);
+#endif
+
+#if 0
+  // TODO(hackathon): property trees
+  sync_tree->SetPropertyTrees(&property_trees_);
+#endif
+
+  frame->page_scale_factor = page_scale_factor_;
+  frame->min_page_scale_factor = min_page_scale_factor_;
+  frame->max_page_scale_factor = max_page_scale_factor_;
+  frame->elastic_overscroll = elastic_overscroll_;
+
+#if 0
+  // TODO(hackathon): swap promises
+  sync_tree->PassSwapPromises(&swap_promise_list_);
+#endif
+
+#if 0
+  // TODO(hackathon): top controls
+  sync_tree->set_top_controls_shrink_blink_size(
+      top_controls_shrink_blink_size_);
+  sync_tree->set_top_controls_height(top_controls_height_);
+  sync_tree->PushTopControlsFromMainThread(top_controls_shown_ratio_);
+#endif
+
+  frame->has_gpu_rasterization_trigger = has_gpu_rasterization_trigger_;
+  frame->content_is_suitable_for_gpu_rasterization = content_is_suitable_for_gpu_rasterization_;
+  RecordGpuRasterizationHistogram();
+
+  frame->device_viewport_size = device_viewport_size_;
+  frame->device_scale_factor = device_scale_factor_;
+  frame->painted_device_scale_factor = painted_device_scale_factor_;
+
+#if 0
+  // TODO(hackathon): debug state
+  host_impl->SetDebugState(debug_state_);
+#endif
+
+#if 0
+  // TODO(hackathon): pending page scale animation
+  if (pending_page_scale_animation_) {
+    sync_tree->SetPendingPageScaleAnimation(
+        std::move(pending_page_scale_animation_));
+  }
+#endif
+
+#if 0
+  // TODO(hackathon): UI resources
+  if (!ui_resource_request_queue_.empty()) {
+    sync_tree->set_ui_resource_request_queue(ui_resource_request_queue_);
+    ui_resource_request_queue_.clear();
+  }
+#endif
+
+
+  {
+    TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
+
+#if 0
+    // TODO(hackathon): layers
+    TreeSynchronizer::PushLayerProperties(&layer_tree_, sync_tree);
+#endif
+
+    TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
+#if 0
+    // TODO(hackathon): animations
+    DCHECK(host_impl->animation_host());
+    layer_tree_.animation_host()->PushPropertiesTo(host_impl->animation_host());
+#endif
+  }
+
+#if 0
+  // TODO(hackathon): scroll offsets
+  sync_tree->UpdatePropertyTreeScrollOffset(&property_trees_);
+#endif
+
+#if 0
+  // TODO(hackathon): micro benchmarks
+  micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
+#endif
+
+#if 0
+  // TODO(hackathon): Does this belong here, or in Service?
+  property_trees_.ResetAllChangeTracking();
+#endif
 }
 
 }  // namespace cc

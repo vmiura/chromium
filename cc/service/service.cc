@@ -331,7 +331,6 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
 void Service::InsertHackyGreenLayer() {
   // TODO(hackathon): Some made up stuff, we should get these from a commit.
   static int layer_id = 1;
-  host_impl_.SetViewportSize(gfx::Size(100, 100));
   auto* pending_tree = host_impl_.pending_tree();
   auto green_layer =
       SolidColorLayerImpl::Create(pending_tree, layer_id++);
@@ -374,15 +373,183 @@ void Service::DidActivateSyncTree() {
   }
 }
 
+
+void Service::FinishCommit() {
+  mojom::ContentFrame* frame = frame_for_commit_.get();
+  LayerTreeImpl* sync_tree = host_impl_.sync_tree();
+
+  if (frame->next_commit_forces_redraw)
+    sync_tree->ForceRedrawNextActivation();
+
+  sync_tree->set_source_frame_number(frame->source_frame);
+
+#if 0
+  // TODO(hackathon): layers
+  if (frame->needs_full_tree_sync)
+    TreeSynchronizer::SynchronizeTrees(root_layer(), sync_tree);
+#endif
+
+  sync_tree->set_needs_full_tree_sync(frame->needs_full_tree_sync);
+
+#if 0
+  // TODO(hackathon): HUD
+  if (hud_layer_.get()) {
+    LayerImpl* hud_impl = sync_tree->LayerById(hud_layer_->id());
+    sync_tree->set_hud_layer(static_cast<HeadsUpDisplayLayerImpl*>(hud_impl));
+  } else {
+    sync_tree->set_hud_layer(NULL);
+  }
+#endif
+
+  sync_tree->set_background_color(frame->background_color);
+  sync_tree->set_has_transparent_background(frame->has_transparent_background);
+  sync_tree->set_have_scroll_event_handlers(frame->have_scroll_event_handlers);
+#if 0
+  // TODO(hackathon): event listener properties
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kTouchStartOrMove,
+      event_listener_properties(EventListenerClass::kTouchStartOrMove));
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kMouseWheel,
+      event_listener_properties(EventListenerClass::kMouseWheel));
+  sync_tree->set_event_listener_properties(
+      EventListenerClass::kTouchEndOrCancel,
+      event_listener_properties(EventListenerClass::kTouchEndOrCancel));
+#endif
+
+  sync_tree->SetViewportLayersFromIds(
+      frame->overscroll_elasticity_layer,
+      frame->page_scale_layer,
+      frame->inner_viewport_scroll_layer,
+      frame->outer_viewport_scroll_layer);
+
+#if 0
+  // TODO(hackathon): selection
+  sync_tree->RegisterSelection(selection_);
+#endif
+
+#if 0
+  // TODO(hackathon): can keep this state in the Service (it doesn't need to
+  // flow back to the LTH)
+
+  bool property_trees_changed_on_active_tree =
+      sync_tree->IsActiveTree() && sync_tree->property_trees()->changed;
+  // Property trees may store damage status. We preserve the sync tree damage
+  // status by pushing the damage status from sync tree property trees to main
+  // thread property trees or by moving it onto the layers.
+  if (root_layer_ && property_trees_changed_on_active_tree) {
+    if (property_trees_.sequence_number ==
+        sync_tree->property_trees()->sequence_number)
+      sync_tree->property_trees()->PushChangeTrackingTo(&property_trees_);
+    else
+      sync_tree->MoveChangeTrackingToLayers();
+  }
+#endif
+
+#if 0
+  // TODO(hackathon): property trees
+  // Setting property trees must happen before pushing the page scale.
+  sync_tree->SetPropertyTrees(&property_trees_);
+#endif
+
+  sync_tree->PushPageScaleFromMainThread(
+      frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
+  sync_tree->elastic_overscroll()->PushFromMainThread(frame->elastic_overscroll);
+  if (sync_tree->IsActiveTree())
+    sync_tree->elastic_overscroll()->PushPendingToActive();
+
+#if 0
+  // TODO(hackathon): swap promises
+  sync_tree->PassSwapPromises(&swap_promise_list_);
+#endif
+
+#if 0
+  // TODO(hackathon): top controls
+  sync_tree->set_top_controls_shrink_blink_size(
+      top_controls_shrink_blink_size_);
+  sync_tree->set_top_controls_height(top_controls_height_);
+  sync_tree->PushTopControlsFromMainThread(top_controls_shown_ratio_);
+#endif
+
+  host_impl_.SetHasGpuRasterizationTrigger(frame->has_gpu_rasterization_trigger);
+  host_impl_.SetContentIsSuitableForGpuRasterization(
+      frame->content_is_suitable_for_gpu_rasterization);
+
+  host_impl_.SetViewportSize(frame->device_viewport_size);
+  // TODO(senorblanco): Move this up so that it happens before GPU rasterization
+  // properties are set, since those trigger an update of GPU rasterization
+  // status, which depends on the device scale factor. (crbug.com/535700)
+  sync_tree->SetDeviceScaleFactor(frame->device_scale_factor);
+  sync_tree->set_painted_device_scale_factor(frame->painted_device_scale_factor);
+#if 0
+  // TODO(hackathon): debug state
+  host_impl->SetDebugState(debug_state_);
+#endif
+
+#if 0
+  // TODO(hackathon): pending page scale animation
+  if (pending_page_scale_animation_) {
+    sync_tree->SetPendingPageScaleAnimation(
+        std::move(pending_page_scale_animation_));
+  }
+#endif
+
+#if 0
+  // TODO(hackathon): UI resources
+  if (!ui_resource_request_queue_.empty()) {
+    sync_tree->set_ui_resource_request_queue(ui_resource_request_queue_);
+    ui_resource_request_queue_.clear();
+  }
+#endif
+
+  DCHECK(!sync_tree->ViewportSizeInvalid());
+
+  sync_tree->set_has_ever_been_drawn(false);
+
+  {
+    TRACE_EVENT0("cc", "Service::PushProperties");
+
+#if 0
+    // TODO(hackathon): layers
+    TreeSynchronizer::PushLayerProperties(&layer_tree_, sync_tree);
+#endif
+
+    // This must happen after synchronizing property trees and after push
+    // properties, which updates property tree indices, but before animation
+    // host pushes properties as animation host push properties can change
+    // Animation::InEffect and we want the old InEffect value for updating
+    // property tree scrolling and animation.
+    sync_tree->UpdatePropertyTreeScrollingAndAnimationFromMainThread();
+
+    TRACE_EVENT0("cc", "Service::AnimationHost::PushProperties");
+#if 0
+    // TODO(hackathon): animations
+    DCHECK(host_impl->animation_host());
+    layer_tree_.animation_host()->PushPropertiesTo(host_impl->animation_host());
+#endif
+  }
+
+#if 0
+  // TODO(hackathon): scroll offsets
+  // This must happen after synchronizing property trees and after pushing
+  // properties, which updates the clobber_active_value flag.
+  sync_tree->UpdatePropertyTreeScrollOffset(&property_trees_);
+#endif
+
+#if 0
+  // TODO(hackathon): micro benchmarks
+  micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
+#endif
+}
+
 void Service::ScheduledActionCommit() {
   DCHECK(commit_callback_);
-  host_impl()->BeginCommit();
+  host_impl_.BeginCommit();
 
-  // TODO(hackathon): Use frame_for_commit_ to commit.
-  // blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
-  //    owner_->host_impl());
+  FinishCommit();
   InsertHackyGreenLayer();
   frame_for_commit_ = nullptr;
+
   if (wait_for_activation_) {
     DCHECK(!activation_callback_);
     std::swap(activation_callback_, commit_callback_);
@@ -391,8 +558,8 @@ void Service::ScheduledActionCommit() {
     commit_callback_.Run();
   }
 
-  scheduler()->DidCommit();
-  host_impl()->CommitComplete();
+  scheduler_.DidCommit();
+  host_impl_.CommitComplete();
 }
 
 }  // namespace cc
