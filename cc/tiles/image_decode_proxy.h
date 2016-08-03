@@ -11,12 +11,15 @@ namespace cc {
 
 class CC_EXPORT ImageDecodeProxy {
  public:
+  ImageDecodeProxy();
+  ~ImageDecodeProxy();
+
   // For now, just use a singleton.
   static ImageDecodeProxy* Current();
 
   bool DecodeImage(uint32_t unique_id, const SkImageInfo& info, void* data);
 
-  void OnImageDecodeCompleted(uint32_t unique_id);
+  void OnImageDecodeCompleted(uint32_t unique_id, bool succeeded);
 
  private:
   std::map<uint32_t, base::WaitableEvent*> events_;
@@ -27,6 +30,8 @@ class CC_EXPORT ProxyImageGenerator : public SkImageGenerator {
   ProxyImageGenerator(const SkImageInfo& info,
                       uint32_t unique_id,
                       ImageDecodeProxy* proxy);
+  ~ProxyImageGenerator() override;
+
   bool onGetPixels(const SkImageInfo& info,
                    void* pixels,
                    size_t rowBytes,

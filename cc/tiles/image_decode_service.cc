@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/tiles/image_decode_service.h"
+#include "cc/tiles/image_decode_proxy.h"
 #include "cc/resources/resource_format_utils.h"
 
 namespace cc {
@@ -18,6 +19,11 @@ SkImageInfo CreateImageInfo(size_t width,
 
 ImageDecodeService::ImageDecodeService() = default;
 ImageDecodeService::~ImageDecodeService() = default;
+
+ImageDecodeService* ImageDecodeService::Current() {
+  static ImageDecodeService service;
+  return &service;
+}
 
 void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
   base::AutoLock hold(lock_);
@@ -49,6 +55,7 @@ void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {
 
 void ImageDecodeService::OnImageDecoded(uint32_t image_id, bool succeeded) {
   // TODO(hackathon): Send IPC.
+  ImageDecodeProxy::Current()->OnImageDecodeCompleted(image_id, succeeded);
 }
 
 }  // namespace cc

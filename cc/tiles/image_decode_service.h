@@ -18,6 +18,9 @@ class CC_EXPORT ImageDecodeService {
   ImageDecodeService();
   ~ImageDecodeService();
 
+  // TODO(hackathon): This shouldn't be a singleton.
+  static ImageDecodeService* Current();
+
   // Blink accesses this to register things.
   void RegisterImage(sk_sp<SkImage> image);
   void UnregisterImage(sk_sp<SkImage> image);
