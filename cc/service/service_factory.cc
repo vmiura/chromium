@@ -13,15 +13,17 @@ ServiceFactory::ServiceFactory(
     gpu::ImageFactory* image_factory)
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      image_factory_(image_factory) {
+      image_factory_(image_factory),
+      compositor_thread_("compositor") {
   ServiceContextProvider::SetupThread();
+  compositor_thread_.Start();
 }
 
 ServiceFactory::~ServiceFactory() = default;
 
 void ServiceFactory::AddChannel(gpu::GpuChannel* channel) {
   std::unique_ptr<CompositorChannel> compositor_channel(
-      new CompositorChannel(this, channel));
+      new CompositorChannel(this, channel, compositor_thread_.task_runner()));
   compositor_channels_.set(channel->client_id(), std::move(compositor_channel));
 }
 
