@@ -1,6 +1,63 @@
 module cc.mojom;
 
 import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/mojo/transform.mojom";
+
+struct TransformCachedNodeData {
+  gfx.mojom.Transform from_target;
+  gfx.mojom.Transform to_target;
+  gfx.mojom.Transform from_screen;
+  gfx.mojom.Transform to_screen;
+  int32 target_id;
+  int32 content_target_id;
+};
+
+struct TransformTree {
+  array<int8> nodes;
+  bool source_to_parent_updates_allowed;
+  float page_scale_factor;
+  float device_scale_factor;
+  float device_transform_scale_factor;
+  array<int32> nodes_affected_by_inner_viewport_bounds_delta;
+  array<int32> nodes_affected_by_outer_viewport_bounds_delta;
+  array<TransformCachedNodeData> cached_data;
+};
+
+struct EffectTree {
+  array<int8> nodes;
+  array<int32> mask_replica_layer_ids;
+};
+
+struct ClipTree {
+  array<int8> nodes;
+};
+
+struct SyncedScrollOffset {
+  gfx.mojom.ScrollOffset pending_base;
+  gfx.mojom.ScrollOffset active_base;
+  gfx.mojom.ScrollOffset active_delta;
+  gfx.mojom.ScrollOffset reflected_delta_in_main_tree;
+  gfx.mojom.ScrollOffset reflected_delta_in_pending_tree;
+  bool clobber_active_value;
+};
+
+struct ScrollTree {
+  array<int8> nodes;
+  int32 currently_scrolling_node_id;
+  map<int32, SyncedScrollOffset> layer_id_to_scroll_offset_map;
+};
+
+struct PropertyTrees {
+  TransformTree transform_tree;
+  EffectTree effect_tree;
+  ClipTree clip_tree;
+  ScrollTree scroll_tree;
+  bool non_root_surfaces_enabled;
+  bool changed;
+  bool full_tree_damaged;
+  int32 sequence_number;
+  bool verify_transform_tree_calculations;
+};
 
 struct ContentFrame {
   uint32 source_frame;
@@ -22,4 +79,6 @@ struct ContentFrame {
   gfx.mojom.Size device_viewport_size;
   float device_scale_factor;
   float painted_device_scale_factor;
+
+  PropertyTrees property_trees;
 };

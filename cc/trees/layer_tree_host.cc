@@ -59,6 +59,7 @@
 #include "cc/trees/remote_channel_impl.h"
 #include "cc/trees/simple_proxy.h"
 #include "cc/trees/single_thread_proxy.h"
+#include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -1773,10 +1774,42 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
   sync_tree->RegisterSelection(selection_);
 #endif
 
-#if 0
-  // TODO(hackathon): property trees
-  sync_tree->SetPropertyTrees(&property_trees_);
-#endif
+  DCHECK(!property_trees_.needs_rebuild);
+  DCHECK(!property_trees_.transform_tree.needs_update());
+  DCHECK(!property_trees_.effect_tree.needs_update());
+  DCHECK(!property_trees_.clip_tree.needs_update());
+  DCHECK(!property_trees_.scroll_tree.needs_update());
+  {
+    auto& source = property_trees_;
+    auto dest = cc::mojom::PropertyTrees::New();
+    dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
+    dest->changed = source.changed;
+    dest->full_tree_damaged = source.full_tree_damaged;
+    dest->sequence_number = source.sequence_number;
+    dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
+    frame->property_trees = std::move(dest);
+  }
+  {
+    auto& source = property_trees_.transform_tree;
+    auto dest = cc::mojom::TransformTree::New();
+    dest->source_to_parent_updates_allowed = source.source_to_parent_updates_allowed();
+    dest->page_scale_factor = source.page_scale_factor();
+    dest->device_scale_factor = source.device_scale_factor();
+    dest->device_transform_scale_factor = source.device_transform_scale_factor();
+    dest->nodes_affected_by_inner_viewport_bounds_delta = source.nodes_affected_by_inner_viewport_bounds_delta();
+    dest->nodes_affected_by_outer_viewport_bounds_delta = source.nodes_affected_by_outer_viewport_bounds_delta();
+    for (const auto& i : source.cached_data()) {
+      auto data = cc::mojom::TransformCachedNodeData::New();
+      data->from_target = i.from_target;
+      data->to_target = i.to_target;
+      data->from_screen = i.from_screen;
+      data->to_screen = i.to_screen;
+      data->target_id = i.target_id;
+      dest->cached_data.push_back(std::move(data));
+    }
+    dest->nodes.resize(source.size() * sizeof(TransformNode));
+    frame->property_trees->transform_tree = std::move(dest);
+  }
 
   frame->page_scale_factor = page_scale_factor_;
   frame->min_page_scale_factor = min_page_scale_factor_;
