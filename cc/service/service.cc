@@ -367,7 +367,7 @@ void Service::Commit(bool wait_for_activation,
 }
 
 void Service::DidActivateSyncTree() {
-  if (!activation_callback_) {
+  if (activation_callback_) {
     activation_callback_.Run();
     activation_callback_.Reset();
   }
