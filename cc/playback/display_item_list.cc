@@ -75,11 +75,18 @@ scoped_refptr<DisplayItemList> DisplayItemList::Create(
       !settings.use_cached_picture || DisplayItemsTracingEnabled()));
 }
 
+scoped_refptr<DisplayItemList> DisplayItemList::CreateFromData(sk_sp<SkData> data) {
+  SkMemoryStream read_stream(data);
+  scoped_refptr<DisplayItemList> output_list = DisplayItemList::CreateFromStream(&read_stream);
+  return output_list;
+}
+
 scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(SkStream* stream) {
   DisplayItemListSettings settings;
   // TODO: Also find id from stream.
   scoped_refptr<DisplayItemList> display_item_list =
       DisplayItemList::Create(gfx::Rect(), settings);
+  display_item_list->id_ = stream->readU32();
   uint32_t num_items = stream->readU32();
   for (uint32_t i = 0; i < num_items; ++i) {
     int x = stream->readS32();
@@ -131,6 +138,7 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(SkStream* strea
         break;
     }
   }
+  display_item_list->Finalize();
   return display_item_list;
 }
 
@@ -401,6 +409,7 @@ void DisplayItemList::GetDiscardableImagesInRect(
 }
 
 void DisplayItemList::Serialize(SkWStream* stream) const {
+  stream->write32(id_);
   stream->write32(inputs_.items.size());
   DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
   for (size_t i = 0; i < inputs_.items.size(); ++i) {
@@ -410,6 +419,13 @@ void DisplayItemList::Serialize(SkWStream* stream) const {
     stream->write32(inputs_.visual_rects[i].height());
     inputs_.items[i].Serialize(stream);
   }
+}
+
+sk_sp<SkData> DisplayItemList::Serialize() const {
+  SkDynamicMemoryWStream write_stream;
+  Serialize(&write_stream);
+  sk_sp<SkData> data(write_stream.copyToData());
+  return data;
 }
 
 }  // namespace cc

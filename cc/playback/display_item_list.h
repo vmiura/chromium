@@ -58,6 +58,8 @@ class CC_EXPORT DisplayItemList
 
   static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
 
+  static scoped_refptr<DisplayItemList> CreateFromData(sk_sp<SkData> data);
+
   // Creates a Protobuf representing the state of this DisplayItemList.
   void ToProtobuf(proto::DisplayItemList* proto);
 
@@ -125,6 +127,8 @@ class CC_EXPORT DisplayItemList
   }
 
   void Serialize(SkWStream* stream) const;
+
+  sk_sp<SkData> Serialize() const;
 
   uint32_t unique_id() const { return id_; }
 

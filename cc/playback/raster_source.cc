@@ -31,13 +31,10 @@ scoped_refptr<RasterSource> RasterSource::CreateFromRecordingSource(
 static scoped_refptr<DisplayItemList> WriteAndReadDisplayList(scoped_refptr<DisplayItemList> input_list) {
   if (!input_list)
     return nullptr;
-  SkDynamicMemoryWStream write_stream;
-  input_list->Serialize(&write_stream);
-  sk_sp<SkData> data(write_stream.copyToData());
-  SkMemoryStream read_stream(data);
-  scoped_refptr<DisplayItemList> output_list = DisplayItemList::CreateFromStream(&read_stream);
-  output_list->Finalize();
+  scoped_refptr<DisplayItemList> output_list =
+      DisplayItemList::CreateFromData(input_list->Serialize());
   DCHECK_EQ(input_list->num_items(), output_list->num_items());
+  DCHECK_EQ(input_list->unique_id(), output_list->unique_id());
   return output_list;
 }
 
