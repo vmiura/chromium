@@ -53,6 +53,7 @@ struct LayerProperties {
   int32 effect_tree_index;
   int32 clip_tree_index;
   int32 scroll_tree_index;
+  gfx.mojom.Vector2dF offset_to_transform_parent;
   bool draws_content;
   bool layer_property_changed;
   bool masks_to_bounds;

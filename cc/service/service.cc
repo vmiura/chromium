@@ -382,7 +382,6 @@ void Service::Commit(const cc::SurfaceId& surface_id,
                      bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {
-  LOG(ERROR) << this << " Commit";
   DCHECK(!commit_callback_);
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());

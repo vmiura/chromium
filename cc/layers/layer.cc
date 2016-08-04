@@ -1903,6 +1903,7 @@ void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   mojom->effect_tree_index = effect_tree_index_;
   mojom->clip_tree_index = clip_tree_index_;
   mojom->scroll_tree_index = scroll_tree_index_;
+  mojom->offset_to_transform_parent = offset_to_transform_parent_;
   mojom->draws_content = DrawsContent();
   mojom->layer_property_changed =
       subtree_property_changed_ || layer_property_changed_;

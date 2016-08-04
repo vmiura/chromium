@@ -1209,6 +1209,7 @@ void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   SetEffectTreeIndex(mojom->effect_tree_index);
   SetClipTreeIndex(mojom->clip_tree_index);
   SetScrollTreeIndex(mojom->scroll_tree_index);
+  set_offset_to_transform_parent(mojom->offset_to_transform_parent);
   SetDrawsContent(mojom->draws_content);
   if (mojom->layer_property_changed)
     NoteLayerPropertyChanged();
