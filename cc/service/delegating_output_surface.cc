@@ -87,11 +87,14 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
 bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  surface_manager_->RegisterSurfaceFactoryClient(
-      surface_id_allocator_->client_id(), this);
-
   bool bind = OutputSurface::BindToClient(client);
   DCHECK(bind);
+
+  // TODO(enne): this has to be after the bind, as it could cause a
+  // SetBeginFrameSource which assumes a client_.  Probably need to
+  // make SurfaceDisplayOutputSurface do this too.
+  surface_manager_->RegisterSurfaceFactoryClient(
+      surface_id_allocator_->client_id(), this);
 
   // Avoid initializing GL context here, as this should be sharing the
   // Display's context.
