@@ -98,7 +98,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   SurfaceManager* const surface_manager_;
 
   // TODO(hackathon): Get a widget from the browser process.
-  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
+  gpu::SurfaceHandle handle_ = gpu::kNullSurfaceHandle;
   SurfaceIdAllocator surface_id_allocator_;
 
   RenderingStatsInstrumentation rendering_stats_;

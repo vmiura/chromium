@@ -17,6 +17,8 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
 
+#include "gpu/ipc/common/surface_handle.h"
+
 namespace gfx {
 class Size;
 }
@@ -50,7 +52,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
       scoped_refptr<gpu::InProcessCommandBuffer::Service> service,
       scoped_refptr<gl::GLSurface> surface,
       bool is_offscreen,
-      gfx::AcceleratedWidget window,
+      gpu::SurfaceHandle handle,
       GLInProcessContext* share_context,
       const gpu::gles2::ContextCreationAttribHelper& attribs,
       const SharedMemoryLimits& memory_limits,

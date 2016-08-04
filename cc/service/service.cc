@@ -186,7 +186,7 @@ Service::Service(const gpu::SurfaceHandle& handle,
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
       surface_manager_(surface_manager),
-      widget_(handle),
+      handle_(handle),
       surface_id_allocator_(id),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
@@ -214,7 +214,7 @@ Service::Service(const gpu::SurfaceHandle& handle,
                      new ImageDecodeProxy(client.get()))),
       compositor_client_(std::move(client)),
       binding_(this, std::move(request)) {
-  const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
+  const bool root_compositor = handle_ != gpu::kNullSurfaceHandle;
   LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   compositor_client_->OnCompositorCreated(surface_id_allocator_.client_id());
@@ -233,13 +233,13 @@ Service::~Service() {
 }
 
 void Service::CreateOutputSurface() {
-  const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
+  const bool root_compositor = handle_ != gpu::kNullSurfaceHandle;
   if (root_compositor) {
     auto begin_frame_source = base::MakeUnique<DelayBasedBeginFrameSource>(
         base::MakeUnique<DelayBasedTimeSource>(task_runner_.get()));
 
     scoped_refptr<ServiceContextProvider> display_context_provider(
-        new ServiceContextProvider(widget_, gpu_memory_buffer_manager_,
+        new ServiceContextProvider(handle_, gpu_memory_buffer_manager_,
                                    image_factory_, gpu::SharedMemoryLimits(),
                                    nullptr /* shared_context_provider */));
     if (!display_context_provider->BindToCurrentThread())
@@ -261,7 +261,7 @@ void Service::CreateOutputSurface() {
   }
 
   scoped_refptr<ServiceContextProvider> compositor_context(
-      new ServiceContextProvider(gfx::kNullAcceleratedWidget,
+      new ServiceContextProvider(gpu::kNullSurfaceHandle,
                                  gpu_memory_buffer_manager_, image_factory_,
                                  gpu::SharedMemoryLimits::ForMailboxContext(),
                                  nullptr));
@@ -269,7 +269,7 @@ void Service::CreateOutputSurface() {
     return;
   scoped_refptr<ServiceContextProvider> worker_context(
       new ServiceContextProvider(
-          gfx::kNullAcceleratedWidget, gpu_memory_buffer_manager_,
+          gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_,
           image_factory_, gpu::SharedMemoryLimits(), compositor_context.get()));
   if (!worker_context->BindToCurrentThread())
     return;

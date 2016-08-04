@@ -52,6 +52,13 @@
 #endif
 
 namespace gpu {
+class GpuChannelManager;
+class GpuCommandBufferStub;
+
+scoped_refptr<gl::GLSurface> ImageTransportSurfaceCreateNativeSurface(
+    GpuChannelManager* manager,
+    GpuCommandBufferStub* stub,
+    SurfaceHandle handle);
 
 namespace {
 
@@ -250,7 +257,7 @@ void InProcessCommandBuffer::PumpCommandsOnGpuThread() {
 bool InProcessCommandBuffer::Initialize(
     scoped_refptr<gl::GLSurface> surface,
     bool is_offscreen,
-    gfx::AcceleratedWidget window,
+    gpu::SurfaceHandle handle,
     const gles2::ContextCreationAttribHelper& attribs,
     InProcessCommandBuffer* share_group,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -268,7 +275,7 @@ bool InProcessCommandBuffer::Initialize(
   }
 
   gpu::Capabilities capabilities;
-  InitializeOnGpuThreadParams params(is_offscreen, window, attribs,
+  InitializeOnGpuThreadParams params(is_offscreen, handle, attribs,
                                      &capabilities, share_group, image_factory);
 
   base::Callback<bool(void)> init_task =
@@ -334,10 +341,12 @@ bool InProcessCommandBuffer::InitializeOnGpuThread(
   decoder_->set_engine(executor_.get());
 
   if (!surface_.get()) {
-    if (params.is_offscreen)
+    if (params.is_offscreen) {
       surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
-    else
-      surface_ = gl::init::CreateViewGLSurface(params.window);
+    } else {
+      surface_ = ImageTransportSurfaceCreateNativeSurface(
+          nullptr, nullptr, params.handle);
+    }
   }
 
   if (!surface_.get()) {

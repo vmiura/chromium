@@ -53,7 +53,7 @@ class GLInProcessContextImpl
   bool Initialize(scoped_refptr<gl::GLSurface> surface,
                   bool is_offscreen,
                   GLInProcessContext* share_context,
-                  gfx::AcceleratedWidget window,
+                  gpu::SurfaceHandle handle,
                   const gpu::gles2::ContextCreationAttribHelper& attribs,
                   const scoped_refptr<InProcessCommandBuffer::Service>& service,
                   const SharedMemoryLimits& mem_limits,
@@ -94,7 +94,7 @@ bool GLInProcessContextImpl::Initialize(
     scoped_refptr<gl::GLSurface> surface,
     bool is_offscreen,
     GLInProcessContext* share_context,
-    gfx::AcceleratedWidget window,
+    gpu::SurfaceHandle handle,
     const gles2::ContextCreationAttribHelper& attribs,
     const scoped_refptr<InProcessCommandBuffer::Service>& service,
     const SharedMemoryLimits& mem_limits,
@@ -118,7 +118,7 @@ bool GLInProcessContextImpl::Initialize(
 
   if (!command_buffer_->Initialize(surface,
                                    is_offscreen,
-                                   window,
+                                   handle,
                                    attribs,
                                    share_command_buffer,
                                    gpu_memory_buffer_manager,
@@ -188,7 +188,7 @@ GLInProcessContext* GLInProcessContext::Create(
     scoped_refptr<gpu::InProcessCommandBuffer::Service> service,
     scoped_refptr<gl::GLSurface> surface,
     bool is_offscreen,
-    gfx::AcceleratedWidget window,
+    gpu::SurfaceHandle handle,
     GLInProcessContext* share_context,
     const ::gpu::gles2::ContextCreationAttribHelper& attribs,
     const SharedMemoryLimits& memory_limits,
@@ -196,11 +196,11 @@ GLInProcessContext* GLInProcessContext::Create(
     ImageFactory* image_factory) {
   if (surface.get()) {
     DCHECK_EQ(surface->IsOffscreen(), is_offscreen);
-    DCHECK_EQ(gfx::kNullAcceleratedWidget, window);
+    DCHECK_EQ(gpu::kNullSurfaceHandle, handle);
   }
 
   std::unique_ptr<GLInProcessContextImpl> context(new GLInProcessContextImpl);
-  if (!context->Initialize(surface, is_offscreen, share_context, window,
+  if (!context->Initialize(surface, is_offscreen, share_context, handle,
                            attribs, service, memory_limits,
                            gpu_memory_buffer_manager, image_factory))
     return NULL;

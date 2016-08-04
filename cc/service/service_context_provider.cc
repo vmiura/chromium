@@ -133,14 +133,14 @@ gpu::gles2::ContextCreationAttribHelper CreateAttributes() {
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext(
     const gpu::gles2::ContextCreationAttribHelper& attributes,
-    gfx::AcceleratedWidget widget,
+    gpu::SurfaceHandle handle,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     const gpu::SharedMemoryLimits& limits,
     gpu::GLInProcessContext* shared_context) {
-  const bool is_offscreen = widget == gfx::kNullAcceleratedWidget;
+  const bool is_offscreen = handle == gpu::kNullSurfaceHandle;
   return base::WrapUnique(gpu::GLInProcessContext::Create(
-      DeferredGpuCommandService::GetInstance(), nullptr, is_offscreen, widget,
+      DeferredGpuCommandService::GetInstance(), nullptr, is_offscreen, handle,
       shared_context, attributes, limits, gpu_memory_buffer_manager,
       image_factory));
 }
@@ -157,7 +157,7 @@ void ServiceContextProvider::SetupThread(
 }
 
 ServiceContextProvider::ServiceContextProvider(
-    gfx::AcceleratedWidget widget,
+    gpu::SurfaceHandle handle,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     const gpu::SharedMemoryLimits& limits,
@@ -165,7 +165,7 @@ ServiceContextProvider::ServiceContextProvider(
     : attributes_(CreateAttributes()),
       context_(CreateTestInProcessContext(
           attributes_,
-          widget,
+          handle,
           gpu_memory_buffer_manager,
           image_factory,
           limits,

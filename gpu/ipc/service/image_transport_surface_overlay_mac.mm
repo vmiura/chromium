@@ -88,12 +88,14 @@ ImageTransportSurfaceOverlayMac::~ImageTransportSurfaceOverlayMac() {
 }
 
 bool ImageTransportSurfaceOverlayMac::Initialize(gl::GLSurface::Format format) {
+  /*
   if (!stub_.get() || !stub_->decoder())
     return false;
 
   stub_->SetLatencyInfoCallback(
       base::Bind(&ImageTransportSurfaceOverlayMac::SetLatencyInfo,
                  base::Unretained(this)));
+  */
 
   // Create the CAContext to send this to the GPU process, and the layer for
   // the context.
@@ -175,7 +177,7 @@ void ImageTransportSurfaceOverlayMac::SendAcceleratedSurfaceBuffersSwapped(
   }
   ca_layer_in_use_queries_.clear();
 
-  stub_->SendSwapBuffersCompleted(params);
+  // stub_->SendSwapBuffersCompleted(params);
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(

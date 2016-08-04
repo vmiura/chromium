@@ -14,6 +14,8 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "ui/gfx/native_widget_types.h"
 
+#include "gpu/ipc/common/surface_handle.h"
+
 class GrContext;
 
 namespace gpu {
@@ -39,7 +41,7 @@ class ServiceContextProvider : public ContextProvider {
     gpu::SyncPointManager* sync_point_manager,
     gpu::gles2::MailboxManager* mailbox_manager);
   explicit ServiceContextProvider(
-      gfx::AcceleratedWidget widget,
+      gpu::SurfaceHandle handle,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::ImageFactory* image_factory,
       const gpu::SharedMemoryLimits& limits,
