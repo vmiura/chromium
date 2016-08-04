@@ -469,8 +469,6 @@ component("cc") {
     "tiles/gpu_image_decode_controller.cc",
     "tiles/gpu_image_decode_controller.h",
     "tiles/image_decode_controller.h",
-    "tiles/image_decode_mojo.cc",
-    "tiles/image_decode_mojo.h",
     "tiles/image_decode_proxy.cc",
     "tiles/image_decode_proxy.h",
     "tiles/image_decode_service.cc",
