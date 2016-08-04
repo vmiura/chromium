@@ -2,8 +2,16 @@
 
 #include "base/trace_event/trace_event.h"
 #include "cc/tiles/image_decode_service.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace cc {
+namespace {
+struct ImageSerialization {
+  uint32_t width;
+  uint32_t height;
+  uint32_t id;
+};
+}
 
 ImageDecodeProxy::ImageDecodeProxy() {
   proxy_thread_.reset(new base::Thread("ImageDecodeProxy"));
@@ -57,6 +65,23 @@ bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
   return true;
 }
 
+
+ProxyImageGenerator::ScopedBindFactory::ScopedBindFactory()
+    : previous_factory_(SkGraphics::SetImageGeneratorFromEncodedFactory(
+          ProxyImageGenerator::create)) {}
+ProxyImageGenerator::ScopedBindFactory::~ScopedBindFactory() {
+  SkGraphics::SetImageGeneratorFromEncodedFactory(previous_factory_);
+}
+
+SkImageGenerator* ProxyImageGenerator::create(SkData* data) {
+  const auto* serialization =
+      reinterpret_cast<const ImageSerialization*>(data->data());
+  SkImageInfo info =
+      SkImageInfo::MakeN32Premul(serialization->width, serialization->height);
+  return new ProxyImageGenerator(info, serialization->id,
+                                 ImageDecodeProxy::Current());
+}
+
 ProxyImageGenerator::ProxyImageGenerator(const SkImageInfo& info,
                                          uint32_t unique_id,
                                          ImageDecodeProxy* proxy)
@@ -65,7 +90,6 @@ ProxyImageGenerator::ProxyImageGenerator(const SkImageInfo& info,
 ProxyImageGenerator::~ProxyImageGenerator() {
   // TODO(hackathon): Should scope this a different way probably - don't want to
   // have to send over IPC?
-  cc::ImageDecodeService::Current()->UnregisterImage(unique_id_);
 }
 
 bool ProxyImageGenerator::onGetPixels(const SkImageInfo& info,
@@ -80,5 +104,23 @@ bool ProxyImageGenerator::onGetPixels(const SkImageInfo& info,
     return false;
 
   return proxy_->DecodeImage(unique_id_, getInfo(), pixels);
+}
+
+SkData* ProxyPixelSerializer::onUseImage(const SkImage* image) {
+  ImageSerialization serialization;
+  serialization.width = image->width();
+  serialization.height = image->height();
+  serialization.id = image->uniqueID();
+
+  return SkData::MakeWithCopy(&serialization, sizeof(serialization)).release();
+}
+
+bool ProxyPixelSerializer::onUseEncodedData(const void* data, size_t len) {
+  return false;
+}
+
+SkData* ProxyPixelSerializer::onEncode(const SkPixmap& pixmap) {
+  CHECK(false);
+  return nullptr;
 }
 }
