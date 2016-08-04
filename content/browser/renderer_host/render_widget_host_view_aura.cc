@@ -2881,7 +2881,7 @@ RenderWidgetHostViewAura::GetRenderViewHostDelegateView() {
 // DelegatedFrameHost, public:
 
 ui::Layer* RenderWidgetHostViewAura::DelegatedFrameHostGetLayer() const {
-  return window_->layer();
+  return window_ ? window_->layer() : nullptr;
 }
 
 bool RenderWidgetHostViewAura::DelegatedFrameHostIsVisible() const {

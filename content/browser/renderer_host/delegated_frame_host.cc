@@ -82,12 +82,15 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
   factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
       id_allocator_->client_id(), this);
   // TODO(hackathon): We should use the frame size not the view size.
-  client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+  auto* layer = client_->DelegatedFrameHostGetLayer();
+  if (layer) {
+    layer->SetShowSurface(
       cc::SurfaceId(id_allocator_->client_id(), 1, 1),
       base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
       base::Bind(&RequireCallback,
                  base::Unretained(factory->GetSurfaceManager())),
       gfx::Size(100, 100), current_scale_factor_, gfx::Size(100, 100));
+  }
 }
 
 void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
