@@ -1379,11 +1379,12 @@ void ResourceProvider::PrepareSendToParent(const ResourceIdArray& resource_ids,
   // Lazily create any mailboxes and verify all unverified sync tokens.
   std::vector<GLbyte*> unverified_sync_tokens;
   std::vector<Resource*> need_synchronization_resources;
+  bool need_ordering_barrier = false;
   for (Resource* resource : resources) {
     if (!IsGpuResourceType(resource->type))
       continue;
 
-    CreateMailboxAndBindResource(gl, resource);
+    need_ordering_barrier |= CreateMailboxAndBindResource(gl, resource);
 
     if (delegated_sync_points_required_) {
       if (resource->needs_sync_token()) {
@@ -1404,6 +1405,13 @@ void ResourceProvider::PrepareSendToParent(const ResourceIdArray& resource_ids,
     gl->OrderingBarrierCHROMIUM();
     gl->GenUnverifiedSyncTokenCHROMIUM(fence_sync, new_sync_token.GetData());
     unverified_sync_tokens.push_back(new_sync_token.GetData());
+    need_ordering_barrier = false;
+  }
+
+  if (need_ordering_barrier) {
+    DCHECK(!delegated_sync_points_required_);
+    DCHECK(gl);
+    gl->OrderingBarrierCHROMIUM();
   }
 
   if (!unverified_sync_tokens.empty()) {
@@ -1571,11 +1579,12 @@ void ResourceProvider::ReceiveReturnsFromParent(
   }
 }
 
-void ResourceProvider::CreateMailboxAndBindResource(
+bool ResourceProvider::CreateMailboxAndBindResource(
     gpu::gles2::GLES2Interface* gl,
     Resource* resource) {
   DCHECK(IsGpuResourceType(resource->type));
   DCHECK(gl);
+  bool did_anything = false;
 
   if (!resource->mailbox().IsValid()) {
     LazyCreate(resource);
@@ -1587,13 +1596,16 @@ void ResourceProvider::CreateMailboxAndBindResource(
                                      mailbox_holder.texture_target,
                                      mailbox_holder.mailbox.name);
     resource->set_mailbox(TextureMailbox(mailbox_holder));
+    did_anything = true;
   }
 
   if (resource->image_id && resource->dirty_image) {
     DCHECK(resource->gl_id);
     DCHECK(resource->origin == Resource::INTERNAL);
     BindImageForSampling(resource);
+    did_anything = true;
   }
+  return did_anything;
 }
 
 void ResourceProvider::TransferResource(Resource* source,

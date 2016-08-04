@@ -641,7 +641,7 @@ class CC_EXPORT ResourceProvider
   static void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
                                            const Resource* resource);
 
-  void CreateMailboxAndBindResource(gpu::gles2::GLES2Interface* gl,
+  bool CreateMailboxAndBindResource(gpu::gles2::GLES2Interface* gl,
                                     Resource* resource);
 
   void TransferResource(Resource* source,
