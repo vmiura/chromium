@@ -45,17 +45,23 @@ DelegatingOutputSurface::~DelegatingOutputSurface() {
 }
 
 void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
+#if 0
   gfx::Size frame_size =
       frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
   if (frame_size.IsEmpty() || frame_size != last_swap_frame_size_) {
     if (!delegated_surface_id_.is_null()) {
       factory_.Destroy(delegated_surface_id_);
     }
-    delegated_surface_id_ = surface_id_allocator_->GenerateId();
+    delegated_surface_id_ = //surface_id_allocator_->GenerateId();
     factory_.Create(delegated_surface_id_);
     last_swap_frame_size_ = frame_size;
   }
-
+#endif
+  if (delegated_surface_id_.is_null()) {
+    delegated_surface_id_ =
+        cc::SurfaceId(surface_id_allocator_->client_id(), 1, 1);
+    factory_.Create(delegated_surface_id_);
+  }
   if (display_) {
     display_->SetSurfaceId(delegated_surface_id_,
                            frame.metadata.device_scale_factor);
