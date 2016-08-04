@@ -708,6 +708,7 @@ void Service::ScheduledActionCommit() {
 }
 
 void Service::Destroy(const DestroyCallback& callback) {
+  scheduler_.SetVisible(false);
   scheduler_.DidLoseOutputSurface();
   host_impl_.ReleaseOutputSurface();
   output_surface_ = nullptr;
