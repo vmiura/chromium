@@ -30,7 +30,9 @@ DelegatingOutputSurface::DelegatingOutputSurface(
   DCHECK(thread_checker_.CalledOnValidThread());
   capabilities_.delegated_rendering = true;
   capabilities_.adjust_deadline_for_parent = true;
-  capabilities_.can_force_reclaim_resources = true;
+  // TODO(hackathon): The LayerTreeHostImpl doesn't draw before the Display does
+  // always, so no reclaim possible.
+  capabilities_.can_force_reclaim_resources = false;
 
   // Display and DelegatingOutputSurface share a GL context, so sync
   // points aren't needed when passing resources between them.
@@ -98,7 +100,8 @@ bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
 }
 
 void DelegatingOutputSurface::ForceReclaimResources() {
-  if (!delegated_surface_id_.is_null()) {
+  if (capabilities_.can_force_reclaim_resources &&
+      !delegated_surface_id_.is_null()) {
     factory_.SubmitCompositorFrame(delegated_surface_id_, CompositorFrame(),
                                    SurfaceFactory::DrawCallback());
   }
