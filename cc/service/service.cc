@@ -599,6 +599,7 @@ void Service::FinishCommit() {
   // effect tree.
   if (sync_tree->IsActiveTree())
     property_trees->effect_tree.set_needs_update(true);
+  property_trees->ResetCachedData();
 
   sync_tree->PushPageScaleFromMainThread(
       frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
