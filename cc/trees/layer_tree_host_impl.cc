@@ -92,6 +92,8 @@
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "cc/tiles/image_decode_service.h"
+#include "cc/tiles/image_decode_proxy.h"
 
 namespace cc {
 namespace {
@@ -178,11 +180,11 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHostImpl::Create(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     TaskGraphRunner* task_graph_runner,
     std::unique_ptr<AnimationHost> animation_host,
-    int id) {
+    int id, ImageDecodeService* image_decode_service) {
   return base::WrapUnique(new LayerTreeHostImpl(
       settings, client, task_runner_provider, rendering_stats_instrumentation,
       shared_bitmap_manager, gpu_memory_buffer_manager, task_graph_runner,
-      std::move(animation_host), id));
+      std::move(animation_host), id, image_decode_service));
 }
 
 LayerTreeHostImpl::LayerTreeHostImpl(
@@ -194,7 +196,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     TaskGraphRunner* task_graph_runner,
     std::unique_ptr<AnimationHost> animation_host,
-    int id)
+    int id, ImageDecodeService* image_decode_service)
     : client_(client),
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(BEGINFRAMETRACKER_FROM_HERE),
@@ -243,7 +245,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       id_(id),
       requires_high_res_to_draw_(false),
       is_likely_to_require_a_draw_(false),
-      mutator_(nullptr) {
+      mutator_(nullptr),
+      image_decode_proxy_(image_decode_service) {
   DCHECK(animation_host_);
   animation_host_->SetMutatorHostClient(this);
 

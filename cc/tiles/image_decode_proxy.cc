@@ -13,29 +13,42 @@ struct ImageSerialization {
 };
 }
 
-ImageDecodeProxy::ImageDecodeProxy() {
-  proxy_thread_.reset(new base::Thread("ImageDecodeProxy"));
-  proxy_thread_->Start();
-  proxy_thread_->task_runner()->PostTask(
+// static.
+ImageDecodeProxy* ImageDecodeProxy::s_proxy = nullptr;
+ImageDecodeProxy* ImageDecodeProxy::Current() {
+  return s_proxy;
+}
+
+ImageDecodeProxy::ImageDecodeProxy(ImageDecodeService* service) : proxy_thread_("ImageDecodeProxy"), service_(service) {
+  base::ThreadRestrictions::SetIOAllowed(true);
+  proxy_thread_.Start();
+  proxy_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::Bind(&ImageDecodeProxy::OnInitializeMojo, base::Unretained(this)));
+  s_proxy = this;
 };
 
-ImageDecodeProxy::~ImageDecodeProxy() = default;
+ImageDecodeProxy::~ImageDecodeProxy() {
+  CompletionEvent event;
+  proxy_thread_.task_runner()->PostTask(
+      FROM_HERE, base::Bind(&ImageDecodeProxy::DoCloseMojo,
+                            base::Unretained(this), base::Unretained(&event)));
+  event.Wait();
+}
 
-ImageDecodeProxy* ImageDecodeProxy::Current() {
-  // Use base::Singleton thingy.
-  static ImageDecodeProxy proxy;
-  return &proxy;
+void ImageDecodeProxy::DoCloseMojo(CompletionEvent* event) {
+  image_decode_ptr_.reset();
+  event->Signal();
 }
 
 void ImageDecodeProxy::OnInitializeMojo() {
-  ImageDecodeService::Current()->Bind(mojo::GetProxy(&image_decode_ptr_));
+  base::ThreadRestrictions::SetIOAllowed(true);
+  service_->Bind(mojo::GetProxy(&image_decode_ptr_));
 }
 
 void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
                                      void* data,
-                                     base::WaitableEvent* event) {
+                                     CompletionEvent* event) {
   TRACE_EVENT1("cc", "ImageDecodeProxy::OnDecodeImage", "unique_id", unique_id);
 
   // TODO(hackathon): Pass shared memory buffer instead of raw pointer.
@@ -45,7 +58,7 @@ void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
                  base::Unretained(this), event));
 }
 
-void ImageDecodeProxy::OnDecodeImageCompleted(base::WaitableEvent* event) {
+void ImageDecodeProxy::OnDecodeImageCompleted(CompletionEvent* event) {
   TRACE_EVENT0("cc", "ImageDecodeProxy::OnDecodeImageCompleted");
   event->Signal();
 }
@@ -53,10 +66,8 @@ void ImageDecodeProxy::OnDecodeImageCompleted(base::WaitableEvent* event) {
 bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
                                    const SkImageInfo& info,
                                    void* data) {
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-
-  proxy_thread_->task_runner()->PostTask(
+  CompletionEvent event;
+  proxy_thread_.task_runner()->PostTask(
       FROM_HERE, base::Bind(&ImageDecodeProxy::OnDecodeImage,
                             base::Unretained(this), unique_id, data, &event));
 

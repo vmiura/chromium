@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "cc/tiles/image_decode_service.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -616,6 +617,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Layer tree that hold layers.
   LayerTree layer_tree_;
+
+  ImageDecodeService image_decode_service_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerTreeHost);
 };
