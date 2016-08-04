@@ -316,14 +316,10 @@ PassRefPtr<SkImage> DeferredImageDecoder::createFrameImageAtIndex(size_t index, 
     RefPtr<SkROBuffer> roBuffer = adoptRef(m_rwBuffer->newRBufferSnapshot());
     RefPtr<SegmentReader> segmentReader = SegmentReader::createFromSkROBuffer(roBuffer.release());
     DecodingImageGenerator* generator = new DecodingImageGenerator(m_frameGenerator, imageInfoFrom(decodedSize, knownToBeOpaque), segmentReader.release(), m_allDataReceived, index, m_frameData[index].m_uniqueID);
-    sk_sp<SkImage> real_image = SkImage::MakeFromGenerator(generator); // SkImage takes ownership of the generator.
+    sk_sp<SkImage> image = SkImage::MakeFromGenerator(generator); // SkImage takes ownership of the generator.
 
     // TODO(hackathon): Should probably register the service a different way.
-    cc::ImageDecodeService::Current()->RegisterImage(real_image);
-
-    // TODO(hackathon): To test the service, we directly create proxy images.
-    cc::ProxyImageGenerator* proxy_generator = new cc::ProxyImageGenerator(generator->getInfo(), real_image->uniqueID(), cc::ImageDecodeProxy::Current());
-    RefPtr<SkImage> image = fromSkSp(SkImage::MakeFromGenerator(proxy_generator));
+    cc::ImageDecodeService::Current()->RegisterImage(image);
 
     if (!image)
         return nullptr;
