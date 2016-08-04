@@ -4,6 +4,8 @@
 
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
+#include "third_party/skia/include/core/SkPixelSerializer.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "cc/base/cc_export.h"
@@ -36,8 +38,20 @@ class CC_EXPORT ImageDecodeProxy {
   base::Lock lock_;
 };
 
+// A generator which acts as a proxy back to the renderer process.
 class CC_EXPORT ProxyImageGenerator : public SkImageGenerator {
  public:
+  // Declare this to set Skia's global ImageGenerator factory for the lifetime
+  // of the object. Reverts to previous factory when it goes out of scope.
+  class ScopedBindFactory {
+   public:
+    ScopedBindFactory();
+    ~ScopedBindFactory();
+
+   private:
+    SkGraphics::ImageGeneratorFromEncodedFactory previous_factory_;
+  };
+
   ProxyImageGenerator(const SkImageInfo& info,
                       uint32_t unique_id,
                       ImageDecodeProxy* proxy);
@@ -50,7 +64,16 @@ class CC_EXPORT ProxyImageGenerator : public SkImageGenerator {
                    int* ctableCount) override;
 
  private:
+  static SkImageGenerator* create(SkData* data);
   const uint32_t unique_id_;
   ImageDecodeProxy* proxy_;
+};
+
+// Used by Skia to serialize images for transport from Renderer > MUS process.
+class CC_EXPORT ProxyPixelSerializer : public SkPixelSerializer {
+ protected:
+  bool onUseEncodedData(const void* data, size_t len) override;
+  SkData* onUseImage(const SkImage* image) override;
+  SkData* onEncode(const SkPixmap& pixmap) override;
 };
 }
