@@ -22,6 +22,7 @@
 #include "ipc/message_filter.h"
 
 namespace cc {
+class LayerTreeSettings;
 struct ServiceConnection;
 }
 
@@ -52,7 +53,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   int GetGpuChannelId() { return gpu_client_id_; }
 
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      gfx::AcceleratedWidget widget);
+      gfx::AcceleratedWidget widget,
+      const cc::LayerTreeSettings& settings);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();

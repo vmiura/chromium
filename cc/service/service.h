@@ -35,6 +35,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   Service(const gpu::SurfaceHandle& handle,
           cc::mojom::CompositorRequest request,
           cc::mojom::CompositorClientPtr client,
+          const cc::LayerTreeSettings& settings,
           int id,
           SharedBitmapManager* shared_bitmap_manager,
           gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,

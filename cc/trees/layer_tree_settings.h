@@ -11,6 +11,7 @@
 
 #include "cc/base/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
+#include "cc/ipc/layer_tree_settings.mojom.h"
 #include "cc/output/managed_memory_policy.h"
 #include "cc/output/renderer_settings.h"
 #include "cc/scheduler/scheduler_settings.h"
@@ -35,6 +36,9 @@ class CC_EXPORT LayerTreeSettings {
   void FromProtobuf(const proto::LayerTreeSettings& proto);
 
   SchedulerSettings ToSchedulerSettings() const;
+
+  LayerTreeSettings(cc::mojom::LayerTreeSettings* mojom);
+  cc::mojom::LayerTreeSettingsPtr ToMojom() const;
 
   RendererSettings renderer_settings;
   bool single_thread_proxy_scheduler = true;

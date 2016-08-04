@@ -6,6 +6,7 @@ module cc.mojom;
 
 import "cc/ipc/begin_frame_args.mojom";
 import "cc/ipc/content_frame.mojom";
+import "cc/ipc/layer_tree_settings.mojom";
 import "cc/ipc/renderer_capabilities.mojom";
 import "cc/ipc/surface_id.mojom";
 import "cc/ipc/image_decode.mojom";
@@ -14,8 +15,9 @@ import "ui/gfx/geometry/mojo/geometry.mojom";
 
 interface CompositorFactory {
   CreateCompositor(gpu.mojom.SurfaceHandle widget,
-                  Compositor& compositor,
-                  CompositorClient client);
+                   cc.mojom.LayerTreeSettings settings,
+                   Compositor& compositor,
+                   CompositorClient client);
 };
 
 interface Compositor {

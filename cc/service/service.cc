@@ -37,19 +37,6 @@
 
 namespace cc {
 
-namespace {
-
-LayerTreeSettings CreateLayerTreeSettings() {
-  LayerTreeSettings settings;
-  settings.use_output_surface_begin_frame_source = true;
-  // TODO(hackathon)
-  settings.renderer_settings.buffer_to_texture_target_map =
-      DefaultBufferToTextureTargetMapForTesting();
-  return settings;
-}
-
-}  // namespace
-
 class Service::ClientImpl : public LayerTreeHostImplClient,
                             public SchedulerClient {
  public:
@@ -185,6 +172,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
 Service::Service(const gpu::SurfaceHandle& handle,
                  cc::mojom::CompositorRequest request,
                  cc::mojom::CompositorClientPtr client,
+                 const cc::LayerTreeSettings& settings,
                  int id,
                  SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -200,18 +188,18 @@ Service::Service(const gpu::SurfaceHandle& handle,
       widget_(handle),
       surface_id_allocator_(id),
       scheduler_(client_.get(),
-                 SchedulerSettings(),
+                 settings.ToSchedulerSettings(),
                  id,
                  task_runner_.get(),
                  nullptr /* begin_frame_source */,
                  base::MakeUnique<CompositorTimingHistory>(
-                     SchedulerSettings().using_synchronous_renderer_compositor,
+                     settings.using_synchronous_renderer_compositor,
                      CompositorTimingHistory::RENDERER_UMA,
                      &rendering_stats_)),
       task_runner_provider_(task_runner_, nullptr),
       its_the_impl_thread_i_promise_(&task_runner_provider_),
       main_thread_animation_host_lol_(AnimationHost::CreateMainInstance()),
-      host_impl_(CreateLayerTreeSettings(),
+      host_impl_(settings,
                  client_.get(),
                  &task_runner_provider_,
                  &rendering_stats_,
@@ -263,14 +251,11 @@ void Service::CreateOutputSurface() {
         output_surface->capabilities().max_frames_pending);
 
     display_.reset(new Display(
-        shared_bitmap_manager_,
-        gpu_memory_buffer_manager_,
+        shared_bitmap_manager_, gpu_memory_buffer_manager_,
         // btw, cc_unittests pixel tests expect default RendeererSettings to
         // pass.
-        CreateLayerTreeSettings().renderer_settings,
-        std::move(begin_frame_source),
-        std::move(output_surface),
-        std::move(display_scheduler),
+        host_impl_.settings().renderer_settings, std::move(begin_frame_source),
+        std::move(output_surface), std::move(display_scheduler),
         base::MakeUnique<TextureMailboxDeleter>(task_runner_)));
   }
 

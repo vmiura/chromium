@@ -15,7 +15,7 @@ class GpuChannel;
 }
 
 namespace cc {
-
+class LayerTreeSettings;
 class ServiceFactory;
 
 class CompositorChannel : public cc::mojom::CompositorFactory {
@@ -27,6 +27,7 @@ class CompositorChannel : public cc::mojom::CompositorFactory {
   // cc::mojom::Compositor implementation.
   void CreateCompositor(
       const gpu::SurfaceHandle& handle,
+      cc::mojom::LayerTreeSettingsPtr settings,
       cc::mojom::CompositorRequest compositor,
       cc::mojom::CompositorClientPtr compositor_client) override;
 

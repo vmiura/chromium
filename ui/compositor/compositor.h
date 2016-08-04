@@ -42,6 +42,7 @@ class ContextProvider;
 class Layer;
 class LayerTreeDebugState;
 class LayerTreeHost;
+class LayerTreeSettings;
 class RendererSettings;
 struct ServiceConnection;
 class SharedBitmapManager;
@@ -137,7 +138,8 @@ class COMPOSITOR_EXPORT ContextFactory {
   // to a function on Compositor to set the ServiceConnection when we have it,
   // similar to OutputSurface.
   virtual std::unique_ptr<cc::ServiceConnection>
-      CreateServiceCompositorConnection(gfx::AcceleratedWidget widget) = 0;
+  CreateServiceCompositorConnection(gfx::AcceleratedWidget widget,
+                                    const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
   virtual cc::SurfaceManager* GetSurfaceManager() = 0;

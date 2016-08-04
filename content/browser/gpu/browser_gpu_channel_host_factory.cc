@@ -16,6 +16,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/service_connection.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -341,7 +342,8 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
 
 std::unique_ptr<cc::ServiceConnection>
 BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
-    gfx::AcceleratedWidget widget) {
+    gfx::AcceleratedWidget widget,
+    const cc::LayerTreeSettings& settings) {
   if (!compositor_factory_) {
     // TODO(hackathon): Synchronous is bad mmkay?
     if (!gpu_channel_ || gpu_channel_->IsLost())
@@ -354,8 +356,9 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   connection->client_request = mojo::GetProxy(&client);
   // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
   gpu::SurfaceHandle handle = widget;
-  compositor_factory_->CreateCompositor(
-      handle, mojo::GetProxy(&connection->compositor), std::move(client));
+  compositor_factory_->CreateCompositor(handle, settings.ToMojom(),
+                                        mojo::GetProxy(&connection->compositor),
+                                        std::move(client));
   return connection;
 }
 

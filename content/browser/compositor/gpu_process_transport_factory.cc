@@ -692,8 +692,10 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
 
 std::unique_ptr<cc::ServiceConnection>
 GpuProcessTransportFactory::CreateServiceCompositorConnection(
-    gfx::AcceleratedWidget widget) {
-  return BrowserGpuChannelHostFactory::instance()->CreateServiceCompositorConnection(widget);
+    gfx::AcceleratedWidget widget,
+    const cc::LayerTreeSettings& settings) {
+  return BrowserGpuChannelHostFactory::instance()
+      ->CreateServiceCompositorConnection(widget, settings);
 }
 
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,

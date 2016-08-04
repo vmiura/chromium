@@ -19,6 +19,7 @@ namespace cc {
 class BeginFrameSource;
 class ContextProvider;
 class ImageSerializationProcessor;
+class LayerTreeSettings;
 struct ServiceConnection;
 class SharedBitmapManager;
 class TaskGraphRunner;
@@ -65,7 +66,7 @@ class CompositorDependencies {
   virtual bool AreImageDecodeTasksEnabled() = 0;
   virtual bool IsThreadedAnimationEnabled() = 0;
   virtual std::unique_ptr<cc::ServiceConnection>
-    CreateServiceCompositorConnection() = 0;
+  CreateServiceCompositorConnection(const cc::LayerTreeSettings& settings) = 0;
 
   virtual ~CompositorDependencies() {}
 };

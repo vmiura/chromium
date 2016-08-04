@@ -63,7 +63,8 @@ class GpuProcessTransportFactory
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   uint32_t AllocateSurfaceClientId() override;
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      gfx::AcceleratedWidget widget) override;
+      gfx::AcceleratedWidget widget,
+      const cc::LayerTreeSettings& settings) override;
   void ResizeDisplay(ui::Compositor* compositor,
                      const gfx::Size& size) override;
   void SetDisplayColorSpace(ui::Compositor* compositor,

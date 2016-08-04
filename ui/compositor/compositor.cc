@@ -405,7 +405,8 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   widget_ = widget;
   widget_valid_ = true;
   host_->InitializeServiceConnection(
-      context_factory_->CreateServiceCompositorConnection(widget));
+      context_factory_->CreateServiceCompositorConnection(widget,
+                                                          host_->settings()));
   if (output_surface_requested_)
     context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
 }

@@ -24,31 +24,38 @@ CompositorChannel::~CompositorChannel() = default;
 
 static void CreateServiceOnThread(
     const gpu::SurfaceHandle& handle,
+    cc::mojom::LayerTreeSettingsPtr settings_mojom,
     cc::mojom::CompositorRequest compositor,
     cc::mojom::CompositorClientPtrInfo compositor_client_info,
-    int id, SharedBitmapManager* shared_bitmap_manager,
+    int id,
+    SharedBitmapManager* shared_bitmap_manager,
     gpu::GpuMemoryBufferManager* gpu_mem,
     gpu::ImageFactory* image_factory,
     SurfaceManager* surface_manager,
     TaskGraphRunner* task_graph_runner) {
+  LayerTreeSettings settings(settings_mojom.get());
+  // HACKATHON: The service compositor uses this mode to give out a
+  // BeginFrameSource, and the browser/renderer should have no control or input
+  // on this decision anymore.
+  settings.use_output_surface_begin_frame_source = true;
+  DCHECK(!settings.renderer_settings.buffer_to_texture_target_map.empty());
   // Deletes itself.
   cc::mojom::CompositorClientPtr client_ptr;
   client_ptr.Bind(std::move(compositor_client_info));
-  new Service(handle, std::move(compositor),
-              std::move(client_ptr),
-              id, shared_bitmap_manager, gpu_mem,
-              image_factory,
-              surface_manager,
-              task_graph_runner);
+  new Service(handle, std::move(compositor), std::move(client_ptr), settings,
+              id, shared_bitmap_manager, gpu_mem, image_factory,
+              surface_manager, task_graph_runner);
 }
 
 void CompositorChannel::CreateCompositor(
     const gpu::SurfaceHandle& handle,
+    cc::mojom::LayerTreeSettingsPtr settings,
     cc::mojom::CompositorRequest compositor,
     cc::mojom::CompositorClientPtr compositor_client) {
   compositor_task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&CreateServiceOnThread, handle, base::Passed(&compositor),
+      base::Bind(&CreateServiceOnThread, handle, base::Passed(&settings),
+                 base::Passed(&compositor),
                  base::Passed(compositor_client.PassInterface()),
                  factory_->NextServiceCompositorId(),
                  // TODO(hackathon): Better be threadsafe.
@@ -62,8 +69,7 @@ void CompositorChannel::CreateCompositor(
                  // These two are owned on the main thread, but will only be
                  // used on the compositor thread which is joined before they
                  // are destroyed.
-                 factory_->surface_manager(),
-                 factory_->task_graph_runner()));
+                 factory_->surface_manager(), factory_->task_graph_runner()));
 }
 
 void CompositorChannel::BindCompositorFactoryRequest(

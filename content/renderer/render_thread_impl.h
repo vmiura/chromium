@@ -226,8 +226,8 @@ class CONTENT_EXPORT RenderThreadImpl
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool AreImageDecodeTasksEnabled() override;
   bool IsThreadedAnimationEnabled() override;
-  std::unique_ptr<cc::ServiceConnection>
-      CreateServiceCompositorConnection() override;
+  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+      const cc::LayerTreeSettings& settings) override;
 
   // scheduler::RendererScheduler::RAILModeObserver implementation.
   void OnRAILModeChanged(v8::RAILMode rail_mode) override;

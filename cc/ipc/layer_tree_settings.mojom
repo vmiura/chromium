@@ -1,0 +1,112 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "cc/ipc/resource_format.mojom";
+import "gpu/ipc/common/memory_allocation.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/mojo/buffer_types.mojom";
+
+enum ScrollbarAnimator {
+  NO_ANIMATOR,
+  LINEAR_FADE,
+  THINNING,
+};
+
+struct BufferUsageFormat {
+  gfx.mojom.BufferUsage usage;
+  gfx.mojom.BufferFormat format;
+};
+
+struct ManagedMemoryPolicy {
+  uint64 bytes_limit_when_visible;
+  gpu.mojom.MemoryAllocationPriorityCutoff priority_cutoff_when_visible;
+  uint64 num_resources_limit;
+};
+
+struct LayerTreeSettings {
+  bool main_frame_before_activation_enabled;
+  bool can_use_lcd_text;
+  bool use_distance_field_text;
+  bool gpu_rasterization_enabled;
+  bool gpu_rasterization_forced;
+  bool async_worker_context_enabled;
+  int32 gpu_rasterization_msaa_sample_count;
+  float gpu_rasterization_skewport_target_time_in_seconds;
+  bool create_low_res_tiling;
+  ScrollbarAnimator scrollbar_animator;
+  int32 scrollbar_fade_delay_ms;
+  int32 scrollbar_fade_resize_delay_ms;
+  int32 scrollbar_fade_duration_ms;
+  uint32 solid_color_scrollbar_color;
+  bool timeout_and_draw_when_animation_checkerboards;
+  bool layer_transforms_should_scale_layer_contents;
+  bool layers_always_allowed_lcd_text;
+  float minimum_contents_scale;
+  float low_res_contents_scale_factor;
+  float top_controls_show_threshold;
+  float top_controls_hide_threshold;
+  double background_animation_rate;
+  gfx.mojom.Size default_tile_size;
+  gfx.mojom.Size max_untiled_layer_size;
+  gfx.mojom.Size minimum_occlusion_tracking_size;
+  int32 tiling_interest_area_padding;
+  float skewport_target_time_in_seconds;
+  int32 skewport_extrapolation_limit_in_screen_pixels;
+  uint64 max_memory_for_prepaint_percentage;
+  bool use_zero_copy;
+  bool use_partial_raster;
+  bool enable_elastic_overscroll;
+  bool ignore_root_layer_flings;
+  uint64 scheduled_raster_task_limit;
+  bool use_occlusion_for_tile_prioritization;
+  bool verify_clip_tree_calculations;
+  bool verify_transform_tree_calculations;
+  bool image_decode_tasks_enabled;
+  bool wait_for_beginframe_interval;
+  bool abort_commit_before_output_surface_creation;
+  bool use_layer_lists;
+  int32 max_staging_buffer_usage_in_bytes;
+  ManagedMemoryPolicy memory_policy_;
+  uint64 gpu_decoded_image_budget_bytes;
+  uint64 software_decoded_image_budget_bytes;
+  int32 max_preraster_distance_in_screen_pixels;
+  bool use_cached_picture_raster;
+
+  // LayerTreeDebugState.
+  bool show_fps_counter;
+  bool show_debug_borders;
+  bool show_paint_rects;
+  bool show_property_changed_rects;
+  bool show_surface_damage_rects;
+  bool show_screen_space_rects;
+  bool show_replica_screen_space_rects;
+  bool show_touch_event_handler_rects;
+  bool show_wheel_event_handler_rects;
+  bool show_scroll_event_handler_rects;
+  bool show_non_fast_scrollable_rects;
+  bool show_layer_animation_bounds_rects;
+  int32 slow_down_raster_scale_factor;
+  bool rasterize_only_visible_content;
+  bool show_picture_borders;
+
+  // RendererSettings.
+  bool allow_antialiasing;
+  bool force_antialiasing;
+  bool force_blending_with_shaders;
+  bool partial_swap_enabled;
+  bool finish_rendering_on_resize;
+  bool should_clear_root_render_pass;
+  bool disable_display_vsync;
+  bool release_overlay_resources_after_gpu_query;
+  double refresh_rate;
+  int32 highp_threshold_min;
+  uint64 texture_id_allocation_chunk_size;
+  bool use_gpu_memory_buffer_resources;
+  ResourceFormat preferred_tile_format;
+  // These two form a map.
+  array<BufferUsageFormat> buffer_types;  // Keys.
+  array<uint32> texture_targets;  // Values.
+};

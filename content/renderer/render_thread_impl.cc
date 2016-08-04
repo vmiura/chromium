@@ -1641,7 +1641,8 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
 }
 
 std::unique_ptr<cc::ServiceConnection>
-RenderThreadImpl::CreateServiceCompositorConnection() {
+RenderThreadImpl::CreateServiceCompositorConnection(
+    const cc::LayerTreeSettings& settings) {
   if (!compositor_factory_) {
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
         CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
@@ -1654,7 +1655,7 @@ RenderThreadImpl::CreateServiceCompositorConnection() {
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
   compositor_factory_->CreateCompositor(
-      gfx::kNullAcceleratedWidget /* offscreen */,
+      gfx::kNullAcceleratedWidget /* offscreen */, settings.ToMojom(),
       mojo::GetProxy(&connection->compositor), std::move(client));
   return connection;
 }
