@@ -1,0 +1,53 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "cc/ipc/surface_id.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
+
+enum LayerType {
+  NINE_PATCH,
+  PICTURE,
+  // TODO(fsamuel): Make this work?
+  // PICTURE_IMAGE,
+  SOLID_COLOR,
+  // TODO(fsamuel): SOLID_COLOR_SCROLLBAR
+  SURFACE,
+  TEXTURE,
+  UI_RESOURCE,
+  VIDEO
+};
+
+struct NinePatchLayerState {
+  gfx.mojom.Rect border;
+  bool fill_center;
+  bool nearest_neighbor;
+  gfx.mojom.Rect image_aperature;
+  gfx.mojom.Rect layer_occlusion;
+};
+
+struct PictureLayerState {
+  // TODO(fsamuel): Region.
+  // Region last_updated_invalidation;
+  int32 update_source_frame_num;
+  bool is_mask;
+};
+
+struct SurfaceLayerState {
+  cc.mojom.SurfaceId id;
+  gfx.mojom.Size size;
+  float scale;
+};
+
+struct Layer {
+  LayerType layer_type;
+  bool draws_content;
+  gfx.mojom.PointF position;
+  gfx.mojom.Size bounds;
+  uint32 background_color;
+
+  NinePatchLayerState? nine_patch_state;
+  PictureLayerState? picture_state;
+};

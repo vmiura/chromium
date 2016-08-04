@@ -41,10 +41,12 @@ mojom("compositor_interfaces") {
     "begin_frame_args.mojom",
     "compositor.mojom",
     "content_frame.mojom",
+    "layer.mojom",
     "renderer_capabilities.mojom",
     "resource_format.mojom",
   ]
   public_deps = [
+    ":interfaces_surfaceid_only",
     "//gpu/ipc/common:interfaces",
     "//mojo/common:common_custom_types",
   ]
