@@ -58,7 +58,7 @@ ImageDecodeService* ImageDecodeService::Current() {
 }
 
 ImageDecodeService::ImageDecodeService()
-    : binding_(this), requests_cv_(&lock_) {
+    : image_decode_binding_(this), requests_cv_(&lock_) {
   TRACE_EVENT0("cc", "ImageDecodeService::ImageDecodeService()");
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
@@ -69,13 +69,27 @@ ImageDecodeService::ImageDecodeService()
     thread->Start();
     threads_.push_back(std::move(thread));
   }
+
+  service_thread_.reset(new base::Thread("ImageDecodeService"));
+  service_thread_->Start();
+
+  new_results_notifier_.reset(
+      new UniqueNotifier(service_thread_->task_runner().get(),
+                         base::Bind(&ImageDecodeService::ProcessResultQueue,
+                                    base::Unretained(this))));
 }
 
 ImageDecodeService::~ImageDecodeService() = default;
 
 void ImageDecodeService::Bind(mojom::ImageDecodeRequest request) {
-  VLOG(0) << "ImageDecodeService::Bind";
-  binding_.Bind(std::move(request));
+  image_decode_request_ = std::move(request);
+  service_thread_->task_runner()->PostTask(
+      FROM_HERE, base::Bind(&ImageDecodeService::DoBindOnServiceThread,
+                            base::Unretained(this)));
+}
+
+void ImageDecodeService::DoBindOnServiceThread() {
+  image_decode_binding_.Bind(std::move(image_decode_request_));
 }
 
 void ImageDecodeService::DecodeImage(uint32_t unique_id,
@@ -116,8 +130,6 @@ void ImageDecodeService::ProcessRequestQueue() {
     }();
     image_decode_results_.emplace_back(
         new ImageDecodeResult(request->image_id, result, request->callback));
-    // TODO(hackathon): This runs on the origin thread, so if the origin thread
-    // is blocked waiting for reply then rip.
     new_results_notifier_->Schedule();
   }
 }
@@ -135,18 +147,6 @@ void ImageDecodeService::DecodeImage(uint32_t image_id,
                                      const base::Closure& callback) {
   TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "image_id", image_id);
   base::AutoLock hold(lock_);
-
-  if (!new_results_notifier_) {
-    // TODO(hackathon): We need to run the Mojo callback on the same thread it
-    // originates from.
-    // Temporarily capturing the thread here... pass it to ImageDecodeService
-    // instead.
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        base::ThreadTaskRunnerHandle::Get();
-    new_results_notifier_.reset(new UniqueNotifier(
-        task_runner.get(), base::Bind(&ImageDecodeService::ProcessResultQueue,
-                                      base::Unretained(this))));
-  }
 
   image_decode_requests_.emplace_back(
       new ImageDecodeRequest(image_id, buffer, callback));
