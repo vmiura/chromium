@@ -21,6 +21,10 @@ class GLInProcessContext;
 class GpuMemoryBufferManager;
 class ImageFactory;
 struct SharedMemoryLimits;
+class SyncPointManager;
+namespace gles2 {
+class MailboxManager;
+}
 }
 
 namespace skia_bindings {
@@ -31,7 +35,9 @@ namespace cc {
 
 class ServiceContextProvider : public ContextProvider {
  public:
-  static void SetupThread();
+  static void SetupThread(
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::gles2::MailboxManager* mailbox_manager);
   explicit ServiceContextProvider(
       gfx::AcceleratedWidget widget,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,

@@ -10,12 +10,14 @@ namespace cc {
 ServiceFactory::ServiceFactory(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gpu::ImageFactory* image_factory)
+    gpu::ImageFactory* image_factory,
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::gles2::MailboxManager* mailbox_manager)
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
       compositor_thread_("compositor") {
-  ServiceContextProvider::SetupThread();
+  ServiceContextProvider::SetupThread(sync_point_manager, mailbox_manager);
   task_graph_runner_.Start("CompositorWorker", base::SimpleThread::Options());
   compositor_thread_.Start();
 }

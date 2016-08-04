@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/in_process_command_buffer.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/gpu_preferences.h"
+#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
@@ -73,8 +74,17 @@ class DeferredGpuCommandService
     }
     return framebuffer_completeness_cache_;
   }
+
+  void set_sync_point_manager(gpu::SyncPointManager* sync_point_manager) {
+    sync_point_manager_ = sync_point_manager;
+  }
+
   gpu::SyncPointManager* sync_point_manager() override {
-    return &sync_point_manager_;
+    return sync_point_manager_;
+  }
+
+  void set_mailbox_manager(gpu::gles2::MailboxManager* manager) {
+    mailbox_manager_ = std::move(manager);
   }
 
   void AddRef() const override {
@@ -88,7 +98,8 @@ class DeferredGpuCommandService
   friend class base::RefCountedThreadSafe<DeferredGpuCommandService>;
 
   DeferredGpuCommandService()
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()), sync_point_manager_(true) {}
+      : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        sync_point_manager_(nullptr) {}
 
   ~DeferredGpuCommandService() override {
     base::AutoLock lock(tasks_lock_);
@@ -100,7 +111,7 @@ class DeferredGpuCommandService
   base::Lock tasks_lock_;
   std::queue<base::Closure> tasks_;
 
-  gpu::SyncPointManager sync_point_manager_;
+  gpu::SyncPointManager* sync_point_manager_;
   scoped_refptr<gpu::gles2::ShaderTranslatorCache> shader_translator_cache_;
   scoped_refptr<gpu::gles2::FramebufferCompletenessCache>
       framebuffer_completeness_cache_;
@@ -136,8 +147,13 @@ std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext(
 
 }  // namespace
 
-void ServiceContextProvider::SetupThread() {
-  DeferredGpuCommandService::GetInstance();
+void ServiceContextProvider::SetupThread(
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::gles2::MailboxManager* mailbox_manager) {
+  DeferredGpuCommandService::GetInstance()->set_sync_point_manager(
+      sync_point_manager);
+  DeferredGpuCommandService::GetInstance()->set_mailbox_manager(
+      mailbox_manager);
 }
 
 ServiceContextProvider::ServiceContextProvider(

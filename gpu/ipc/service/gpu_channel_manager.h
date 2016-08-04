@@ -132,6 +132,10 @@ class GPU_EXPORT GpuChannelManager {
     return exiting_for_lost_context_;
   }
 
+  gles2::MailboxManager* mailbox_manager() const {
+    return mailbox_manager_.get();
+  }
+
  protected:
   virtual std::unique_ptr<GpuChannel> CreateGpuChannel(
       int client_id,
@@ -145,9 +149,6 @@ class GPU_EXPORT GpuChannelManager {
   }
 
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
-  gles2::MailboxManager* mailbox_manager() const {
-    return mailbox_manager_.get();
-  }
   PreemptionFlag* preemption_flag() const {
     return preemption_flag_.get();
   }

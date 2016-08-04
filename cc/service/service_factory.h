@@ -14,6 +14,10 @@ namespace gpu {
 class GpuChannel;
 class GpuMemoryBufferManager;
 class ImageFactory;
+class SyncPointManager;
+namespace gles2 {
+class MailboxManager;
+}
 }
 
 namespace cc {
@@ -25,7 +29,9 @@ class CC_SERVICE_EXPORT ServiceFactory {
  public:
   ServiceFactory(SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                 gpu::ImageFactory* image_factory);
+                 gpu::ImageFactory* image_factory,
+                 gpu::SyncPointManager* sync_point_manager,
+                 gpu::gles2::MailboxManager* mailbox_manager);
   ~ServiceFactory();
 
   void AddChannel(gpu::GpuChannel* channel);

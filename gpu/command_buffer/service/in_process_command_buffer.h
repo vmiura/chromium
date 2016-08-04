@@ -158,7 +158,7 @@ class GPU_EXPORT InProcessCommandBuffer : public CommandBuffer,
     scoped_refptr<gles2::MailboxManager> mailbox_manager();
     gpu::gles2::ProgramCache* program_cache();
 
-   private:
+   protected:
     const GpuPreferences gpu_preferences_;
     const GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
     scoped_refptr<gl::GLShareGroup> share_group_;
