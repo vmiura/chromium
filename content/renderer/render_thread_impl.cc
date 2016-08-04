@@ -1222,13 +1222,9 @@ void RenderThreadImpl::InitializeWebKit(
   websocket_message_filter()->SetLoadingTaskRunner(
       renderer_scheduler_->LoadingTaskRunner());
 
-#if 0
-  // TODO(hackathon): don't create compositor thread so that we handle event on
-  // main (otherwise they get dropped).
   if (!command_line.HasSwitch(switches::kDisableThreadedCompositing) &&
       !command_line.HasSwitch(switches::kUseRemoteCompositing))
     InitializeCompositorThread();
-#endif
 
   if (!input_event_filter_.get()) {
     // Always provide an input event filter implementation to ensure consistent
