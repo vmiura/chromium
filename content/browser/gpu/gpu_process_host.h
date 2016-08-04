@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
+#include "content/common/host_discardable_shared_memory_manager.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -199,6 +200,10 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
       gpu::SurfaceHandle parent_handle,
       gpu::SurfaceHandle window_handle);
 #endif
+  void OnAllocateLockedDiscardableSharedMemory(
+      uint32_t size,
+      DiscardableSharedMemoryId id,
+      IPC::Message* reply_msg);
 
   void CreateChannelCache(int32_t client_id);
   void OnDestroyChannel(int32_t client_id);
@@ -220,6 +225,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   // The serial number of the GpuProcessHost / GpuProcessHostUIShim pair.
   int host_id_;
+  int process_id_;
+  base::Process peer_process_;
 
   // These are the channel requests that we have already sent to
   // the GPU process, but haven't heard back about yet.

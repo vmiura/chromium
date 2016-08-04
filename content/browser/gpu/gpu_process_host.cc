@@ -36,6 +36,7 @@
 #include "content/browser/mojo/mojo_shell_context.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/common/child_process_messages.h"
 #include "content/common/establish_channel_params.h"
 #include "content/common/gpu_host_messages.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -421,6 +422,7 @@ GpuProcessHost* GpuProcessHost::FromID(int host_id) {
 
 GpuProcessHost::GpuProcessHost(int host_id, GpuProcessKind kind)
     : host_id_(host_id),
+      process_id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       valid_(true),
       in_process_(false),
       swiftshader_rendering_(false),
@@ -458,6 +460,8 @@ GpuProcessHost::GpuProcessHost(int host_id, GpuProcessKind kind)
 
 GpuProcessHost::~GpuProcessHost() {
   DCHECK(CalledOnValidThread());
+  HostDiscardableSharedMemoryManager::current()->ProcessRemoved(
+      process_id_);
 
   SendOutstandingReplies();
 
@@ -656,6 +660,9 @@ bool GpuProcessHost::OnMessageReceived(const IPC::Message& message) {
                         OnAcceleratedSurfaceCreatedChildWindow)
 #endif
     IPC_MESSAGE_HANDLER(GpuHostMsg_FieldTrialActivated, OnFieldTrialActivated);
+    IPC_MESSAGE_HANDLER_DELAY_REPLY(
+        ChildProcessHostMsg_SyncAllocateLockedDiscardableSharedMemory,
+        OnAllocateLockedDiscardableSharedMemory)
     IPC_MESSAGE_UNHANDLED(RouteOnUIThread(message))
   IPC_END_MESSAGE_MAP()
 
@@ -706,6 +713,7 @@ void GpuProcessHost::OnChannelConnected(int32_t peer_pid) {
     Send(queued_messages_.front());
     queued_messages_.pop();
   }
+  peer_process_ = base::Process::OpenWithExtraPrivileges(peer_pid);
 }
 
 void GpuProcessHost::EstablishGpuChannel(
@@ -1194,6 +1202,32 @@ void GpuProcessHost::OnCacheShader(int32_t client_id,
   if (iter == client_id_to_shader_cache_.end())
     return;
   iter->second->Cache(GetShaderPrefixKey() + ":" + key, shader);
+}
+
+static void AllocateLockedDiscardableSharedMemoryOnFileThread(
+    base::ProcessHandle peer_handle,
+    int process_id,
+    uint32_t size,
+    DiscardableSharedMemoryId id,
+    IPC::Message* reply_msg) {
+  base::SharedMemoryHandle handle;
+  HostDiscardableSharedMemoryManager::current()
+      ->AllocateLockedDiscardableSharedMemoryForChild(
+          peer_handle, process_id, size, id, &handle);
+  ChildProcessHostMsg_SyncAllocateLockedDiscardableSharedMemory::
+      WriteReplyParams(reply_msg, handle);
+  GpuProcessHost::SendOnIO(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
+                           CAUSE_FOR_GPU_LAUNCH_NO_LAUNCH, reply_msg);
+}
+
+void GpuProcessHost::OnAllocateLockedDiscardableSharedMemory(
+    uint32_t size,
+    DiscardableSharedMemoryId id,
+    IPC::Message* reply_msg) {
+  BrowserThread::PostTask(
+      BrowserThread::FILE_USER_BLOCKING, FROM_HERE,
+      base::Bind(&AllocateLockedDiscardableSharedMemoryOnFileThread,
+                 peer_process_.Handle(), process_id_, size, id, reply_msg));
 }
 
 }  // namespace content
