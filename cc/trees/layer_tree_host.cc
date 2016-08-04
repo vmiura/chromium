@@ -447,7 +447,6 @@ void LayerTreeHost::BeginMainFrameNotExpectedSoon() {
 void LayerTreeHost::BeginMainFrame(const BeginFrameArgs& args) {
   client_->BeginMainFrame(args);
 }
-
 void LayerTreeHost::DidStopFlinging() {
   proxy_->MainThreadHasStoppedFlinging();
 }
@@ -1330,6 +1329,7 @@ void LayerTreeHost::OnCommitForSwapPromises() {
 
 void LayerTreeHost::set_surface_client_id(uint32_t client_id) {
   surface_client_id_ = client_id;
+  proxy_->SetSurfaceClientId(client_id);
 }
 
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {

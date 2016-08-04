@@ -44,6 +44,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;
   void SetOutputSurface(OutputSurface* output_surface) override;
+  void SetSurfaceClientId(uint32_t client_id) override;
   void SetVisible(bool visible) override;
   const RendererCapabilities& GetRendererCapabilities() const override;
   void SetNeedsAnimate() override;
@@ -95,6 +96,8 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   const int layer_tree_host_id_;
 
   bool commit_waits_for_activation_;
+
+  cc::SurfaceId surface_id_;
 
   // Set when the Proxy is started using Proxy::Start() and reset when it is
   // stopped using Proxy::Stop().

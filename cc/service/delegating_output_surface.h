@@ -38,6 +38,8 @@ class CC_SERVICE_EXPORT DelegatingOutputSurface
       scoped_refptr<ContextProvider> worker_context_provider);
   ~DelegatingOutputSurface() override;
 
+  void SetSurfaceId(const cc::SurfaceId& surface_id);
+
   // OutputSurface implementation.
   void SwapBuffers(CompositorFrame frame) override;
   bool BindToClient(OutputSurfaceClient* client) override;

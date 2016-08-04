@@ -31,7 +31,12 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
 
   void SetNeedsBeginMainFrame() { compositor_->SetNeedsBeginMainFrame(); }
   void SetNeedsRedraw(const gfx::Rect& damage_rect) { compositor_->SetNeedsRedraw(damage_rect); }
-  void Commit(bool hold_commit_for_activation, mojom::ContentFramePtr frame) { compositor_->Commit(hold_commit_for_activation, std::move(frame)); }
+  void Commit(const cc::SurfaceId& surface_id,
+              bool hold_commit_for_activation,
+              mojom::ContentFramePtr frame) {
+    compositor_->Commit(surface_id, hold_commit_for_activation,
+                        std::move(frame));
+  }
 
  private:
   cc::mojom::CompositorPtr compositor_;

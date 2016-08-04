@@ -373,7 +373,8 @@ void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   scheduler_.SetNeedsRedraw();
 }
 
-void Service::Commit(bool wait_for_activation,
+void Service::Commit(const cc::SurfaceId& surface_id,
+                     bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {
   LOG(ERROR) << this << " Commit";
@@ -381,6 +382,8 @@ void Service::Commit(bool wait_for_activation,
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
+
+  output_surface_->SetSurfaceId(surface_id);
 
   frame_for_commit_ = std::move(frame);
   wait_for_activation_ = wait_for_activation;

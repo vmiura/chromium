@@ -42,6 +42,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;
   void SetOutputSurface(OutputSurface* output_surface) override;
+  void SetSurfaceClientId(uint32_t client_id) override {}
   void ReleaseOutputSurface() override;
   void SetVisible(bool visible) override;
   const RendererCapabilities& GetRendererCapabilities() const override;

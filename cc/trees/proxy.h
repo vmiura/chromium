@@ -49,6 +49,8 @@ class CC_EXPORT Proxy {
   // with the result of this function.
   virtual void SetOutputSurface(OutputSurface* output_surface) = 0;
 
+  virtual void SetSurfaceClientId(uint32_t client_id) = 0;
+
   virtual void ReleaseOutputSurface() = 0;
 
   virtual void SetVisible(bool visible) = 0;

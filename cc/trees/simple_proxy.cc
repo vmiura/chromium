@@ -96,6 +96,10 @@ void SimpleProxy::SetOutputSurface(OutputSurface* output_surface) {
   NOTREACHED();
 }
 
+void SimpleProxy::SetSurfaceClientId(uint32_t client_id) {
+  surface_id_ = SurfaceId(client_id, 1, 1);
+}
+
 void SimpleProxy::SetVisible(bool visible) {
   // TODO(piman): hackathon ??
   TRACE_EVENT1("cc", "SimpleProxy::SetVisible", "visible", visible);
@@ -105,7 +109,6 @@ void SimpleProxy::SetVisible(bool visible) {
 const RendererCapabilities& SimpleProxy::GetRendererCapabilities() const {
   // TODO(piman): hackathon ??
   DCHECK(IsMainThread());
-  NOTIMPLEMENTED();
   return renderer_capabilities_;
 }
 
@@ -349,7 +352,8 @@ void SimpleProxy::OnBeginMainFrame(
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
     layer_tree_host_->GetContentFrame(frame.get());
     mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-    compositor_->Commit(hold_commit_for_activation, std::move(frame));
+    compositor_->Commit(surface_id_, hold_commit_for_activation,
+                        std::move(frame));
   }
 
   layer_tree_host_->CommitComplete();
