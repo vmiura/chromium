@@ -11,6 +11,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
+#include "cc/layers/surface_layer_impl.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
@@ -443,6 +444,9 @@ void Service::FinishCommit() {
           case cc::mojom::LayerType::SOLID_COLOR:
             layer = SolidColorLayerImpl::Create(sync_tree, id);
             break;
+          case cc::mojom::LayerType::SURFACE:
+            layer = SurfaceLayerImpl::Create(sync_tree, id);
+            break;
         }
       }
       return layer;
@@ -457,6 +461,12 @@ void Service::FinishCommit() {
         sync_tree->AddToLayerList(layer.get());
         sync_tree->AddLayer(std::move(layer));
       }
+      for (const auto& layer_properties : frame->layer_properties) {
+        LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
+        LOG(ERROR) << "read layer properties " << layer->id();
+        layer->ReadPropertiesMojom(layer_properties.get());
+      }
+
     } else {
       LOG(ERROR) << "read empty tree";
     }

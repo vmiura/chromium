@@ -1735,6 +1735,12 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     LayerTreeHostCommon::CallFunctionForEveryLayer(this, write_layer);
     frame->layer_tree = std::move(tree);
   }
+
+  for (auto* layer : layer_tree_.LayersThatShouldPushProperties()) {
+    auto mojom = cc::mojom::LayerProperties::New();
+    layer->WritePropertiesMojom(mojom.get());
+    frame->layer_properties.push_back(std::move(mojom));
+  }
   frame->needs_full_tree_sync = needs_full_tree_sync_;
   needs_full_tree_sync_ = false;
 

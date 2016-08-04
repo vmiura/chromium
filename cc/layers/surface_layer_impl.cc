@@ -62,6 +62,16 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceScale(surface_scale_);
 }
 
+void SurfaceLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
+  LayerImpl::ReadPropertiesMojom(mojom);
+  DCHECK(mojom->surface_state);
+  mojom::SurfaceLayerState* surface_state = mojom->surface_state.get();
+
+  surface_id_ = surface_state->id;
+  surface_size_ = surface_state->size;
+  surface_scale_ = surface_state->scale;
+}
+
 void SurfaceLayerImpl::AppendQuads(RenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   AppendRainbowDebugBorder(render_pass);

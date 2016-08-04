@@ -72,7 +72,7 @@ enum LayerType {
   SOLID_COLOR,
   // TODO(hackathon): SOLID_COLOR_SCROLLBAR
   // TODO(hackathon): NINE_PATCH,
-  // TODO(hackathon): SURFACE,
+  SURFACE,
   // TODO(hackathon): TEXTURE,
   // TODO(hackathon): UI_RESOURCE,
   // TODO(hackathon): VIDEO
@@ -112,4 +112,5 @@ struct ContentFrame {
   PropertyTrees property_trees;
   // This exists iff needs_full_tree_sync is true.
   LayerTree? layer_tree;
+  array<cc.mojom.LayerProperties> layer_properties;
 };

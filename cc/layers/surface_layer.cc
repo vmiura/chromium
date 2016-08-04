@@ -57,6 +57,20 @@ SurfaceLayer::~SurfaceLayer() {
   DCHECK(destroy_sequence_.is_null());
 }
 
+void SurfaceLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
+  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
+  mojom->layer_type = cc::mojom::LayerType::SURFACE;
+}
+
+void SurfaceLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
+  Layer::WritePropertiesMojom(mojom);
+  mojom->surface_state = mojom::SurfaceLayerState::New();
+  mojom::SurfaceLayerState* surface_state = mojom->surface_state.get();
+  surface_state->id = surface_id_;
+  surface_state->size = surface_size_;
+  surface_state->scale = surface_scale_;
+}
+
 void SurfaceLayer::SetSurfaceId(const SurfaceId& surface_id,
                                 float scale,
                                 const gfx::Size& size) {

@@ -39,6 +39,8 @@ struct SurfaceLayerState {
 };
 
 struct LayerProperties {
+  int32 layer_id;
+
   bool draws_content;
   gfx.mojom.PointF position;
   gfx.mojom.Size bounds;

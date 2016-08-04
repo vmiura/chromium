@@ -1893,6 +1893,7 @@ void Layer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
 }
 
 void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
+  mojom->layer_id = inputs_.layer_id;
   mojom->draws_content = draws_content_;
   mojom->position = inputs_.position;
   mojom->bounds = inputs_.bounds;

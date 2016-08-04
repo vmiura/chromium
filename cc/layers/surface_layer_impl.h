@@ -31,6 +31,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer) override;
+  void ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) override;
   void AppendQuads(RenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
