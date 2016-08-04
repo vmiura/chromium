@@ -450,6 +450,8 @@ component("cc") {
     "tiles/gpu_image_decode_controller.cc",
     "tiles/gpu_image_decode_controller.h",
     "tiles/image_decode_controller.h",
+    "tiles/image_decode_mojo.cc",
+    "tiles/image_decode_mojo.h",
     "tiles/image_decode_proxy.cc",
     "tiles/image_decode_proxy.h",
     "tiles/image_decode_service.cc",
@@ -569,6 +571,7 @@ component("cc") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//cc/ipc:image_decode_interfaces",
     "//cc/proto",
     "//cc/surfaces:surface_id",
     "//gpu",

@@ -5,6 +5,7 @@
 #ifndef CC_TILES_IMAGE_DECODE_SERVICE_H_
 #define CC_TILES_IMAGE_DECODE_SERVICE_H_
 
+#include "base/bind.h"
 #include "cc/base/cc_export.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "base/synchronization/lock.h"
@@ -31,7 +32,9 @@ class CC_EXPORT ImageDecodeService {
   void UnregisterImage(uint32_t image_id);
 
   // Mojo accesses this?
-  void DecodeImage(uint32_t image_id, void* buffer);
+  void DecodeImage(uint32_t image_id,
+                   void* buffer,
+                   const base::Closure& callback);
 
   // Called by the thread.
   void ProcessRequestQueue();
@@ -40,19 +43,48 @@ class CC_EXPORT ImageDecodeService {
 
  private:
   bool DoDecodeImage(uint32_t image_id, void* buffer);
-  void OnImageDecoded(uint32_t image_id, bool succeeded);
+  void OnImageDecoded(uint32_t image_id,
+                      bool succeeded,
+                      const base::Closure& callback);
 
   base::Lock lock_;
   std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
 
   base::ConditionVariable requests_cv_;
-  std::deque<std::pair<uint32_t, void*>> image_decode_requests_;
-  std::deque<std::pair<uint32_t, bool>> image_decode_results_;
+
+  struct ImageDecodeRequest {
+    ImageDecodeRequest(uint32_t image_id,
+                       void* buffer,
+                       const base::Closure& callback);
+    ~ImageDecodeRequest();
+
+    uint32_t image_id;
+    void* buffer;
+    const base::Closure callback;
+
+    DISALLOW_COPY_AND_ASSIGN(ImageDecodeRequest);
+  };
+
+  struct ImageDecodeResult {
+    ImageDecodeResult(uint32_t image_id,
+                      bool succeeded,
+                      const base::Closure& callback);
+    ~ImageDecodeResult();
+
+    uint32_t image_id;
+    bool succeeded;
+    const base::Closure callback;
+
+    DISALLOW_COPY_AND_ASSIGN(ImageDecodeResult);
+  };
+
+  std::deque<std::unique_ptr<ImageDecodeRequest>> image_decode_requests_;
+  std::deque<std::unique_ptr<ImageDecodeResult>> image_decode_results_;
 
   std::vector<std::unique_ptr<base::SimpleThread>> threads_;
   // TODO(hackathon): Hold on to this for lifetime issues?
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  UniqueNotifier new_results_notifier_;
+  // scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  std::unique_ptr<UniqueNotifier> new_results_notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageDecodeService);
 };

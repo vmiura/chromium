@@ -36,6 +36,15 @@ component("ipc") {
   ]
 }
 
+mojom("image_decode_interfaces") {
+  sources = [
+    "image_decode.mojom",
+  ]
+  public_deps = [
+    "//mojo/common:common_custom_types",
+  ]
+}
+
 mojom("interfaces") {
   sources = [
     "begin_frame_args.mojom",

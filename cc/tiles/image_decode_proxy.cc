@@ -1,10 +1,18 @@
 #include "cc/tiles/image_decode_proxy.h"
 
+#include "base/trace_event/trace_event.h"
 #include "cc/tiles/image_decode_service.h"
 
 namespace cc {
 
-ImageDecodeProxy::ImageDecodeProxy() = default;
+ImageDecodeProxy::ImageDecodeProxy() {
+  mojo_thread_.reset(new base::Thread("image_decode_proxy"));
+  mojo_thread_->Start();
+  mojo_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::Bind(&ImageDecodeProxy::OnInitializeMojo, base::Unretained(this)));
+};
+
 ImageDecodeProxy::~ImageDecodeProxy() = default;
 
 ImageDecodeProxy* ImageDecodeProxy::Current() {
@@ -13,26 +21,45 @@ ImageDecodeProxy* ImageDecodeProxy::Current() {
   return &proxy;
 }
 
+void ImageDecodeProxy::OnInitializeMojo() {
+  VLOG(0) << "ImageDecodeProxy::InitializeMojo()";
+
+  image_decode_mojo_.reset(
+      new ImageDecodeMojo(mojo::GetProxy(&image_decode_ptr_)));
+}
+
+void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
+                                     void* data,
+                                     base::WaitableEvent* event) {
+  TRACE_EVENT1("cc", "ImageDecodeProxy::OnDecodeImage", "unique_id", unique_id);
+  VLOG(0) << "ImageDecodeProxy::OnDecodeImage " << unique_id << " " << data;
+
+  // TODO(hackathon): send request via image_decode_mojo_.
+  image_decode_ptr_->DecodeImage(
+      unique_id, (uint64_t)data,
+      base::Bind(&ImageDecodeProxy::OnDecodeImageCompleted,
+                 base::Unretained(this), event));
+}
+
+void ImageDecodeProxy::OnDecodeImageCompleted(base::WaitableEvent* event) {
+  TRACE_EVENT0("cc", "ImageDecodeProxy::OnDecodeImageCompleted");
+  VLOG(0) << "ImageDecodeProxy::OnDecodeImageCompleted";
+  event->Signal();
+}
+
 bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
                                    const SkImageInfo& info,
                                    void* data) {
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  events_[unique_id] = &event;
 
-  // TODO(hackathon): send request via IPC.
-  ImageDecodeService::Current()->DecodeImage(unique_id, data);
+  mojo_thread_->task_runner()->PostTask(
+      FROM_HERE, base::Bind(&ImageDecodeProxy::OnDecodeImage,
+                            base::Unretained(this), unique_id, data, &event));
 
   event.Wait();
 
   return true;
-}
-
-void ImageDecodeProxy::OnImageDecodeCompleted(uint32_t unique_id,
-                                              bool succeeded) {
-  // TODO(hackathon): pipe succeeded.
-  events_[unique_id]->Signal();
-  events_.erase(unique_id);
 }
 
 ProxyImageGenerator::ProxyImageGenerator(const SkImageInfo& info,
