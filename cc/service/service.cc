@@ -35,9 +35,6 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 
-// TODO(hackathon): For Hacks.
-#include "cc/layers/solid_color_layer_impl.h"
-
 namespace cc {
 
 namespace {
@@ -353,20 +350,6 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
 
   DCHECK_NE(INVALID_RESULT, result);
   return result;
-}
-
-void Service::InsertHackyGreenLayer() {
-  // TODO(hackathon): Some made up stuff, we should get these from a commit.
-  static int layer_id = 1;
-  auto* pending_tree = host_impl_.pending_tree();
-  auto green_layer =
-      SolidColorLayerImpl::Create(pending_tree, layer_id++);
-  green_layer->SetDrawsContent(true);
-  green_layer->SetBackgroundColor(SK_ColorGREEN);
-  green_layer->SetPosition(gfx::PointF(10, 10));
-  green_layer->SetBounds(gfx::Size(80, 80));
-  pending_tree->SetRootLayerForTesting(std::move(green_layer));
-  pending_tree->BuildPropertyTreesForTesting();
 }
 
 void Service::SetNeedsBeginMainFrame() {
