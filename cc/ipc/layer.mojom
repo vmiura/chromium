@@ -50,4 +50,5 @@ struct Layer {
 
   NinePatchLayerState? nine_patch_state;
   PictureLayerState? picture_state;
+  SurfaceLayerState? surface_state;
 };
