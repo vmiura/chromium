@@ -512,12 +512,14 @@ void Service::FinishCommit() {
 
   // Setting property trees must happen before pushing the page scale.
   PropertyTrees* property_trees = sync_tree->property_trees();
+  bool property_trees_sequence_changed = false;
   {
     auto& source = *frame->property_trees;
     auto* dest = property_trees;
     dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
     dest->changed = source.changed;
     dest->full_tree_damaged = source.full_tree_damaged;
+    property_trees_sequence_changed = (dest->sequence_number != source.sequence_number);
     dest->sequence_number = source.sequence_number;
     dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
   }
@@ -585,7 +587,8 @@ void Service::FinishCommit() {
   // effect tree.
   if (sync_tree->IsActiveTree())
     property_trees->effect_tree.set_needs_update(true);
-  property_trees->ResetCachedData();
+  if (property_trees_sequence_changed)
+    property_trees->ResetCachedData();
 
   sync_tree->PushPageScaleFromMainThread(
       frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
