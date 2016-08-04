@@ -861,8 +861,11 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
 
-  if (!surface_id_.is_null())
-    surface_factory_->Destroy(surface_id_);
+  if (surface_factory_) {
+    // HACKATHON: surface_factory_ is always null and unused.
+    if (!surface_id_.is_null())
+      surface_factory_->Destroy(surface_id_);
+  }
   factory->GetSurfaceManager()->UnregisterSurfaceFactoryClient(
       id_allocator_->client_id());
   factory->GetSurfaceManager()->InvalidateSurfaceClientId(
