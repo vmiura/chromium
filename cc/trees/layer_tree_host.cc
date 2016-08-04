@@ -1736,11 +1736,6 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     frame->layer_tree = std::move(tree);
   }
 
-  for (auto* layer : layer_tree_.LayersThatShouldPushProperties()) {
-    auto mojom = cc::mojom::LayerProperties::New();
-    layer->WritePropertiesMojom(mojom.get());
-    frame->layer_properties.push_back(std::move(mojom));
-  }
   frame->needs_full_tree_sync = needs_full_tree_sync_;
   needs_full_tree_sync_ = false;
 
@@ -1823,6 +1818,7 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
       data->from_screen = i.from_screen;
       data->to_screen = i.to_screen;
       data->target_id = i.target_id;
+      data->content_target_id = i.content_target_id;
       dest->cached_data.push_back(std::move(data));
     }
     size_t vec_bytes = source.nodes().size() * sizeof(TransformNode);
@@ -1948,10 +1944,11 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
 
-#if 0
-    // TODO(hackathon): layers
-    TreeSynchronizer::PushLayerProperties(&layer_tree_, sync_tree);
-#endif
+    for (auto* layer : layer_tree_.LayersThatShouldPushProperties()) {
+      auto mojom = cc::mojom::LayerProperties::New();
+      layer->WritePropertiesMojom(mojom.get());
+      frame->layer_properties.push_back(std::move(mojom));
+    }
 
     TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
 #if 0

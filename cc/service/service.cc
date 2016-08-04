@@ -461,12 +461,6 @@ void Service::FinishCommit() {
         sync_tree->AddToLayerList(layer.get());
         sync_tree->AddLayer(std::move(layer));
       }
-      for (const auto& layer_properties : frame->layer_properties) {
-        LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
-        LOG(ERROR) << "read layer properties " << layer->id();
-        layer->ReadPropertiesMojom(layer_properties.get());
-      }
-
     } else {
       LOG(ERROR) << "read empty tree";
     }
@@ -563,6 +557,7 @@ void Service::FinishCommit() {
       dst_data->from_screen = src_data.from_screen;
       dst_data->to_screen = src_data.to_screen;
       dst_data->target_id = src_data.target_id;
+      dst_data->content_target_id = src_data.content_target_id;
     }
   }
   {
@@ -661,10 +656,11 @@ void Service::FinishCommit() {
   {
     TRACE_EVENT0("cc", "Service::PushProperties");
 
-#if 0
-    // TODO(hackathon): layers
-    TreeSynchronizer::PushLayerProperties(&layer_tree_, sync_tree);
-#endif
+    for (const auto& layer_properties : frame->layer_properties) {
+      LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
+      LOG(ERROR) << "read layer properties " << layer->id();
+      layer->ReadPropertiesMojom(layer_properties.get());
+    }
 
     // This must happen after synchronizing property trees and after push
     // properties, which updates property tree indices, but before animation
