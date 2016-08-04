@@ -82,7 +82,7 @@ class CC_EXPORT ProxyMain : public Proxy {
 
   // Proxy implementation.
   void InitializeCompositor(
-      std::unique_ptr<CompositorProxy> compositor) override;
+      std::unique_ptr<ServiceConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

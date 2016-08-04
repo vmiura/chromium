@@ -27,6 +27,7 @@ component("service") {
   ]
   deps = [
     "//base",
+    "//cc:transport",
     "//cc/ipc:interfaces",
     "//cc/surfaces",
     "//gpu/command_buffer/client:gl_in_process_context",

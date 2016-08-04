@@ -20,6 +20,7 @@
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/debug/frame_viewer_instrumentation.h"
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer_client.h"
 #include "cc/layers/layer_impl.h"

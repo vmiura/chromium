@@ -30,6 +30,7 @@ class LayerTreeDebugState;
 class LayerTreeMutator;
 class OutputSurface;
 struct RendererCapabilities;
+struct ServiceConnection;
 
 // Abstract interface responsible for proxying commands from the main-thread
 // side of the compositor over to the compositor implementation.
@@ -38,7 +39,7 @@ class CC_EXPORT Proxy {
   virtual ~Proxy() {}
 
   virtual void InitializeCompositor(
-      std::unique_ptr<CompositorProxy> compositor) = 0;
+      std::unique_ptr<ServiceConnection> connection) = 0;
 
   virtual void RegisterChildCompositor(uint32_t client) {}
 

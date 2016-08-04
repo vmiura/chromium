@@ -554,6 +554,8 @@ component("cc") {
     "trees/scoped_abort_remaining_swap_promises.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
+    "trees/service_connection.cc",
+    "trees/service_connection.h",
     "trees/simple_proxy.cc",
     "trees/simple_proxy.h",
     "trees/single_thread_proxy.cc",
@@ -587,7 +589,6 @@ component("cc") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//cc/client",
     "//cc/ipc:compositor_interfaces",
     "//cc/proto",
     "//cc/surfaces:surface_id",

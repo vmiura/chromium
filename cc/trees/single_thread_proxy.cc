@@ -109,7 +109,7 @@ SingleThreadProxy::~SingleThreadProxy() {
 }
 
 void SingleThreadProxy::InitializeCompositor(
-    std::unique_ptr<CompositorProxy> compositor) {}
+    std::unique_ptr<ServiceConnection> connection) {}
 
 void SingleThreadProxy::FinishAllRendering() {
   TRACE_EVENT0("cc", "SingleThreadProxy::FinishAllRendering");

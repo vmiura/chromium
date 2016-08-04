@@ -7,8 +7,6 @@
 
 #include "base/macros.h"
 #include "cc/base/cc_export.h"
-#include "cc/client/compositor_channel_host.h"
-#include "cc/client/compositor_proxy.h"
 #include "cc/input/top_controls_state.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/output/output_surface.h"
@@ -17,6 +15,7 @@
 #include "cc/trees/proxy.h"
 #include "cc/trees/proxy_common.h"
 #include "cc/trees/remote_proto_channel.h"
+#include "mojo/public/cpp/bindings/binding.h"
 
 namespace cc {
 
@@ -29,7 +28,7 @@ class LayerTreeMutator;
 // This class aggregates all interactions that the impl side of the compositor
 // needs to have with the main side.
 // The class is created and lives on the main thread.
-class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
+class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
  public:
   static std::unique_ptr<SimpleProxy> Create(
       LayerTreeHost* layer_tree_host,
@@ -38,8 +37,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   ~SimpleProxy() override;
 
   // Proxy implementation.
-  void InitializeCompositor(
-      std::unique_ptr<CompositorProxy> compositor) override;
+  void InitializeCompositor(std::unique_ptr<ServiceConnection> connection) override;
   void RegisterChildCompositor(uint32_t client_id) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
@@ -93,7 +91,6 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   bool needs_set_visible_value_when_ready_;
   LayerTreeHost* layer_tree_host_;
   TaskRunnerProvider* task_runner_provider_;
-  std::unique_ptr<CompositorProxy> compositor_;
 
   const int layer_tree_host_id_;
 
@@ -109,6 +106,10 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   bool begin_frame_requested_;
 
   RendererCapabilities renderer_capabilities_;
+
+ private:
+  mojo::InterfacePtr<cc::mojom::Compositor> compositor_;
+  mojo::Binding<cc::mojom::CompositorClient> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleProxy);
 };

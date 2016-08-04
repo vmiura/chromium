@@ -149,7 +149,7 @@ void RemoteChannelImpl::HandleProto(
 }
 
 void RemoteChannelImpl::InitializeCompositor(
-    std::unique_ptr<CompositorProxy> compositor) {}
+    std::unique_ptr<ServiceConnection> connection) {}
 
 void RemoteChannelImpl::FinishAllRendering() {
   NOTREACHED() << "Should not be called on the remote client LayerTreeHost";

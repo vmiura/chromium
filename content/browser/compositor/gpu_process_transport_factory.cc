@@ -26,6 +26,7 @@
 #include "cc/raster/task_graph_runner.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/delay_based_time_source.h"
+#include "cc/trees/service_connection.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/display_scheduler.h"
 #include "cc/surfaces/surface_display_output_surface.h"
@@ -689,9 +690,10 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
   return next_surface_client_id_++;
 }
 
-cc::CompositorChannelHost*
-GpuProcessTransportFactory::GetCompositorChannelHost() {
-  return BrowserGpuChannelHostFactory::instance()->GetCompositorChannelHost();
+std::unique_ptr<cc::ServiceConnection>
+GpuProcessTransportFactory::CreateServiceCompositorConnection(
+    gfx::AcceleratedWidget widget) {
+  return BrowserGpuChannelHostFactory::instance()->CreateServiceCompositorConnection(widget);
 }
 
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,

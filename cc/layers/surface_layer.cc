@@ -8,6 +8,7 @@
 
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/output/swap_promise.h"
 #include "cc/trees/layer_tree_host.h"

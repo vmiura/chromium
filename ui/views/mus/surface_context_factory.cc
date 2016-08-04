@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "cc/output/output_surface.h"
 #include "cc/resources/shared_bitmap_manager.h"
+#include "cc/trees/service_connection.h"
 #include "cc/surfaces/surface_id_allocator.h"
 #include "services/ui/public/cpp/window.h"
 #include "ui/compositor/reflector.h"
@@ -91,7 +92,9 @@ uint32_t SurfaceContextFactory::AllocateSurfaceClientId() {
   return next_surface_id_namespace_++;
 }
 
-cc::CompositorChannelHost* SurfaceContextFactory::GetCompositorChannelHost() {
+std::unique_ptr<cc::ServiceConnection>
+SurfaceContextFactory::CreateServiceCompositorConnection(
+    gfx::AcceleratedWidget widget) {
   return nullptr;
 }
 

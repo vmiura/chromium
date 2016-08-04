@@ -38,12 +38,12 @@ class SingleThreadTaskRunner;
 
 namespace cc {
 class AnimationTimeline;
-class CompositorChannelHost;
 class ContextProvider;
 class Layer;
 class LayerTreeDebugState;
 class LayerTreeHost;
 class RendererSettings;
+struct ServiceConnection;
 class SharedBitmapManager;
 class SurfaceIdAllocator;
 class SurfaceManager;
@@ -132,8 +132,12 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Allocate a new client ID for the display compositor.
   virtual uint32_t AllocateSurfaceClientId() = 0;
 
-  // Get the CompositorChannelHost.
-  virtual cc::CompositorChannelHost* GetCompositorChannelHost() = 0;
+  // Sets up a connection to the service compositor (synchronously, woops).
+  // TODO(hackathon): Make this async by returning void and have it call back
+  // to a function on Compositor to set the ServiceConnection when we have it,
+  // similar to OutputSurface.
+  virtual std::unique_ptr<cc::ServiceConnection>
+      CreateServiceCompositorConnection(gfx::AcceleratedWidget widget) = 0;
 
   // Gets the surface manager.
   virtual cc::SurfaceManager* GetSurfaceManager() = 0;

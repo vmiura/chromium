@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/profiler/scoped_tracker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -15,6 +16,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/trees/service_connection.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -26,6 +28,7 @@
 #include "content/public/common/content_client.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/message_filter.h"
 
@@ -261,7 +264,7 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   shutdown_event_->Signal();
   if (gpu_channel_) {
     gpu_channel_->DestroyChannel();
-    compositor_channel_.reset();
+    compositor_factory_.reset();
     gpu_channel_ = NULL;
   }
 }
@@ -309,7 +312,7 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     DCHECK(!pending_request_.get());
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
-    compositor_channel_.reset();
+    compositor_factory_.reset();
     gpu_channel_ = NULL;
   }
 
@@ -336,12 +339,24 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
   return NULL;
 }
 
-cc::CompositorChannelHost*
-BrowserGpuChannelHostFactory::GetCompositorChannelHost() {
-  // TODO(piman): hack!!
-  if (!compositor_channel_)
-    EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
-  return compositor_channel_.get();
+std::unique_ptr<cc::ServiceConnection>
+BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
+    gfx::AcceleratedWidget widget) {
+  if (!compositor_factory_) {
+    // TODO(hackathon): Synchronous is bad mmkay?
+    if (!gpu_channel_ || gpu_channel_->IsLost())
+      EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
+    gpu_channel_->GetRemoteAssociatedInterface(&compositor_factory_);
+  }
+  DCHECK(compositor_factory_);
+  auto connection = base::MakeUnique<cc::ServiceConnection>();
+  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
+  connection->client_request = mojo::GetProxy(&client);
+  // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
+  gpu::SurfaceHandle handle = widget;
+  compositor_factory_->CreateCompositor(
+      handle, mojo::GetProxy(&connection->compositor), std::move(client));
+  return connection;
 }
 
 void BrowserGpuChannelHostFactory::GpuChannelEstablished() {
@@ -360,7 +375,6 @@ void BrowserGpuChannelHostFactory::GpuChannelEstablished() {
         this, gpu_client_id_, pending_request_->gpu_info(),
         pending_request_->channel_handle(), shutdown_event_.get(),
         gpu_memory_buffer_manager_.get());
-    compositor_channel_ = cc::CompositorChannelHost::Create(gpu_channel_.get());
   }
   gpu_host_id_ = pending_request_->gpu_host_id();
   pending_request_ = NULL;

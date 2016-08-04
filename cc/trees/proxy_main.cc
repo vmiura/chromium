@@ -257,7 +257,7 @@ void ProxyMain::BeginMainFrame(
 }
 
 void ProxyMain::InitializeCompositor(
-    std::unique_ptr<CompositorProxy> compositor) {}
+    std::unique_ptr<ServiceConnection> connection) {}
 
 void ProxyMain::FinishAllRendering() {
   DCHECK(IsMainThread());

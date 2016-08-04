@@ -50,6 +50,7 @@
 #include "cc/proto/layer_tree_host.pb.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/scheduler/begin_frame_source.h"
+#include "cc/trees/service_connection.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
@@ -237,7 +238,6 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
       needs_full_tree_sync_(true),
       needs_meta_info_recomputation_(true),
       client_(params->client),
-      compositor_channel_(params->compositor_channel),
       source_frame_number_(0),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
       output_surface_lost_(false /* HACKATHON: No OS here anymore. */),
@@ -426,8 +426,9 @@ LayerTreeHost::~LayerTreeHost() {
   }
 }
 
-void LayerTreeHost::SetSurfaceHandle(gpu::SurfaceHandle handle) {
-  proxy_->InitializeCompositor(compositor_channel_->CreateCompositor(handle));
+void LayerTreeHost::InitializeServiceConnection(
+    std::unique_ptr<ServiceConnection> connection) {
+  proxy_->InitializeCompositor(std::move(connection));
 }
 
 void LayerTreeHost::WillBeginMainFrame() {

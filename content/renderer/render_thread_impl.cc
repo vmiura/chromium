@@ -44,6 +44,7 @@
 #include "cc/output/output_surface.h"
 #include "cc/output/vulkan_in_process_context_provider.h"
 #include "cc/raster/task_graph_runner.h"
+#include "cc/trees/service_connection.h"
 #include "cc/trees/layer_tree_host_common.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/memory_coordinator/child/child_memory_coordinator_impl.h"
@@ -165,6 +166,7 @@
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/native_widget_types.h"
 
 #if defined(OS_ANDROID)
 #include <cpu-features.h>
@@ -1642,12 +1644,23 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
   return is_threaded_animation_enabled_;
 }
 
-cc::CompositorChannelHost* RenderThreadImpl::GetCompositorChannelHost() {
-  // TODO(piman): hack!!
-  if (!compositor_channel_)
-    EstablishGpuChannelSync(
-        CAUSE_FOR_GPU_LAUNCH_RENDERER_SHARED_MAIN_THREAD_CONTEXT);
-  return compositor_channel_.get();
+std::unique_ptr<cc::ServiceConnection>
+RenderThreadImpl::CreateServiceCompositorConnection() {
+  if (!compositor_factory_) {
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
+        CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
+    // TODO(hackathon): Deal with failure, this should be an async function.
+    CHECK(gpu_channel_host) << "Sad times in sad land. Gpu process required.";
+    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_factory_);
+  }
+  DCHECK(compositor_factory_);
+  auto connection = base::MakeUnique<cc::ServiceConnection>();
+  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
+  connection->client_request = mojo::GetProxy(&client);
+  compositor_factory_->CreateCompositor(
+      gfx::kNullAcceleratedWidget /* offscreen */,
+      mojo::GetProxy(&connection->compositor), std::move(client));
+  return connection;
 }
 
 void RenderThreadImpl::OnRAILModeChanged(v8::RAILMode rail_mode) {
@@ -1786,7 +1799,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
     if (!gpu_channel_->IsLost())
       return gpu_channel_;
 
-    compositor_channel_.reset();
+    compositor_factory_.reset();
 
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
@@ -1814,8 +1827,6 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
         gpu::GpuChannelHost::Create(this, client_id, gpu_info, channel_handle,
                                     ChildProcess::current()->GetShutDownEvent(),
                                     gpu_memory_buffer_manager());
-
-    compositor_channel_ = cc::CompositorChannelHost::Create(gpu_channel_.get());
   } else {
 #if defined(MOJO_SHELL_CLIENT) && defined(USE_AURA)
     gpu_channel_ = ui::GpuService::GetInstance()->EstablishGpuChannelSync();

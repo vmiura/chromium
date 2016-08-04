@@ -38,6 +38,7 @@
 #include "cc/proto/compositor_message.pb.h"
 #include "cc/resources/single_release_callback.h"
 #include "cc/scheduler/begin_frame_source.h"
+#include "cc/trees/service_connection.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/remote_proto_channel.h"
@@ -238,7 +239,6 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
       compositor_deps_->GetGpuMemoryBufferManager();
   params.settings = &settings;
   params.task_graph_runner = compositor_deps_->GetTaskGraphRunner();
-  params.compositor_channel = compositor_deps_->GetCompositorChannelHost();
   params.main_task_runner =
       compositor_deps_->GetCompositorMainThreadTaskRunner();
   if (settings.use_external_begin_frame_source) {
@@ -255,9 +255,12 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
   } else if (!threaded_) {
     // Single-threaded layout tests.
     layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
+    layer_tree_host_->InitializeServiceConnection(
+        compositor_deps_->CreateServiceCompositorConnection());
   } else {
     layer_tree_host_ = cc::LayerTreeHost::CreateMojo(&params);
-    layer_tree_host_->SetSurfaceHandle(gpu::kNullSurfaceHandle);
+    layer_tree_host_->InitializeServiceConnection(
+        compositor_deps_->CreateServiceCompositorConnection());
   }
   DCHECK(layer_tree_host_);
 }

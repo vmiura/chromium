@@ -16,6 +16,7 @@
 #include "cc/ipc/content_frame.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/swap_promise.h"
+#include "cc/trees/service_connection.h"
 #include "cc/trees/blocking_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/remote_channel_main.h"
@@ -41,7 +42,8 @@ SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
       commit_waits_for_activation_(false),
       started_(false),
       defer_commits_(false),
-      begin_frame_requested_(false) {
+      begin_frame_requested_(false),
+      binding_(this) {
   TRACE_EVENT0("cc", "SimpleProxy::SimpleProxy");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
@@ -61,10 +63,9 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 }
 #endif
 
-void SimpleProxy::InitializeCompositor(
-    std::unique_ptr<CompositorProxy> compositor) {
-  compositor_ = std::move(compositor);
-  compositor_->set_delegate(this);
+void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connection) {
+  compositor_ = std::move(connection->compositor);
+  binding_.Bind(std::move(connection->client_request));
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
     SetNeedsBeginFrame();
@@ -207,7 +208,6 @@ void SimpleProxy::Stop() {
   if (compositor_) {
     mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
     compositor_->Destroy();
-    compositor_->set_delegate(nullptr);
   }
 
   layer_tree_host_ = nullptr;

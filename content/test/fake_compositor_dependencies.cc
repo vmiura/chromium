@@ -115,9 +115,4 @@ bool FakeCompositorDependencies::IsThreadedAnimationEnabled() {
   return true;
 }
 
-cc::CompositorChannelHost*
-FakeCompositorDependencies::GetCompositorChannelHost() {
-  return nullptr;
-}
-
 }  // namespace content

@@ -24,7 +24,6 @@
 #include "cc/base/cc_export.h"
 #include "cc/blimp/client_picture_cache.h"
 #include "cc/blimp/engine_picture_cache.h"
-#include "cc/client/compositor_channel_host.h"
 #include "cc/debug/micro_benchmark.h"
 #include "cc/debug/micro_benchmark_controller.h"
 #include "cc/input/event_listener_properties.h"
@@ -96,7 +95,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     LayerTreeHostClient* client = nullptr;
     SharedBitmapManager* shared_bitmap_manager = nullptr;
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr;
-    cc::CompositorChannelHost* compositor_channel = nullptr;
     TaskGraphRunner* task_graph_runner = nullptr;
     LayerTreeSettings const* settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
@@ -136,7 +134,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   virtual ~LayerTreeHost();
 
-  void SetSurfaceHandle(gpu::SurfaceHandle handle);
+  void InitializeServiceConnection(
+      std::unique_ptr<ServiceConnection> connection);
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();
@@ -530,9 +529,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool needs_meta_info_recomputation_;
 
   LayerTreeHostClient* client_;
-  // This is a non-owning pointer.
-  // TODO(post-hackathon): Figure out lifetime.
-  CompositorChannelHost* compositor_channel_;
 
   std::unique_ptr<Proxy> proxy_;
   std::unique_ptr<TaskRunnerProvider> task_runner_provider_;

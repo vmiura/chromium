@@ -251,10 +251,6 @@ uint32_t InProcessContextFactory::AllocateSurfaceClientId() {
   return next_surface_client_id_++;
 }
 
-cc::CompositorChannelHost* InProcessContextFactory::GetCompositorChannelHost() {
-  return nullptr;
-}
-
 cc::SurfaceManager* InProcessContextFactory::GetSurfaceManager() {
   return surface_manager_;
 }

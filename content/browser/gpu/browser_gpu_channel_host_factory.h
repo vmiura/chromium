@@ -15,11 +15,15 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "cc/client/compositor_channel_host.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/message_filter.h"
+
+namespace cc {
+struct ServiceConnection;
+}
 
 namespace content {
 class BrowserGpuMemoryBufferManager;
@@ -45,8 +49,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   void EstablishGpuChannel(CauseForGpuLaunch cause_for_gpu_launch,
                            const base::Closure& callback);
   gpu::GpuChannelHost* GetGpuChannel();
-  cc::CompositorChannelHost* GetCompositorChannelHost();
   int GetGpuChannelId() { return gpu_client_id_; }
+
+  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+      gfx::AcceleratedWidget widget);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();
@@ -69,11 +75,13 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   const uint64_t gpu_client_tracing_id_;
   std::unique_ptr<base::WaitableEvent> shutdown_event_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  std::unique_ptr<cc::CompositorChannelHost> compositor_channel_;
   std::unique_ptr<BrowserGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   int gpu_host_id_;
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
+
+  mojo::AssociatedInterfacePtr<cc::mojom::CompositorFactory>
+      compositor_factory_;
 
   static BrowserGpuChannelHostFactory* instance_;
 

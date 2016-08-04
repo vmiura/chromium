@@ -36,7 +36,7 @@ source_set("browser") {
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
     "//cc",
-    "//cc/client",
+    "//cc/ipc:compositor_interfaces",
     "//cc/surfaces",
     "//components/display_compositor",
     "//components/filesystem:lib",

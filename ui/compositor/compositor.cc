@@ -28,6 +28,7 @@
 #include "cc/output/context_provider.h"
 #include "cc/output/latency_info_swap_promise.h"
 #include "cc/scheduler/begin_frame_source.h"
+#include "cc/trees/service_connection.h"
 #include "cc/surfaces/surface_id_allocator.h"
 #include "cc/surfaces/surface_manager.h"
 #include "cc/trees/layer_tree_host.h"
@@ -206,7 +207,6 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
   params.task_graph_runner = context_factory_->GetTaskGraphRunner();
   params.settings = &settings;
   params.main_task_runner = task_runner_;
-  params.compositor_channel = context_factory_->GetCompositorChannelHost();
   params.animation_host = cc::AnimationHost::CreateMainInstance();
   host_ = cc::LayerTreeHost::CreateMojo(&params);
   UMA_HISTOGRAM_TIMES("GPU.CreateBrowserCompositor",
@@ -404,7 +404,8 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   DCHECK(!widget_valid_);
   widget_ = widget;
   widget_valid_ = true;
-  host_->SetSurfaceHandle(widget_);
+  host_->InitializeServiceConnection(
+      context_factory_->CreateServiceCompositorConnection(widget));
   if (output_surface_requested_)
     context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
 }

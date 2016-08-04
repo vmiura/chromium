@@ -5,11 +5,16 @@
 #include "cc/test/fake_proxy.h"
 
 #include "cc/animation/layer_tree_mutator.h"
+#include "cc/trees/service_connection.h"
 
 namespace cc {
 
 void FakeProxy::SetLayerTreeHost(LayerTreeHost* host) {
   layer_tree_host_ = host;
+}
+
+void FakeProxy::InitializeCompositor(
+    std::unique_ptr<ServiceConnection> connection) {
 }
 
 bool FakeProxy::IsStarted() const { return true; }

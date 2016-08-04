@@ -22,8 +22,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "cc/client/compositor_channel_host.h"
-#include "cc/client/compositor_proxy.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/output/buffer_to_texture_target_map.h"
 #include "components/scheduler/renderer/renderer_scheduler.h"
 #include "content/child/child_thread_impl.h"
@@ -227,7 +226,8 @@ class CONTENT_EXPORT RenderThreadImpl
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool AreImageDecodeTasksEnabled() override;
   bool IsThreadedAnimationEnabled() override;
-  cc::CompositorChannelHost* GetCompositorChannelHost() override;
+  std::unique_ptr<cc::ServiceConnection>
+      CreateServiceCompositorConnection() override;
 
   // scheduler::RendererScheduler::RAILModeObserver implementation.
   void OnRAILModeChanged(v8::RAILMode rail_mode) override;
@@ -603,10 +603,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // The channel from the renderer process to the GPU process.
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
 
-  // The channel from the renderer process to the compositor service
-  // in the GPU process.
-  std::unique_ptr<cc::CompositorChannelHost> compositor_channel_;
-
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
@@ -716,6 +712,9 @@ class CONTENT_EXPORT RenderThreadImpl
   mojom::RenderFrameMessageFilterAssociatedPtr render_frame_message_filter_;
 
   bool is_renderer_suspended_;
+
+  mojo::AssociatedInterfacePtr<cc::mojom::CompositorFactory>
+      compositor_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderThreadImpl);
 };
