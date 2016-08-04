@@ -1206,6 +1206,10 @@ void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   position_ = mojom->position;
   bounds_ = mojom->bounds;
   background_color_ = mojom->background_color;
+  ElementId element_id;
+  element_id.primaryId = mojom->element_id->primary_id;
+  element_id.secondaryId = mojom->element_id->secondary_id;
+  SetElementId(element_id);
   SetTransformTreeIndex(mojom->transform_tree_index);
   SetEffectTreeIndex(mojom->effect_tree_index);
   SetClipTreeIndex(mojom->clip_tree_index);

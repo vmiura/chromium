@@ -38,6 +38,11 @@ struct SurfaceLayerState {
   float scale;
 };
 
+struct ElementId {
+  int32 primary_id;
+  int32 secondary_id;
+};
+
 struct LayerProperties {
   int32 layer_id;
 
@@ -49,6 +54,7 @@ struct LayerProperties {
   int32 effect_tree_index;
   int32 clip_tree_index;
   int32 scroll_tree_index;
+  ElementId element_id;
 
   NinePatchLayerState? nine_patch_state;
   PictureLayerState? picture_state;
