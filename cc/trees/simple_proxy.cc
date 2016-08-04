@@ -205,6 +205,7 @@ void SimpleProxy::Stop() {
   DCHECK(started_);
 
   if (compositor_) {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
     compositor_->Destroy();
     compositor_->set_delegate(nullptr);
   }
