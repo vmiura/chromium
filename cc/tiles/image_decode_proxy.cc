@@ -20,18 +20,19 @@ ImageDecodeProxy* ImageDecodeProxy::Current() {
 }
 
 ImageDecodeProxy::ImageDecodeProxy(ImageDecodeService* service)
-    : proxy_thread_("ImageDecodeProxy"){
-          /*
-          base::ThreadRestrictions::SetIOAllowed(true);
-          service->Bind(mojo::GetProxy(&image_decode_ptr_));
-          proxy_thread_.Start();
-          proxy_thread_.task_runner()->PostTask(
-              FROM_HERE,
-              base::Bind(&ImageDecodeProxy::OnInitializeMojo,
-          base::Unretained(this)));
-          s_proxy = this;
-          */
-      };
+    : proxy_thread_("ImageDecodeProxy") {
+  base::ThreadRestrictions::SetIOAllowed(true);
+  cc::mojom::ImageDecodePtr image_decode_ptr;
+  service->Bind(mojo::GetProxy(&image_decode_ptr));
+
+  cc::mojom::ImageDecodePtrInfo ptr_info = image_decode_ptr.PassInterface();
+
+  proxy_thread_.Start();
+  proxy_thread_.task_runner()->PostTask(
+      FROM_HERE, base::Bind(&ImageDecodeProxy::OnInitializeMojo,
+                            base::Unretained(this), base::Passed(&ptr_info)));
+  s_proxy = this;
+};
 
 ImageDecodeProxy::ImageDecodeProxy(mojom::CompositorClient* compositor_client)
     : proxy_thread_("ImageDecodeProxy") {
