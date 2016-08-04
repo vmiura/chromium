@@ -438,8 +438,7 @@ void Service::FinishCommit() {
             layer = LayerImpl::Create(sync_tree, id);
             break;
           case cc::mojom::LayerType::PICTURE:
-            layer = PictureLayerImpl::Create(
-                sync_tree, id, mojom->is_mask);
+            layer = PictureLayerImpl::Create( sync_tree, id, mojom->is_mask);
             break;
           case cc::mojom::LayerType::SOLID_COLOR:
             layer = SolidColorLayerImpl::Create(sync_tree, id);

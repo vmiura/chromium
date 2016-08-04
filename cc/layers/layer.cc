@@ -1894,17 +1894,36 @@ void Layer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
 
 void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   mojom->layer_id = inputs_.layer_id;
-  mojom->element_id = mojom::ElementId::New();
-  mojom->element_id->primary_id = inputs_.element_id.primaryId;
-  mojom->element_id->secondary_id = inputs_.element_id.secondaryId;
-  mojom->draws_content = draws_content_;
-  mojom->position = inputs_.position;
-  mojom->bounds = inputs_.bounds;
+  bool use_paint_properties = paint_properties_.source_frame_number ==
+                              layer_tree_host_->source_frame_number();
   mojom->background_color = inputs_.background_color;
+  mojom->bounds =
+      use_paint_properties ? paint_properties_.bounds : inputs_.bounds;
   mojom->transform_tree_index = transform_tree_index_;
   mojom->effect_tree_index = effect_tree_index_;
   mojom->clip_tree_index = clip_tree_index_;
   mojom->scroll_tree_index = scroll_tree_index_;
+  mojom->draws_content = DrawsContent();
+  mojom->layer_property_changed =
+      subtree_property_changed_ || layer_property_changed_;
+  mojom->masks_to_bounds = inputs_.masks_to_bounds;
+  mojom->contents_opaque = inputs_.contents_opaque;
+  mojom->position = inputs_.position;
+  mojom->transform_is_animating = TransformIsAnimating();
+  mojom->transform = inputs_.transform;
+  mojom->scroll_clip_layer_id = inputs_.scroll_clip_layer_id;
+  mojom->element_id = mojom::ElementId::New();
+  mojom->element_id->primary_id = inputs_.element_id.primaryId;
+  mojom->element_id->secondary_id = inputs_.element_id.secondaryId;
+  mojom->mutable_properties = inputs_.mutable_properties;
+  mojom->update_rect = inputs_.update_rect;
+  mojom->has_will_change_transform_hint = has_will_change_transform_hint();
+
+  subtree_property_changed_ = false;
+  layer_property_changed_ = false;
+  inputs_.update_rect = gfx::Rect();
+
+  layer_tree_->RemoveLayerShouldPushProperties(this);
 }
 
 }  // namespace cc

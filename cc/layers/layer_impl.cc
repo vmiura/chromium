@@ -1202,18 +1202,32 @@ float LayerImpl::GetIdealContentsScale() const {
 }
 
 void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
-  draws_content_ = mojom->draws_content;
   position_ = mojom->position;
-  bounds_ = mojom->bounds;
-  background_color_ = mojom->background_color;
-  ElementId element_id;
-  element_id.primaryId = mojom->element_id->primary_id;
-  element_id.secondaryId = mojom->element_id->secondary_id;
-  SetElementId(element_id);
+  SetBackgroundColor(mojom->background_color);
+  SetBounds(mojom->bounds);
   SetTransformTreeIndex(mojom->transform_tree_index);
   SetEffectTreeIndex(mojom->effect_tree_index);
   SetClipTreeIndex(mojom->clip_tree_index);
   SetScrollTreeIndex(mojom->scroll_tree_index);
+  SetDrawsContent(mojom->draws_content);
+  if (mojom->layer_property_changed)
+    NoteLayerPropertyChanged();
+  SetMasksToBounds(mojom->masks_to_bounds);
+  SetContentsOpaque(mojom->contents_opaque);
+  if (mojom->transform_is_animating)
+    SetTransform(mojom->transform);
+  ElementId element_id;
+  element_id.primaryId = mojom->element_id->primary_id;
+  element_id.secondaryId = mojom->element_id->secondary_id;
+  SetScrollClipLayer(mojom->scroll_clip_layer_id);
+  SetElementId(element_id);
+  SetMutableProperties(mojom->mutable_properties);
+
+  mojom->update_rect.Union(update_rect());
+  SetUpdateRect(mojom->update_rect);
+
+  SetHasWillChangeTransformHint(mojom->has_will_change_transform_hint);
+  SetNeedsPushProperties();
 }
 
 }  // namespace cc

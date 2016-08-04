@@ -1944,7 +1944,8 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
 
-    for (auto* layer : layer_tree_.LayersThatShouldPushProperties()) {
+    auto layers = layer_tree_.LayersThatShouldPushProperties();
+    for (auto* layer : layers) {
       auto mojom = cc::mojom::LayerProperties::New();
       layer->WritePropertiesMojom(mojom.get());
       frame->layer_properties.push_back(std::move(mojom));

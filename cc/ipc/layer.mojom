@@ -6,6 +6,7 @@ module cc.mojom;
 
 import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/mojo/transform.mojom";
 
 struct NinePatchLayerState {
   gfx.mojom.Rect border;
@@ -46,15 +47,24 @@ struct ElementId {
 struct LayerProperties {
   int32 layer_id;
 
-  bool draws_content;
-  gfx.mojom.PointF position;
-  gfx.mojom.Size bounds;
   uint32 background_color;
+  gfx.mojom.Size bounds;
   int32 transform_tree_index;
   int32 effect_tree_index;
   int32 clip_tree_index;
   int32 scroll_tree_index;
+  bool draws_content;
+  bool layer_property_changed;
+  bool masks_to_bounds;
+  bool contents_opaque;
+  gfx.mojom.PointF position;
+  bool transform_is_animating;
+  gfx.mojom.Transform transform;
+  int32 scroll_clip_layer_id;
   ElementId element_id;
+  uint32 mutable_properties;
+  gfx.mojom.Rect update_rect;
+  bool has_will_change_transform_hint;
 
   NinePatchLayerState? nine_patch_state;
   PictureLayerState? picture_state;
