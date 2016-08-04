@@ -44,6 +44,8 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_factory.h"
+#include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -69,6 +71,8 @@
 #endif
 
 #if defined(OS_LINUX)
+#include "content/common/child_process_sandbox_support_impl_linux.h"
+#include "content/common/font_config_ipc_linux.h"
 #include "content/public/common/sandbox_init.h"
 #endif
 
@@ -167,6 +171,7 @@ int GpuMain(const MainFunctionParams& parameters) {
 #endif
 
   logging::SetLogMessageHandler(GpuProcessLogMessageHandler);
+  SkGraphics::Init();
 
   if (command_line.HasSwitch(switches::kSupportsDualGpus)) {
     std::string types = command_line.GetSwitchValueASCII(
@@ -376,6 +381,8 @@ int GpuMain(const MainFunctionParams& parameters) {
       gpu_info.sandboxed = StartSandboxLinux(gpu_info, watchdog_thread.get(),
                                              should_initialize_gl_context);
     }
+    SkFontConfigInterface::SetGlobal(
+        new FontConfigIPC(GetSandboxFD()))->unref();
 #elif defined(OS_WIN)
     gpu_info.sandboxed = StartSandboxWindows(parameters.sandbox_info);
 #elif defined(OS_MACOSX)
