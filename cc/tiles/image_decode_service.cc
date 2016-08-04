@@ -36,17 +36,28 @@ SkImageInfo CreateImageInfo(size_t width,
 }
 }  // namespace
 
+ImageDecodeService::ImageDecodeRequest::ImageDecodeRequest(
+    uint32_t image_id,
+    void* buffer,
+    const base::Closure& callback)
+    : image_id(image_id), buffer(buffer), callback(callback) {}
+
+ImageDecodeService::ImageDecodeRequest::~ImageDecodeRequest() {}
+
+ImageDecodeService::ImageDecodeResult::ImageDecodeResult(
+    uint32_t image_id,
+    bool succeeded,
+    const base::Closure& callback)
+    : image_id(image_id), succeeded(succeeded), callback(callback) {}
+
+ImageDecodeService::ImageDecodeResult::~ImageDecodeResult() {}
+
 ImageDecodeService* ImageDecodeService::Current() {
   static ImageDecodeService service;
   return &service;
 }
 
-ImageDecodeService::ImageDecodeService()
-    : requests_cv_(&lock_),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      new_results_notifier_(task_runner_.get(),
-                            base::Bind(&ImageDecodeService::ProcessResultQueue,
-                                       base::Unretained(this))) {
+ImageDecodeService::ImageDecodeService() : requests_cv_(&lock_) {
   TRACE_EVENT0("cc", "ImageDecodeService::ImageDecodeService()");
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
@@ -83,31 +94,48 @@ void ImageDecodeService::ProcessRequestQueue() {
       continue;
     }
 
-    auto request = image_decode_requests_.front();
+    auto request = std::move(image_decode_requests_.front());
     image_decode_requests_.pop_front();
     bool result = [this, &request]() {
       base::AutoUnlock release(lock_);
-      return DoDecodeImage(request.first, request.second);
+      return DoDecodeImage(request->image_id, request->buffer);
     }();
-    image_decode_results_.emplace_back(request.first, result);
+    image_decode_results_.emplace_back(
+        new ImageDecodeResult(request->image_id, result, request->callback));
     // TODO(hackathon): This runs on the origin thread, so if the origin thread
     // is blocked waiting for reply then rip.
-    new_results_notifier_.Schedule();
+    new_results_notifier_->Schedule();
   }
 }
 
 void ImageDecodeService::ProcessResultQueue() {
   TRACE_EVENT0("cc", "ImageDecodeService::ProcessResultQueue");
   base::AutoLock hold(lock_);
-  for (auto result : image_decode_results_)
-    OnImageDecoded(result.first, result.second);
+  for (auto& result : image_decode_results_)
+    OnImageDecoded(result->image_id, result->succeeded, result->callback);
   image_decode_results_.clear();
 }
 
-void ImageDecodeService::DecodeImage(uint32_t image_id, void* buffer) {
+void ImageDecodeService::DecodeImage(uint32_t image_id,
+                                     void* buffer,
+                                     const base::Closure& callback) {
   TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "image_id", image_id);
   base::AutoLock hold(lock_);
-  image_decode_requests_.emplace_back(image_id, buffer);
+
+  if (!new_results_notifier_) {
+    // TODO(hackathon): We need to run the Mojo callback on the same thread it
+    // originates from.
+    // Temporarily capturing the thread here... pass it to ImageDecodeService
+    // instead.
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        base::ThreadTaskRunnerHandle::Get();
+    new_results_notifier_.reset(new UniqueNotifier(
+        task_runner.get(), base::Bind(&ImageDecodeService::ProcessResultQueue,
+                                      base::Unretained(this))));
+  }
+
+  image_decode_requests_.emplace_back(
+      new ImageDecodeRequest(image_id, buffer, callback));
   requests_cv_.Broadcast();
 }
 
@@ -129,11 +157,12 @@ bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
   return result;
 }
 
-void ImageDecodeService::OnImageDecoded(uint32_t image_id, bool succeeded) {
+void ImageDecodeService::OnImageDecoded(uint32_t image_id,
+                                        bool succeeded,
+                                        const base::Closure& callback) {
   TRACE_EVENT1("cc", "ImageDecodeService::OnImageDecoded", "image_id",
                image_id);
-  // TODO(hackathon): Send IPC. Post to the origin thread?
-  ImageDecodeProxy::Current()->OnImageDecodeCompleted(image_id, succeeded);
+  callback.Run();
 }
 
 }  // namespace cc
