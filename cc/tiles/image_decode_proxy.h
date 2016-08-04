@@ -34,7 +34,7 @@ class CC_EXPORT ImageDecodeProxy {
   // Blink accesses this to create the generator factory.
   static ImageDecodeProxy* s_proxy;
 
-  void OnInitializeMojo();
+  void OnInitializeMojo(cc::mojom::ImageDecodePtrInfo ptr_info);
   void OnDecodeImage(uint32_t unique_id, void* data, CompletionEvent* event);
   void OnDecodeImageCompleted(CompletionEvent* event);
 
