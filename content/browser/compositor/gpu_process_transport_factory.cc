@@ -692,7 +692,7 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
 
 std::unique_ptr<cc::ServiceConnection>
 GpuProcessTransportFactory::CreateServiceCompositorConnection(
-    gpu::SurfaceHandle handle) {
+    gpu::SurfaceHandle handle,
     const cc::LayerTreeSettings& settings) {
   return BrowserGpuChannelHostFactory::instance()
       ->CreateServiceCompositorConnection(handle, settings);

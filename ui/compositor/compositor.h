@@ -139,7 +139,7 @@ class COMPOSITOR_EXPORT ContextFactory {
   // to a function on Compositor to set the ServiceConnection when we have it,
   // similar to OutputSurface.
   virtual std::unique_ptr<cc::ServiceConnection>
-  CreateServiceCompositorConnection(gfx::AcceleratedWidget widget,
+  CreateServiceCompositorConnection(gpu::SurfaceHandle handle,
                                     const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
