@@ -20,6 +20,7 @@
 #include "cc/surfaces/surface_sequence.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "content/browser/gpu/gpu_surface_tracker.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_export.h"
@@ -373,6 +374,8 @@ class COMPOSITOR_EXPORT Compositor
   cc::SurfaceIdAllocator* surface_id_allocator() {
     return surface_id_allocator_.get();
   }
+
+  void InitializeServiceConnection(gpu::SurfaceHandle handle);
 
  private:
   friend class base::RefCounted<Compositor>;

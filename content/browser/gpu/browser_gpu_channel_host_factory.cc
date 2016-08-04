@@ -21,6 +21,7 @@
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/gpu/gpu_surface_tracker.h"
 #include "content/browser/gpu/shader_disk_cache.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -342,7 +343,7 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
 
 std::unique_ptr<cc::ServiceConnection>
 BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
-    gfx::AcceleratedWidget widget,
+    gpu::SurfaceHandle handle,
     const cc::LayerTreeSettings& settings) {
   if (!compositor_factory_) {
     // TODO(hackathon): Synchronous is bad mmkay?
@@ -354,11 +355,8 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
-  // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
-  gpu::SurfaceHandle handle = widget;
-  compositor_factory_->CreateCompositor(handle, settings.ToMojom(),
-                                        mojo::GetProxy(&connection->compositor),
-                                        std::move(client));
+  compositor_factory_->CreateCompositor(
+      handle, settings.ToMojom(), mojo::GetProxy(&connection->compositor), std::move(client));
   return connection;
 }
 

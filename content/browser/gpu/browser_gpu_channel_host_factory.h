@@ -53,7 +53,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   int GetGpuChannelId() { return gpu_client_id_; }
 
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      gfx::AcceleratedWidget widget,
+      gpu::SurfaceHandle handle,
       const cc::LayerTreeSettings& settings);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.

@@ -402,16 +402,25 @@ void Compositor::SetAuthoritativeVSyncInterval(
   }
 }
 
+void Compositor::InitializeServiceConnection(gpu::SurfaceHandle handle) {
+  host_->InitializeServiceConnection(
+      context_factory_->CreateServiceCompositorConnection(handle, host_->settings()));
+  if (output_surface_requested_)
+    context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
+}
+
 void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   // This function should only get called once.
   DCHECK(!widget_valid_);
   widget_ = widget;
   widget_valid_ = true;
+#ifndef OS_MACOSX
   host_->InitializeServiceConnection(
       context_factory_->CreateServiceCompositorConnection(widget,
                                                           host_->settings()));
   if (output_surface_requested_)
     context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
+#endif
 }
 
 gfx::AcceleratedWidget Compositor::ReleaseAcceleratedWidget() {

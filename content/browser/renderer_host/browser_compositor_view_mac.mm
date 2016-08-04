@@ -101,8 +101,13 @@ RecyclableCompositorMac::RecyclableCompositorMac()
     : accelerated_widget_mac_(new ui::AcceleratedWidgetMac()),
       compositor_(content::GetContextFactory(),
                   ui::WindowResizeHelperMac::Get()->task_runner()) {
-  compositor_.SetAcceleratedWidget(
-      accelerated_widget_mac_->accelerated_widget());
+  auto widget = accelerated_widget_mac_->accelerated_widget();
+  compositor_.SetAcceleratedWidget(widget);
+  auto handle =
+      widget
+          ? content::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(widget)
+          : gpu::kNullSurfaceHandle;
+  compositor_.InitializeServiceConnection(handle);
   compositor_.SetLocksWillTimeOut(false);
   Suspend();
   compositor_.AddObserver(this);

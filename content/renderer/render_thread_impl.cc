@@ -1655,7 +1655,7 @@ RenderThreadImpl::CreateServiceCompositorConnection(
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
   compositor_factory_->CreateCompositor(
-      gfx::kNullAcceleratedWidget /* offscreen */, settings.ToMojom(),
+      gpu::kNullSurfaceHandle /* offscreen */, settings.ToMojom(),
       mojo::GetProxy(&connection->compositor), std::move(client));
   return connection;
 }

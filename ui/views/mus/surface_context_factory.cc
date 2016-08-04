@@ -94,7 +94,7 @@ uint32_t SurfaceContextFactory::AllocateSurfaceClientId() {
 
 std::unique_ptr<cc::ServiceConnection>
 SurfaceContextFactory::CreateServiceCompositorConnection(
-    gfx::AcceleratedWidget widget,
+    gpu::SurfaceHandle handle,
     const cc::LayerTreeSettings& settings) {
   return nullptr;
 }
