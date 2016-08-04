@@ -653,7 +653,7 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
       settings_, client, task_runner_provider_.get(),
       rendering_stats_instrumentation_.get(), shared_bitmap_manager_,
       gpu_memory_buffer_manager_, task_graph_runner_,
-      std::move(animation_host_impl), id_);
+      std::move(animation_host_impl), id_, &image_decode_service_);
   host_impl->SetHasGpuRasterizationTrigger(has_gpu_rasterization_trigger_);
   host_impl->SetContentIsSuitableForGpuRasterization(
       content_is_suitable_for_gpu_rasterization_);

@@ -7,15 +7,18 @@
 #include "third_party/skia/include/core/SkPixelSerializer.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "base/synchronization/waitable_event.h"
+#include "cc/base/completion_event.h"
 #include "base/threading/thread.h"
 #include "cc/base/cc_export.h"
 #include "cc/ipc/image_decode.mojom.h"
+#include "cc/tiles/image_decode_service.h"
+#include "cc/base/completion_event.h"
 
 namespace cc {
 
 class CC_EXPORT ImageDecodeProxy {
  public:
-  ImageDecodeProxy();
+  ImageDecodeProxy(ImageDecodeService* service);
   ~ImageDecodeProxy();
 
   // For now, just use a singleton.
@@ -23,19 +26,27 @@ class CC_EXPORT ImageDecodeProxy {
 
   bool DecodeImage(uint32_t unique_id, const SkImageInfo& info, void* data);
 
+  void DoCloseMojo(CompletionEvent* event);
+
  private:
+  // Blink accesses this to create the generator factory.
+  static ImageDecodeProxy* s_proxy;
+
   void OnInitializeMojo();
   void OnDecodeImage(uint32_t unique_id,
                      void* data,
-                     base::WaitableEvent* event);
-  void OnDecodeImageCompleted(base::WaitableEvent* event);
+                     CompletionEvent* event);
+  void OnDecodeImageCompleted(CompletionEvent* event);
 
   cc::mojom::ImageDecodePtr image_decode_ptr_;
-  std::unique_ptr<base::Thread> proxy_thread_;
+  base::Thread proxy_thread_;
 
   // Lock to exclusively access all the following members that are used to
   // implement the TaskRunner and TaskGraphRunner interfaces.
   base::Lock lock_;
+
+  // TODO(hackathon): Used for Bind, replace with IPC call back to the renderer.
+  ImageDecodeService* service_;
 };
 
 // A generator which acts as a proxy back to the renderer process.

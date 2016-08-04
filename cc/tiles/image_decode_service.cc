@@ -7,6 +7,7 @@
 #include "cc/resources/resource_format_utils.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace cc {
 namespace {
@@ -15,14 +16,14 @@ class ImageDecodeThread : public base::SimpleThread {
   ImageDecodeThread(const std::string& prefix,
                     const Options& options,
                     ImageDecodeService* service)
-      : SimpleThread(prefix, options), service_(service) {}
+      : SimpleThread(prefix, options), s_service(service) {}
 
   void Run() final {
-    service_->ProcessRequestQueue();
+    s_service->ProcessRequestQueue();
   }
 
  private:
-  ImageDecodeService* service_;
+  ImageDecodeService* s_service;
 };
 
 const int kNumThreads = 2;
@@ -52,16 +53,19 @@ ImageDecodeService::ImageDecodeResult::ImageDecodeResult(
 
 ImageDecodeService::ImageDecodeResult::~ImageDecodeResult() {}
 
+ImageDecodeService* ImageDecodeService::s_service = nullptr;
 ImageDecodeService* ImageDecodeService::Current() {
-  static ImageDecodeService service;
-  return &service;
+  return s_service;
 }
 
 ImageDecodeService::ImageDecodeService()
-    : image_decode_binding_(this), requests_cv_(&lock_) {
+    : image_decode_binding_(this),
+      requests_cv_(&lock_),
+      service_thread_("ImageDecodeService") {
   TRACE_EVENT0("cc", "ImageDecodeService::ImageDecodeService()");
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
+  base::ThreadRestrictions::SetIOAllowed(true);
   for (int i = 0; i < kNumThreads; ++i) {
     std::unique_ptr<base::SimpleThread> thread(new ImageDecodeThread(
         base::StringPrintf("ImageDecodeThread%d", i + 1).c_str(),
@@ -70,26 +74,47 @@ ImageDecodeService::ImageDecodeService()
     threads_.push_back(std::move(thread));
   }
 
-  service_thread_.reset(new base::Thread("ImageDecodeService"));
-  service_thread_->Start();
+  service_thread_.Start();
 
   new_results_notifier_.reset(
-      new UniqueNotifier(service_thread_->task_runner().get(),
+      new UniqueNotifier(service_thread_.task_runner().get(),
                          base::Bind(&ImageDecodeService::ProcessResultQueue,
                                     base::Unretained(this))));
+  s_service = this;
 }
 
-ImageDecodeService::~ImageDecodeService() = default;
+ImageDecodeService::~ImageDecodeService() {
+  {
+    base::AutoLock hold(lock_);
+    shutdown_ = true;
+    requests_cv_.Broadcast();
+  }
+  for (auto& thread : threads_)
+    thread->Join();
+
+  CompletionEvent event;
+  service_thread_.task_runner()->PostTask(
+      FROM_HERE, base::Bind(&ImageDecodeService::DoCloseMojoBinding,
+                            base::Unretained(this), base::Unretained(&event)));
+  event.Wait();
+}
 
 void ImageDecodeService::Bind(mojom::ImageDecodeRequest request) {
+  base::ThreadRestrictions::SetIOAllowed(true);
   image_decode_request_ = std::move(request);
-  service_thread_->task_runner()->PostTask(
+  service_thread_.task_runner()->PostTask(
       FROM_HERE, base::Bind(&ImageDecodeService::DoBindOnServiceThread,
                             base::Unretained(this)));
 }
 
 void ImageDecodeService::DoBindOnServiceThread() {
+  base::ThreadRestrictions::SetIOAllowed(true);
   image_decode_binding_.Bind(std::move(image_decode_request_));
+}
+
+void ImageDecodeService::DoCloseMojoBinding(CompletionEvent* event) {
+  image_decode_binding_.Close();
+  event->Signal();
 }
 
 void ImageDecodeService::DecodeImage(uint32_t unique_id,
@@ -116,7 +141,7 @@ void ImageDecodeService::UnregisterImage(uint32_t image_id) {
 
 void ImageDecodeService::ProcessRequestQueue() {
   base::AutoLock hold(lock_);
-  for (;;) {
+  while (!shutdown_) {
     if (image_decode_requests_.empty()) {
       requests_cv_.Wait();
       continue;

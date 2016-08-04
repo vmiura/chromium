@@ -6,6 +6,7 @@
 #define CC_TILES_IMAGE_DECODE_SERVICE_H_
 
 #include "base/bind.h"
+#include "cc/base/completion_event.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
@@ -33,6 +34,7 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
   // Mojo stuff
   void Bind(mojom::ImageDecodeRequest request);
   void DoBindOnServiceThread();
+  void DoCloseMojoBinding(CompletionEvent* event);
 
   // mojom::ImageDecode:
   void DecodeImage(uint32_t unique_id,
@@ -54,20 +56,7 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
   void ProcessResultQueue();
 
  private:
-  bool DoDecodeImage(uint32_t image_id, void* buffer);
-  void OnImageDecoded(uint32_t image_id,
-                      bool succeeded,
-                      const base::Closure& callback);
-
-  base::Lock lock_;
-
-  std::unique_ptr<base::Thread> service_thread_;
-  mojom::ImageDecodeRequest image_decode_request_;
-  mojo::Binding<mojom::ImageDecode> image_decode_binding_;
-
-  std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
-
-  base::ConditionVariable requests_cv_;
+  static ImageDecodeService* s_service;
 
   struct ImageDecodeRequest {
     ImageDecodeRequest(uint32_t image_id,
@@ -95,6 +84,21 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
     DISALLOW_COPY_AND_ASSIGN(ImageDecodeResult);
   };
 
+  bool DoDecodeImage(uint32_t image_id, void* buffer);
+  void OnImageDecoded(uint32_t image_id,
+                      bool succeeded,
+                      const base::Closure& callback);
+
+  base::Lock lock_;
+
+  mojom::ImageDecodeRequest image_decode_request_;
+  mojo::Binding<mojom::ImageDecode> image_decode_binding_;
+
+  std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
+
+  base::ConditionVariable requests_cv_;
+  base::Thread service_thread_;
+
   std::deque<std::unique_ptr<ImageDecodeRequest>> image_decode_requests_;
   std::deque<std::unique_ptr<ImageDecodeResult>> image_decode_results_;
 
@@ -102,6 +106,8 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
   // TODO(hackathon): Hold on to this for lifetime issues?
   // scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<UniqueNotifier> new_results_notifier_;
+
+  bool shutdown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ImageDecodeService);
 };

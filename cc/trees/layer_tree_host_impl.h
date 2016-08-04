@@ -44,6 +44,9 @@
 #include "cc/trees/task_runner_provider.h"
 #include "ui/gfx/geometry/rect.h"
 
+#include "cc/tiles/image_decode_service.h"
+#include "cc/tiles/image_decode_proxy.h"
+
 namespace gfx {
 class ScrollOffset;
 }
@@ -158,7 +161,7 @@ class CC_EXPORT LayerTreeHostImpl
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<AnimationHost> animation_host,
-      int id);
+      int id, ImageDecodeService* service);
   ~LayerTreeHostImpl() override;
 
   // InputHandler implementation
@@ -631,7 +634,7 @@ class CC_EXPORT LayerTreeHostImpl
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<AnimationHost> animation_host,
-      int id);
+      int id, ImageDecodeService* service);
 
   // Virtual for testing.
   virtual bool AnimateLayers(base::TimeTicks monotonic_time);
@@ -850,6 +853,8 @@ class CC_EXPORT LayerTreeHostImpl
 
   std::unique_ptr<PendingTreeDurationHistogramTimer>
       pending_tree_duration_timer_;
+
+  ImageDecodeProxy image_decode_proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerTreeHostImpl);
 };
