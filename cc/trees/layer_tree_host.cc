@@ -431,6 +431,11 @@ void LayerTreeHost::InitializeServiceConnection(
   proxy_->InitializeCompositor(std::move(connection));
 }
 
+void LayerTreeHost::BindImageDecodePtr(
+    mojom::ImageDecodeRequest decode_request) {
+  image_decode_service_.Bind(std::move(decode_request));
+}
+
 void LayerTreeHost::WillBeginMainFrame() {
   devtools_instrumentation::WillBeginMainThreadFrame(id(),
                                                      source_frame_number());
@@ -684,7 +689,9 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
       settings_, client, task_runner_provider_.get(),
       rendering_stats_instrumentation_.get(), shared_bitmap_manager_,
       gpu_memory_buffer_manager_, task_graph_runner_,
-      std::move(animation_host_impl), id_, &image_decode_service_);
+      std::move(animation_host_impl), id_,
+      std::unique_ptr<ImageDecodeProxy>(
+          new ImageDecodeProxy(&image_decode_service_)));
   host_impl->SetHasGpuRasterizationTrigger(has_gpu_rasterization_trigger_);
   host_impl->SetContentIsSuitableForGpuRasterization(
       content_is_suitable_for_gpu_rasterization_);

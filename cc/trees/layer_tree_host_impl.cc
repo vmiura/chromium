@@ -180,11 +180,12 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHostImpl::Create(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     TaskGraphRunner* task_graph_runner,
     std::unique_ptr<AnimationHost> animation_host,
-    int id, ImageDecodeService* image_decode_service) {
+    int id,
+    std::unique_ptr<ImageDecodeProxy> proxy) {
   return base::WrapUnique(new LayerTreeHostImpl(
       settings, client, task_runner_provider, rendering_stats_instrumentation,
       shared_bitmap_manager, gpu_memory_buffer_manager, task_graph_runner,
-      std::move(animation_host), id, image_decode_service));
+      std::move(animation_host), id, std::move(proxy)));
 }
 
 LayerTreeHostImpl::LayerTreeHostImpl(
@@ -196,7 +197,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     TaskGraphRunner* task_graph_runner,
     std::unique_ptr<AnimationHost> animation_host,
-    int id, ImageDecodeService* image_decode_service)
+    int id,
+    std::unique_ptr<ImageDecodeProxy> proxy)
     : client_(client),
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(BEGINFRAMETRACKER_FROM_HERE),
@@ -246,7 +248,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       requires_high_res_to_draw_(false),
       is_likely_to_require_a_draw_(false),
       mutator_(nullptr),
-      image_decode_proxy_(image_decode_service) {
+      image_decode_proxy_(std::move(proxy)) {
   DCHECK(animation_host_);
   animation_host_->SetMutatorHostClient(this);
 

@@ -161,7 +161,8 @@ class CC_EXPORT LayerTreeHostImpl
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<AnimationHost> animation_host,
-      int id, ImageDecodeService* service);
+      int id,
+      std::unique_ptr<ImageDecodeProxy> proxy);
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
       LayerTreeHostImplClient* client,
@@ -171,7 +172,8 @@ class CC_EXPORT LayerTreeHostImpl
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<AnimationHost> animation_host,
-      int id, ImageDecodeService* service);
+      int id,
+      std::unique_ptr<ImageDecodeProxy> proxy);
   ~LayerTreeHostImpl() override;
 
   // InputHandler implementation
@@ -853,7 +855,7 @@ class CC_EXPORT LayerTreeHostImpl
   std::unique_ptr<PendingTreeDurationHistogramTimer>
       pending_tree_duration_timer_;
 
-  ImageDecodeProxy image_decode_proxy_;
+  std::unique_ptr<ImageDecodeProxy> image_decode_proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerTreeHostImpl);
 };

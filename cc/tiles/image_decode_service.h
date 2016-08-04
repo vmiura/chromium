@@ -114,4 +114,4 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
 
 }  // namespace cc
 
-#endif // CC_TILES_IMAGE_DECODE_SERVICE_H_
+#endif  // CC_TILES_IMAGE_DECODE_SERVICE_H_

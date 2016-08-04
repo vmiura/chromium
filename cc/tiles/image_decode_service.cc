@@ -18,9 +18,7 @@ class ImageDecodeThread : public base::SimpleThread {
                     ImageDecodeService* service)
       : SimpleThread(prefix, options), s_service(service) {}
 
-  void Run() final {
-    s_service->ProcessRequestQueue();
-  }
+  void Run() final { s_service->ProcessRequestQueue(); }
 
  private:
   ImageDecodeService* s_service;

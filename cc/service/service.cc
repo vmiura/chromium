@@ -220,7 +220,9 @@ Service::Service(const gpu::SurfaceHandle& handle,
                  task_graph_runner,
                  main_thread_animation_host_lol_->CreateImplInstance(
                      false /* supports_impl_scrolling */),
-                 id),
+                 id,
+                 std::unique_ptr<ImageDecodeProxy>(
+                     new ImageDecodeProxy(client.get()))),
       compositor_client_(std::move(client)),
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;

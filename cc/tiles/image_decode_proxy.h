@@ -11,6 +11,7 @@
 #include "base/threading/thread.h"
 #include "cc/base/cc_export.h"
 #include "cc/ipc/image_decode.mojom.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/tiles/image_decode_service.h"
 #include "cc/base/completion_event.h"
 
@@ -18,7 +19,8 @@ namespace cc {
 
 class CC_EXPORT ImageDecodeProxy {
  public:
-  ImageDecodeProxy(ImageDecodeService* service);
+  ImageDecodeProxy(mojom::CompositorClient* compositor_client);
+  ImageDecodeProxy(ImageDecodeService* compositor_client);
   ~ImageDecodeProxy();
 
   // For now, just use a singleton.
@@ -33,9 +35,7 @@ class CC_EXPORT ImageDecodeProxy {
   static ImageDecodeProxy* s_proxy;
 
   void OnInitializeMojo();
-  void OnDecodeImage(uint32_t unique_id,
-                     void* data,
-                     CompletionEvent* event);
+  void OnDecodeImage(uint32_t unique_id, void* data, CompletionEvent* event);
   void OnDecodeImageCompleted(CompletionEvent* event);
 
   cc::mojom::ImageDecodePtr image_decode_ptr_;
@@ -44,9 +44,6 @@ class CC_EXPORT ImageDecodeProxy {
   // Lock to exclusively access all the following members that are used to
   // implement the TaskRunner and TaskGraphRunner interfaces.
   base::Lock lock_;
-
-  // TODO(hackathon): Used for Bind, replace with IPC call back to the renderer.
-  ImageDecodeService* service_;
 };
 
 // A generator which acts as a proxy back to the renderer process.

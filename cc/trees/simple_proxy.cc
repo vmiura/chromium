@@ -399,5 +399,10 @@ void SimpleProxy::OnRendererCapabilities(
   renderer_capabilities_ = capabilities;
 }
 
+void SimpleProxy::OnImageDecodeProxyCreated(
+    mojom::ImageDecodeRequest decode_request) {
+  layer_tree_host_->BindImageDecodePtr(std::move(decode_request));
+}
+
 }  // namespace cc
 

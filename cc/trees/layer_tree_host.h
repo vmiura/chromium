@@ -32,6 +32,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/top_controls_state.h"
+#include "cc/ipc/image_decode.mojom.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/output/output_surface.h"
@@ -137,6 +138,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void InitializeServiceConnection(
       std::unique_ptr<ServiceConnection> connection);
+
+  void BindImageDecodePtr(mojom::ImageDecodeRequest decode_request);
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();

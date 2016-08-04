@@ -19,8 +19,22 @@ ImageDecodeProxy* ImageDecodeProxy::Current() {
   return s_proxy;
 }
 
-ImageDecodeProxy::ImageDecodeProxy(ImageDecodeService* service) : proxy_thread_("ImageDecodeProxy"), service_(service) {
+ImageDecodeProxy::ImageDecodeProxy(ImageDecodeService* service)
+    : proxy_thread_("ImageDecodeProxy") {
   base::ThreadRestrictions::SetIOAllowed(true);
+  service->Bind(mojo::GetProxy(&image_decode_ptr_));
+  proxy_thread_.Start();
+  proxy_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::Bind(&ImageDecodeProxy::OnInitializeMojo, base::Unretained(this)));
+  s_proxy = this;
+};
+
+ImageDecodeProxy::ImageDecodeProxy(mojom::CompositorClient* compositor_client)
+    : proxy_thread_("ImageDecodeProxy") {
+  base::ThreadRestrictions::SetIOAllowed(true);
+  compositor_client->OnImageDecodeProxyCreated(
+      mojo::GetProxy(&image_decode_ptr_));
   proxy_thread_.Start();
   proxy_thread_.task_runner()->PostTask(
       FROM_HERE,
@@ -43,7 +57,7 @@ void ImageDecodeProxy::DoCloseMojo(CompletionEvent* event) {
 
 void ImageDecodeProxy::OnInitializeMojo() {
   base::ThreadRestrictions::SetIOAllowed(true);
-  service_->Bind(mojo::GetProxy(&image_decode_ptr_));
+  // service_->Bind(mojo::GetProxy(&image_decode_ptr_));
 }
 
 void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
@@ -75,7 +89,6 @@ bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
 
   return true;
 }
-
 
 ProxyImageGenerator::ScopedBindFactory::ScopedBindFactory()
     : previous_factory_(SkGraphics::SetImageGeneratorFromEncodedFactory(

@@ -9,6 +9,7 @@
 #include "cc/base/cc_export.h"
 #include "cc/input/top_controls_state.h"
 #include "cc/ipc/compositor.mojom.h"
+#include "cc/ipc/image_decode.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/trees/channel_main.h"
@@ -79,6 +80,8 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   void OnDidCompleteSwapBuffers() override;
   void OnRendererCapabilities(
       const cc::RendererCapabilities& capabilities) override;
+  void OnImageDecodeProxyCreated(
+      mojom::ImageDecodeRequest decode_request) override;
 
   bool IsMainThread() const;
 
