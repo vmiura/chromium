@@ -1,0 +1,197 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "cc/ipc/filter_operations.mojom";
+import "cc/ipc/layer.mojom";
+import "mojo/common/common_custom_types.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/mojo/transform.mojom";
+
+struct AnimationHost {
+  array<AnimationTimeline> timelines;
+};
+
+struct AnimationTimeline {
+  uint64 id;
+  bool is_impl_only;
+  array<AnimationPlayer> animation_players;
+};
+
+// TODO(hackathon): we shouldn't send all of the players each frame; it's
+// wasteful.
+struct AnimationPlayer {
+  uint64 id;
+  ElementId element_id;
+};
+
+enum TargetProperty {
+  TRANSFORM = 0,
+  OPACITY,
+  FILTER,
+  SCROLL_OFFSET,
+  BACKGROUND_COLOR,
+  // These sentinels must be last
+  FIRST_TARGET_PROPERTY = TRANSFORM,
+  LAST_TARGET_PROPERTY = BACKGROUND_COLOR
+};
+
+enum RunState {
+  WAITING_FOR_TARGET_AVAILABILITY = 0,
+  WAITING_FOR_DELETION,
+  STARTING,
+  RUNNING,
+  PAUSED,
+  FINISHED,
+  ABORTED,
+  ABORTED_BUT_NEEDS_COMPLETION,
+  // This sentinel must be last.
+  LAST_RUN_STATE = ABORTED_BUT_NEEDS_COMPLETION
+};
+
+enum Direction { NORMAL, REVERSE, ALTERNATE_NORMAL, ALTERNATE_REVERSE };
+
+enum FillMode { NONE, FORWARDS, BACKWARDS, BOTH };
+
+enum AnimationType {
+  TRANSFORM = 0,
+  OPACITY,
+  FILTER,
+  SCROLL_OFFSET,
+  BACKGROUND_COLOR,
+  // These sentinels must be last
+  FIRST_TARGET_PROPERTY = TRANSFORM,
+  LAST_TARGET_PROPERTY = BACKGROUND_COLOR
+};
+
+struct CubicBezierTimingFunction {
+  double x1;
+  double y1;
+  double x2;
+  double y2;
+  EaseType ease_type;
+};
+
+struct StepsTimingFunction {
+  uint64 steps;
+  float steps_start_offset;
+};
+
+struct TimingFunction {
+  CubicBezierTimingFunction? cubic_bezier_timing_function;
+  StepsTimingFunction? steps_timing_function;
+};
+
+enum AnimationCurveType { COLOR, FLOAT, TRANSFORM, FILTER, SCROLL_OFFSET };
+
+struct FilterKeyframe {
+  FilterOperations filter_operation;
+};
+
+struct FloatKeyframe {
+  float value;
+};
+
+enum TransformOperationType {
+  TRANSFORM_OPERATION_TRANSLATE,
+  TRANSFORM_OPERATION_ROTATE,
+  TRANSFORM_OPERATION_SCALE,
+  TRANSFORM_OPERATION_SKEW,
+  TRANSFORM_OPERATION_PERSPECTIVE,
+  TRANSFORM_OPERATION_MATRIX,
+  TRANSFORM_OPERATION_IDENTITY
+};
+
+// cc/animation/transform_operation.h
+struct TransformOperation {
+  TransformOperationType type;
+  gfx.mojom.Transform matrix;
+
+  // These should be a union.
+  float x;
+  float y;
+  float z;
+  float angle;
+};
+
+struct TransformKeyframe {
+  array<TransformOperation> operations;
+};
+
+enum EaseType { EASE, EASE_IN, EASE_OUT, EASE_IN_OUT, CUSTOM };
+
+struct Keyframe {
+  mojo.common.mojom.TimeDelta time;
+  TimingFunction timing_function;
+
+  FloatKeyframe? float_keyframe;
+  TransformKeyframe? transform_keyframe;
+  FilterKeyframe? filter_keyframe;
+};
+
+enum DurationBehavior { DELTA_BASED, CONSTANT, INVERSE_DELTA };
+
+struct ScrollOffsetAnimationCurve {
+  gfx.mojom.ScrollOffset initial_value;
+  gfx.mojom.ScrollOffset target_value;
+  mojo.common.mojom.TimeDelta total_animation_duration;
+  mojo.common.mojom.TimeDelta last_retarget;
+  DurationBehavior duration_behavior;
+  bool has_set_initial_value;
+};
+
+struct AnimationCurve {
+  AnimationCurveType type;
+  TimingFunction timing_function;
+  array<Keyframe>? keyframes;
+  ScrollOffsetAnimationCurve? scroll_offset_animation_curve;
+};
+
+struct Animation {
+  AnimationCurve curve;
+
+  uint64 id;
+  uint64 group;
+  TargetProperty target_property;
+  RunState run_state;
+  double iterations;
+  double iteration_start;
+  mojo.common.mojom.TimeTicks start_time;
+  Direction direction;
+  double playback_rate;
+  FillMode fill_mode;
+  mojo.common.mojom.TimeDelta time_offset;
+  bool needs_synchronized_start_time;
+  bool received_finished_event;
+  bool suspended;
+  mojo.common.mojom.TimeTicks pause_time;
+  mojo.common.mojom.TimeTicks total_paused_time;
+  bool is_controlling_instance;
+  bool is_impl_only;
+  bool affects_active_elements;
+  bool affects_pending_elements;
+};
+
+struct PropertyAnimationState {
+  bool currently_running_for_active_elements;
+  bool currently_running_for_pending_elements;
+  bool potentially_animating_for_active_elements;
+  bool potentially_animating_for_pending_elements;
+};
+
+struct ElementAnimations {
+  array<AnimationPlayer> players_list;
+  ElementId element_id;
+  array<Animation> animations;
+  bool is_active;
+  mojo.common.mojom.TimeTicks last_tick_time;
+  bool has_element_in_active_list;
+  bool has_element_in_pending_list;
+  bool needs_to_start_animations;
+  bool scroll_offset_animation_was_interrupted;
+  PropertyAnimationState filter_animation_state;
+  PropertyAnimationState opacity_animation_state;
+  PropertyAnimationState transform_animation_state;
+};

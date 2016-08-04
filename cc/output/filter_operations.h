@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "cc/base/cc_transport_export.h"
 #include "cc/output/filter_operation.h"
 
 namespace base {
@@ -27,7 +28,7 @@ class Rect;
 namespace cc {
 
 // An ordered list of filter operations.
-class CC_EXPORT FilterOperations {
+class CC_TRANSPORT_EXPORT FilterOperations {
  public:
   FilterOperations();
 

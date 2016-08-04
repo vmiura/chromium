@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -28,7 +28,7 @@ class Rect;
 
 namespace cc {
 
-class CC_EXPORT FilterOperation {
+class CC_TRANSPORT_EXPORT FilterOperation {
  public:
   enum FilterType {
     GRAYSCALE,

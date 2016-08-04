@@ -36,6 +36,8 @@ class CC_EXPORT AnimationCurve {
   virtual CurveType Type() const = 0;
   virtual std::unique_ptr<AnimationCurve> Clone() const = 0;
 
+  //virtual void WriteMojom(cc::mojom::AnimationCurve* mojom) = 0;
+
   const ColorAnimationCurve* ToColorAnimationCurve() const;
   const FloatAnimationCurve* ToFloatAnimationCurve() const;
   const TransformAnimationCurve* ToTransformAnimationCurve() const;

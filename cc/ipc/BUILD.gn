@@ -47,9 +47,12 @@ mojom("image_decode_interfaces") {
 
 mojom("compositor_interfaces") {
   sources = [
+    "animation.mojom",
     "begin_frame_args.mojom",
     "compositor.mojom",
     "content_frame.mojom",
+    "filter_operation.mojom",
+    "filter_operations.mojom",
     "layer.mojom",
     "layer_tree_settings.mojom",
     "renderer_capabilities.mojom",
@@ -59,6 +62,7 @@ mojom("compositor_interfaces") {
     ":interfaces_surfaceid_only",
     "//gpu/ipc/common:interfaces",
     "//mojo/common:common_custom_types",
+    "//skia/public/interfaces",
   ]
 }
 
@@ -66,8 +70,6 @@ mojom("interfaces") {
   sources = [
     "compositor_frame.mojom",
     "compositor_frame_metadata.mojom",
-    "filter_operation.mojom",
-    "filter_operations.mojom",
     "quads.mojom",
     "render_pass.mojom",
     "render_pass_id.mojom",

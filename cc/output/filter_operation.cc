@@ -278,6 +278,7 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
       break;
     case FilterOperation::DROP_SHADOW:
       value->SetDouble("std_deviation", amount_);
+      // TODO(hackathon): figure out the deps that would allow this to work.
       MathUtil::AddToTracedValue("offset", drop_shadow_offset_, value);
       value->SetInteger("color", drop_shadow_color_);
       break;

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("base") {
-  visibility = [ "//cc" ]
+  visibility = [ "//cc", "//cc:transport" ]
 
   sources = [
     "completion_event.h",
