@@ -49,12 +49,13 @@ void SatisfyCallback(cc::SurfaceManager* manager,
 void RequireCallback(cc::SurfaceManager* manager,
                      const cc::SurfaceId& id,
                      const cc::SurfaceSequence& sequence) {
-  cc::Surface* surface = manager->GetSurfaceForId(id);
-  if (!surface) {
-    LOG(ERROR) << "Attempting to require callback on nonexistent surface";
-    return;
-  }
-  surface->AddDestructionDependency(sequence);
+  // TODO(hackathon): The SurfaceManager in the browser doesn't do anything.
+  //cc::Surface* surface = manager->GetSurfaceForId(id);
+  //if (!surface) {
+  //  //LOG(ERROR) << "Attempting to require callback on nonexistent surface";
+  //  return;
+  //}
+  //surface->AddDestructionDependency(sequence);
 }
 
 }  // namespace
