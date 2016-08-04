@@ -29,7 +29,7 @@ class CC_EXPORT ImageDecodeProxy {
   void OnDecodeImageCompleted(base::WaitableEvent* event);
 
   cc::mojom::ImageDecodePtr image_decode_ptr_;
-  std::unique_ptr<base::Thread> mojo_thread_;
+  std::unique_ptr<base::Thread> proxy_thread_;
 
   // Lock to exclusively access all the following members that are used to
   // implement the TaskRunner and TaskGraphRunner interfaces.

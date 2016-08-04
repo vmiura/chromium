@@ -6,9 +6,9 @@
 namespace cc {
 
 ImageDecodeProxy::ImageDecodeProxy() {
-  mojo_thread_.reset(new base::Thread("image_decode_proxy"));
-  mojo_thread_->Start();
-  mojo_thread_->task_runner()->PostTask(
+  proxy_thread_.reset(new base::Thread("ImageDecodeProxy"));
+  proxy_thread_->Start();
+  proxy_thread_->task_runner()->PostTask(
       FROM_HERE,
       base::Bind(&ImageDecodeProxy::OnInitializeMojo, base::Unretained(this)));
 };
@@ -22,7 +22,6 @@ ImageDecodeProxy* ImageDecodeProxy::Current() {
 }
 
 void ImageDecodeProxy::OnInitializeMojo() {
-  VLOG(0) << "ImageDecodeProxy::InitializeMojo()";
   ImageDecodeService::Current()->Bind(mojo::GetProxy(&image_decode_ptr_));
 }
 
@@ -30,7 +29,6 @@ void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
                                      void* data,
                                      base::WaitableEvent* event) {
   TRACE_EVENT1("cc", "ImageDecodeProxy::OnDecodeImage", "unique_id", unique_id);
-  VLOG(0) << "ImageDecodeProxy::OnDecodeImage " << unique_id << " " << data;
 
   // TODO(hackathon): Pass shared memory buffer instead of raw pointer.
   image_decode_ptr_->DecodeImage(
@@ -41,7 +39,6 @@ void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
 
 void ImageDecodeProxy::OnDecodeImageCompleted(base::WaitableEvent* event) {
   TRACE_EVENT0("cc", "ImageDecodeProxy::OnDecodeImageCompleted");
-  VLOG(0) << "ImageDecodeProxy::OnDecodeImageCompleted";
   event->Signal();
 }
 
@@ -51,7 +48,7 @@ bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  mojo_thread_->task_runner()->PostTask(
+  proxy_thread_->task_runner()->PostTask(
       FROM_HERE, base::Bind(&ImageDecodeProxy::OnDecodeImage,
                             base::Unretained(this), unique_id, data, &event));
 

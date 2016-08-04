@@ -9,6 +9,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
+#include "base/threading/thread.h"
 #include "cc/base/cc_export.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/ipc/image_decode.mojom.h"
@@ -31,6 +32,7 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
 
   // Mojo stuff
   void Bind(mojom::ImageDecodeRequest request);
+  void DoBindOnServiceThread();
 
   // mojom::ImageDecode:
   void DecodeImage(uint32_t unique_id,
@@ -57,9 +59,12 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
                       bool succeeded,
                       const base::Closure& callback);
 
-  mojo::Binding<mojom::ImageDecode> binding_;
-
   base::Lock lock_;
+
+  std::unique_ptr<base::Thread> service_thread_;
+  mojom::ImageDecodeRequest image_decode_request_;
+  mojo::Binding<mojom::ImageDecode> image_decode_binding_;
+
   std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
 
   base::ConditionVariable requests_cv_;
