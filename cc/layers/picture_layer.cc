@@ -265,11 +265,21 @@ void PictureLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
   mojom->is_mask = is_mask_;
 }
 
+
+static mojom::RegionPtr RegionToMojom(const Region& region) {
+  auto mojom = mojom::Region::New();
+  for (Region::Iterator it(region); it.has_rect(); it.next())
+    mojom->rects.push_back(it.rect());
+  return mojom;
+}
+
 void PictureLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   Layer::WritePropertiesMojom(mojom);
   DropRecordingSourceContentIfInvalid();
   mojom->picture_state = mojom::PictureLayerState::New();
   mojom::PictureLayerState* picture_state = mojom->picture_state.get();
+  picture_state->last_updated_invalidation = RegionToMojom(last_updated_invalidation_);
+  last_updated_invalidation_.Clear();
   picture_state->gpu_raster_max_texture_size =
       layer_tree_host()->device_viewport_size();
   picture_state->nearest_neighbor = picture_layer_inputs_.nearest_neighbor;

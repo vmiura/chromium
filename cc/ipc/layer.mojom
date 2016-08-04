@@ -15,13 +15,16 @@ struct NinePatchLayerState {
   gfx.mojom.Rect layer_occlusion;
 };
 
+struct Region {
+  array<gfx.mojom.Rect> rects;
+};
+
 struct PictureLayerState {
-  // TODO(fsamuel): Region.
-  // Region last_updated_invalidation;
-  gfx.mojom.Rect recorded_viewport;
-  gfx.mojom.Size size;
+  Region last_updated_invalidation;
   gfx.mojom.Size gpu_raster_max_texture_size;
   bool nearest_neighbor;
+  gfx.mojom.Rect recorded_viewport;
+  gfx.mojom.Size size;
   bool requires_clear;
   bool is_solid_color;
   uint32 solid_color;

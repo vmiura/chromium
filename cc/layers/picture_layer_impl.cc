@@ -1312,6 +1312,13 @@ bool PictureLayerImpl::HasValidTilePriorities() const {
          is_drawn_render_surface_layer_list_member();
 }
 
+static Region RegionFromMojom(const mojom::Region* mojom) {
+  Region region;
+  for (auto rect : mojom->rects)
+    region.Union(rect);
+  return region;
+}
+
 void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   LayerImpl::ReadPropertiesMojom(mojom);
   DCHECK(mojom->picture_state);
@@ -1319,8 +1326,7 @@ void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
 
   gpu_raster_max_texture_size_ = picture_state->gpu_raster_max_texture_size;
   SetNearestNeighbor(picture_state->nearest_neighbor);
-  // TODO(piman): invalidation region
-  Region invalidation;
+  Region invalidation = RegionFromMojom(picture_state->last_updated_invalidation.get());
 
   RecordingSource recording_source;
   recording_source.ReadMojom(picture_state);
