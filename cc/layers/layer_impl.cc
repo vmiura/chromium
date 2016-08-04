@@ -1206,6 +1206,10 @@ void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   position_ = mojom->position;
   bounds_ = mojom->bounds;
   background_color_ = mojom->background_color;
+  SetTransformTreeIndex(mojom->transform_tree_index);
+  SetEffectTreeIndex(mojom->effect_tree_index);
+  SetClipTreeIndex(mojom->clip_tree_index);
+  SetScrollTreeIndex(mojom->scroll_tree_index);
 }
 
 }  // namespace cc

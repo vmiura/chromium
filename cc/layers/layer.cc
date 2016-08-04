@@ -1898,6 +1898,10 @@ void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   mojom->position = inputs_.position;
   mojom->bounds = inputs_.bounds;
   mojom->background_color = inputs_.background_color;
+  mojom->transform_tree_index = transform_tree_index_;
+  mojom->effect_tree_index = effect_tree_index_;
+  mojom->clip_tree_index = clip_tree_index_;
+  mojom->scroll_tree_index = scroll_tree_index_;
 }
 
 }  // namespace cc

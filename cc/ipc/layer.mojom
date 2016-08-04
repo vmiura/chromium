@@ -45,6 +45,10 @@ struct LayerProperties {
   gfx.mojom.PointF position;
   gfx.mojom.Size bounds;
   uint32 background_color;
+  int32 transform_tree_index;
+  int32 effect_tree_index;
+  int32 clip_tree_index;
+  int32 scroll_tree_index;
 
   NinePatchLayerState? nine_patch_state;
   PictureLayerState? picture_state;
