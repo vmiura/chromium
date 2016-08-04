@@ -26,6 +26,7 @@ interface Compositor {
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   SetVisible(bool visible);
+  BeginMainFrameAborted(cc.mojom.CommitEarlyOutReason reason);
   [Sync] Commit(bool wait_for_activation, ContentFrame frame) => ();
   [Sync] Destroy() => ();
 };

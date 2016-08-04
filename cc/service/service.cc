@@ -397,6 +397,19 @@ AdditionGroup<gfx::ScrollOffset> ScrollOffsetFromMojom(
   return AdditionGroup<gfx::ScrollOffset>(gfx::ScrollOffset(mojom->x, mojom->y));
 }
 
+void Service::BeginMainFrameAborted(CommitEarlyOutReason reason) {
+#if 0
+  // TODO(hackathon):
+  if (CommitEarlyOutHandledCommit(reason)) {
+    SetInputThrottledUntilCommitOnImpl(false);
+  }
+#endif
+  host_impl_.BeginMainFrameAborted(reason);
+  scheduler_.NotifyBeginMainFrameStarted(
+      base::TimeTicks() /* TODO(hackathon): heh. */);
+  scheduler_.BeginMainFrameAborted(reason);
+}
+
 void Service::FinishCommit() {
   mojom::ContentFrame* frame = frame_for_commit_.get();
   LayerTreeImpl* sync_tree = host_impl_.sync_tree();
@@ -445,8 +458,6 @@ void Service::FinishCommit() {
         sync_tree->AddToLayerList(layer.get());
         sync_tree->AddLayer(std::move(layer));
       }
-    } else {
-      LOG(ERROR) << "read empty tree";
     }
     sync_tree->OnCanDrawStateChangedForTree();
   }

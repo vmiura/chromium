@@ -114,3 +114,10 @@ struct ContentFrame {
   LayerTree? layer_tree;
   array<cc.mojom.LayerProperties> layer_properties;
 };
+
+enum CommitEarlyOutReason {
+  ABORTED_OUTPUT_SURFACE_LOST,
+  ABORTED_NOT_VISIBLE,
+  ABORTED_DEFERRED_COMMIT,
+  FINISHED_NO_UPDATES,
+};

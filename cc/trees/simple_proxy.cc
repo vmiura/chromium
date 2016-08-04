@@ -280,11 +280,12 @@ void SimpleProxy::OnBeginMainFrame(
   TRACE_EVENT_SYNTHETIC_DELAY_BEGIN("cc.BeginMainFrame");
   DCHECK(IsMainThread());
   DCHECK(begin_frame_requested_);
-  begin_frame_requested_ = false;
 
   if (defer_commits_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
+    compositor_->BeginMainFrameAborted(
+        CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT /* TODO(hackathon): Add the time. */);
     return;
   }
 
@@ -295,18 +296,14 @@ void SimpleProxy::OnBeginMainFrame(
 
   if (!layer_tree_host_->visible()) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
-    // TODO(piman): hackathon ??
-    NOTIMPLEMENTED();
+    compositor_->BeginMainFrameAborted(
+        CommitEarlyOutReason::ABORTED_NOT_VISIBLE /* TODO(hackathon): Add the time. */);
     return;
   }
 
-  //if (layer_tree_host_->output_surface_lost()) {
-  //  TRACE_EVENT_INSTANT0("cc", "EarlyOut_OutputSurfaceLost",
-  //                       TRACE_EVENT_SCOPE_THREAD);
-  //  // TODO(piman): hackathon ??
-  //  NOTREACHED();
-  //  return;
-  //}
+  // If we get this far, we won't try to make a new main frame. Early outs
+  // before this will retry.
+  begin_frame_requested_ = false;
 
   // TODO(piman): hackathon
   // layer_tree_host_->ApplyScrollAndScale(
@@ -341,11 +338,11 @@ void SimpleProxy::OnBeginMainFrame(
 
   if (!updated && can_cancel_this_commit) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoUpdates", TRACE_EVENT_SCOPE_THREAD);
-    // TODO(piman): hackathon ??
-    NOTIMPLEMENTED();
     layer_tree_host_->CommitComplete();
     layer_tree_host_->DidBeginMainFrame();
     layer_tree_host_->BreakSwapPromises(SwapPromise::COMMIT_NO_UPDATE);
+    compositor_->BeginMainFrameAborted(
+        CommitEarlyOutReason::FINISHED_NO_UPDATES /* TODO(hackathon): Add the time. */);
     return;
   }
 

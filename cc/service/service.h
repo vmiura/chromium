@@ -61,6 +61,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetVisible(bool visible) override;
+  void BeginMainFrameAborted(CommitEarlyOutReason reason) override;
   void Commit(bool wait_for_activation,
               mojom::ContentFramePtr frame,
               const CommitCallback& callback) override;
