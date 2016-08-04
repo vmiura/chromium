@@ -37,9 +37,13 @@ SkImageInfo CreateImageInfo(size_t width,
 
 ImageDecodeService::ImageDecodeRequest::ImageDecodeRequest(
     uint32_t image_id,
-    void* buffer,
+    mojo::ScopedSharedBufferHandle buffer_handle,
+    uint32_t size,
     const base::Closure& callback)
-    : image_id(image_id), buffer(buffer), callback(callback) {}
+    : image_id(image_id),
+      buffer_handle(std::move(buffer_handle)),
+      size(size),
+      callback(callback) {}
 
 ImageDecodeService::ImageDecodeRequest::~ImageDecodeRequest() {}
 
@@ -115,14 +119,6 @@ void ImageDecodeService::DoCloseMojoBinding(CompletionEvent* event) {
   event->Signal();
 }
 
-void ImageDecodeService::DecodeImage(uint32_t unique_id,
-                                     uint64_t data,
-                                     const DecodeImageCallback& callback) {
-  TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "unique_id", unique_id);
-  void* data_ptr = (void*)data;
-  DecodeImage(unique_id, data_ptr, callback);
-}
-
 void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
   TRACE_EVENT1("cc", "ImageDecodeService::RegisterImage", "image_id",
                image->uniqueID());
@@ -149,7 +145,20 @@ void ImageDecodeService::ProcessRequestQueue() {
     image_decode_requests_.pop_front();
     bool result = [this, &request]() {
       base::AutoUnlock release(lock_);
-      return DoDecodeImage(request->image_id, request->buffer);
+
+      // Map |data| into the address space and copy out its contents.
+      if (!request->buffer_handle.is_valid()) {
+        LOG(ERROR) << "Invalid data handle received from renderer process.";
+        return false;
+      }
+
+      mojo::ScopedSharedBufferMapping mapping =
+          request->buffer_handle->Map(request->size);
+      if (!mapping) {
+        LOG(ERROR) << "Failed to mmap region of " << request->size << " bytes.";
+        return false;
+      }
+      return DoDecodeImage(request->image_id, mapping.get());
     }();
     image_decode_results_.emplace_back(
         new ImageDecodeResult(request->image_id, result, request->callback));
@@ -165,14 +174,16 @@ void ImageDecodeService::ProcessResultQueue() {
   image_decode_results_.clear();
 }
 
-void ImageDecodeService::DecodeImage(uint32_t image_id,
-                                     void* buffer,
-                                     const base::Closure& callback) {
+void ImageDecodeService::DecodeImage(
+    uint32_t image_id,
+    mojo::ScopedSharedBufferHandle buffer_handle,
+    uint32_t size,
+    const DecodeImageCallback& callback) {
   TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "image_id", image_id);
   base::AutoLock hold(lock_);
 
-  image_decode_requests_.emplace_back(
-      new ImageDecodeRequest(image_id, buffer, callback));
+  image_decode_requests_.emplace_back(new ImageDecodeRequest(
+      image_id, std::move(buffer_handle), size, callback));
   requests_cv_.Broadcast();
 }
 

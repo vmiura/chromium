@@ -1,5 +1,5 @@
 module cc.mojom;
 
 interface ImageDecode {
-  DecodeImage(uint32 unique_id, uint64 data) => ();
+  DecodeImage(uint32 unique_id, handle<shared_buffer> buffer_handle, uint32 size) => ();
 };

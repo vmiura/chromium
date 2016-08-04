@@ -35,7 +35,10 @@ class CC_EXPORT ImageDecodeProxy {
   static ImageDecodeProxy* s_proxy;
 
   void OnInitializeMojo(cc::mojom::ImageDecodePtrInfo ptr_info);
-  void OnDecodeImage(uint32_t unique_id, void* data, CompletionEvent* event);
+  void OnDecodeImage(uint32_t unique_id,
+                     mojo::ScopedSharedBufferHandle* remote_handle,
+                     size_t size,
+                     CompletionEvent* event);
   void OnDecodeImageCompleted(CompletionEvent* event);
 
   cc::mojom::ImageDecodePtr image_decode_ptr_;
