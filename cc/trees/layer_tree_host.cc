@@ -1327,9 +1327,13 @@ void LayerTreeHost::OnCommitForSwapPromises() {
     swap_promise->OnCommit();
 }
 
-void LayerTreeHost::set_surface_client_id(uint32_t client_id) {
+void LayerTreeHost::SetSurfaceClientId(uint32_t client_id) {
   surface_client_id_ = client_id;
-  proxy_->SetSurfaceClientId(client_id);
+  client_->DidSetSurfaceClientId(client_id);
+}
+
+void LayerTreeHost::RegisterChildCompositor(uint32_t client_id) {
+  proxy_->RegisterChildCompositor(client_id);
 }
 
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {

@@ -1099,6 +1099,10 @@ void RenderWidgetCompositor::DidCompletePageScaleAnimation() {
   delegate_->DidCompletePageScaleAnimation();
 }
 
+void RenderWidgetCompositor::DidSetSurfaceClientId(uint32_t client_id) {
+  delegate_->DidSetSurfaceClientId(client_id);
+}
+
 void RenderWidgetCompositor::RequestScheduleAnimation() {
   delegate_->RequestScheduleAnimation();
 }
@@ -1125,7 +1129,7 @@ void RenderWidgetCompositor::SendCompositorProto(
 }
 
 void RenderWidgetCompositor::SetSurfaceClientId(uint32_t surface_client_id) {
-  layer_tree_host_->set_surface_client_id(surface_client_id);
+  // layer_tree_host_->set_surface_client_id(surface_client_id);
 }
 
 void RenderWidgetCompositor::OnHandleCompositorProto(

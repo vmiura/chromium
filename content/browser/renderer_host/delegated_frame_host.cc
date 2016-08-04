@@ -221,6 +221,23 @@ uint32_t DelegatedFrameHost::GetSurfaceClientId() {
   return id_allocator_->client_id();
 }
 
+void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
+  id_allocator_.reset(new cc::SurfaceIdAllocator(client_id));
+  surface_id_ = cc::SurfaceId(client_id, 1, 1);
+  auto* layer = client_->DelegatedFrameHostGetLayer();
+  fprintf(stderr, ">>>%s layer: %p\n", __PRETTY_FUNCTION__, layer);
+  if (layer) {
+    gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
+    layer->SetShowSurface(
+        cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+        base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
+        base::Bind(&RequireCallback, base::Unretained(GetSurfaceManager())),
+        desired_size, current_scale_factor_, desired_size);
+  }
+  if (compositor_)
+    compositor_->AddSurfaceClient(client_id);
+}
+
 cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
     cc::SurfaceHittestDelegate* delegate,
     const gfx::Point& point,
@@ -600,6 +617,7 @@ void DelegatedFrameHost::SetBeginFrameSource(
 }
 
 void DelegatedFrameHost::EvictDelegatedFrame() {
+#if 0
   client_->DelegatedFrameHostGetLayer()->SetShowSolidColorContent();
   if (!surface_id_.is_null()) {
     surface_factory_->Destroy(surface_id_);
@@ -607,6 +625,7 @@ void DelegatedFrameHost::EvictDelegatedFrame() {
   }
   delegated_frame_evictor_->DiscardedFrame();
   UpdateGutters();
+#endif
 }
 
 // static
@@ -862,7 +881,7 @@ void DelegatedFrameHost::SetCompositor(ui::Compositor* compositor) {
   vsync_manager_ = compositor_->vsync_manager();
   vsync_manager_->AddObserver(this);
 
-  compositor_->AddSurfaceClient(id_allocator_->client_id());
+  // compositor_->AddSurfaceClient(id_allocator_->client_id());
 }
 
 void DelegatedFrameHost::ResetCompositor() {
@@ -879,7 +898,7 @@ void DelegatedFrameHost::ResetCompositor() {
     vsync_manager_ = NULL;
   }
 
-  compositor_->RemoveSurfaceClient(id_allocator_->client_id());
+  // compositor_->RemoveSurfaceClient(id_allocator_->client_id());
   compositor_ = nullptr;
 }
 

@@ -56,6 +56,9 @@ class CONTENT_EXPORT RenderWidgetCompositorDelegate {
   // process.
   virtual void DidCompleteSwapBuffers() = 0;
 
+  // Notifies that the client has acquired an ID.
+  virtual void DidSetSurfaceClientId(uint32_t client) {}
+
   // Called by the compositor to forward a proto that represents serialized
   // compositor state.
   virtual void ForwardCompositorProto(const std::vector<uint8_t>& proto) = 0;

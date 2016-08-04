@@ -5,6 +5,7 @@
 #include "cc/service/delegating_output_surface.h"
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "cc/output/compositor_frame.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/surface.h"
@@ -43,21 +44,7 @@ DelegatingOutputSurface::~DelegatingOutputSurface() {
     DetachFromClient();
 }
 
-void DelegatingOutputSurface::SetSurfaceId(const cc::SurfaceId& surface_id) {
-  if (surface_id == delegated_surface_id_)
-    return;
-
-  if (!delegated_surface_id_.is_null())
-    factory_.Destroy(delegated_surface_id_);
-  delegated_surface_id_ = surface_id;
-  factory_.Create(delegated_surface_id_);
-}
-
 void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
-  if (delegated_surface_id_.is_null())
-    return;
-
-#if 0
   gfx::Size frame_size =
       frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
   if (frame_size.IsEmpty() || frame_size != last_swap_frame_size_) {
@@ -69,7 +56,6 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
     last_swap_frame_size_ = frame_size;
   }
 
-#endif
   if (display_) {
     display_->SetSurfaceId(delegated_surface_id_,
                            frame.metadata.device_scale_factor);
@@ -158,9 +144,12 @@ void DelegatingOutputSurface::DisplaySetMemoryPolicy(
 }
 
 void DelegatingOutputSurface::DidDrawCallback() {
-  // TODO(danakj): Why the lost check?
-  if (!output_surface_lost_)
-    client_->DidSwapBuffersComplete();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::Bind(&OutputSurfaceClient::DidSwapBuffersComplete,
+                            base::Unretained(client_)));
+  // // TODO(danakj): Why the lost check?
+  // if (!output_surface_lost_)
+  //   client_->DidSwapBuffersComplete();
 }
 
 }  // namespace cc

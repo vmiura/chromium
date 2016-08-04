@@ -55,11 +55,11 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void InsertHackyGreenLayer();
 
   // cc::mojom::Compositor implementation.
+  void RegisterChildCompositor(uint32_t client_id) override;
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetVisible(bool visible) override;
-  void Commit(const cc::SurfaceId& surface_id,
-              bool wait_for_activation,
+  void Commit(bool wait_for_activation,
               mojom::ContentFramePtr frame,
               const CommitCallback& callback) override;
   void Destroy(const DestroyCallback& callback) override;

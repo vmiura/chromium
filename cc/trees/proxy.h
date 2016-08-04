@@ -40,6 +40,8 @@ class CC_EXPORT Proxy {
   virtual void InitializeCompositor(
       std::unique_ptr<CompositorProxy> compositor) = 0;
 
+  virtual void RegisterChildCompositor(uint32_t client) {}
+
   virtual void FinishAllRendering() = 0;
 
   virtual bool IsStarted() const = 0;
@@ -48,8 +50,6 @@ class CC_EXPORT Proxy {
   // Will call LayerTreeHost::OnCreateAndInitializeOutputSurfaceAttempted
   // with the result of this function.
   virtual void SetOutputSurface(OutputSurface* output_surface) = 0;
-
-  virtual void SetSurfaceClientId(uint32_t client_id) = 0;
 
   virtual void ReleaseOutputSurface() = 0;
 

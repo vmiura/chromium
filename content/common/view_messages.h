@@ -845,6 +845,7 @@ IPC_MESSAGE_ROUTED1(ViewMsg_HandleCompositorProto,
 IPC_MESSAGE_ROUTED1(ViewHostMsg_SetNeedsBeginFrames,
                     bool /* enabled */)
 
+IPC_MESSAGE_ROUTED1(ViewHostMsg_SetSurfaceClientId, uint32_t /* client_id */)
 // Sent by the renderer when it is creating a new window.  The browser creates a
 // tab for it.  If |reply.route_id| is MSG_ROUTING_NONE, the view couldn't be
 // created.

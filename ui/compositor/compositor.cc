@@ -217,7 +217,6 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
   host_->animation_host()->AddAnimationTimeline(animation_timeline_.get());
 
   host_->SetRootLayer(root_web_layer_);
-  host_->set_surface_client_id(surface_id_allocator_->client_id());
   host_->SetVisible(true);
 }
 
@@ -257,6 +256,8 @@ Compositor::~Compositor() {
 }
 
 void Compositor::AddSurfaceClient(uint32_t client_id) {
+  host_->RegisterChildCompositor(client_id);
+#if 0
   // We don't give the client a parent until the ui::Compositor has an
   // OutputSurface.
   uint32_t parent_client_id = 0;
@@ -266,9 +267,11 @@ void Compositor::AddSurfaceClient(uint32_t client_id) {
         parent_client_id, client_id);
   }
   surface_clients_[client_id] = parent_client_id;
+#endif
 }
 
 void Compositor::RemoveSurfaceClient(uint32_t client_id) {
+#if 0
   auto it = surface_clients_.find(client_id);
   DCHECK(it != surface_clients_.end());
   if (host_->has_output_surface()) {
@@ -276,6 +279,7 @@ void Compositor::RemoveSurfaceClient(uint32_t client_id) {
         it->second, client_id);
   }
   surface_clients_.erase(it);
+#endif
 }
 
 void Compositor::SetOutputSurface(

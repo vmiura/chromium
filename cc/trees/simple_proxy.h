@@ -40,11 +40,11 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
   // Proxy implementation.
   void InitializeCompositor(
       std::unique_ptr<CompositorProxy> compositor) override;
+  void RegisterChildCompositor(uint32_t client_id) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;
   void SetOutputSurface(OutputSurface* output_surface) override;
-  void SetSurfaceClientId(uint32_t client_id) override;
   void SetVisible(bool visible) override;
   const RendererCapabilities& GetRendererCapabilities() const override;
   void SetNeedsAnimate() override;
@@ -73,7 +73,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public mojom::CompositorClient {
               TaskRunnerProvider* task_runner_provider);
 
   // mojom::CompositorClient implementation
-  void OnCompositorCreated() override;
+  void OnCompositorCreated(uint32_t client_id) override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;

@@ -226,7 +226,7 @@ Service::Service(const gpu::SurfaceHandle& handle,
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
-  compositor_client_->OnCompositorCreated();
+  compositor_client_->OnCompositorCreated(surface_id_allocator_.client_id());
 }
 
 Service::~Service() {
@@ -350,6 +350,12 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
+void Service::RegisterChildCompositor(uint32_t client_id) {
+  fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
+  surface_manager_->RegisterSurfaceNamespaceHierarchy(
+      surface_id_allocator_.client_id(), client_id);
+}
+
 void Service::SetNeedsBeginMainFrame() {
   client_->SetNeedsCommitOnImplThread();
 }
@@ -364,16 +370,13 @@ void Service::SetVisible(bool visible) {
   scheduler_.SetVisible(visible);
 }
 
-void Service::Commit(const cc::SurfaceId& surface_id,
-                     bool wait_for_activation,
+void Service::Commit(bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {
   DCHECK(!commit_callback_);
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
-
-  output_surface_->SetSurfaceId(surface_id);
 
   frame_for_commit_ = std::move(frame);
   wait_for_activation_ = wait_for_activation;

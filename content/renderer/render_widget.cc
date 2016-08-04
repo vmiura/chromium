@@ -772,6 +772,11 @@ void RenderWidget::DidCompleteSwapBuffers() {
   need_update_rect_for_auto_resize_ = false;
 }
 
+void RenderWidget::DidSetSurfaceClientId(uint32_t client_id) {
+  fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
+  Send(new ViewHostMsg_SetSurfaceClientId(routing_id_, client_id));
+}
+
 void RenderWidget::ForwardCompositorProto(const std::vector<uint8_t>& proto) {
   Send(new ViewHostMsg_ForwardCompositorProto(routing_id_, proto));
 }

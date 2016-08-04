@@ -79,6 +79,10 @@ void SimpleProxy::InitializeCompositor(
   }
 }
 
+void SimpleProxy::RegisterChildCompositor(uint32_t client_id) {
+  compositor_->RegisterChildCompositor(client_id);
+}
+
 void SimpleProxy::FinishAllRendering() {
   DCHECK(IsMainThread());
   DCHECK(!defer_commits_);
@@ -96,10 +100,6 @@ bool SimpleProxy::CommitToActiveTree() const {
 
 void SimpleProxy::SetOutputSurface(OutputSurface* output_surface) {
   NOTREACHED();
-}
-
-void SimpleProxy::SetSurfaceClientId(uint32_t client_id) {
-  surface_id_ = SurfaceId(client_id, 1, 1);
 }
 
 void SimpleProxy::SetVisible(bool visible) {
@@ -262,7 +262,9 @@ bool SimpleProxy::IsMainThread() const {
   return task_runner_provider_->IsMainThread();
 }
 
-void SimpleProxy::OnCompositorCreated() {}
+void SimpleProxy::OnCompositorCreated(uint32_t client_id) {
+  layer_tree_host_->SetSurfaceClientId(client_id);
+}
 
 void SimpleProxy::OnBeginMainFrame(
     uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) {
@@ -363,8 +365,7 @@ void SimpleProxy::OnBeginMainFrame(
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
     layer_tree_host_->GetContentFrame(frame.get());
     mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-    compositor_->Commit(surface_id_, hold_commit_for_activation,
-                        std::move(frame));
+    compositor_->Commit(hold_commit_for_activation, std::move(frame));
   }
 
   layer_tree_host_->CommitComplete();

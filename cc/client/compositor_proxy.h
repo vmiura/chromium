@@ -20,7 +20,7 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   void set_delegate(mojom::CompositorClient* delegate) { delegate_ = delegate; }
 
   // cc::mojom::CompositorClient implementation.
-  void OnCompositorCreated() override;
+  void OnCompositorCreated(uint32_t client_id) override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;
@@ -29,14 +29,14 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
   void OnRendererCapabilities(
       const cc::RendererCapabilities& capabilities) override;
 
+  void RegisterChildCompositor(uint32_t client_id) {
+    compositor_->RegisterChildCompositor(client_id);
+  }
   void SetNeedsBeginMainFrame() { compositor_->SetNeedsBeginMainFrame(); }
   void SetNeedsRedraw(const gfx::Rect& damage_rect) { compositor_->SetNeedsRedraw(damage_rect); }
   void SetVisible(bool visible) { compositor_->SetVisible(visible); }
-  void Commit(const cc::SurfaceId& surface_id,
-              bool hold_commit_for_activation,
-              mojom::ContentFramePtr frame) {
-    compositor_->Commit(surface_id, hold_commit_for_activation,
-                        std::move(frame));
+  void Commit(bool hold_commit_for_activation, mojom::ContentFramePtr frame) {
+    compositor_->Commit(hold_commit_for_activation, std::move(frame));
   }
   void Destroy() { compositor_->Destroy(); }
 

@@ -18,15 +18,16 @@ interface CompositorFactory {
 };
 
 interface Compositor {
+  RegisterChildCompositor(uint32 client_id);
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   SetVisible(bool visible);
-  [Sync] Commit(SurfaceId surface_id, bool wait_for_activation, ContentFrame frame) => ();
+  [Sync] Commit(bool wait_for_activation, ContentFrame frame) => ();
   [Sync] Destroy() => ();
 };
 
 interface CompositorClient {
-  OnCompositorCreated();
+  OnCompositorCreated(uint32 client_id);
   OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
   OnBeginMainFrameNotExpectedSoon();
   OnDidCompletePageScaleAnimation();

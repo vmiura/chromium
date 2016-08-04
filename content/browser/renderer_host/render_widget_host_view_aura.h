@@ -505,6 +505,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Called when RenderWidget wants to start BeginFrame scheduling or stop.
   void OnSetNeedsBeginFrames(bool needs_begin_frames);
 
+  void OnSetSurfaceClientId(uint32_t client_id);
+
   RenderFrameHostImpl* GetFocusedFrame();
 
   // Returns true if the |event| passed in can be forwarded to the renderer.

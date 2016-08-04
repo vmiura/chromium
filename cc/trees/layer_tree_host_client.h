@@ -58,6 +58,7 @@ class LayerTreeHostClient {
   virtual void DidCommitAndDrawFrame() = 0;
   virtual void DidCompleteSwapBuffers() = 0;
   virtual void DidCompletePageScaleAnimation() = 0;
+  virtual void DidSetSurfaceClientId(uint32_t client_id) {}
 
  protected:
   virtual ~LayerTreeHostClient() {}

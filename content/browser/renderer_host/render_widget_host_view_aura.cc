@@ -509,6 +509,7 @@ bool RenderWidgetHostViewAura::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostViewAura, message)
     IPC_MESSAGE_HANDLER(ViewHostMsg_SetNeedsBeginFrames,
                         OnSetNeedsBeginFrames)
+    IPC_MESSAGE_HANDLER(ViewHostMsg_SetSurfaceClientId, OnSetSurfaceClientId)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -747,6 +748,10 @@ void RenderWidgetHostViewAura::OnSetNeedsBeginFrames(bool needs_begin_frames) {
     else
       begin_frame_source_->RemoveObserver(this);
   }
+}
+
+void RenderWidgetHostViewAura::OnSetSurfaceClientId(uint32_t client_id) {
+  delegated_frame_host_->SetSurfaceClientId(client_id);
 }
 
 void RenderWidgetHostViewAura::OnBeginFrame(

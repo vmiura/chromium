@@ -15,12 +15,13 @@ CompositorProxy::CompositorProxy(
 
 CompositorProxy::~CompositorProxy() = default;
 
-void CompositorProxy::OnCompositorCreated() {
+void CompositorProxy::OnCompositorCreated(uint32_t client_id) {
   if (delegate_)
-    delegate_->OnCompositorCreated();
+    delegate_->OnCompositorCreated(client_id);
 }
 
-void CompositorProxy::OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& args) {
+void CompositorProxy::OnBeginMainFrame(uint32_t begin_frame_id,
+                                       const BeginFrameArgs& args) {
   if (delegate_)
     delegate_->OnBeginMainFrame(begin_frame_id, args);
 }
