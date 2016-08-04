@@ -75,7 +75,7 @@ class CC_EXPORT RecordingSource {
 
   const DisplayItemList* GetDisplayItemList();
 
-  void WriteMojom(mojom::PictureLayerState* mojom) const;
+  void WriteMojom(mojom::PictureLayerState* mojom);
   void ReadMojom(mojom::PictureLayerState* mojom);
 
  protected:
@@ -92,6 +92,7 @@ class CC_EXPORT RecordingSource {
   SkColor background_color_;
 
   scoped_refptr<DisplayItemList> display_list_;
+  uint32_t last_send_display_list_id_;
   size_t painter_reported_memory_usage_;
 
  private:

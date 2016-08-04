@@ -38,6 +38,7 @@ RecordingSource::RecordingSource()
       clear_canvas_with_debug_color_(kDefaultClearCanvasSetting),
       solid_color_(SK_ColorTRANSPARENT),
       background_color_(SK_ColorTRANSPARENT),
+      last_send_display_list_id_(0),
       painter_reported_memory_usage_(0) {}
 
 RecordingSource::~RecordingSource() {}
@@ -245,7 +246,7 @@ void RecordingSource::Clear() {
   is_solid_color_ = false;
 }
 
-void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) const {
+void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
   mojom->recorded_viewport = recorded_viewport_;
   mojom->size = size_;
   mojom->requires_clear = requires_clear_;
@@ -253,12 +254,19 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) const {
   mojom->solid_color = solid_color_;
   mojom->background_color = background_color_;
   if (display_list_) {
-    SkDynamicMemoryWStream write_stream;
-    display_list_->SerializeToStream(&write_stream);
-    mojom->display_list.resize(write_stream.bytesWritten());
-    write_stream.copyTo(mojom->display_list.data());
+    mojom->display_list_id = display_list_->unique_id();
+    if (last_send_display_list_id_ != display_list_->unique_id()) {
+      SkDynamicMemoryWStream write_stream;
+      display_list_->SerializeToStream(&write_stream);
+      mojom->display_list.resize(write_stream.bytesWritten());
+      write_stream.copyTo(mojom->display_list.data());
+      last_send_display_list_id_ = display_list_->unique_id();
+    } else {
+      mojom->display_list.clear();
+    }
   } else {
-    mojom->display_list.clear();
+      mojom->display_list_id = 0;
+      mojom->display_list.clear();
   }
 }
 
@@ -274,7 +282,8 @@ void RecordingSource::ReadMojom(mojom::PictureLayerState* mojom) {
                                mojom->display_list.size(), false);
     display_list_ = DisplayItemList::CreateFromStream(&read_stream);
   } else {
-    display_list_ = nullptr;
+    if (display_list_ && display_list_->unique_id() != mojom->display_list_id)
+      display_list_ = nullptr;
   }
 }
 

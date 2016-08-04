@@ -30,6 +30,7 @@ struct PictureLayerState {
   bool is_solid_color;
   uint32 solid_color;
   uint32 background_color;
+  uint32 display_list_id;
   array<int8> display_list;
 };
 
