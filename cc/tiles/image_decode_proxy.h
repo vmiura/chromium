@@ -7,7 +7,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "cc/base/cc_export.h"
-#include "cc/tiles/image_decode_mojo.h"
+#include "cc/ipc/image_decode.mojom.h"
 
 namespace cc {
 
@@ -27,10 +27,6 @@ class CC_EXPORT ImageDecodeProxy {
                      void* data,
                      base::WaitableEvent* event);
   void OnDecodeImageCompleted(base::WaitableEvent* event);
-
-  // TODO(hackathon): ImageDecodeMojo would be owned by LTH.
-  // Temporarily making ImageDecodeProxy proxy own one for testing.
-  std::unique_ptr<ImageDecodeMojo> image_decode_mojo_;
 
   cc::mojom::ImageDecodePtr image_decode_ptr_;
   std::unique_ptr<base::Thread> mojo_thread_;

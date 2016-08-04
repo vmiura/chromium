@@ -6,12 +6,14 @@
 #define CC_TILES_IMAGE_DECODE_SERVICE_H_
 
 #include "base/bind.h"
-#include "cc/base/cc_export.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "base/synchronization/lock.h"
 #include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
+#include "cc/base/cc_export.h"
 #include "cc/base/unique_notifier.h"
+#include "cc/ipc/image_decode.mojom.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 #include <unordered_map>
 #include <vector>
@@ -19,13 +21,21 @@
 
 namespace cc {
 
-class CC_EXPORT ImageDecodeService {
+class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
  public:
   // TODO(hackathon): This shouldn't be a singleton.
   static ImageDecodeService* Current();
 
   ImageDecodeService();
-  ~ImageDecodeService();
+  ~ImageDecodeService() override;
+
+  // Mojo stuff
+  void Bind(mojom::ImageDecodeRequest request);
+
+  // mojom::ImageDecode:
+  void DecodeImage(uint32_t unique_id,
+                   uint64_t data,
+                   const DecodeImageCallback& callback) override;
 
   // Blink accesses this to register things.
   void RegisterImage(sk_sp<SkImage> image);
@@ -46,6 +56,8 @@ class CC_EXPORT ImageDecodeService {
   void OnImageDecoded(uint32_t image_id,
                       bool succeeded,
                       const base::Closure& callback);
+
+  mojo::Binding<mojom::ImageDecode> binding_;
 
   base::Lock lock_;
   std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;

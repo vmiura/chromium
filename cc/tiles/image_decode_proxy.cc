@@ -23,9 +23,7 @@ ImageDecodeProxy* ImageDecodeProxy::Current() {
 
 void ImageDecodeProxy::OnInitializeMojo() {
   VLOG(0) << "ImageDecodeProxy::InitializeMojo()";
-
-  image_decode_mojo_.reset(
-      new ImageDecodeMojo(mojo::GetProxy(&image_decode_ptr_)));
+  ImageDecodeService::Current()->Bind(mojo::GetProxy(&image_decode_ptr_));
 }
 
 void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
@@ -34,7 +32,7 @@ void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
   TRACE_EVENT1("cc", "ImageDecodeProxy::OnDecodeImage", "unique_id", unique_id);
   VLOG(0) << "ImageDecodeProxy::OnDecodeImage " << unique_id << " " << data;
 
-  // TODO(hackathon): send request via image_decode_mojo_.
+  // TODO(hackathon): Pass shared memory buffer instead of raw pointer.
   image_decode_ptr_->DecodeImage(
       unique_id, (uint64_t)data,
       base::Bind(&ImageDecodeProxy::OnDecodeImageCompleted,

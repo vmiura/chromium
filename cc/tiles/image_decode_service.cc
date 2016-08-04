@@ -57,7 +57,8 @@ ImageDecodeService* ImageDecodeService::Current() {
   return &service;
 }
 
-ImageDecodeService::ImageDecodeService() : requests_cv_(&lock_) {
+ImageDecodeService::ImageDecodeService()
+    : binding_(this), requests_cv_(&lock_) {
   TRACE_EVENT0("cc", "ImageDecodeService::ImageDecodeService()");
   // TODO(hackathon): We need to move this to Start or something and eventually
   // join the threads.
@@ -71,6 +72,19 @@ ImageDecodeService::ImageDecodeService() : requests_cv_(&lock_) {
 }
 
 ImageDecodeService::~ImageDecodeService() = default;
+
+void ImageDecodeService::Bind(mojom::ImageDecodeRequest request) {
+  VLOG(0) << "ImageDecodeService::Bind";
+  binding_.Bind(std::move(request));
+}
+
+void ImageDecodeService::DecodeImage(uint32_t unique_id,
+                                     uint64_t data,
+                                     const DecodeImageCallback& callback) {
+  TRACE_EVENT1("cc", "ImageDecodeService::DecodeImage", "unique_id", unique_id);
+  void* data_ptr = (void*)data;
+  DecodeImage(unique_id, data_ptr, callback);
+}
 
 void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
   TRACE_EVENT1("cc", "ImageDecodeService::RegisterImage", "image_id",
