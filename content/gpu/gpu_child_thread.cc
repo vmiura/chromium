@@ -10,11 +10,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/worker_pool.h"
 #include "build/build_config.h"
 #include "cc/service/service_factory.h"
+#include "content/child/child_discardable_shared_memory_manager.h"
 #include "content/child/child_gpu_memory_buffer_manager.h"
 #include "content/child/child_process.h"
 #include "content/child/child_shared_bitmap_manager.h"
@@ -161,6 +163,8 @@ GpuChildThread::GpuChildThread(
   target_services_ = NULL;
 #endif
   g_thread_safe_sender.Get() = thread_safe_sender();
+  base::DiscardableMemoryAllocator::SetInstance(
+      ChildThreadImpl::discardable_shared_memory_manager());
 }
 
 GpuChildThread::GpuChildThread(
