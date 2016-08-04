@@ -262,6 +262,15 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
 void PictureLayer::WriteMojom(cc::mojom::Layer* mojom) {
   Layer::WriteMojom(mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::PICTURE;
+
+  // TODO(hackathon): ...
+}
+
+void PictureLayer::ReadMojom(cc::mojom::Layer* mojom) {
+  DCHECK_EQ(cc::mojom::LayerType::PICTURE, mojom->layer_type);
+  Layer::ReadMojom(mojom);
+
+  // TODO(hackathon): ...
 }
 
 }  // namespace cc

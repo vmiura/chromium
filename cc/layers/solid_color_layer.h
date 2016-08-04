@@ -21,6 +21,7 @@ class CC_EXPORT SolidColorLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetBackgroundColor(SkColor color) override;
   void WriteMojom(cc::mojom::Layer* mojom) override;
+  void ReadMojom(cc::mojom::Layer* mojom) override;
 
  protected:
   SolidColorLayer();

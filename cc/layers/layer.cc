@@ -1888,11 +1888,20 @@ LayerTree* Layer::GetLayerTree() const {
 }
 
 void Layer::WriteMojom(cc::mojom::Layer* mojom) {
+  mojom->id = inputs_.layer_id;
   mojom->layer_type = cc::mojom::LayerType::BASE;
   mojom->draws_content = draws_content_;
   mojom->position = inputs_.position;
   mojom->bounds = inputs_.bounds;
   mojom->background_color = inputs_.background_color;
+}
+
+void Layer::ReadMojom(cc::mojom::Layer* mojom) {
+  inputs_.layer_id = mojom->id;
+  draws_content_ = mojom->draws_content;
+  inputs_.position = mojom->position;
+  inputs_.bounds = mojom->bounds;
+  inputs_.background_color = mojom->background_color;
 }
 
 }  // namespace cc

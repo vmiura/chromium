@@ -93,6 +93,7 @@ static void PushLayerPropertiesInternal(
     std::unordered_set<LayerType*> layers_that_should_push_properties,
     LayerTreeImpl* impl_tree) {
   for (auto layer : layers_that_should_push_properties) {
+    LOG(ERROR) << "Push " << layer->id();
     LayerImpl* layer_impl = impl_tree->LayerById(layer->id());
     DCHECK(layer_impl);
     layer->PushPropertiesTo(layer_impl);
@@ -101,12 +102,14 @@ static void PushLayerPropertiesInternal(
 
 void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
                                            LayerTreeImpl* active_tree) {
+  LOG(ERROR) << "Push impl";
   PushLayerPropertiesInternal(pending_tree->LayersThatShouldPushProperties(),
                               active_tree);
 }
 
 void TreeSynchronizer::PushLayerProperties(LayerTree* host_tree,
                                            LayerTreeImpl* impl_tree) {
+  LOG(ERROR) << "Push main";
   PushLayerPropertiesInternal(host_tree->LayersThatShouldPushProperties(),
                               impl_tree);
 }

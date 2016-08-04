@@ -32,4 +32,9 @@ void SolidColorLayer::WriteMojom(cc::mojom::Layer* mojom) {
   mojom->layer_type = cc::mojom::LayerType::SOLID_COLOR;
 }
 
+void SolidColorLayer::ReadMojom(cc::mojom::Layer* mojom) {
+  DCHECK_EQ(cc::mojom::LayerType::SOLID_COLOR, mojom->layer_type);
+  Layer::ReadMojom(mojom);
+}
+
 }  // namespace cc

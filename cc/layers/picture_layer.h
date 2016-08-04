@@ -44,6 +44,7 @@ class CC_EXPORT PictureLayer : public Layer {
   }
 
   void WriteMojom(cc::mojom::Layer* mojom) override;
+  void ReadMojom(cc::mojom::Layer* mojom) override;
 
  protected:
   explicit PictureLayer(ContentLayerClient* client);

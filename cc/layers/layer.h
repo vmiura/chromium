@@ -500,6 +500,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   ElementListType GetElementTypeForAnimation() const;
 
+  virtual void WriteMojom(cc::mojom::Layer* mojom);
+  virtual void ReadMojom(cc::mojom::Layer* mojom);
+
  protected:
   friend class LayerImpl;
   friend class TreeSynchronizer;
@@ -554,8 +557,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // When true, the layer is about to perform an update. Any commit requests
   // will be handled implicitly after the update completes.
   bool ignore_set_needs_commit_;
-
-  virtual void WriteMojom(cc::mojom::Layer* mojom);
 
  private:
   friend class base::RefCounted<Layer>;

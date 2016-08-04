@@ -1,9 +1,16 @@
 #include "cc/service/service.h"
 
+#include <stack>
+
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
+#include "cc/ipc/content_frame.mojom.h"
+#include "cc/ipc/layer.mojom.h"
+#include "cc/layers/layer.h"
+#include "cc/layers/picture_layer.h"
+#include "cc/layers/solid_color_layer.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
@@ -23,6 +30,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/trees/tree_synchronizer.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 
@@ -368,6 +376,7 @@ void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
 void Service::Commit(bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {
+  LOG(ERROR) << this << " Commit";
   DCHECK(!commit_callback_);
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
@@ -407,12 +416,60 @@ void Service::FinishCommit() {
 
   sync_tree->set_source_frame_number(frame->source_frame);
 
-#if 0
-  // TODO(hackathon): layers
-  if (frame->needs_full_tree_sync)
-    TreeSynchronizer::SynchronizeTrees(root_layer(), sync_tree);
+  if (frame->needs_full_tree_sync) {
+    scoped_refptr<Layer> root_layer;
+    auto& tree = frame->layer_tree;
+    LOG(ERROR) << "read tree " << !!tree;
+    if (tree) {
+      DCHECK_EQ(tree->ops[0], cc::mojom::LayerTreeOp::CHILD_LAYER);
+
+      auto create_layer = [](cc::mojom::Layer* mojom) {
+        scoped_refptr<Layer> layer;
+        switch (mojom->layer_type) {
+          case cc::mojom::LayerType::BASE:
+            layer = Layer::Create();
+            break;
+          case cc::mojom::LayerType::PICTURE:
+            layer = PictureLayer::Create(nullptr);
+            break;
+          case cc::mojom::LayerType::SOLID_COLOR:
+            layer = SolidColorLayer::Create();
+            break;
+        }
+        layer->ReadMojom(mojom);
+        return layer;
+      };
+
+      std::stack<Layer*> ancestors;
+
+      auto root_layer = create_layer(tree->layers[0].get());
+      ancestors.push(root_layer.get());
+      LOG(ERROR) << "read root " << root_layer->id();
+
+      size_t layer_index = 1;  // 0 is the root, start at 1.
+      size_t op_index = 1;
+      for (; op_index < tree->ops.size(); ++op_index) {
+        DCHECK(!ancestors.empty());
+        Layer* parent = ancestors.top();
+        scoped_refptr<Layer> layer;
+        switch (tree->ops[op_index]) {
+          case cc::mojom::LayerTreeOp::CHILD_LAYER:
+            layer = create_layer(tree->layers[layer_index++].get());
+            ancestors.push(layer.get());
+            LOG(ERROR) << "read child " << layer->id();
+            parent->AddChild(layer);
+            break;
+          case cc::mojom::LayerTreeOp::MOVE_TO_PARENT:
+            LOG(ERROR) << "read parent";
+            DCHECK(!ancestors.empty());
+            ancestors.pop();
+            break;
+        }
+      }
+    }
+    TreeSynchronizer::SynchronizeTrees(root_layer.get(), sync_tree);
+  }
   sync_tree->set_needs_full_tree_sync(frame->needs_full_tree_sync);
-#endif
 
 #if 0
   // TODO(hackathon): HUD

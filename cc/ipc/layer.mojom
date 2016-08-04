@@ -9,16 +9,15 @@ import "ui/gfx/geometry/mojo/geometry.mojom";
 
 enum LayerType {
   BASE,
-  NINE_PATCH,
   PICTURE,
-  // TODO(fsamuel): Make this work?
-  // PICTURE_IMAGE,
+  // TODO(hackathon): PICTURE_IMAGE,
   SOLID_COLOR,
-  // TODO(fsamuel): SOLID_COLOR_SCROLLBAR
-  SURFACE,
-  TEXTURE,
-  UI_RESOURCE,
-  VIDEO
+  // TODO(hackathon): SOLID_COLOR_SCROLLBAR
+  // TODO(hackathon): NINE_PATCH,
+  // TODO(hackathon): SURFACE,
+  // TODO(hackathon): TEXTURE,
+  // TODO(hackathon): UI_RESOURCE,
+  // TODO(hackathon): VIDEO
 };
 
 struct NinePatchLayerState {
@@ -43,6 +42,7 @@ struct SurfaceLayerState {
 };
 
 struct Layer {
+  int32 id;
   LayerType layer_type;
   bool draws_content;
   gfx.mojom.PointF position;

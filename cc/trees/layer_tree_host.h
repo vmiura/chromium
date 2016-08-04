@@ -32,7 +32,6 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/top_controls_state.h"
-#include "cc/ipc/content_frame.mojom.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/output/output_surface.h"
@@ -80,6 +79,10 @@ class UIResourceRequest;
 struct PendingPageScaleAnimation;
 struct RenderingStats;
 struct ScrollAndScaleSet;
+
+namespace mojom {
+class ContentFrame;
+}
 
 namespace proto {
 class LayerTreeHost;

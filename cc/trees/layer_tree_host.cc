@@ -1724,26 +1724,30 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
 
   if (needs_full_tree_sync_ && root_layer()) {
     // DFS walk of the tree.
-    auto mojom = cc::mojom::LayerTree::New();
+    auto tree = cc::mojom::LayerTree::New();
 
-    auto write_layer = [](Layer* layer, cc::mojom::LayerTree* mojom) {
-      mojom->ops.push_back(cc::mojom::LayerTreeOp::CHILD_LAYER);
+    auto write_layer = [](Layer* layer, cc::mojom::LayerTree* tree) {
+      LOG(ERROR) << "write child layer " << layer->id();
+      tree->ops.push_back(cc::mojom::LayerTreeOp::CHILD_LAYER);
       auto layer_mojom = cc::mojom::Layer::New();
       layer->WriteMojom(layer_mojom.get());
-      mojom->layers.push_back(std::move(layer_mojom));
+      tree->layers.push_back(std::move(layer_mojom));
     };
 
     std::function<void(Layer*,cc::mojom::LayerTree*)> for_each_child = [&](
-        Layer* layer, cc::mojom::LayerTree* mojom) {
+        Layer* layer, cc::mojom::LayerTree* tree) {
       for (const auto& child : layer->children()) {
-        write_layer(child.get(), mojom);
-        for_each_child(child.get(), mojom);
+        write_layer(child.get(), tree);
+        for_each_child(child.get(), tree);
       }
-      mojom->ops.push_back(cc::mojom::LayerTreeOp::MOVE_TO_PARENT);
+      LOG(ERROR) << "write parent";
+      tree->ops.push_back(cc::mojom::LayerTreeOp::MOVE_TO_PARENT);
     };
 
-    write_layer(root_layer(), mojom.get());
-    for_each_child(root_layer(), mojom.get());
+    write_layer(root_layer(), tree.get());
+    for_each_child(root_layer(), tree.get());
+
+    frame->layer_tree = std::move(tree);
   }
 #if 0
   // TODO(hackathon): layers
