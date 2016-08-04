@@ -7,19 +7,6 @@ module cc.mojom;
 import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
-enum LayerType {
-  BASE,
-  PICTURE,
-  // TODO(hackathon): PICTURE_IMAGE,
-  SOLID_COLOR,
-  // TODO(hackathon): SOLID_COLOR_SCROLLBAR
-  // TODO(hackathon): NINE_PATCH,
-  // TODO(hackathon): SURFACE,
-  // TODO(hackathon): TEXTURE,
-  // TODO(hackathon): UI_RESOURCE,
-  // TODO(hackathon): VIDEO
-};
-
 struct NinePatchLayerState {
   gfx.mojom.Rect border;
   bool fill_center;
@@ -48,9 +35,7 @@ struct SurfaceLayerState {
   float scale;
 };
 
-struct Layer {
-  int32 id;
-  LayerType layer_type;
+struct LayerProperties {
   bool draws_content;
   gfx.mojom.PointF position;
   gfx.mojom.Size bounds;

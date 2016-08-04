@@ -4,7 +4,7 @@
 
 #include "cc/layers/solid_color_layer.h"
 
-#include "cc/ipc/layer.mojom.h"
+#include "cc/ipc/content_frame.mojom.h"
 #include "cc/layers/solid_color_layer_impl.h"
 
 namespace cc {
@@ -27,14 +27,9 @@ void SolidColorLayer::SetBackgroundColor(SkColor color) {
   Layer::SetBackgroundColor(color);
 }
 
-void SolidColorLayer::WriteMojom(cc::mojom::Layer* mojom) {
-  Layer::WriteMojom(mojom);  // Before we override stuff.
+void SolidColorLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
+  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::SOLID_COLOR;
-}
-
-void SolidColorLayer::ReadMojom(cc::mojom::Layer* mojom) {
-  DCHECK_EQ(cc::mojom::LayerType::SOLID_COLOR, mojom->layer_type);
-  Layer::ReadMojom(mojom);
 }
 
 }  // namespace cc

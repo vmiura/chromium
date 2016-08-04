@@ -8,9 +8,9 @@
 #include "cc/animation/animation_host.h"
 #include "cc/ipc/content_frame.mojom.h"
 #include "cc/ipc/layer.mojom.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/picture_layer.h"
-#include "cc/layers/solid_color_layer.h"
+#include "cc/layers/layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
+#include "cc/layers/solid_color_layer_impl.h"
 #include "cc/output/renderer_capabilities.h"
 #include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
@@ -420,57 +420,47 @@ void Service::FinishCommit() {
   sync_tree->set_source_frame_number(frame->source_frame);
 
   if (frame->needs_full_tree_sync) {
-    scoped_refptr<Layer> root_layer;
-    auto& tree = frame->layer_tree;
-    LOG(ERROR) << "read tree " << !!tree;
-    if (tree) {
-      DCHECK_EQ(tree->ops[0], cc::mojom::LayerTreeOp::CHILD_LAYER);
+    std::unique_ptr<OwnedLayerImplList> old_pending_layers(
+        sync_tree->DetachLayers());
+    OwnedLayerImplMap old_pending_layer_map;
+    for (auto& it : *old_pending_layers)
+      old_pending_layer_map[it->id()] = std::move(it);
 
-      auto create_layer = [](cc::mojom::Layer* mojom) {
-        scoped_refptr<Layer> layer;
+    auto create_layer = [&old_pending_layer_map, sync_tree](
+        cc::mojom::LayerStructure* mojom) {
+      int id = mojom->layer_id;
+      std::unique_ptr<LayerImpl> layer =
+          std::move(old_pending_layer_map[id]);
+      if (!layer) {
         switch (mojom->layer_type) {
           case cc::mojom::LayerType::BASE:
-            layer = Layer::Create();
+            layer = LayerImpl::Create(sync_tree, id);
             break;
           case cc::mojom::LayerType::PICTURE:
-            layer = PictureLayer::Create(nullptr);
+            layer = PictureLayerImpl::Create(
+                sync_tree, id, false /* TODO(hackathon): masks */);
             break;
           case cc::mojom::LayerType::SOLID_COLOR:
-            layer = SolidColorLayer::Create();
-            break;
-        }
-        layer->ReadMojom(mojom);
-        return layer;
-      };
-
-      std::stack<Layer*> ancestors;
-
-      auto root_layer = create_layer(tree->layers[0].get());
-      ancestors.push(root_layer.get());
-      LOG(ERROR) << "read root " << root_layer->id();
-
-      size_t layer_index = 1;  // 0 is the root, start at 1.
-      size_t op_index = 1;
-      for (; op_index < tree->ops.size(); ++op_index) {
-        DCHECK(!ancestors.empty());
-        Layer* parent = ancestors.top();
-        scoped_refptr<Layer> layer;
-        switch (tree->ops[op_index]) {
-          case cc::mojom::LayerTreeOp::CHILD_LAYER:
-            layer = create_layer(tree->layers[layer_index++].get());
-            ancestors.push(layer.get());
-            LOG(ERROR) << "read child " << layer->id();
-            parent->AddChild(layer);
-            break;
-          case cc::mojom::LayerTreeOp::MOVE_TO_PARENT:
-            LOG(ERROR) << "read parent";
-            DCHECK(!ancestors.empty());
-            ancestors.pop();
+            layer = SolidColorLayerImpl::Create(sync_tree, id);
             break;
         }
       }
+      return layer;
+    };
+
+    sync_tree->ClearLayerList();
+    auto& tree = frame->layer_tree;
+    if (tree) {
+      for (const auto& layer_structure : tree->layers) {
+        auto layer = create_layer(layer_structure.get());
+        LOG(ERROR) << "read layer " << layer->id();
+        sync_tree->AddToLayerList(layer.get());
+        sync_tree->AddLayer(std::move(layer));
+      }
+    } else {
+      LOG(ERROR) << "read empty tree";
     }
-    TreeSynchronizer::SynchronizeTrees(root_layer.get(), sync_tree);
+    sync_tree->OnCanDrawStateChangedForTree();
   }
   sync_tree->set_needs_full_tree_sync(frame->needs_full_tree_sync);
 
@@ -709,7 +699,7 @@ void Service::ScheduledActionCommit() {
   host_impl_.BeginCommit();
 
   FinishCommit();
-  InsertHackyGreenLayer();
+  //InsertHackyGreenLayer();
   frame_for_commit_ = nullptr;
 
   if (wait_for_activation_) {

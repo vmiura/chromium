@@ -1951,6 +1951,7 @@ void LayerTreeHostImpl::CreatePendingTree() {
 }
 
 void LayerTreeHostImpl::ActivateSyncTree() {
+  LOG(ERROR) << "LayerTreeHostImpl::ActivateSyncTree";
   if (pending_tree_) {
     TRACE_EVENT_ASYNC_END0("cc", "PendingTree:waiting", pending_tree_.get());
 

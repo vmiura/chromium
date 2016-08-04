@@ -65,9 +65,27 @@ enum LayerTreeOp {
   MOVE_TO_PARENT,
 };
 
+enum LayerType {
+  BASE,
+  PICTURE,
+  // TODO(hackathon): PICTURE_IMAGE,
+  SOLID_COLOR,
+  // TODO(hackathon): SOLID_COLOR_SCROLLBAR
+  // TODO(hackathon): NINE_PATCH,
+  // TODO(hackathon): SURFACE,
+  // TODO(hackathon): TEXTURE,
+  // TODO(hackathon): UI_RESOURCE,
+  // TODO(hackathon): VIDEO
+};
+
+struct LayerStructure {
+  LayerType layer_type;
+  int32 layer_id;
+  // TODO(hackathon): mask for PictureLayerImpl
+};
+
 struct LayerTree {
-  array<LayerTreeOp> ops;
-  array<cc.mojom.Layer> layers;
+  array<cc.mojom.LayerStructure> layers;
 };
 
 struct ContentFrame {
@@ -92,5 +110,6 @@ struct ContentFrame {
   float painted_device_scale_factor;
 
   PropertyTrees property_trees;
+  // This exists iff needs_full_tree_sync is true.
   LayerTree? layer_tree;
 };

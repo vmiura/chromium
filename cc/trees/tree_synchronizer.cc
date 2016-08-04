@@ -37,6 +37,7 @@ void SynchronizeTreesInternal(LayerTreeType* source_tree,
   for (int id : property_trees->effect_tree.mask_replica_layer_ids()) {
     std::unique_ptr<LayerImpl> layer_impl(ReuseOrCreateLayerImpl(
         &old_layer_map, source_tree->LayerById(id), tree_impl));
+    LOG(ERROR) << "impl add layer " << layer_impl->id();
     tree_impl->AddLayer(std::move(layer_impl));
   }
 }

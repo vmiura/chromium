@@ -96,6 +96,8 @@ class CC_EXPORT PictureLayerImpl
     is_directly_composited_image_ = is_directly_composited_image;
   }
 
+  void ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) override;
+
  protected:
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id, bool is_mask);
   PictureLayerTiling* AddTiling(float contents_scale);

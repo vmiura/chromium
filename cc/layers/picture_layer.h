@@ -43,8 +43,8 @@ class CC_EXPORT PictureLayer : public Layer {
     return recording_source_.get();
   }
 
-  void WriteMojom(cc::mojom::Layer* mojom) override;
-  void ReadMojom(cc::mojom::Layer* mojom) override;
+  void WriteStructureMojom(cc::mojom::LayerStructure* mojom) override;
+  void WritePropertiesMojom(cc::mojom::LayerProperties* mojom) override;
 
  protected:
   explicit PictureLayer(ContentLayerClient* client);

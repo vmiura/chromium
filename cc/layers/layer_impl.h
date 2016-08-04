@@ -69,6 +69,10 @@ class Tile;
 class TransformTree;
 class ScrollState;
 
+namespace mojom {
+class LayerProperties;
+}
+
 struct AppendQuadsData;
 
 enum DrawMode {
@@ -464,6 +468,8 @@ class CC_EXPORT LayerImpl {
   AnimationHost* GetAnimationHost() const;
 
   ElementListType GetElementTypeForAnimation() const;
+
+  virtual void ReadPropertiesMojom(cc::mojom::LayerProperties* mojom);
 
  protected:
   LayerImpl(LayerTreeImpl* layer_impl,

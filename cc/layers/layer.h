@@ -66,7 +66,8 @@ class ScrollbarLayerInterface;
 class SimpleEnclosedRegion;
 
 namespace mojom {
-class Layer;
+class LayerProperties;
+class LayerStructure;
 }
 
 namespace proto {
@@ -500,8 +501,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   ElementListType GetElementTypeForAnimation() const;
 
-  virtual void WriteMojom(cc::mojom::Layer* mojom);
-  virtual void ReadMojom(cc::mojom::Layer* mojom);
+  virtual void WriteStructureMojom(cc::mojom::LayerStructure* mojom);
+  virtual void WritePropertiesMojom(cc::mojom::LayerProperties* mojom);
 
  protected:
   friend class LayerImpl;

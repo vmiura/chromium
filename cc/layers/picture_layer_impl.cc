@@ -18,6 +18,8 @@
 #include "cc/debug/debug_colors.h"
 #include "cc/debug/micro_benchmark_impl.h"
 #include "cc/debug/traced_value.h"
+#include "cc/ipc/content_frame.mojom.h"
+#include "cc/ipc/layer.mojom.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/output/begin_frame_args.h"
@@ -1308,6 +1310,20 @@ bool PictureLayerImpl::IsOnActiveOrPendingTree() const {
 bool PictureLayerImpl::HasValidTilePriorities() const {
   return IsOnActiveOrPendingTree() &&
          is_drawn_render_surface_layer_list_member();
+}
+
+void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
+  LayerImpl::ReadPropertiesMojom(mojom);
+  DCHECK(mojom->picture_state);
+#if 0
+  // TODO(piman): Make work for PLImpl.
+  mojom::PictureLayerState* picture_state = mojom->picture_state.get();
+  if (!recording_source_)
+    recording_source_.reset(new RecordingSource);
+  recording_source_->ReadMojom(picture_state);
+  is_mask_ = picture_state->is_mask = is_mask_;
+  update_source_frame_number_ = picture_state->update_source_frame_num;
+#endif
 }
 
 }  // namespace cc

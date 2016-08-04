@@ -26,6 +26,7 @@
 #include "cc/debug/traced_value.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_state.h"
+#include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_utils.h"
 #include "cc/output/copy_output_request.h"
@@ -1198,6 +1199,13 @@ float LayerImpl::GetIdealContentsScale() const {
   gfx::Vector2dF transform_scales = MathUtil::ComputeTransform2dScaleComponents(
       ScreenSpaceTransform(), default_scale);
   return std::max(transform_scales.x(), transform_scales.y());
+}
+
+void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
+  draws_content_ = mojom->draws_content;
+  position_ = mojom->position;
+  bounds_ = mojom->bounds;
+  background_color_ = mojom->background_color;
 }
 
 }  // namespace cc
