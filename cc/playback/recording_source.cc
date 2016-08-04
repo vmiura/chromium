@@ -16,6 +16,7 @@
 #include "cc/proto/gfx_conversions.h"
 #include "cc/proto/recording_source.pb.h"
 #include "skia/ext/analysis_canvas.h"
+#include "third_party/skia/include/core/SkStream.h"
 
 namespace {
 
@@ -242,6 +243,39 @@ void RecordingSource::Clear() {
   display_list_ = nullptr;
   painter_reported_memory_usage_ = 0;
   is_solid_color_ = false;
+}
+
+void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) const {
+  mojom->recorded_viewport = recorded_viewport_;
+  mojom->size = size_;
+  mojom->requires_clear = requires_clear_;
+  mojom->is_solid_color = is_solid_color_;
+  mojom->solid_color = solid_color_;
+  mojom->background_color = background_color_;
+  if (display_list_) {
+    SkDynamicMemoryWStream write_stream;
+    display_list_->SerializeToStream(&write_stream);
+    mojom->display_list.resize(write_stream.bytesWritten());
+    write_stream.copyTo(mojom->display_list.data());
+  } else {
+    mojom->display_list.clear();
+  }
+}
+
+void RecordingSource::ReadMojom(mojom::PictureLayerState* mojom) {
+  recorded_viewport_ = mojom->recorded_viewport;
+  size_ = mojom->size;
+  requires_clear_ = mojom->requires_clear;
+  is_solid_color_ = mojom->is_solid_color;
+  solid_color_ = mojom->solid_color;
+  background_color_ = mojom->background_color;
+  if (!mojom->display_list.empty()) {
+    SkMemoryStream read_stream(mojom->display_list.data(),
+                               mojom->display_list.size(), false);
+    display_list_ = DisplayItemList::CreateFromStream(&read_stream);
+  } else {
+    display_list_ = nullptr;
+  }
 }
 
 }  // namespace cc

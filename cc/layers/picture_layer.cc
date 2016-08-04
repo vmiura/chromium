@@ -262,15 +262,23 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
 void PictureLayer::WriteMojom(cc::mojom::Layer* mojom) {
   Layer::WriteMojom(mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::PICTURE;
-
-  // TODO(hackathon): ...
+  mojom->picture_state = mojom::PictureLayerState::New();
+  mojom::PictureLayerState* picture_state = mojom->picture_state.get();
+  recording_source_->WriteMojom(picture_state);
+  picture_state->is_mask = is_mask_;
+  picture_state->update_source_frame_num = update_source_frame_number_;
 }
 
 void PictureLayer::ReadMojom(cc::mojom::Layer* mojom) {
   DCHECK_EQ(cc::mojom::LayerType::PICTURE, mojom->layer_type);
   Layer::ReadMojom(mojom);
-
-  // TODO(hackathon): ...
+  DCHECK(mojom->picture_state);
+  mojom::PictureLayerState* picture_state = mojom->picture_state.get();
+  if (!recording_source_)
+    recording_source_.reset(new RecordingSource);
+  recording_source_->ReadMojom(picture_state);
+  is_mask_ = picture_state->is_mask = is_mask_;
+  update_source_frame_number_ = picture_state->update_source_frame_num;
 }
 
 }  // namespace cc

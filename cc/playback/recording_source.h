@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "cc/base/cc_export.h"
 #include "cc/base/invalidation_region.h"
+#include "cc/ipc/layer.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -73,6 +74,9 @@ class CC_EXPORT RecordingSource {
   gfx::Rect recorded_viewport() const { return recorded_viewport_; }
 
   const DisplayItemList* GetDisplayItemList();
+
+  void WriteMojom(mojom::PictureLayerState* mojom) const;
+  void ReadMojom(mojom::PictureLayerState* mojom);
 
  protected:
   void Clear();

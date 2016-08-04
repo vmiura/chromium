@@ -33,6 +33,13 @@ struct PictureLayerState {
   // Region last_updated_invalidation;
   int32 update_source_frame_num;
   bool is_mask;
+  gfx.mojom.Rect recorded_viewport;
+  gfx.mojom.Size size;
+  bool requires_clear;
+  bool is_solid_color;
+  uint32 solid_color;
+  uint32 background_color;
+  array<int8> display_list;
 };
 
 struct SurfaceLayerState {

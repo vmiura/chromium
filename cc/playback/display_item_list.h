@@ -125,6 +125,9 @@ class CC_EXPORT DisplayItemList
   }
 
   sk_sp<SkData> Serialize() const;
+  void SerializeToStream(SkWStream* stream) const;
+
+  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
 
   uint32_t unique_id() const { return id_; }
 
@@ -137,9 +140,6 @@ class CC_EXPORT DisplayItemList
   ~DisplayItemList();
 
   void ProcessAppendedItem(const DisplayItem* item);
-
-  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
-  void SerializeToStream(SkWStream* stream) const;
 
   sk_sp<SkPicture> picture_;
 
