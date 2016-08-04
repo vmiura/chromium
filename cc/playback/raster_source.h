@@ -133,6 +133,8 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     return image_decode_controller_;
   }
 
+  const scoped_refptr<DisplayItemList>& display_list() { return display_list_; }
+
  protected:
   friend class base::RefCountedThreadSafe<RasterSource>;
 

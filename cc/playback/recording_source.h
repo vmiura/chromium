@@ -76,7 +76,8 @@ class CC_EXPORT RecordingSource {
   const DisplayItemList* GetDisplayItemList();
 
   void WriteMojom(mojom::PictureLayerState* mojom);
-  void ReadMojom(mojom::PictureLayerState* mojom);
+  void ReadMojom(mojom::PictureLayerState* mojom,
+                 scoped_refptr<DisplayItemList> last_display_list);
 
  protected:
   void Clear();

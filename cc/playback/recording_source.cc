@@ -270,7 +270,9 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
   }
 }
 
-void RecordingSource::ReadMojom(mojom::PictureLayerState* mojom) {
+void RecordingSource::ReadMojom(
+    mojom::PictureLayerState* mojom,
+    scoped_refptr<DisplayItemList> last_display_list) {
   recorded_viewport_ = mojom->recorded_viewport;
   size_ = mojom->size;
   requires_clear_ = mojom->requires_clear;
@@ -282,8 +284,9 @@ void RecordingSource::ReadMojom(mojom::PictureLayerState* mojom) {
                                mojom->display_list.size(), false);
     display_list_ = DisplayItemList::CreateFromStream(&read_stream);
   } else {
-    if (display_list_ && display_list_->unique_id() != mojom->display_list_id)
-      display_list_ = nullptr;
+    if (last_display_list &&
+        last_display_list->unique_id() == mojom->display_list_id)
+      display_list_ = std::move(last_display_list);
   }
 }
 

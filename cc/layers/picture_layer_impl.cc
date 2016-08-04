@@ -23,6 +23,7 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/output/begin_frame_args.h"
+#include "cc/playback/display_item_list.h"
 #include "cc/quads/debug_border_draw_quad.h"
 #include "cc/quads/picture_draw_quad.h"
 #include "cc/quads/solid_color_draw_quad.h"
@@ -1326,10 +1327,13 @@ void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
 
   gpu_raster_max_texture_size_ = picture_state->gpu_raster_max_texture_size;
   SetNearestNeighbor(picture_state->nearest_neighbor);
-  Region invalidation = RegionFromMojom(picture_state->last_updated_invalidation.get());
+  Region invalidation =
+      RegionFromMojom(picture_state->last_updated_invalidation.get());
 
+  scoped_refptr<DisplayItemList> last_display_list =
+      raster_source_ ? raster_source_->display_list() : nullptr;
   RecordingSource recording_source;
-  recording_source.ReadMojom(picture_state);
+  recording_source.ReadMojom(picture_state, std::move(last_display_list));
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource(RasterSourceUsesLCDText());
   UpdateRasterSource(raster_source, &invalidation, nullptr);
