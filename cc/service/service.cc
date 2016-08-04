@@ -343,6 +343,12 @@ void Service::RegisterChildCompositor(uint32_t client_id) {
       surface_id_allocator_.client_id(), client_id);
 }
 
+void Service::UnregisterChildCompositor(uint32_t client_id) {
+  fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
+  surface_manager_->UnregisterSurfaceNamespaceHierarchy(
+      surface_id_allocator_.client_id(), client_id);
+}
+
 void Service::SetNeedsBeginMainFrame() {
   client_->SetNeedsCommitOnImplThread();
 }

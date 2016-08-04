@@ -42,6 +42,7 @@ class CC_EXPORT Proxy {
       std::unique_ptr<ServiceConnection> connection) = 0;
 
   virtual void RegisterChildCompositor(uint32_t client) {}
+  virtual void UnregisterChildCompositor(uint32_t client) {}
 
   virtual void FinishAllRendering() = 0;
 

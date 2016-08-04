@@ -57,6 +57,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
 
   // cc::mojom::Compositor implementation.
   void RegisterChildCompositor(uint32_t client_id) override;
+  void UnregisterChildCompositor(uint32_t client_id) override;
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetVisible(bool visible) override;

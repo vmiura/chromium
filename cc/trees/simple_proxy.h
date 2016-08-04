@@ -40,6 +40,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   // Proxy implementation.
   void InitializeCompositor(std::unique_ptr<ServiceConnection> connection) override;
   void RegisterChildCompositor(uint32_t client_id) override;
+  void UnregisterChildCompositor(uint32_t client_id) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

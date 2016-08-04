@@ -84,6 +84,10 @@ void SimpleProxy::RegisterChildCompositor(uint32_t client_id) {
   compositor_->RegisterChildCompositor(client_id);
 }
 
+void SimpleProxy::UnregisterChildCompositor(uint32_t client_id) {
+  compositor_->UnregisterChildCompositor(client_id);
+}
+
 void SimpleProxy::FinishAllRendering() {
   DCHECK(IsMainThread());
   DCHECK(!defer_commits_);

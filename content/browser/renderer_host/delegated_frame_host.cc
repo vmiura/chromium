@@ -861,7 +861,7 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   DCHECK(!compositor_);
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
-
+#if 0
   if (surface_factory_) {
     // HACKATHON: surface_factory_ is always null and unused.
     if (!surface_id_.is_null())
@@ -871,7 +871,7 @@ DelegatedFrameHost::~DelegatedFrameHost() {
       id_allocator_->client_id());
   factory->GetSurfaceManager()->InvalidateSurfaceClientId(
       id_allocator_->client_id());
-
+#endif
   DCHECK(!vsync_manager_.get());
 }
 
@@ -903,6 +903,8 @@ void DelegatedFrameHost::ResetCompositor() {
   }
 
   // compositor_->RemoveSurfaceClient(id_allocator_->client_id());
+  if (!surface_id_.is_null())
+    compositor_->RemoveSurfaceClient(surface_id_.client_id());
   compositor_ = nullptr;
 }
 

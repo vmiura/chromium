@@ -271,6 +271,7 @@ void Compositor::AddSurfaceClient(uint32_t client_id) {
 }
 
 void Compositor::RemoveSurfaceClient(uint32_t client_id) {
+  host_->UnregisterChildCompositor(client_id);
 #if 0
   auto it = surface_clients_.find(client_id);
   DCHECK(it != surface_clients_.end());
@@ -284,6 +285,7 @@ void Compositor::RemoveSurfaceClient(uint32_t client_id) {
 
 void Compositor::SetOutputSurface(
     std::unique_ptr<cc::OutputSurface> output_surface) {
+#if 0
   output_surface_requested_ = false;
   host_->SetOutputSurface(std::move(output_surface));
   // ui::Compositor uses a SingleThreadProxy and so BindToClient will be called
@@ -301,6 +303,7 @@ void Compositor::SetOutputSurface(
         surface_id_allocator_->client_id(), client.first);
     client.second = surface_id_allocator_->client_id();
   }
+#endif
 }
 
 void Compositor::ScheduleDraw() {

@@ -22,6 +22,7 @@ interface CompositorFactory {
 
 interface Compositor {
   RegisterChildCompositor(uint32 client_id);
+  UnregisterChildCompositor(uint32 client_id);
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   SetVisible(bool visible);
