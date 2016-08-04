@@ -711,4 +711,12 @@ void Service::ScheduledActionCommit() {
   host_impl_.CommitComplete();
 }
 
+void Service::Destroy(const DestroyCallback& callback) {
+  scheduler_.DidLoseOutputSurface();
+  host_impl_.ReleaseOutputSurface();
+  output_surface_ = nullptr;
+  display_ = nullptr;
+  callback.Run();
+}
+
 }  // namespace cc

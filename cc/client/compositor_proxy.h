@@ -38,6 +38,7 @@ class CC_CLIENT_EXPORT CompositorProxy : public cc::mojom::CompositorClient {
     compositor_->Commit(surface_id, hold_commit_for_activation,
                         std::move(frame));
   }
+  void Destroy() { compositor_->Destroy(); }
 
  private:
   cc::mojom::CompositorPtr compositor_;

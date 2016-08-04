@@ -51,8 +51,6 @@ SimpleProxy::~SimpleProxy() {
   TRACE_EVENT0("cc", "SimpleProxy::~SimpleProxy");
   DCHECK(IsMainThread());
   DCHECK(!started_);
-  if (compositor_)
-    compositor_->set_delegate(nullptr);
 }
 
 #if 0
@@ -205,6 +203,11 @@ void SimpleProxy::Stop() {
   TRACE_EVENT0("cc", "SimpleProxy::Stop");
   DCHECK(IsMainThread());
   DCHECK(started_);
+
+  if (compositor_) {
+    compositor_->Destroy();
+    compositor_->set_delegate(nullptr);
+  }
 
   layer_tree_host_ = nullptr;
   started_ = false;

@@ -62,6 +62,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
               bool wait_for_activation,
               mojom::ContentFramePtr frame,
               const CommitCallback& callback) override;
+  void Destroy(const DestroyCallback& callback) override;
 
  private:
   void FinishCommit();

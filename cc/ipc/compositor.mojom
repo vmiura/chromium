@@ -22,6 +22,7 @@ interface Compositor {
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   SetVisible(bool visible);
   [Sync] Commit(SurfaceId surface_id, bool wait_for_activation, ContentFrame frame) => ();
+  [Sync] Destroy() => ();
 };
 
 interface CompositorClient {
