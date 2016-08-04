@@ -34,7 +34,8 @@ class CC_EXPORT ImageDecodeProxy {
 
   void OnInitializeMojo();
   void OnDecodeImage(uint32_t unique_id,
-                     void* data,
+                     mojo::ScopedSharedBufferHandle* remote_handle,
+                     size_t size,
                      CompletionEvent* event);
   void OnDecodeImageCompleted(CompletionEvent* event);
 

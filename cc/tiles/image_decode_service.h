@@ -15,6 +15,7 @@
 #include "cc/base/unique_notifier.h"
 #include "cc/ipc/image_decode.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/system/buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 #include <unordered_map>
@@ -38,17 +39,13 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
 
   // mojom::ImageDecode:
   void DecodeImage(uint32_t unique_id,
-                   uint64_t data,
+                   mojo::ScopedSharedBufferHandle buffer_handle,
+                   uint32_t size,
                    const DecodeImageCallback& callback) override;
 
   // Blink accesses this to register things.
   void RegisterImage(sk_sp<SkImage> image);
   void UnregisterImage(uint32_t image_id);
-
-  // Mojo accesses this?
-  void DecodeImage(uint32_t image_id,
-                   void* buffer,
-                   const base::Closure& callback);
 
   // Called by the thread.
   void ProcessRequestQueue();
@@ -60,12 +57,14 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
 
   struct ImageDecodeRequest {
     ImageDecodeRequest(uint32_t image_id,
-                       void* buffer,
+                       mojo::ScopedSharedBufferHandle buffer_handle,
+                       uint32_t size,
                        const base::Closure& callback);
     ~ImageDecodeRequest();
 
     uint32_t image_id;
-    void* buffer;
+    mojo::ScopedSharedBufferHandle buffer_handle;
+    uint32_t size;
     const base::Closure callback;
 
     DISALLOW_COPY_AND_ASSIGN(ImageDecodeRequest);

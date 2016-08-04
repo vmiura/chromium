@@ -46,14 +46,16 @@ void ImageDecodeProxy::OnInitializeMojo() {
   service_->Bind(mojo::GetProxy(&image_decode_ptr_));
 }
 
-void ImageDecodeProxy::OnDecodeImage(uint32_t unique_id,
-                                     void* data,
-                                     CompletionEvent* event) {
+void ImageDecodeProxy::OnDecodeImage(
+    uint32_t unique_id,
+    mojo::ScopedSharedBufferHandle* remote_handle,
+    size_t size,
+    CompletionEvent* event) {
   TRACE_EVENT1("cc", "ImageDecodeProxy::OnDecodeImage", "unique_id", unique_id);
 
   // TODO(hackathon): Pass shared memory buffer instead of raw pointer.
   image_decode_ptr_->DecodeImage(
-      unique_id, (uint64_t)data,
+      unique_id, std::move(*remote_handle), size,
       base::Bind(&ImageDecodeProxy::OnDecodeImageCompleted,
                  base::Unretained(this), event));
 }
@@ -66,12 +68,32 @@ void ImageDecodeProxy::OnDecodeImageCompleted(CompletionEvent* event) {
 bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
                                    const SkImageInfo& info,
                                    void* data) {
+  size_t size = info.getSafeSize(info.minRowBytes());
+
+  // Allocate shared memory buffer.
+  mojo::ScopedSharedBufferHandle local_handle =
+      mojo::SharedBufferHandle::Create(size);
+  DCHECK(local_handle.is_valid());
+
+  mojo::ScopedSharedBufferMapping mapped = local_handle->Map(size);
+  DCHECK(mapped);
+
+  mojo::ScopedSharedBufferHandle remote_handle =
+      local_handle->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+  CHECK(remote_handle.is_valid())
+      << "Mojo error when creating read-only buffer handle.";
+
   CompletionEvent event;
   proxy_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&ImageDecodeProxy::OnDecodeImage,
-                            base::Unretained(this), unique_id, data, &event));
+      FROM_HERE,
+      base::Bind(&ImageDecodeProxy::OnDecodeImage, base::Unretained(this),
+                 unique_id, &remote_handle, size, &event));
 
   event.Wait();
+
+  void* local_data = mapped.get();
+
+  memcpy(data, local_data, size);
 
   return true;
 }
