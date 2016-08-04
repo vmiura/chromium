@@ -28,18 +28,8 @@ scoped_refptr<RasterSource> RasterSource::CreateFromRecordingSource(
   return make_scoped_refptr(new RasterSource(other, can_use_lcd_text));
 }
 
-static scoped_refptr<DisplayItemList> WriteAndReadDisplayList(scoped_refptr<DisplayItemList> input_list) {
-  if (!input_list)
-    return nullptr;
-  scoped_refptr<DisplayItemList> output_list =
-      DisplayItemList::CreateFromData(input_list->Serialize());
-  DCHECK_EQ(input_list->num_items(), output_list->num_items());
-  DCHECK_EQ(input_list->unique_id(), output_list->unique_id());
-  return output_list;
-}
-
 RasterSource::RasterSource(const RecordingSource* other, bool can_use_lcd_text)
-    : display_list_(WriteAndReadDisplayList(other->display_list_)),
+    : display_list_(other->display_list_),
       painter_reported_memory_usage_(other->painter_reported_memory_usage_),
       background_color_(other->background_color_),
       requires_clear_(other->requires_clear_),
