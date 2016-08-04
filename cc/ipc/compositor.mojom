@@ -20,6 +20,7 @@ interface CompositorFactory {
 interface Compositor {
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
+  SetVisible(bool visible);
   [Sync] Commit(SurfaceId surface_id, bool wait_for_activation, ContentFrame frame) => ();
 };
 

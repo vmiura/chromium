@@ -226,9 +226,7 @@ Service::Service(const gpu::SurfaceHandle& handle,
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
-  scheduler_.SetVisible(true);
   compositor_client_->OnCompositorCreated();
-  host_impl_.SetVisible(true);
 }
 
 Service::~Service() {
@@ -359,6 +357,11 @@ void Service::SetNeedsBeginMainFrame() {
 void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   host_impl_.SetViewportDamage(damage_rect);
   scheduler_.SetNeedsRedraw();
+}
+
+void Service::SetVisible(bool visible) {
+  host_impl_.SetVisible(visible);
+  scheduler_.SetVisible(visible);
 }
 
 void Service::Commit(const cc::SurfaceId& surface_id,

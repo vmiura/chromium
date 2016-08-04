@@ -75,6 +75,10 @@ void SimpleProxy::InitializeCompositor(
     needs_redraw_when_ready_ = false;
     SetNeedsRedraw(needs_redraw_rect_when_ready_);
   }
+  if (needs_set_visible_when_ready_) {
+    needs_set_visible_when_ready_ = false;
+    SetVisible(needs_set_visible_value_when_ready_);
+  }
 }
 
 void SimpleProxy::FinishAllRendering() {
@@ -101,9 +105,13 @@ void SimpleProxy::SetSurfaceClientId(uint32_t client_id) {
 }
 
 void SimpleProxy::SetVisible(bool visible) {
-  // TODO(piman): hackathon ??
   TRACE_EVENT1("cc", "SimpleProxy::SetVisible", "visible", visible);
-  NOTIMPLEMENTED();
+  if (!compositor_) {
+    needs_set_visible_when_ready_ = true;
+    needs_set_visible_value_when_ready_ = visible;
+    return;
+  }
+  compositor_->SetVisible(visible);
 }
 
 const RendererCapabilities& SimpleProxy::GetRendererCapabilities() const {

@@ -57,6 +57,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   // cc::mojom::Compositor implementation.
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
+  void SetVisible(bool visible) override;
   void Commit(const cc::SurfaceId& surface_id,
               bool wait_for_activation,
               mojom::ContentFramePtr frame,
