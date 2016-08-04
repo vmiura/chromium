@@ -81,7 +81,7 @@ enum LayerType {
 struct LayerStructure {
   LayerType layer_type;
   int32 layer_id;
-  // TODO(hackathon): mask for PictureLayerImpl
+  bool is_mask;  // Only for PictureLayer
 };
 
 struct LayerTree {

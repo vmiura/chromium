@@ -1315,15 +1315,18 @@ bool PictureLayerImpl::HasValidTilePriorities() const {
 void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   LayerImpl::ReadPropertiesMojom(mojom);
   DCHECK(mojom->picture_state);
-#if 0
-  // TODO(piman): Make work for PLImpl.
   mojom::PictureLayerState* picture_state = mojom->picture_state.get();
-  if (!recording_source_)
-    recording_source_.reset(new RecordingSource);
-  recording_source_->ReadMojom(picture_state);
-  is_mask_ = picture_state->is_mask = is_mask_;
-  update_source_frame_number_ = picture_state->update_source_frame_num;
-#endif
+
+  gpu_raster_max_texture_size_ = picture_state->gpu_raster_max_texture_size;
+  SetNearestNeighbor(picture_state->nearest_neighbor);
+  // TODO(piman): invalidation region
+  Region invalidation;
+
+  RecordingSource recording_source;
+  recording_source.ReadMojom(picture_state);
+  scoped_refptr<RasterSource> raster_source =
+      recording_source.CreateRasterSource(RasterSourceUsesLCDText());
+  UpdateRasterSource(raster_source, &invalidation, nullptr);
 }
 
 }  // namespace cc

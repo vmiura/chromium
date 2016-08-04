@@ -262,15 +262,18 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
 void PictureLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
   Layer::WriteStructureMojom(mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::PICTURE;
+  mojom->is_mask = is_mask_;
 }
 
 void PictureLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   Layer::WritePropertiesMojom(mojom);
+  DropRecordingSourceContentIfInvalid();
   mojom->picture_state = mojom::PictureLayerState::New();
   mojom::PictureLayerState* picture_state = mojom->picture_state.get();
+  picture_state->gpu_raster_max_texture_size =
+      layer_tree_host()->device_viewport_size();
+  picture_state->nearest_neighbor = picture_layer_inputs_.nearest_neighbor;
   recording_source_->WriteMojom(picture_state);
-  picture_state->is_mask = is_mask_;
-  picture_state->update_source_frame_num = update_source_frame_number_;
 }
 
 }  // namespace cc
