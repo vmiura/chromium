@@ -65,6 +65,10 @@ class ResourceUpdateQueue;
 class ScrollbarLayerInterface;
 class SimpleEnclosedRegion;
 
+namespace mojom {
+class Layer;
+}
+
 namespace proto {
 class LayerNode;
 class LayerProperties;
@@ -550,6 +554,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // When true, the layer is about to perform an update. Any commit requests
   // will be handled implicitly after the update completes.
   bool ignore_set_needs_commit_;
+
+  virtual void WriteMojom(cc::mojom::Layer* mojom);
 
  private:
   friend class base::RefCounted<Layer>;

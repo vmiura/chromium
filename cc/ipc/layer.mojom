@@ -8,6 +8,7 @@ import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
 enum LayerType {
+  BASE,
   NINE_PATCH,
   PICTURE,
   // TODO(fsamuel): Make this work?

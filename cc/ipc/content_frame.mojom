@@ -1,5 +1,6 @@
 module cc.mojom;
 
+import "cc/ipc/layer.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/transform.mojom";
 
@@ -59,6 +60,16 @@ struct PropertyTrees {
   bool verify_transform_tree_calculations;
 };
 
+enum LayerTreeOp {
+  CHILD_LAYER,
+  MOVE_TO_PARENT,
+};
+
+struct LayerTree {
+  array<LayerTreeOp> ops;
+  array<cc.mojom.Layer> layers;
+};
+
 struct ContentFrame {
   uint32 source_frame;
   bool next_commit_forces_redraw;
@@ -81,4 +92,5 @@ struct ContentFrame {
   float painted_device_scale_factor;
 
   PropertyTrees property_trees;
+  LayerTree? layer_tree;
 };

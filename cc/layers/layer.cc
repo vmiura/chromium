@@ -20,6 +20,7 @@
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/debug/frame_viewer_instrumentation.h"
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer_client.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_proto_converter.h"
@@ -1884,6 +1885,14 @@ gfx::Transform Layer::screen_space_transform() const {
 
 LayerTree* Layer::GetLayerTree() const {
   return layer_tree_;
+}
+
+void Layer::WriteMojom(cc::mojom::Layer* mojom) {
+  mojom->layer_type = cc::mojom::LayerType::BASE;
+  mojom->draws_content = draws_content_;
+  mojom->position = inputs_.position;
+  mojom->bounds = inputs_.bounds;
+  mojom->background_color = inputs_.background_color;
 }
 
 }  // namespace cc

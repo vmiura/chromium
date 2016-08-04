@@ -43,6 +43,8 @@ class CC_EXPORT PictureLayer : public Layer {
     return recording_source_.get();
   }
 
+  void WriteMojom(cc::mojom::Layer* mojom) override;
+
  protected:
   explicit PictureLayer(ContentLayerClient* client);
   // Allow tests to inject a recording source.
