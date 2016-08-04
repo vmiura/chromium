@@ -95,6 +95,7 @@ class CC_EXPORT LayerImpl {
   virtual ~LayerImpl();
 
   int id() const { return layer_id_; }
+  void UpdateLayerIdWithOffset(int offset) { layer_id_ += offset; }
 
   // Interactions with attached animations.
   gfx::ScrollOffset ScrollOffsetForAnimation() const;

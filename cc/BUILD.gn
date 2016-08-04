@@ -224,6 +224,8 @@ component("cc") {
     "output/compositor_frame.h",
     "output/compositor_frame_metadata.cc",
     "output/compositor_frame_metadata.h",
+    "output/content_frame.cc",
+    "output/content_frame.h",
     "output/context_provider.h",
     "output/copy_output_request.cc",
     "output/copy_output_request.h",

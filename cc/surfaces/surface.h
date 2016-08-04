@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/output/content_frame.h"
 #include "cc/output/copy_output_request.h"
 #include "cc/quads/render_pass_id.h"
 #include "cc/surfaces/surface_factory.h"
@@ -31,6 +32,7 @@ class LatencyInfo;
 
 namespace cc {
 class CompositorFrame;
+class ContentFrame;
 class CopyOutputRequest;
 class SurfaceManager;
 class SurfaceFactory;
@@ -51,6 +53,7 @@ class CC_SURFACES_EXPORT Surface {
   void SetPreviousFrameSurface(Surface* surface);
 
   void QueueFrame(CompositorFrame frame, const DrawCallback& draw_callback);
+  void SetContentFrame(ContentFrame frame);
   void RequestCopyOfOutput(std::unique_ptr<CopyOutputRequest> copy_request);
   // Adds each CopyOutputRequest in the current frame to copy_requests. The
   // caller takes ownership of them.
@@ -62,6 +65,7 @@ class CC_SURFACES_EXPORT Surface {
   // If the CompositorFrame's DelegateFrameData is null then there is
   // no eligible frame.
   const CompositorFrame& GetEligibleFrame();
+  const ContentFrame& GetContentFrame();
 
   // Returns a number that increments by 1 every time a new frame is enqueued.
   int frame_index() const { return frame_index_; }
@@ -100,6 +104,7 @@ class CC_SURFACES_EXPORT Surface {
   base::WeakPtr<SurfaceFactory> factory_;
   // TODO(jamesr): Support multiple frames in flight.
   CompositorFrame current_frame_;
+  ContentFrame current_content_frame_;
   int frame_index_;
   bool destroyed_;
   std::vector<SurfaceSequence> destruction_dependencies_;

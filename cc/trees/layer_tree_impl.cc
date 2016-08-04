@@ -49,6 +49,9 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+// Hackathon.
+#include "cc/output/content_frame.h"
+
 namespace cc {
 
 LayerTreeImpl::LayerTreeImpl(
@@ -305,6 +308,13 @@ void LayerTreeImpl::BuildLayerListForTesting() {
   for (; it != LayerListIterator<LayerImpl>(nullptr); ++it) {
     AddToLayerList(*it);
   }
+}
+
+// Hackathon.
+void LayerTreeImpl::StuffAggregatedContentFrameIn(
+    AggregatedContentFrame&& frame) {
+  layer_list_ = frame.layer_list;
+  SetPropertyTrees(frame.property_trees.get());
 }
 
 bool LayerTreeImpl::IsRootLayer(const LayerImpl* layer) const {

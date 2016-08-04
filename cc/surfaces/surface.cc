@@ -44,6 +44,10 @@ void Surface::SetPreviousFrameSurface(Surface* surface) {
   previous_frame_surface_id_ = surface->surface_id();
 }
 
+void Surface::SetContentFrame(ContentFrame frame) {
+  current_content_frame_ = std::move(frame);
+}
+
 void Surface::QueueFrame(CompositorFrame frame, const DrawCallback& callback) {
   DCHECK(factory_);
   ClearCopyRequests();
@@ -136,6 +140,10 @@ void Surface::TakeCopyOutputRequests(
 
 const CompositorFrame& Surface::GetEligibleFrame() {
   return current_frame_;
+}
+
+const ContentFrame& Surface::GetContentFrame() {
+  return current_content_frame_;
 }
 
 void Surface::TakeLatencyInfo(std::vector<ui::LatencyInfo>* latency_info) {

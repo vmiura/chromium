@@ -28,6 +28,10 @@
 #include "cc/output/vulkan_renderer.h"
 #endif
 
+// Hackathon.
+#include "cc/surfaces/content_frame_aggregator.h"
+#include "cc/output/content_frame.h"
+
 namespace cc {
 
 Display::Display(SharedBitmapManager* bitmap_manager,
@@ -102,6 +106,13 @@ void Display::SetSurfaceId(const SurfaceId& id, float device_scale_factor) {
   UpdateRootSurfaceResourcesLocked();
   if (scheduler_)
     scheduler_->SetNewRootSurface(id);
+}
+
+void Display::CommitContentFrame(cc::ContentFrame&& content_frame) {
+  if (!current_surface_id_.is_null()) {
+    Surface* surface = surface_manager_->GetSurfaceForId(current_surface_id_);
+    surface->SetContentFrame(std::move(content_frame));
+  }
 }
 
 void Display::Resize(const gfx::Size& size) {
@@ -201,6 +212,7 @@ void Display::InitializeRenderer() {
   aggregator_.reset(new SurfaceAggregator(
       surface_manager_, resource_provider_.get(), output_partial_list));
   aggregator_->set_output_is_secure(output_is_secure_);
+  content_frame_aggregator_.reset(new ContentFrameAggregator(surface_manager_));
 }
 
 void Display::DidLoseOutputSurface() {
@@ -217,6 +229,15 @@ void Display::UpdateRootSurfaceResourcesLocked() {
       !surface || !surface->GetEligibleFrame().delegated_frame_data;
   if (scheduler_)
     scheduler_->SetRootSurfaceResourcesLocked(root_surface_resources_locked);
+}
+
+AggregatedContentFrame Display::AggregateContentFrames() {
+  if (content_frame_aggregator_) {
+    return content_frame_aggregator_->Aggregate(current_surface_id_);
+  } else {
+    AggregatedContentFrame temp;
+    return temp;
+  }
 }
 
 bool Display::DrawAndSwap() {

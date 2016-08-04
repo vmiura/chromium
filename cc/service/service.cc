@@ -15,6 +15,7 @@
 #include "cc/output/renderer_capabilities.h"
 #include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
+#include "cc/output/content_frame.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/compositor_timing_history.h"
 #include "cc/scheduler/delay_based_time_source.h"
@@ -679,6 +680,14 @@ void Service::FinishCommit() {
     new_scroll_offset_map[pair.first] = synced;
   }
   property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map, sync_tree);
+
+  // Hackathon technically only combines one content frame because of reasons.
+  cc::ContentFrame new_content_frame;
+  new_content_frame.Set(*sync_tree);
+  if (display_) {
+    display_->CommitContentFrame(std::move(new_content_frame));
+    AggregatedContentFrame result_frame = display_->AggregateContentFrames();
+  }
 
 #if 0
   // TODO(hackathon): micro benchmarks

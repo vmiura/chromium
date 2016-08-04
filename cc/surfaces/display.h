@@ -46,6 +46,11 @@ class SurfaceIdAllocator;
 class SurfaceFactory;
 class TextureMailboxDeleter;
 
+// hackathon.
+class ContentFrame;
+class ContentFrameAggregator;
+class AggregatedContentFrame;
+
 // A Display produces a surface that can be used to draw to a physical display
 // (OutputSurface). The client is responsible for creating and sizing the
 // surface IDs used to draw into the display and deciding when to draw.
@@ -80,6 +85,10 @@ class CC_SURFACES_EXPORT Display : public DisplaySchedulerClient,
   void SetOutputIsSecure(bool secure);
 
   const SurfaceId& CurrentSurfaceId();
+
+  // Hackathon.
+  void CommitContentFrame(cc::ContentFrame&& content_frame);
+  AggregatedContentFrame AggregateContentFrames();
 
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap() override;
@@ -144,6 +153,7 @@ class CC_SURFACES_EXPORT Display : public DisplaySchedulerClient,
   std::unique_ptr<DisplayScheduler> scheduler_;
   std::unique_ptr<ResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
+  std::unique_ptr<ContentFrameAggregator> content_frame_aggregator_;
   std::unique_ptr<TextureMailboxDeleter> texture_mailbox_deleter_;
   std::unique_ptr<DirectRenderer> renderer_;
   SoftwareRenderer* software_renderer_ = nullptr;

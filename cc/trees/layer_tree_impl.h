@@ -55,6 +55,9 @@ class VideoFrameControllerClient;
 struct PendingPageScaleAnimation;
 struct RendererCapabilities;
 
+// Hackathon.
+class AggregatedContentFrame;
+
 typedef std::vector<UIResourceRequest> UIResourceRequestQueue;
 typedef SyncedProperty<AdditionGroup<float>> SyncedTopControls;
 typedef SyncedProperty<AdditionGroup<gfx::Vector2dF>> SyncedElasticOverscroll;
@@ -447,6 +450,10 @@ class CC_EXPORT LayerTreeImpl {
   void ClearLayerList();
 
   void BuildLayerListForTesting();
+
+  // Hackathon.
+  void StuffAggregatedContentFrameIn(AggregatedContentFrame&& frame);
+  OwnedLayerImplList* layer_list() { return layers_.get(); }
 
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;

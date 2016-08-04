@@ -16,6 +16,8 @@ source_set("surface_id") {
 component("surfaces") {
   output_name = "cc_surfaces"
   sources = [
+    "content_frame_aggregator.cc",
+    "content_frame_aggregator.h",
     "display.cc",
     "display.h",
     "display_client.h",
