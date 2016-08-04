@@ -45,6 +45,9 @@ namespace {
 LayerTreeSettings CreateLayerTreeSettings() {
   LayerTreeSettings settings;
   settings.use_output_surface_begin_frame_source = true;
+  // TODO(hackathon)
+  settings.renderer_settings.buffer_to_texture_target_map =
+      DefaultBufferToTextureTargetMapForTesting();
   return settings;
 }
 
@@ -228,6 +231,7 @@ Service::Service(const gpu::SurfaceHandle& handle,
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   scheduler_.SetVisible(true);
   compositor_client_->OnCompositorCreated();
+  host_impl_.SetVisible(true);
 }
 
 Service::~Service() {
@@ -456,7 +460,6 @@ void Service::FinishCommit() {
     if (tree) {
       for (const auto& layer_structure : tree->layers) {
         auto layer = create_layer(layer_structure.get());
-        LOG(ERROR) << "read layer " << layer->id();
         sync_tree->AddToLayerList(layer.get());
         sync_tree->AddLayer(std::move(layer));
       }
@@ -657,7 +660,6 @@ void Service::FinishCommit() {
 
     for (const auto& layer_properties : frame->layer_properties) {
       LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
-      LOG(ERROR) << "read layer properties " << layer->id();
       layer->ReadPropertiesMojom(layer_properties.get());
     }
 

@@ -1726,7 +1726,6 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     auto tree = cc::mojom::LayerTree::New();
 
     auto write_layer = [&tree](Layer* layer) {
-      LOG(ERROR) << "write layer " << layer->id();
       auto mojom = cc::mojom::LayerStructure::New();
       layer->WriteStructureMojom(mojom.get());
       tree->layers.push_back(std::move(mojom));

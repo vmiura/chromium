@@ -16,6 +16,7 @@ ServiceFactory::ServiceFactory(
       image_factory_(image_factory),
       compositor_thread_("compositor") {
   ServiceContextProvider::SetupThread();
+  task_graph_runner_.Start("CompositorWorker", base::SimpleThread::Options());
   compositor_thread_.Start();
 }
 
