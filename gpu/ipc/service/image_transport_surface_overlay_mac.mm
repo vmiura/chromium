@@ -68,7 +68,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurfaceCreateNativeSurface(
 ImageTransportSurfaceOverlayMac::ImageTransportSurfaceOverlayMac(
     GpuCommandBufferStub* stub,
     SurfaceHandle handle)
-    : stub_(stub->AsWeakPtr()),
+    : //stub_(stub->AsWeakPtr()),
       handle_(handle),
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),
@@ -80,10 +80,10 @@ ImageTransportSurfaceOverlayMac::ImageTransportSurfaceOverlayMac(
 
 ImageTransportSurfaceOverlayMac::~ImageTransportSurfaceOverlayMac() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
-  if (stub_.get()) {
-    stub_->SetLatencyInfoCallback(
-        base::Callback<void(const std::vector<ui::LatencyInfo>&)>());
-  }
+  //if (stub_.get()) {
+  //  stub_->SetLatencyInfoCallback(
+  //      base::Callback<void(const std::vector<ui::LatencyInfo>&)>());
+  //}
   Destroy();
 }
 

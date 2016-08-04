@@ -65,7 +65,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       // Note that with virtualization we might still be able to make current
       // a different onscreen surface with this context later. But we should
       // always be creating the context with an offscreen surface first.
-      DCHECK(compatible_surface->IsOffscreen());
+      // TODO(hackathon): Nope.
+      //DCHECK(compatible_surface->IsOffscreen());
       return InitializeGLContext(new GLContextCGL(share_group),
                                  compatible_surface, gpu_preference);
     case kGLImplementationOSMesaGL:
