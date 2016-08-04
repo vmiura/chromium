@@ -81,6 +81,13 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
       id_allocator_->client_id());
   factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
       id_allocator_->client_id(), this);
+  // TODO(hackathon): We should use the frame size not the view size.
+  client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+      cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+      base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
+      base::Bind(&RequireCallback,
+                 base::Unretained(factory->GetSurfaceManager())),
+      gfx::Size(100, 100), current_scale_factor_, gfx::Size(100, 100));
 }
 
 void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
@@ -261,12 +268,21 @@ bool DelegatedFrameHost::ShouldSkipFrame(gfx::Size size_in_dip) const {
 }
 
 void DelegatedFrameHost::WasResized() {
-  if (client_->DelegatedFrameHostDesiredSizeInDIP() !=
+  // TODO(hackathon): Figure out how resize should work.
+  gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
+#if 0
+  if (desired_size !=
           current_frame_size_in_dip_ &&
       !client_->DelegatedFrameHostIsVisible())
     EvictDelegatedFrame();
   MaybeCreateResizeLock();
   UpdateGutters();
+#endif
+  client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+      cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+      base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
+      base::Bind(&RequireCallback, base::Unretained(GetSurfaceManager())),
+      desired_size, current_scale_factor_, desired_size);
 }
 
 SkColor DelegatedFrameHost::GetGutterColor() const {
