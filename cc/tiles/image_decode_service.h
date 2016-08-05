@@ -44,7 +44,7 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
                    const DecodeImageCallback& callback) override;
 
   // Blink accesses this to register things.
-  void RegisterImage(sk_sp<SkImage> image);
+  void RegisterImage(sk_sp<const SkImage> image);
   void UnregisterImage(uint32_t image_id);
 
   // Called by the thread.
@@ -93,7 +93,7 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
   mojom::ImageDecodeRequest image_decode_request_;
   mojo::Binding<mojom::ImageDecode> image_decode_binding_;
 
-  std::unordered_map<uint32_t, sk_sp<SkImage>> image_map_;
+  std::unordered_map<uint32_t, sk_sp<const SkImage>> image_map_;
 
   base::ConditionVariable requests_cv_;
   base::Thread service_thread_;

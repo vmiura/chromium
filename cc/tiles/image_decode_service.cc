@@ -117,7 +117,7 @@ void ImageDecodeService::DoCloseMojoBinding(CompletionEvent* event) {
   event->Signal();
 }
 
-void ImageDecodeService::RegisterImage(sk_sp<SkImage> image) {
+void ImageDecodeService::RegisterImage(sk_sp<const SkImage> image) {
   TRACE_EVENT1("cc", "ImageDecodeService::RegisterImage", "image_id",
                image->uniqueID());
   base::AutoLock hold(lock_);
@@ -189,7 +189,7 @@ void ImageDecodeService::DecodeImage(
 
 bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
   TRACE_EVENT1("cc", "ImageDecodeService::DoDecodeImage", "image_id", image_id);
-  sk_sp<SkImage> image = [this, image_id]() {
+  sk_sp<const SkImage> image = [this, image_id]() {
     base::AutoLock hold(lock_);
     return image_map_[image_id];
   }();

@@ -166,6 +166,12 @@ bool ProxyImageGenerator::onGetPixels(const SkImageInfo& info,
 }
 
 SkData* ProxyPixelSerializer::onUseImage(const SkImage* image) {
+  if (auto* service = ImageDecodeService::Current()) {
+    // TODO(hackathon): Ref this here so we can conver tto an sk_sp and keep
+    // the image alive.
+    image->ref();
+    service->RegisterImage(sk_sp<const SkImage>(image));
+  }
   ImageSerialization serialization;
   serialization.width = image->width();
   serialization.height = image->height();

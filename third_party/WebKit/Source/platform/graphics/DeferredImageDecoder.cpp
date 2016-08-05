@@ -317,12 +317,6 @@ PassRefPtr<SkImage> DeferredImageDecoder::createFrameImageAtIndex(size_t index, 
     RefPtr<SegmentReader> segmentReader = SegmentReader::createFromSkROBuffer(roBuffer.release());
     DecodingImageGenerator* generator = new DecodingImageGenerator(m_frameGenerator, imageInfoFrom(decodedSize, knownToBeOpaque), segmentReader.release(), m_allDataReceived, index, m_frameData[index].m_uniqueID);
     RefPtr<SkImage> image = fromSkSp(SkImage::MakeFromGenerator(generator)); // SkImage takes ownership of the generator.
-
-    // TODO(hackathon): Should probably register the service a different way.
-    if (auto* decoding_service = cc::ImageDecodeService::Current()) {
-        decoding_service->RegisterImage(sk_sp<SkImage>(image.get()));
-    }
-
     if (!image)
         return nullptr;
 
