@@ -69,6 +69,9 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void WaitForActivation(const WaitForActivationCallback& callback) override;
   void Destroy(const DestroyCallback& callback) override;
 
+  void PrepareCommitInternal(bool will_wait_for_activation,
+                             mojom::ContentFramePtr frame);
+
  private:
   class ClientImpl;
 

@@ -388,6 +388,44 @@ void Service::PrepareCommit(bool will_wait_for_activation,
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
 
+  bool viewport_changed_size =
+      frame->device_viewport_size != host_impl_.device_viewport_size();
+  // TODO(hackathon): AND !device scale factor changed.
+  DCHECK(!viewport_changed_size);
+  // First commit should always be PrepareCommitSync.
+  DCHECK(!surface_id_.is_null());
+
+  PrepareCommitInternal(will_wait_for_activation, std::move(frame));
+}
+
+void Service::PrepareCommitSync(bool will_wait_for_activation,
+                                mojom::ContentFramePtr frame,
+                                const PrepareCommitSyncCallback& callback) {
+  bool viewport_changed_size =
+      frame->device_viewport_size != host_impl_.device_viewport_size();
+  // TODO(hackathon): OR device scale factor changed.
+  DCHECK(surface_id_.is_null() || viewport_changed_size);
+
+  if (surface_id_.is_null()) {
+    LOG(ERROR) << "viewport size first commit " << host_impl_.device_viewport_size().ToString();
+    // TODO(danakj): Use surface_id_allocator_ though.
+    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
+    if (output_surface_)
+      output_surface_->SetDelegatedSurfaceId(surface_id_);
+  } else {
+    LOG(ERROR) << "viewport size changed to " << host_impl_.device_viewport_size().ToString();
+    // TODO(danakj): Use surface_id_allocator_ though.
+    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
+    if (output_surface_)
+      output_surface_->SetDelegatedSurfaceId(surface_id_);
+  }
+  callback.Run(surface_id_);
+
+  PrepareCommitInternal(will_wait_for_activation, std::move(frame));
+}
+
+void Service::PrepareCommitInternal(bool will_wait_for_activation,
+                                    mojom::ContentFramePtr frame) {
   frame_for_commit_ = std::move(frame);
   if (will_wait_for_activation)
     wait_for_activation_state_ = kWaitForActivationPrepared;
@@ -399,16 +437,6 @@ void Service::PrepareCommit(bool will_wait_for_activation,
   //DCHECK(!blocked_main_commit().layer_tree_host);
   //blocked_main_commit().layer_tree_host = layer_tree_host;
   scheduler_.NotifyReadyToCommit();
-}
-
-void Service::PrepareCommitSync(bool will_wait_for_activation,
-                                mojom::ContentFramePtr frame,
-                                const PrepareCommitSyncCallback& callback) {
-  SurfaceId new_surface_id;
-  // TODO(hackathon): generate new_surface_id and do something with it;
-  callback.Run(new_surface_id);
-
-  PrepareCommit(will_wait_for_activation, std::move(frame));
 }
 
 void Service::DidActivateSyncTree() {
@@ -760,27 +788,6 @@ void Service::FinishCommit() {
   // TODO(hackathon): micro benchmarks
   micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
 #endif
-
-  if (surface_id_.is_null()) {
-    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
-    if (output_surface_)
-      output_surface_->SetDelegatedSurfaceId(surface_id_);
-  } else {
-    // TODO(hackathon): If the commit was sync (aka changed size) then change
-    // the id.
-#if 0
-    gfx::Size frame_size =
-        frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
-    if (frame_size.IsEmpty() || frame_size != last_swap_frame_size_) {
-      if (!delegated_surface_id_.is_null()) {
-        factory_.Destroy(delegated_surface_id_);
-      }
-      delegated_surface_id_ = //surface_id_allocator_->GenerateId();
-          factory_.Create(delegated_surface_id_);
-      last_swap_frame_size_ = frame_size;
-    }
-#endif
-  }
 }
 
 void Service::ScheduledActionCommit() {
