@@ -421,7 +421,8 @@ void Service::DidActivateSyncTree() {
     activation_callback_.Run();
     activation_callback_.Reset();
   } else {
-    wait_for_activation_state_ = kWaitForActivationActivated;
+    if (wait_for_activation_state_ == kWaitForActivationCommitted)
+      wait_for_activation_state_ = kWaitForActivationActivated;
   }
 }
 

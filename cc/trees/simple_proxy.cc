@@ -377,7 +377,7 @@ void SimpleProxy::OnBeginMainFrame(
       mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
       // TODO(hackathon): need sync if new surface id
       bool need_sync = false;
-      if (need_sync) {
+      if (!need_sync) {
         compositor_->PrepareCommit(hold_commit_for_activation,
                                    std::move(frame));
       } else {
