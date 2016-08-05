@@ -769,7 +769,9 @@ void Service::FinishCommit() {
   }
   property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map, sync_tree);
 
-  {
+  // TODO(weiliangc): This crashes once surface ids start changing.
+  // The surface ID changed during BeginCommitSync.
+  if (0) {
     TRACE_EVENT0("cc", "Service::FinishCommit content frame aggregation");
     // Hackathon technically only combines one content frame because of reasons.
     cc::ContentFrame new_content_frame;
