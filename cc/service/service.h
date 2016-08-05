@@ -53,8 +53,6 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void DidActivateSyncTree();
   void ScheduledActionCommit();
 
-  void InsertHackyGreenLayer();
-
   // cc::mojom::Compositor implementation.
   void RegisterChildCompositor(uint32_t client_id) override;
   void UnregisterChildCompositor(uint32_t client_id) override;
@@ -63,17 +61,16 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetVisible(bool visible) override;
   void BeginMainFrameAborted(CommitEarlyOutReason reason) override;
-  void Commit(bool wait_for_activation,
-              mojom::ContentFramePtr frame,
-              const CommitCallback& callback) override;
+  void PrepareCommit(bool will_wait_for_activation,
+                     mojom::ContentFramePtr frame) override;
+  void PrepareCommitSync(bool will_wait_for_activation,
+                         mojom::ContentFramePtr frame,
+                         const PrepareCommitSyncCallback& callback) override;
+  void WaitForActivation(const WaitForActivationCallback& callback) override;
   void Destroy(const DestroyCallback& callback) override;
 
  private:
-  void FinishCommit();
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
   class ClientImpl;
-  std::unique_ptr<ClientImpl> client_;
 
   class SetImplThread {
    public:
@@ -93,6 +90,18 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
 #endif
   };
 
+  enum WaitForActivationState {
+    kWaitForActivationNone,
+    kWaitForActivationPrepared,
+    kWaitForActivationCommitted,
+    kWaitForActivationActivated,
+  };
+  
+  void FinishCommit();
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  std::unique_ptr<ClientImpl> client_;
+
   SharedBitmapManager* const shared_bitmap_manager_;
   gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
   gpu::ImageFactory* const image_factory_;
@@ -111,9 +120,8 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   cc::mojom::CompositorClientPtr compositor_client_;
   mojo::StrongBinding<cc::mojom::Compositor> binding_;
   mojom::ContentFramePtr frame_for_commit_;
-  bool wait_for_activation_ = false;
-  CommitCallback commit_callback_;
-  CommitCallback activation_callback_;
+  WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;
+  WaitForActivationCallback activation_callback_;
 
   // This is null for non-root service compositors.
   std::unique_ptr<Display> display_;

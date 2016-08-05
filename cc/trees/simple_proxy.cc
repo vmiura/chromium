@@ -375,7 +375,19 @@ void SimpleProxy::OnBeginMainFrame(
     {
       TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame compositor->Commit");
       mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-      compositor_->Commit(hold_commit_for_activation, std::move(frame));
+      // TODO(hackathon): need sync if new surface id
+      bool need_sync = false;
+      if (need_sync) {
+        compositor_->PrepareCommit(hold_commit_for_activation,
+                                   std::move(frame));
+      } else {
+        SurfaceId new_surface_id;
+        compositor_->PrepareCommitSync(hold_commit_for_activation,
+                                       std::move(frame), &new_surface_id);
+        // TODO(hackathon): do somethign with new_surface_id
+      }
+      if (hold_commit_for_activation)
+        compositor_->WaitForActivation();
     }
   }
 

@@ -380,18 +380,17 @@ void Service::SetVisible(bool visible) {
   scheduler_.SetVisible(visible);
 }
 
-void Service::Commit(bool wait_for_activation,
-                     mojom::ContentFramePtr frame,
-                     const CommitCallback& callback) {
-  TRACE_EVENT1("cc", "Service::Commit", "wait_for_activation", wait_for_activation);
-  DCHECK(!commit_callback_);
+void Service::PrepareCommit(bool will_wait_for_activation,
+                            mojom::ContentFramePtr frame) {
+  TRACE_EVENT1("cc", "Service::Commit", "wait_for_activation", will_wait_for_activation);
+  DCHECK_EQ(wait_for_activation_state_, kWaitForActivationNone);
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
 
   frame_for_commit_ = std::move(frame);
-  wait_for_activation_ = wait_for_activation;
-  commit_callback_ = callback;
+  if (will_wait_for_activation)
+    wait_for_activation_state_ = kWaitForActivationPrepared;
 
   scheduler_.NotifyBeginMainFrameStarted(
       base::TimeTicks() /* TODO(hackathon): main_thread_start_time */);
@@ -402,11 +401,38 @@ void Service::Commit(bool wait_for_activation,
   scheduler_.NotifyReadyToCommit();
 }
 
+void Service::PrepareCommitSync(bool will_wait_for_activation,
+                                mojom::ContentFramePtr frame,
+                                const PrepareCommitSyncCallback& callback) {
+  SurfaceId new_surface_id;
+  // TODO(hackathon): generate new_surface_id and do something with it;
+  callback.Run(new_surface_id);
+
+  PrepareCommit(will_wait_for_activation, std::move(frame));
+}
+
 void Service::DidActivateSyncTree() {
   TRACE_EVENT0("cc", "Service::DidActivateSyncTree");
+  DCHECK(wait_for_activation_state_ == kWaitForActivationNone ||
+         wait_for_activation_state_ == kWaitForActivationCommitted);
   if (activation_callback_) {
+    DCHECK_NE(wait_for_activation_state_, kWaitForActivationNone);
+    wait_for_activation_state_ = kWaitForActivationNone;
     activation_callback_.Run();
     activation_callback_.Reset();
+  } else {
+    wait_for_activation_state_ = kWaitForActivationActivated;
+  }
+}
+
+void Service::WaitForActivation(const WaitForActivationCallback& callback) {
+  DCHECK_NE(wait_for_activation_state_, kWaitForActivationNone);
+  DCHECK(!activation_callback_);
+  if (wait_for_activation_state_ == kWaitForActivationActivated) {
+    wait_for_activation_state_ = kWaitForActivationNone;
+    callback.Run();
+  } else {
+    activation_callback_ = callback;
   }
 }
 
@@ -760,21 +786,15 @@ void Service::FinishCommit() {
 
 void Service::ScheduledActionCommit() {
   TRACE_EVENT0("cc", "Service::ScheduledActionCommit");
-  DCHECK(commit_callback_);
+  DCHECK(wait_for_activation_state_ == kWaitForActivationNone ||
+         wait_for_activation_state_ == kWaitForActivationPrepared);
   host_impl_.BeginCommit();
 
   FinishCommit();
-  //InsertHackyGreenLayer();
   frame_for_commit_ = nullptr;
 
-  if (wait_for_activation_) {
-    DCHECK(!activation_callback_);
-    std::swap(activation_callback_, commit_callback_);
-    wait_for_activation_ = false;
-  } else {
-    commit_callback_.Run();
-    commit_callback_.Reset();
-  }
+  if (wait_for_activation_state_ == kWaitForActivationPrepared)
+    wait_for_activation_state_ = kWaitForActivationCommitted;
 
   scheduler_.DidCommit();
   host_impl_.CommitComplete();
