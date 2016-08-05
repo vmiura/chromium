@@ -625,6 +625,10 @@ void DelegatedFrameHost::SetBeginFrameSource(
   client_->SetBeginFrameSource(begin_frame_source);
 }
 
+uint32_t DelegatedFrameHost::GetNamespaceId() {
+  return id_allocator_->client_id();
+}
+
 void DelegatedFrameHost::EvictDelegatedFrame() {
 #if 0
   client_->DelegatedFrameHostGetLayer()->SetShowSolidColorContent();

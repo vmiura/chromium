@@ -81,6 +81,10 @@ void CompositorFrameSinkImpl::SetBeginFrameSource(
   begin_frame_source_ = begin_frame_source;
 }
 
+uint32_t CompositorFrameSinkImpl::GetNamespaceId() {
+  return 0; // TODO(hackathon): Should be the id allocator's client_id().
+}
+
 void CompositorFrameSinkImpl::OnBeginFrame(const cc::BeginFrameArgs& args) {
   // TODO(fsamuel): Implement this.
 }

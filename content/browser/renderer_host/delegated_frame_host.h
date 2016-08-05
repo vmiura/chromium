@@ -124,6 +124,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void WillDrawSurface(const cc::SurfaceId& id,
                        const gfx::Rect& damage_rect) override;
   void SetBeginFrameSource(cc::BeginFrameSource* begin_frame_source) override;
+  uint32_t GetNamespaceId() override;
 
   bool CanCopyToBitmap() const;
 

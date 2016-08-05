@@ -658,6 +658,10 @@ void RenderWidgetHostViewChildFrame::SetBeginFrameSource(
     begin_frame_source_->AddObserver(this);
 }
 
+uint32_t RenderWidgetHostViewChildFrame::GetNamespaceId() {
+  return id_allocator_->client_id();
+}
+
 void RenderWidgetHostViewChildFrame::OnBeginFrame(
     const cc::BeginFrameArgs& args) {
   host_->Send(new ViewMsg_BeginFrame(host_->GetRoutingID(), args));

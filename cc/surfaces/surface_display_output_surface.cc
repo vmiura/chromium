@@ -143,6 +143,10 @@ void SurfaceDisplayOutputSurface::SetBeginFrameSource(
   client_->SetBeginFrameSource(begin_frame_source);
 }
 
+uint32_t SurfaceDisplayOutputSurface::GetNamespaceId() {
+  return surface_id_allocator_->client_id();
+}
+
 void SurfaceDisplayOutputSurface::DisplayOutputSurfaceLost() {
   output_surface_lost_ = true;
   DidLoseOutputSurface();

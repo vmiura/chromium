@@ -51,6 +51,7 @@ class CC_SURFACES_EXPORT SurfaceDisplayOutputSurface
   // SurfaceFactoryClient implementation.
   void ReturnResources(const ReturnedResourceArray& resources) override;
   void SetBeginFrameSource(BeginFrameSource* begin_frame_source) override;
+  uint32_t GetNamespaceId() override;
 
   // DisplayClient implementation.
   void DisplayOutputSurfaceLost() override;

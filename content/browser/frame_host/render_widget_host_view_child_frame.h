@@ -164,6 +164,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // cc::SurfaceFactoryClient implementation.
   void ReturnResources(const cc::ReturnedResourceArray& resources) override;
   void SetBeginFrameSource(cc::BeginFrameSource* source) override;
+  uint32_t GetNamespaceId() override;
 
   // cc::BeginFrameObserver implementation.
   void OnBeginFrame(const cc::BeginFrameArgs& args) override;

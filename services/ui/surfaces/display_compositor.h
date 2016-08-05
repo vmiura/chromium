@@ -56,6 +56,7 @@ class DisplayCompositor : public cc::SurfaceFactoryClient,
   // SurfaceFactoryClient implementation.
   void ReturnResources(const cc::ReturnedResourceArray& resources) override;
   void SetBeginFrameSource(cc::BeginFrameSource* begin_frame_source) override;
+  uint32_t GetNamespaceId() override;
 
   // DisplayClient implementation.
   void DisplayOutputSurfaceLost() override;

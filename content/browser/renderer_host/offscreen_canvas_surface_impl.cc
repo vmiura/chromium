@@ -94,4 +94,8 @@ void OffscreenCanvasSurfaceImpl::WillDrawSurface(const cc::SurfaceId& id,
 void OffscreenCanvasSurfaceImpl::SetBeginFrameSource(
     cc::BeginFrameSource* begin_frame_source) {}
 
+uint32_t OffscreenCanvasSurfaceImpl::GetNamespaceId() {
+  return id_allocator_->client_id();
+}
+
 }  // namespace content

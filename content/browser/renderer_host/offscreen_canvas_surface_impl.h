@@ -34,6 +34,7 @@ class OffscreenCanvasSurfaceImpl : public blink::mojom::OffscreenCanvasSurface,
   void WillDrawSurface(const cc::SurfaceId& id,
                        const gfx::Rect& damage_rect) override;
   void SetBeginFrameSource(cc::BeginFrameSource* begin_frame_source) override;
+  uint32_t GetNamespaceId() override;
 
  private:
   ~OffscreenCanvasSurfaceImpl() override;

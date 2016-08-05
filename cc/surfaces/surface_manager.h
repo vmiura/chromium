@@ -9,10 +9,12 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -92,6 +94,12 @@ class CC_SURFACES_EXPORT SurfaceManager {
   void UnregisterSurfaceNamespaceHierarchy(uint32_t parent_namespace,
                                            uint32_t child_namespace);
 
+  void SetParentCallbackForNewChildSurfaceId(
+      uint32_t parent_namespace,
+      const base::Callback<void(uint32_t)>& cb);
+
+  void ReceivedSurfaceIdForNamespace(uint32_t client_id, const SurfaceId& surface_id);
+
  private:
   void RecursivelyAttachBeginFrameSource(uint32_t client_id,
                                          BeginFrameSource* source);
@@ -133,13 +141,21 @@ class CC_SURFACES_EXPORT SurfaceManager {
     // The currently assigned begin frame source for this client.
     BeginFrameSource* source;
     // This represents a dag of parent -> children mapping.
-    std::vector<uint32_t> children;
+    std::set<uint32_t> children;
   };
   std::unordered_map<uint32_t, ClientSourceMapping> namespace_client_map_;
   // Set of which sources are registered to which namespace.  Any child
   // that is implicitly using this namespace must be reachable by the
   // parent in the dag.
   std::unordered_map<BeginFrameSource*, uint32_t> registered_sources_;
+
+  // Map from parent namespace to a callback that is run when a child of that
+  // parent submits a frame with a previously unseen surface id.
+  std::unordered_map<uint32_t, base::Callback<void(uint32_t)> >
+      parent_callback_for_new_child_surface_id_;
+  // The last surface id we've received for each namespace. When this changes,
+  // the above callback will be called for any parents.
+  std::unordered_map<uint32_t, SurfaceId> last_surface_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceManager);
 };

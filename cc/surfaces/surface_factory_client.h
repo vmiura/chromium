@@ -26,6 +26,8 @@ class CC_SURFACES_EXPORT SurfaceFactoryClient {
 
   // This allows the SurfaceFactory to pass a BeginFrameSource to use.
   virtual void SetBeginFrameSource(BeginFrameSource* begin_frame_source) = 0;
+
+  virtual uint32_t GetNamespaceId() = 0;
 };
 
 }  // namespace cc

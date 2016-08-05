@@ -338,10 +338,17 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
+// void Surface::OnNewSurfaceIdForChildCompositor(uint32_t client_id) {
+  // TODO(danakj): A callback to tell compositor_client_ about the new surface
+  // id for our child.
+//}
+
 void Service::RegisterChildCompositor(uint32_t client_id) {
   fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
   surface_manager_->RegisterSurfaceNamespaceHierarchy(
       surface_id_allocator_.client_id(), client_id);
+  // TODO(danakj): SurfaceManager::SetParentCallbackForNewChildSurfaceId so we
+  // hear about new surfaces ids from our children.
 }
 
 void Service::UnregisterChildCompositor(uint32_t client_id) {
