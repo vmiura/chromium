@@ -18,7 +18,9 @@ namespace cc {
 class ContextProvider;
 class InputHandlerClient;
 class OutputSurface;
+class SurfaceId;
 struct BeginFrameArgs;
+struct SurfaceSequence;
 
 class LayerTreeHostClient {
  public:
@@ -59,6 +61,9 @@ class LayerTreeHostClient {
   virtual void DidCompleteSwapBuffers() = 0;
   virtual void DidCompletePageScaleAnimation() = 0;
   virtual void DidSetSurfaceClientId(uint32_t client_id) {}
+  virtual void DidChildCreateNewSurface(
+      const SurfaceId& surface_id,
+      const SurfaceSequence& surface_sequence) {}
 
  protected:
   virtual ~LayerTreeHostClient() {}

@@ -53,8 +53,8 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   void DidActivateSyncTree();
   void ScheduledActionCommit();
 
-  void InsertHackyGreenLayer();
-
+  void OnNewSurfaceIdForChildCompositor(uint32_t client_id,
+                                        const SurfaceId& surface_id);
   // cc::mojom::Compositor implementation.
   void RegisterChildCompositor(uint32_t client_id) override;
   void UnregisterChildCompositor(uint32_t client_id) override;
@@ -101,6 +101,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   // TODO(hackathon): Get a widget from the browser process.
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   SurfaceIdAllocator surface_id_allocator_;
+  uint32_t next_sequence_id_;
 
   RenderingStatsInstrumentation rendering_stats_;
   Scheduler scheduler_;

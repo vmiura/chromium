@@ -91,6 +91,10 @@ void SimpleProxy::UnregisterChildCompositor(uint32_t client_id) {
   compositor_->UnregisterChildCompositor(client_id);
 }
 
+void SimpleProxy::SatisfySurfaceSequence(const SurfaceSequence& sequence) {
+  compositor_->SatisfySequence(sequence);
+}
+
 void SimpleProxy::FinishAllRendering() {
   DCHECK(IsMainThread());
   DCHECK(!defer_commits_);
@@ -412,6 +416,11 @@ void SimpleProxy::OnRendererCapabilities(
 void SimpleProxy::OnImageDecodeProxyCreated(
     mojom::ImageDecodeRequest decode_request) {
   layer_tree_host_->BindImageDecodePtr(std::move(decode_request));
+}
+
+void SimpleProxy::OnChildCreatedNewSurface(const SurfaceId& surface_id,
+                                           const SurfaceSequence& sequence) {
+  layer_tree_host_->OnChildCreatedNewSurface(surface_id, sequence);
 }
 
 }  // namespace cc

@@ -42,4 +42,5 @@ interface CompositorClient {
   OnDidCompleteSwapBuffers();
   OnRendererCapabilities(RendererCapabilities capabilities);
   OnImageDecodeProxyCreated(ImageDecode& decode);
+  OnChildCreatedNewSurface(SurfaceId surface_id, SurfaceSequence sequence);
 };

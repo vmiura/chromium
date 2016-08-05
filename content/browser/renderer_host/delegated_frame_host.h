@@ -98,6 +98,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   ~DelegatedFrameHost() override;
 
   // ui::CompositorObserver implementation.
+  void OnCompositorDidChildCreateNewSurface(
+      ui::Compositor* compositor,
+      const cc::SurfaceId& surface_id,
+      const cc::SurfaceSequence& sequence) override;
   void OnCompositingDidCommit(ui::Compositor* compositor) override;
   void OnCompositingStarted(ui::Compositor* compositor,
                             base::TimeTicks start_time) override;
@@ -292,6 +296,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<cc::SurfaceIdAllocator> id_allocator_;
   std::unique_ptr<cc::SurfaceFactory> surface_factory_;
   cc::SurfaceId surface_id_;
+  cc::SurfaceSequence surface_sequence_;
   gfx::Size current_surface_size_;
   float current_scale_factor_;
   cc::ReturnedResourceArray surface_returned_resources_;

@@ -338,13 +338,14 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) {
 
 void SurfaceManager::SetParentCallbackForNewChildSurfaceId(
     uint32_t parent_namespace,
-    const base::Callback<void(uint32_t)>& cb) {
+    const base::Callback<void(uint32_t, const SurfaceId&)>& cb) {
   parent_callback_for_new_child_surface_id_[parent_namespace] = cb;
   if (!cb.is_null()) {
     const auto& children = namespace_client_map_[parent_namespace].children;
     for (uint32_t child_namespace : children) {
-      if (last_surface_id_.find(child_namespace) != last_surface_id_.end())
-        cb.Run(child_namespace);
+      auto it = last_surface_id_.find(child_namespace);
+      if (it != last_surface_id_.end())
+        cb.Run(child_namespace, it->second);
     }
   }
 }
@@ -363,7 +364,7 @@ void SurfaceManager::ReceivedSurfaceIdForNamespace(
     if (mapping.children.find(client_id) != mapping.children.end()) {
       const auto& cb = parent_callback_for_new_child_surface_id_[parent_id];
       if (!cb.is_null())
-        cb.Run(client_id);
+        cb.Run(client_id, surface_id);
     }
   }
 }
