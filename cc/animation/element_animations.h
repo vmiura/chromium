@@ -43,6 +43,19 @@ enum class AnimationChangeType;
 class CC_TRANSPORT_EXPORT ElementAnimations
     : public base::RefCounted<ElementAnimations> {
  public:
+  struct PropertyAnimationState {
+    bool currently_running_for_active_elements = false;
+    bool currently_running_for_pending_elements = false;
+    bool potentially_animating_for_active_elements = false;
+    bool potentially_animating_for_pending_elements = false;
+    void Clear() {
+      currently_running_for_active_elements = false;
+      currently_running_for_pending_elements = false;
+      potentially_animating_for_active_elements = false;
+      potentially_animating_for_pending_elements = false;
+    }
+  };
+
   static scoped_refptr<ElementAnimations> Create();
 
   ElementId element_id() const { return element_id_; }
@@ -281,19 +294,6 @@ class CC_TRANSPORT_EXPORT ElementAnimations
   bool needs_to_start_animations_;
 
   bool scroll_offset_animation_was_interrupted_;
-
-  struct PropertyAnimationState {
-    bool currently_running_for_active_elements = false;
-    bool currently_running_for_pending_elements = false;
-    bool potentially_animating_for_active_elements = false;
-    bool potentially_animating_for_pending_elements = false;
-    void Clear() {
-      currently_running_for_active_elements = false;
-      currently_running_for_pending_elements = false;
-      potentially_animating_for_active_elements = false;
-      potentially_animating_for_pending_elements = false;
-    }
-  };
 
   struct PropertyAnimationState filter_animation_state_;
   struct PropertyAnimationState opacity_animation_state_;

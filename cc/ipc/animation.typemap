@@ -17,7 +17,10 @@ public_headers = [
   "//cc/animation/transform_operation.h",
   "//cc/animation/transform_operations.h",
 ]
-traits_headers = [ "//cc/ipc/transform_operation_struct_traits.h" ]
+traits_headers = [
+  "//cc/ipc/property_animation_state_struct_traits.h",
+  "//cc/ipc/transform_operation_struct_traits.h",
+]
 sources = [
   "//cc/ipc/transform_operation_struct_traits.cc",
 ]
