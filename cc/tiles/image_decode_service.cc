@@ -77,15 +77,13 @@ ImageDecodeService::ImageDecodeService()
   }
 
   service_thread_.Start();
-
-  new_results_notifier_.reset(
-      new UniqueNotifier(service_thread_.task_runner().get(),
-                         base::Bind(&ImageDecodeService::ProcessResultQueue,
-                                    base::Unretained(this))));
   s_service = this;
 }
 
 ImageDecodeService::~ImageDecodeService() {
+  // TODO(hackathon): Pipe this class to webkit rather than using a singleton.
+  s_service = nullptr;
+
   {
     base::AutoLock hold(lock_);
     shutdown_ = true;
@@ -162,7 +160,9 @@ void ImageDecodeService::ProcessRequestQueue() {
     }();
     image_decode_results_.emplace_back(
         new ImageDecodeResult(request->image_id, result, request->callback));
-    new_results_notifier_->Schedule();
+    service_thread_.task_runner()->PostTask(
+        FROM_HERE, base::Bind(&ImageDecodeService::ProcessResultQueue,
+                              base::Unretained(this)));
   }
 }
 

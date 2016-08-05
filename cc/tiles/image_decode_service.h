@@ -102,9 +102,6 @@ class CC_EXPORT ImageDecodeService : public cc::mojom::ImageDecode {
   std::deque<std::unique_ptr<ImageDecodeResult>> image_decode_results_;
 
   std::vector<std::unique_ptr<base::SimpleThread>> threads_;
-  // TODO(hackathon): Hold on to this for lifetime issues?
-  // scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::unique_ptr<UniqueNotifier> new_results_notifier_;
 
   bool shutdown_ = false;
 
