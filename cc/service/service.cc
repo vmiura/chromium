@@ -411,10 +411,12 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
       frame->device_scale_factor != last_commit_tree->device_scale_factor();
   DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
-  // TODO(danakj): Use surface_id_allocator_ though.
-  surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
-  if (output_surface_)
-    output_surface_->SetDelegatedSurfaceId(surface_id_);
+  // TODO(danakj): Use surface_id_allocator_ though and do this always.
+  if (surface_id_.is_null()) {
+    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
+    if (output_surface_)
+      output_surface_->SetDelegatedSurfaceId(surface_id_);
+  }
   callback.Run(surface_id_);
 
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
