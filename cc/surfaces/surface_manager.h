@@ -32,7 +32,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
   SurfaceManager();
   ~SurfaceManager();
 
-  void WillRegisterSurface(const SurfaceId& surface_id);
   void RegisterSurface(Surface* surface);
   void DeregisterSurface(const SurfaceId& surface_id);
 
@@ -40,7 +39,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
   void Destroy(std::unique_ptr<Surface> surface);
 
   Surface* GetSurfaceForId(const SurfaceId& surface_id);
-  bool SurfaceWaitingForRaster(const SurfaceId& surface_id);
 
   void AddObserver(SurfaceDamageObserver* obs) {
     observer_list_.AddObserver(obs);
@@ -106,9 +104,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
 
   using SurfaceMap = std::unordered_map<SurfaceId, Surface*, SurfaceIdHash>;
   SurfaceMap surface_map_;
-  // Surface ids which are not valid yet but which a particular client
-  // has promised to produced and is just waiting on rasterization.
-  std::unordered_set<SurfaceId, SurfaceIdHash> promised_surface_ids_;
   base::ObserverList<SurfaceDamageObserver> observer_list_;
   base::ThreadChecker thread_checker_;
 

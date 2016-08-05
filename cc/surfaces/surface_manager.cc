@@ -44,23 +44,15 @@ SurfaceManager::~SurfaceManager() {
   DCHECK_EQ(registered_sources_.size(), 0u);
 }
 
-void SurfaceManager::WillRegisterSurface(const SurfaceId& surface_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(promised_surface_ids_.find(surface_id) == promised_surface_ids_.end());
-  promised_surface_ids_.insert(surface_id);
-}
-
 void SurfaceManager::RegisterSurface(Surface* surface) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(surface);
   DCHECK(!surface_map_.count(surface->surface_id()));
   surface_map_[surface->surface_id()] = surface;
-  promised_surface_ids_.erase(surface->surface_id());
 }
 
 void SurfaceManager::DeregisterSurface(const SurfaceId& surface_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(promised_surface_ids_.find(surface_id) == promised_surface_ids_.end());
   SurfaceMap::iterator it = surface_map_.find(surface_id);
   DCHECK(it != surface_map_.end());
   surface_map_.erase(it);
@@ -337,11 +329,6 @@ void SurfaceManager::UnregisterSurfaceNamespaceHierarchy(
   RecursivelyDetachBeginFrameSource(child_namespace, parent_source);
   for (auto source_iter : registered_sources_)
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
-}
-
-bool SurfaceManager::SurfaceWaitingForRaster(const SurfaceId& surface_id) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return promised_surface_ids_.find(surface_id) != promised_surface_ids_.end();
 }
 
 Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) {

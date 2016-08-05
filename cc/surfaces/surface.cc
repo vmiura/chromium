@@ -203,4 +203,9 @@ void Surface::ClearCopyRequests() {
   }
 }
 
+bool Surface::HasValidFrame() const {
+  // If a surface has delegated frame data, then something has been queued.
+  return !!current_frame_.delegated_frame_data;
+}
+
 }  // namespace cc

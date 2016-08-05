@@ -95,6 +95,8 @@ class CC_SURFACES_EXPORT Surface {
   bool destroyed() const { return destroyed_; }
   void set_destroyed(bool destroyed) { destroyed_ = destroyed; }
 
+  bool HasValidFrame() const;
+
  private:
   void UnrefFrameResources(DelegatedFrameData* frame_data);
   void ClearCopyRequests();

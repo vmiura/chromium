@@ -556,10 +556,11 @@ gfx::Rect SurfaceAggregator::PrewalkTree(const SurfaceId& surface_id,
     return gfx::Rect();
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   if (!surface) {
-    if (!manager_->SurfaceWaitingForRaster(surface_id))
-      result->had_missing_surfaces = true;
     contained_surfaces_[surface_id] = 0;
     return gfx::Rect();
+  }
+  if (!surface->HasValidFrame()) {
+    result->had_missing_surfaces = true;
   }
   contained_surfaces_[surface_id] = surface->frame_index();
   const CompositorFrame& surface_frame = surface->GetEligibleFrame();
