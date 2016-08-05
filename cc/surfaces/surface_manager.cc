@@ -339,6 +339,11 @@ void SurfaceManager::UnregisterSurfaceNamespaceHierarchy(
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
 }
 
+bool SurfaceManager::SurfaceWaitingForRaster(const SurfaceId& surface_id) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return promised_surface_ids_.find(surface_id) != promised_surface_ids_.end();
+}
+
 Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   SurfaceMap::iterator it = surface_map_.find(surface_id);

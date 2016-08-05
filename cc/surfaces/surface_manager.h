@@ -40,6 +40,7 @@ class CC_SURFACES_EXPORT SurfaceManager {
   void Destroy(std::unique_ptr<Surface> surface);
 
   Surface* GetSurfaceForId(const SurfaceId& surface_id);
+  bool SurfaceWaitingForRaster(const SurfaceId& surface_id);
 
   void AddObserver(SurfaceDamageObserver* obs) {
     observer_list_.AddObserver(obs);
