@@ -254,7 +254,11 @@ bool Display::DrawAndSwap() {
     return false;
   }
 
-  CompositorFrame frame = aggregator_->Aggregate(current_surface_id_);
+  CompositorFrame frame;
+  if (!aggregator_->Aggregate(current_surface_id_, &frame)) {
+    return false;
+  }
+
   if (!frame.delegated_frame_data) {
     TRACE_EVENT_INSTANT0("cc", "Empty aggregated frame.",
                          TRACE_EVENT_SCOPE_THREAD);

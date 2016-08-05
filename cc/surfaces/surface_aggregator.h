@@ -36,7 +36,7 @@ class CC_SURFACES_EXPORT SurfaceAggregator {
                     bool aggregate_only_damaged);
   ~SurfaceAggregator();
 
-  CompositorFrame Aggregate(const SurfaceId& surface_id);
+  bool Aggregate(const SurfaceId& surface_id, CompositorFrame* output);
   void ReleaseResources(const SurfaceId& surface_id);
   SurfaceIndexMap& previous_contained_surfaces() {
     return previous_contained_surfaces_;
@@ -60,6 +60,7 @@ class CC_SURFACES_EXPORT SurfaceAggregator {
     // This is the set of Surfaces that were referenced by another Surface, but
     // not included in a SurfaceDrawQuad.
     std::set<SurfaceId> undrawn_surfaces;
+    bool had_missing_surfaces = false;
   };
 
   ClipData CalculateClipRect(const ClipData& surface_clip,

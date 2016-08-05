@@ -556,6 +556,8 @@ gfx::Rect SurfaceAggregator::PrewalkTree(const SurfaceId& surface_id,
     return gfx::Rect();
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   if (!surface) {
+    if (!manager_->SurfaceWaitingForRaster(surface_id))
+      result->had_missing_surfaces = true;
     contained_surfaces_[surface_id] = 0;
     return gfx::Rect();
   }
@@ -765,25 +767,30 @@ void SurfaceAggregator::PropagateCopyRequestPasses() {
   }
 }
 
-CompositorFrame SurfaceAggregator::Aggregate(const SurfaceId& surface_id) {
+bool SurfaceAggregator::Aggregate(const SurfaceId& surface_id,
+                                  CompositorFrame* frame) {
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   DCHECK(surface);
   contained_surfaces_[surface_id] = surface->frame_index();
   const CompositorFrame& root_surface_frame = surface->GetEligibleFrame();
-  if (!root_surface_frame.delegated_frame_data)
-    return CompositorFrame();
+  if (!root_surface_frame.delegated_frame_data) {
+    return false;
+  }
   TRACE_EVENT0("cc", "SurfaceAggregator::Aggregate");
 
-  CompositorFrame frame;
-  frame.delegated_frame_data = base::WrapUnique(new DelegatedFrameData);
+  frame->delegated_frame_data = base::WrapUnique(new DelegatedFrameData);
 
-  dest_resource_list_ = &frame.delegated_frame_data->resource_list;
-  dest_pass_list_ = &frame.delegated_frame_data->render_pass_list;
+  dest_resource_list_ = &frame->delegated_frame_data->resource_list;
+  dest_pass_list_ = &frame->delegated_frame_data->render_pass_list;
 
   valid_surfaces_.clear();
   PrewalkResult prewalk_result;
   root_damage_rect_ =
       PrewalkTree(surface_id, false, RenderPassId(), &prewalk_result);
+  if (prewalk_result.had_missing_surfaces) {
+    return false;
+  }
+
   PropagateCopyRequestPasses();
   has_copy_requests_ = !copy_request_passes_.empty();
 
@@ -798,8 +805,9 @@ CompositorFrame SurfaceAggregator::Aggregate(const SurfaceId& surface_id) {
 
   DCHECK(referenced_surfaces_.empty());
 
-  if (dest_pass_list_->empty())
-    return CompositorFrame();
+  if (dest_pass_list_->empty()) {
+    return true;
+  }
 
   dest_pass_list_ = NULL;
   ProcessAddedAndRemovedSurfaces();
@@ -807,17 +815,16 @@ CompositorFrame SurfaceAggregator::Aggregate(const SurfaceId& surface_id) {
   contained_surfaces_.clear();
 
   for (SurfaceIndexMap::iterator it = previous_contained_surfaces_.begin();
-       it != previous_contained_surfaces_.end();
-       ++it) {
+       it != previous_contained_surfaces_.end(); ++it) {
     Surface* surface = manager_->GetSurfaceForId(it->first);
     if (surface)
-      surface->TakeLatencyInfo(&frame.metadata.latency_info);
+      surface->TakeLatencyInfo(&frame->metadata.latency_info);
   }
 
   // TODO(jamesr): Aggregate all resource references into the returned frame's
   // resource list.
 
-  return frame;
+  return true;
 }
 
 void SurfaceAggregator::ReleaseResources(const SurfaceId& surface_id) {
