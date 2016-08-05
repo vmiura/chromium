@@ -401,7 +401,7 @@ void RemoteChannelImpl::SendMessageProto(
 
 void RemoteChannelImpl::DidCompleteSwapBuffersOnMain() {
   DCHECK(task_runner_provider_->IsMainThread());
-  main().layer_tree_host->DidCompleteSwapBuffers();
+  main().layer_tree_host->DidCompleteSwapBuffers(SurfaceId());
 }
 
 void RemoteChannelImpl::DidCommitAndDrawFrameOnMain() {

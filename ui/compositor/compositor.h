@@ -351,7 +351,7 @@ class COMPOSITOR_EXPORT Compositor
   void WillCommit() override {}
   void DidCommit() override;
   void DidCommitAndDrawFrame() override;
-  void DidCompleteSwapBuffers() override;
+  void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override {}
 
   // cc::LayerTreeHostSingleThreadClient implementation.

@@ -179,7 +179,7 @@ class CONTENT_EXPORT RenderWidgetCompositor
   void WillCommit() override;
   void DidCommit() override;
   void DidCommitAndDrawFrame() override;
-  void DidCompleteSwapBuffers() override;
+  void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override;
   void DidSetSurfaceClientId(uint32_t client_id) override;
 

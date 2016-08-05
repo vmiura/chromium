@@ -59,7 +59,7 @@ void OutputSurface::OnResourcesReturned(
 }
 
 void OutputSurface::SwapBuffersComplete() {
-  client_->DidSwapBuffersComplete();
+  client_->DidSwapBuffersComplete(cc::SurfaceId());
 }
 
 }  // namespace ui

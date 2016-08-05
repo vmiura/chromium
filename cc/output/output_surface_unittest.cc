@@ -43,14 +43,16 @@ class TestOutputSurface : public OutputSurface {
                       std::move(software_device)) {}
 
   void SwapBuffers(CompositorFrame frame) override {
-    client_->DidSwapBuffersComplete();
+    client_->DidSwapBuffersComplete(SurfaceId());
   }
   uint32_t GetFramebufferCopyTextureFormat() override {
     // TestContextProvider has no real framebuffer, just use RGB.
     return GL_RGB;
   }
 
-  void OnSwapBuffersCompleteForTesting() { client_->DidSwapBuffersComplete(); }
+  void OnSwapBuffersCompleteForTesting() {
+    client_->DidSwapBuffersComplete(SurfaceId());
+  }
 
  protected:
 };

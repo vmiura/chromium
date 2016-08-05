@@ -1092,7 +1092,8 @@ void RenderWidgetCompositor::DidCommitAndDrawFrame() {
   delegate_->DidCommitAndDrawCompositorFrame();
 }
 
-void RenderWidgetCompositor::DidCompleteSwapBuffers() {
+void RenderWidgetCompositor::DidCompleteSwapBuffers(
+    const cc::SurfaceId& surface_id) {
   delegate_->DidCompleteSwapBuffers();
   if (!threaded_)
     delegate_->OnSwapBuffersComplete();

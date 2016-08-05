@@ -57,7 +57,7 @@ class CC_SERVICE_EXPORT DelegatingOutputSurface
   void SetDelegatedSurfaceId(const SurfaceId& id);
 
  private:
-  void DidDrawCallback();
+  void DidDrawCallback(const SurfaceId& surface_id);
 
   // This class is only meant to be used on a single thread.
   base::ThreadChecker thread_checker_;

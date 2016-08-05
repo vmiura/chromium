@@ -24,6 +24,10 @@
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "ipc/ipc_sync_channel.h"
 
+namespace cc {
+class SurfaceId;
+}
+
 namespace content {
 
 CompositorOutputSurface::CompositorOutputSurface(
@@ -163,7 +167,7 @@ void CompositorOutputSurface::OnReclaimCompositorResources(
     return;
   ReclaimResources(resources);
   if (is_swap_ack)
-    client_->DidSwapBuffersComplete();
+    client_->DidSwapBuffersComplete(cc::SurfaceId());
 }
 
 bool CompositorOutputSurface::Send(IPC::Message* message) {

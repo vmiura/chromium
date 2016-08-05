@@ -58,7 +58,7 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
   factory_.SubmitCompositorFrame(
       delegated_surface_id_, std::move(frame),
       base::Bind(&DelegatingOutputSurface::DidDrawCallback,
-                 base::Unretained(this)));
+                 base::Unretained(this), delegated_surface_id_));
 }
 
 bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
@@ -131,10 +131,10 @@ void DelegatingOutputSurface::DisplaySetMemoryPolicy(
   SetMemoryPolicy(policy);
 }
 
-void DelegatingOutputSurface::DidDrawCallback() {
+void DelegatingOutputSurface::DidDrawCallback(const SurfaceId& surface_id) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::Bind(&OutputSurfaceClient::DidSwapBuffersComplete,
-                            base::Unretained(client_)));
+                            base::Unretained(client_), surface_id));
   // // TODO(danakj): Why the lost check?
   // if (!output_surface_lost_)
   //   client_->DidSwapBuffersComplete();

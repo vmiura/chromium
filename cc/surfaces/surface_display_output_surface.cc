@@ -156,7 +156,7 @@ void SurfaceDisplayOutputSurface::DisplaySetMemoryPolicy(
 void SurfaceDisplayOutputSurface::SwapBuffersComplete() {
   // TODO(danakj): Why the lost check?
   if (!output_surface_lost_)
-    client_->DidSwapBuffersComplete();
+    client_->DidSwapBuffersComplete(SurfaceId());
 }
 
 }  // namespace cc

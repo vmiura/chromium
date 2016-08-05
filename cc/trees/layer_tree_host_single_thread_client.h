@@ -7,6 +7,8 @@
 
 namespace cc {
 
+class SurfaceId;
+
 class LayerTreeHostSingleThreadClient {
  public:
   // Request that the client schedule a composite.
@@ -21,7 +23,7 @@ class LayerTreeHostSingleThreadClient {
   // these functions can be used to keep track of pending swap buffers calls for
   // rate limiting.
   virtual void DidPostSwapBuffers() = 0;
-  virtual void DidCompleteSwapBuffers() = 0;
+  virtual void DidCompleteSwapBuffers(const SurfaceId& surface_id) = 0;
   virtual void DidAbortSwapBuffers() = 0;
 
  protected:

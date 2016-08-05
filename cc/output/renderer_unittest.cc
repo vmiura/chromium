@@ -35,7 +35,7 @@ TestOutputSurface::~TestOutputSurface() {
 }
 
 void TestOutputSurface::SwapBuffers(CompositorFrame frame) {
-  client_->DidSwapBuffersComplete();
+  client_->DidSwapBuffersComplete(SurfaceId());
 }
 
 class MockContextProvider : public TestContextProvider {

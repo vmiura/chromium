@@ -41,7 +41,7 @@ interface CompositorClient {
   OnBeginMainFrameNotExpectedSoon();
   OnDidCompletePageScaleAnimation();
   OnDidCommitAndDrawFrame();
-  OnDidCompleteSwapBuffers();
+  OnDidCompleteSwapBuffers(SurfaceId surface_id);
   OnRendererCapabilities(RendererCapabilities capabilities);
   OnImageDecodeProxyCreated(ImageDecode& decode);
 };

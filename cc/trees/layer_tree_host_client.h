@@ -18,6 +18,7 @@ namespace cc {
 class ContextProvider;
 class InputHandlerClient;
 class OutputSurface;
+class SurfaceId;
 struct BeginFrameArgs;
 
 class LayerTreeHostClient {
@@ -56,7 +57,7 @@ class LayerTreeHostClient {
   virtual void WillCommit() = 0;
   virtual void DidCommit() = 0;
   virtual void DidCommitAndDrawFrame() = 0;
-  virtual void DidCompleteSwapBuffers() = 0;
+  virtual void DidCompleteSwapBuffers(const SurfaceId& surface_id) = 0;
   virtual void DidCompletePageScaleAnimation() = 0;
   virtual void DidSetSurfaceClientId(uint32_t client_id) {}
 

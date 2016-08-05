@@ -73,7 +73,7 @@ void ProxyMain::SetChannel(std::unique_ptr<ChannelMain> channel_main) {
 
 void ProxyMain::DidCompleteSwapBuffers() {
   DCHECK(IsMainThread());
-  layer_tree_host_->DidCompleteSwapBuffers();
+  layer_tree_host_->DidCompleteSwapBuffers(SurfaceId());
 }
 
 void ProxyMain::SetRendererCapabilities(

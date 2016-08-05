@@ -162,7 +162,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void DidLoseOutputSurface();
   bool output_surface_lost() const { return output_surface_lost_; }
   void DidCommitAndDrawFrame() { client_->DidCommitAndDrawFrame(); }
-  void DidCompleteSwapBuffers() { client_->DidCompleteSwapBuffers(); }
+  void DidCompleteSwapBuffers(const SurfaceId& surface_id) {
+    client_->DidCompleteSwapBuffers(surface_id);
+  }
   bool UpdateLayers();
 
   LayerListIterator<Layer> begin() const;

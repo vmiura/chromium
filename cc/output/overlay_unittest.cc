@@ -173,7 +173,9 @@ class OverlayOutputSurface : public OutputSurface {
   }
   void SwapBuffers(CompositorFrame frame) override {
   }
-  void OnSwapBuffersComplete() override { client_->DidSwapBuffersComplete(); }
+  void OnSwapBuffersComplete() override {
+    client_->DidSwapBuffersComplete(SurfaceId());
+  }
 
   void SetOverlayCandidateValidator(OverlayCandidateValidator* validator) {
     overlay_candidate_validator_.reset(validator);

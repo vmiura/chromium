@@ -246,7 +246,7 @@ void OutputSurface::PostSwapBuffersComplete() {
 // We don't post tasks bound to the client directly since they might run
 // after the OutputSurface has been destroyed.
 void OutputSurface::OnSwapBuffersComplete() {
-  client_->DidSwapBuffersComplete();
+  client_->DidSwapBuffersComplete(SurfaceId());
 }
 
 void OutputSurface::DidReceiveTextureInUseResponses(

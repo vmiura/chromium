@@ -21,6 +21,7 @@ class Transform;
 namespace cc {
 
 class BeginFrameSource;
+class SurfaceId;
 struct ManagedMemoryPolicy;
 
 class CC_EXPORT OutputSurfaceClient {
@@ -39,7 +40,7 @@ class CC_EXPORT OutputSurfaceClient {
   // producing more frames.
   // For the display compositor this is literally a notification that the swap
   // to the hardware is complete.
-  virtual void DidSwapBuffersComplete() = 0;
+  virtual void DidSwapBuffersComplete(const SurfaceId& surface_id) = 0;
   virtual void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) = 0;
   virtual void ReclaimResources(const ReturnedResourceArray& resources) = 0;

@@ -7,7 +7,8 @@
 
 namespace cc {
 
-void FakeOutputSurfaceClient::DidSwapBuffersComplete() {
+void FakeOutputSurfaceClient::DidSwapBuffersComplete(
+    const SurfaceId& surface_id) {
   swap_count_++;
 }
 

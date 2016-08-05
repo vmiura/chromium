@@ -520,7 +520,7 @@ void Compositor::DidCommit() {
 void Compositor::DidCommitAndDrawFrame() {
 }
 
-void Compositor::DidCompleteSwapBuffers() {
+void Compositor::DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) {
   FOR_EACH_OBSERVER(CompositorObserver, observer_list_,
                     OnCompositingEnded(this));
 }

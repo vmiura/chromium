@@ -321,7 +321,8 @@ void ProxyImpl::SetEstimatedParentDrawTime(base::TimeDelta draw_time) {
   scheduler_->SetEstimatedParentDrawTime(draw_time);
 }
 
-void ProxyImpl::DidSwapBuffersCompleteOnImplThread() {
+void ProxyImpl::DidSwapBuffersCompleteOnImplThread(
+    const SurfaceId& surface_id) {
   TRACE_EVENT0("cc,benchmark", "ProxyImpl::DidSwapBuffersCompleteOnImplThread");
   DCHECK(IsImplThread());
   scheduler_->DidSwapBuffersComplete();

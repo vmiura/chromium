@@ -361,13 +361,13 @@ bool Display::DrawAndSwap() {
                                 frame.metadata.latency_info.end());
     if (scheduler_)
       scheduler_->DidSwapBuffers();
-    DidSwapBuffersComplete();
+    DidSwapBuffersComplete(current_surface_id_);
   }
 
   return true;
 }
 
-void Display::DidSwapBuffersComplete() {
+void Display::DidSwapBuffersComplete(const SurfaceId& surface_id) {
   if (scheduler_)
     scheduler_->DidSwapBuffersComplete();
   if (renderer_)

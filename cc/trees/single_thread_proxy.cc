@@ -516,12 +516,13 @@ void SingleThreadProxy::SetEstimatedParentDrawTime(base::TimeDelta draw_time) {
     scheduler_on_impl_thread_->SetEstimatedParentDrawTime(draw_time);
 }
 
-void SingleThreadProxy::DidSwapBuffersCompleteOnImplThread() {
+void SingleThreadProxy::DidSwapBuffersCompleteOnImplThread(
+    const SurfaceId& surface_id) {
   TRACE_EVENT0("cc,benchmark",
                "SingleThreadProxy::DidSwapBuffersCompleteOnImplThread");
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->DidSwapBuffersComplete();
-  layer_tree_host_->DidCompleteSwapBuffers();
+  layer_tree_host_->DidCompleteSwapBuffers(surface_id);
 }
 
 void SingleThreadProxy::OnDrawForOutputSurface(

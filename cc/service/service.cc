@@ -61,9 +61,10 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   void SetEstimatedParentDrawTime(base::TimeDelta draw_time) override {
     owner_->scheduler()->SetEstimatedParentDrawTime(draw_time);
   }
-  void DidSwapBuffersCompleteOnImplThread() override {
+  void DidSwapBuffersCompleteOnImplThread(
+      const SurfaceId& surface_id) override {
     owner_->scheduler()->DidSwapBuffersComplete();
-    owner_->compositor_client()->OnDidCompleteSwapBuffers();
+    owner_->compositor_client()->OnDidCompleteSwapBuffers(surface_id);
   }
   void OnCanDrawStateChanged(bool can_draw) override {
     owner_->scheduler()->SetCanDraw(can_draw);

@@ -78,7 +78,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;
   void OnDidCommitAndDrawFrame() override;
-  void OnDidCompleteSwapBuffers() override;
+  void OnDidCompleteSwapBuffers(const SurfaceId& surface_id) override;
   void OnRendererCapabilities(
       const cc::RendererCapabilities& capabilities) override;
   void OnImageDecodeProxyCreated(

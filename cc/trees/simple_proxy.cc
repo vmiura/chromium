@@ -415,9 +415,9 @@ void SimpleProxy::OnDidCommitAndDrawFrame() {
   layer_tree_host_->DidCommitAndDrawFrame();
 }
 
-void SimpleProxy::OnDidCompleteSwapBuffers() {
+void SimpleProxy::OnDidCompleteSwapBuffers(const SurfaceId& surface_id) {
   DCHECK(IsMainThread());
-  layer_tree_host_->DidCompleteSwapBuffers();
+  layer_tree_host_->DidCompleteSwapBuffers(surface_id);
 }
 
 void SimpleProxy::OnRendererCapabilities(
