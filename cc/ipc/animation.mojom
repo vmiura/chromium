@@ -4,6 +4,7 @@
 
 module cc.mojom;
 
+import "cc/ipc/element_id.mojom";
 import "cc/ipc/filter_operations.mojom";
 import "cc/ipc/layer.mojom";
 import "mojo/common/common_custom_types.mojom";

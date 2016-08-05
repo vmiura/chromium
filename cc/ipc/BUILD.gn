@@ -47,6 +47,7 @@ mojom("image_decode_interfaces") {
 
 mojom("compositor_interfaces") {
   sources = [
+    "element_id.mojom",
     "animation.mojom",
     "begin_frame_args.mojom",
     "compositor.mojom",

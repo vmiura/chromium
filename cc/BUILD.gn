@@ -7,6 +7,8 @@ import("//testing/test.gni")
 
 component("transport") {
   sources = [
+    "animation/element_id.cc",
+    "animation/element_id.h",
     "output/begin_frame_args.cc",
     "output/begin_frame_args.h",
     "output/filter_operation.cc",
@@ -23,6 +25,7 @@ component("transport") {
   deps = [
     "//base",
     "//cc/base",
+    "//cc/proto",
     "//gpu/command_buffer/client:gles2_interface",
     "//skia/public/interfaces",
     "//ui/gfx",
@@ -49,8 +52,6 @@ component("cc") {
     "animation/animation_timeline.h",
     "animation/element_animations.cc",
     "animation/element_animations.h",
-    "animation/element_id.cc",
-    "animation/element_id.h",
     "animation/keyframed_animation_curve.cc",
     "animation/keyframed_animation_curve.h",
     "animation/scroll_offset_animation_curve.cc",

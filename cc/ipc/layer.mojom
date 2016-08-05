@@ -4,6 +4,7 @@
 
 module cc.mojom;
 
+import "cc/ipc/element_id.mojom";
 import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/transform.mojom";
@@ -40,11 +41,6 @@ struct SurfaceLayerState {
   float scale;
 };
 
-struct ElementId {
-  int32 primary_id;
-  int32 secondary_id;
-};
-
 struct LayerProperties {
   int32 layer_id;
 
@@ -63,7 +59,7 @@ struct LayerProperties {
   bool transform_is_animating;
   gfx.mojom.Transform transform;
   int32 scroll_clip_layer_id;
-  ElementId element_id;
+  cc.mojom.ElementId element_id;
   uint32 mutable_properties;
   gfx.mojom.Rect update_rect;
   bool has_will_change_transform_hint;

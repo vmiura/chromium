@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "base/hash.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 
 namespace base {
 class Value;
@@ -42,7 +42,7 @@ class ElementId;
 // restoration of cc entities (when visuals are hidden and shown) but maintain
 // stable identifiers. There will be a single layer for an ElementId, but
 // not every layer will have an id.
-struct CC_EXPORT ElementId {
+struct CC_TRANSPORT_EXPORT ElementId {
   ElementId(int primaryId, int secondaryId)
       : primaryId(primaryId), secondaryId(secondaryId) {}
   ElementId() : ElementId(0, 0) {}
@@ -67,14 +67,14 @@ struct CC_EXPORT ElementId {
   int secondaryId;
 };
 
-CC_EXPORT ElementId LayerIdToElementIdForTesting(int layer_id);
+CC_TRANSPORT_EXPORT ElementId LayerIdToElementIdForTesting(int layer_id);
 
-struct CC_EXPORT ElementIdHash {
+struct CC_TRANSPORT_EXPORT ElementIdHash {
   size_t operator()(ElementId key) const;
 };
 
 // Stream operator so ElementId can be used in assertion statements.
-CC_EXPORT std::ostream& operator<<(std::ostream& out, const ElementId& id);
+CC_TRANSPORT_EXPORT std::ostream& operator<<(std::ostream& out, const ElementId& id);
 
 }  // namespace cc
 

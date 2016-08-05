@@ -10,7 +10,6 @@ public_headers = [
   "//cc/animation/animation_player.h",
   "//cc/animation/animation_timeline.h",
   "//cc/animation/element_animations.h",
-  "//cc/animation/element_id.h",
   "//cc/animation/keyframed_animation_curve.h",
   "//cc/animation/scroll_offset_animation_curve.h",
   "//cc/animation/target_property.h",
@@ -18,6 +17,10 @@ public_headers = [
   "//cc/animation/transform_operation.h",
   "//cc/animation/transform_operations.h",
 ]
-traits_headers = [ "//cc/ipc/transform_operation_struct_traits.h" ]
+traits_headers = [
+  "//cc/ipc/transform_operation_struct_traits.h",
+]
 deps = [ "//cc:transport", ]
-type_mappings = [ "cc.mojom.TransformOperation=cc::TransformOperation" ]
+type_mappings = [
+  "cc.mojom.TransformOperation=cc::TransformOperation",
+]

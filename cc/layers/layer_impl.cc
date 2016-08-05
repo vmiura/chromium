@@ -26,6 +26,7 @@
 #include "cc/debug/traced_value.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_state.h"
+#include "cc/ipc/element_id.mojom.h"
 #include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_utils.h"
@@ -1218,8 +1219,8 @@ void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   if (mojom->transform_is_animating)
     SetTransform(mojom->transform);
   ElementId element_id;
-  element_id.primaryId = mojom->element_id->primary_id;
-  element_id.secondaryId = mojom->element_id->secondary_id;
+  element_id.primaryId = mojom->element_id.primaryId;
+  element_id.secondaryId = mojom->element_id.secondaryId;
   SetScrollClipLayer(mojom->scroll_clip_layer_id);
   SetElementId(element_id);
   SetMutableProperties(mojom->mutable_properties);

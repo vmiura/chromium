@@ -8,6 +8,7 @@ typemaps = [
   "//cc/ipc/compositor_frame.typemap",
   "//cc/ipc/compositor_frame_metadata.typemap",
   "//cc/ipc/content_frame.typemap",
+  "//cc/ipc/element_id.typemap",
   "//cc/ipc/filter_operation.typemap",
   "//cc/ipc/filter_operations.typemap",
   "//cc/ipc/render_pass.typemap",

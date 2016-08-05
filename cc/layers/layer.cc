@@ -21,6 +21,7 @@
 #include "cc/debug/frame_viewer_instrumentation.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/ipc/content_frame.mojom.h"
+#include "cc/ipc/element_id.mojom.h"
 #include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer_client.h"
 #include "cc/layers/layer_impl.h"
@@ -1914,9 +1915,7 @@ void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   mojom->transform_is_animating = TransformIsAnimating();
   mojom->transform = inputs_.transform;
   mojom->scroll_clip_layer_id = inputs_.scroll_clip_layer_id;
-  mojom->element_id = mojom::ElementId::New();
-  mojom->element_id->primary_id = inputs_.element_id.primaryId;
-  mojom->element_id->secondary_id = inputs_.element_id.secondaryId;
+  mojom->element_id = inputs_.element_id;
   mojom->mutable_properties = inputs_.mutable_properties;
   mojom->update_rect = inputs_.update_rect;
   mojom->has_will_change_transform_hint = has_will_change_transform_hint();
