@@ -7,10 +7,12 @@
 
 #include "cc/ipc/animation.mojom.h"
 #include "cc/animation/transform_operation.h"
+#include "ui/gfx/mojo/transform_struct_traits.h"
 
 namespace mojo {
 
 namespace {
+
 cc::mojom::TransformOperationType CCTransformOperationTypeToMojo(
     const cc::TransformOperation::Type& type) {
   switch (type) {
@@ -56,6 +58,22 @@ cc::TransformOperation::Type MojoTransformOperationTypeToCC(
 }
 
 }  // namespace
+
+template <>
+struct EnumTraits<cc::mojom::TargetProperty, cc::TargetProperty::Type> {
+  static cc::mojom::TargetProperty ToMojom(
+      cc::TargetProperty::Type target_property);
+  static bool FromMojom(cc::mojom::TargetProperty input,
+                        cc::TargetProperty::Type* out);
+};
+
+template <>
+struct EnumTraits<cc::mojom::AnimationRunState, cc::Animation::RunState> {
+  static cc::mojom::AnimationRunState ToMojom(
+      cc::Animation::RunState run_state);
+  static bool FromMojom(cc::mojom::AnimationRunState input,
+                        cc::Animation::RunState* out);
+};
 
 template <>
 struct StructTraits<cc::mojom::TransformOperation, cc::TransformOperation> {

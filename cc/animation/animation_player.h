@@ -14,7 +14,7 @@
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_curve.h"
 #include "cc/animation/element_animations.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 
 namespace cc {
 
@@ -31,8 +31,9 @@ class ElementAnimations;
 // same-property animations.
 // Each AnimationPlayer has its copy on the impl thread.
 // This is a CC counterpart for blink::AnimationPlayer (in 1:1 relationship).
-class CC_EXPORT AnimationPlayer : public base::RefCounted<AnimationPlayer>,
-                                  public base::LinkNode<AnimationPlayer> {
+class CC_TRANSPORT_EXPORT AnimationPlayer
+    : public base::RefCounted<AnimationPlayer>,
+      public base::LinkNode<AnimationPlayer> {
  public:
   static scoped_refptr<AnimationPlayer> Create(int id);
   scoped_refptr<AnimationPlayer> CreateImplInstance() const;

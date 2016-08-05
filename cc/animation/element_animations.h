@@ -17,7 +17,7 @@
 #include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/target_property.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"
 
@@ -40,7 +40,8 @@ enum class AnimationChangeType;
 // the element.
 // This is a CC counterpart for blink::ElementAnimations (in 1:1 relationship).
 // No pointer to/from respective blink::ElementAnimations object for now.
-class CC_EXPORT ElementAnimations : public base::RefCounted<ElementAnimations> {
+class CC_TRANSPORT_EXPORT ElementAnimations
+    : public base::RefCounted<ElementAnimations> {
  public:
   static scoped_refptr<ElementAnimations> Create();
 

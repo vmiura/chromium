@@ -10,14 +10,14 @@
 
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_curve.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 #include "cc/output/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/transform.h"
 
 namespace cc {
 
-struct CC_EXPORT AnimationEvent {
+struct CC_TRANSPORT_EXPORT AnimationEvent {
   enum Type { STARTED, FINISHED, ABORTED, PROPERTY_UPDATE, TAKEOVER };
 
   AnimationEvent(Type type,
@@ -46,7 +46,7 @@ struct CC_EXPORT AnimationEvent {
   std::unique_ptr<AnimationCurve> curve;
 };
 
-class CC_EXPORT AnimationEvents {
+class CC_TRANSPORT_EXPORT AnimationEvents {
  public:
   AnimationEvents();
   ~AnimationEvents();

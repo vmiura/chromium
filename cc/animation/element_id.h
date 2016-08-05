@@ -74,7 +74,8 @@ struct CC_TRANSPORT_EXPORT ElementIdHash {
 };
 
 // Stream operator so ElementId can be used in assertion statements.
-CC_TRANSPORT_EXPORT std::ostream& operator<<(std::ostream& out, const ElementId& id);
+CC_TRANSPORT_EXPORT std::ostream& operator<<(std::ostream& out,
+                                             const ElementId& id);
 
 }  // namespace cc
 

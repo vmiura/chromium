@@ -5,6 +5,8 @@
 #ifndef CC_BASE_TIME_UTIL_H_
 #define CC_BASE_TIME_UTIL_H_
 
+#include "cc/base/cc_export.h"
+
 namespace base {
 class TimeDelta;
 }

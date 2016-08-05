@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "cc/animation/target_property.h"
-#include "cc/base/cc_export.h"
+#include "cc/base/cc_transport_export.h"
 
 namespace cc {
 
@@ -19,7 +19,7 @@ class AnimationCurve;
 // An Animation contains all the state required to play an AnimationCurve.
 // Specifically, the affected property, the run state (paused, finished, etc.),
 // loop count, last pause time, and the total time spent paused.
-class CC_EXPORT Animation {
+class CC_TRANSPORT_EXPORT Animation {
  public:
   // Animations begin in the 'WAITING_FOR_TARGET_AVAILABILITY' state. An
   // Animation waiting for target availibility will run as soon as its target

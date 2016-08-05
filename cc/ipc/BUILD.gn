@@ -64,6 +64,7 @@ mojom("compositor_interfaces") {
     "//gpu/ipc/common:interfaces",
     "//mojo/common:common_custom_types",
     "//skia/public/interfaces",
+    "//ui/gfx/mojo",
   ]
 }
 
