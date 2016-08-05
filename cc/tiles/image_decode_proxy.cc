@@ -47,7 +47,6 @@ ImageDecodeProxy::ImageDecodeProxy(mojom::CompositorClient* compositor_client)
   proxy_thread_.task_runner()->PostTask(
       FROM_HERE, base::Bind(&ImageDecodeProxy::OnInitializeMojo,
                             base::Unretained(this), base::Passed(&ptr_info)));
-  s_proxy = this;
 };
 
 ImageDecodeProxy::~ImageDecodeProxy() {
@@ -122,11 +121,15 @@ bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
   return true;
 }
 
-ProxyImageGenerator::ScopedBindFactory::ScopedBindFactory()
+ProxyImageGenerator::ScopedBindFactory::ScopedBindFactory(
+    ImageDecodeProxy* proxy)
     : previous_factory_(SkGraphics::SetImageGeneratorFromEncodedFactory(
-          ProxyImageGenerator::create)) {}
+          ProxyImageGenerator::create)) {
+  ImageDecodeProxy::s_proxy = proxy;
+}
 ProxyImageGenerator::ScopedBindFactory::~ScopedBindFactory() {
   SkGraphics::SetImageGeneratorFromEncodedFactory(previous_factory_);
+  ImageDecodeProxy::s_proxy = nullptr;
 }
 
 SkImageGenerator* ProxyImageGenerator::create(SkData* data) {
@@ -176,7 +179,7 @@ bool ProxyPixelSerializer::onUseEncodedData(const void* data, size_t len) {
 }
 
 SkData* ProxyPixelSerializer::onEncode(const SkPixmap& pixmap) {
-  CHECK(false);
+  // TODO(hackathon): Enable this to allow for non-encoded (UI) images.
   return nullptr;
 }
 }

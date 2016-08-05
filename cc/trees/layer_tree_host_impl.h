@@ -231,6 +231,7 @@ class CC_EXPORT LayerTreeHostImpl
     resourceless_software_draw_ = true;
   }
 
+  ImageDecodeProxy* image_decode_proxy() { return image_decode_proxy_.get(); }
   struct CC_EXPORT FrameData : public RenderPassSink {
     FrameData();
     ~FrameData() override;

@@ -667,6 +667,8 @@ void Service::FinishCommit() {
     TRACE_EVENT0("cc", "Service::PushProperties");
 
     for (const auto& layer_properties : frame->layer_properties) {
+      ProxyImageGenerator::ScopedBindFactory scoped_bind(
+          host_impl_.image_decode_proxy());
       LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
       layer->ReadPropertiesMojom(layer_properties.get());
     }

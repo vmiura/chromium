@@ -319,7 +319,7 @@ PassRefPtr<SkImage> DeferredImageDecoder::createFrameImageAtIndex(size_t index, 
     RefPtr<SkImage> image = fromSkSp(SkImage::MakeFromGenerator(generator)); // SkImage takes ownership of the generator.
 
     // TODO(hackathon): Should probably register the service a different way.
-    //cc::ImageDecodeService::Current()->RegisterImage(image);
+    cc::ImageDecodeService::Current()->RegisterImage(sk_sp<SkImage>(image.get()));
 
     if (!image)
         return nullptr;

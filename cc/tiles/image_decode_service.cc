@@ -191,9 +191,11 @@ bool ImageDecodeService::DoDecodeImage(uint32_t image_id, void* buffer) {
   TRACE_EVENT1("cc", "ImageDecodeService::DoDecodeImage", "image_id", image_id);
   sk_sp<SkImage> image = [this, image_id]() {
     base::AutoLock hold(lock_);
-    DCHECK(image_map_.find(image_id) != image_map_.end());
     return image_map_[image_id];
   }();
+
+  if (!image)
+    return false;
 
   // TODO(hackathon): Change format.
   SkImageInfo decoded_info =

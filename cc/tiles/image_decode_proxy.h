@@ -30,10 +30,10 @@ class CC_EXPORT ImageDecodeProxy {
 
   void DoCloseMojo(CompletionEvent* event);
 
- private:
   // Blink accesses this to create the generator factory.
   static ImageDecodeProxy* s_proxy;
 
+ private:
   void OnInitializeMojo(cc::mojom::ImageDecodePtrInfo ptr_info);
   void OnDecodeImage(uint32_t unique_id,
                      mojo::ScopedSharedBufferHandle* remote_handle,
@@ -56,7 +56,7 @@ class CC_EXPORT ProxyImageGenerator : public SkImageGenerator {
   // of the object. Reverts to previous factory when it goes out of scope.
   class ScopedBindFactory {
    public:
-    ScopedBindFactory();
+    ScopedBindFactory(ImageDecodeProxy* proxy);
     ~ScopedBindFactory();
 
    private:

@@ -17,6 +17,7 @@
 #include "cc/debug/picture_debug_util.h"
 #include "cc/playback/display_item_list.h"
 #include "cc/proto/display_item.pb.h"
+#include "cc/tiles/image_decode_proxy.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -79,8 +80,8 @@ void DrawingDisplayItem::Serialize(SkWStream* stream) const {
   stream->write32(Drawing);
   stream->write32(picture_->uniqueID());
   DCHECK(picture_); // If this doesn't hold, don't serialize the type either.
-  // TODO: Pass an actual pixel serializer.
-  picture_->serialize(stream, nullptr);
+  ProxyPixelSerializer serializer;
+  picture_->serialize(stream, &serializer);
 }
 
 void DrawingDisplayItem::Deserialize(SkStream* stream,
