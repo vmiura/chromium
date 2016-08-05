@@ -54,6 +54,7 @@ const char kGnomeAccessibilityEnabledKey[] =
     "/desktop/gnome/interface/accessibility";
 
 bool PlatformShouldEnableAccessibility() {
+  return false;
   GConfClient* client = gconf_client_get_default();
   if (!client) {
     LOG(ERROR) << "gconf_client_get_default failed";
@@ -65,7 +66,6 @@ bool PlatformShouldEnableAccessibility() {
                                          kGnomeAccessibilityEnabledKey,
                                          &error);
   g_object_unref(client);
-
   if (error) {
     VLOG(1) << "gconf_client_get_bool failed";
     g_error_free(error);
