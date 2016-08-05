@@ -142,10 +142,6 @@ void DelegatingOutputSurface::SetBeginFrameSource(
   client_->SetBeginFrameSource(begin_frame_source);
 }
 
-uint32_t DelegatingOutputSurface::GetNamespaceId() {
-  return surface_id_allocator_->client_id();
-}
-
 void DelegatingOutputSurface::DisplayOutputSurfaceLost() {
   output_surface_lost_ = true;
   DidLoseOutputSurface();

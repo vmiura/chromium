@@ -45,7 +45,6 @@ class CompositorFrameSinkImpl : public cc::SurfaceFactoryClient,
   void WillDrawSurface(const cc::SurfaceId& surface_id,
                        const gfx::Rect& damage_rect) override;
   void SetBeginFrameSource(cc::BeginFrameSource* begin_frame_source) override;
-  uint32_t GetNamespaceId() override;
 
   // BeginFrameObserver implementation.
   void OnBeginFrame(const cc::BeginFrameArgs& args) override;

@@ -74,10 +74,6 @@ void SurfaceFactory::SubmitCompositorFrame(const SurfaceId& surface_id,
   DCHECK(it != surface_map_.end());
   DCHECK(it->second->factory().get() == this);
   it->second->QueueFrame(std::move(frame), callback);
-
-  uint32_t client_namespace_id = client_->GetNamespaceId();
-  manager_->ReceivedSurfaceIdForNamespace(client_namespace_id, surface_id);
-
   if (!manager_->SurfaceModified(surface_id)) {
     TRACE_EVENT_INSTANT0("cc", "Damage not visible.", TRACE_EVENT_SCOPE_THREAD);
     it->second->RunDrawCallbacks();

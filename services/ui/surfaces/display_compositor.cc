@@ -112,10 +112,6 @@ void DisplayCompositor::SetBeginFrameSource(
   // TODO(fsamuel): Implement this.
 }
 
-uint32_t DisplayCompositor::GetNamespaceId() {
-  return allocator_.client_id();
-}
-
 void DisplayCompositor::DisplayOutputSurfaceLost() {
   // TODO(fsamuel): This looks like it would crash if a frame was in flight and
   // will be submitted.

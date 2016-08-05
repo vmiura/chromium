@@ -217,8 +217,8 @@ void SurfaceManager::RecursivelyAttachBeginFrameSource(
     if (mapping.client)
       mapping.client->SetBeginFrameSource(source);
   }
-  for (uint32_t child : mapping.children)
-    RecursivelyAttachBeginFrameSource(child, source);
+  for (size_t i = 0; i < mapping.children.size(); ++i)
+    RecursivelyAttachBeginFrameSource(mapping.children[i], source);
 }
 
 void SurfaceManager::RecursivelyDetachBeginFrameSource(
@@ -238,9 +238,9 @@ void SurfaceManager::RecursivelyDetachBeginFrameSource(
     return;
   }
 
-  const auto& children = iter->second.children;
-  for (uint32_t child : children) {
-    RecursivelyDetachBeginFrameSource(child, source);
+  std::vector<uint32_t>& children = iter->second.children;
+  for (size_t i = 0; i < children.size(); ++i) {
+    RecursivelyDetachBeginFrameSource(children[i], source);
   }
 }
 
@@ -250,11 +250,11 @@ bool SurfaceManager::ChildContains(uint32_t child_namespace,
   if (iter == namespace_client_map_.end())
     return false;
 
-  const auto& children = iter->second.children;
-  for (uint32_t child : children) {
-    if (child == search_namespace)
+  const std::vector<uint32_t>& children = iter->second.children;
+  for (size_t i = 0; i < children.size(); ++i) {
+    if (children[i] == search_namespace)
       return true;
-    if (ChildContains(child, search_namespace))
+    if (ChildContains(children[i], search_namespace))
       return true;
   }
   return false;
@@ -270,9 +270,11 @@ void SurfaceManager::RegisterSurfaceNamespaceHierarchy(
   // then this will create an infinite loop.  Might as well just crash here.
   CHECK(!ChildContains(child_namespace, parent_namespace));
 
-  auto& children = namespace_client_map_[parent_namespace].children;
-  DCHECK(!children.count(child_namespace));
-  children.insert(child_namespace);
+  std::vector<uint32_t>& children =
+      namespace_client_map_[parent_namespace].children;
+  for (size_t i = 0; i < children.size(); ++i)
+    DCHECK_NE(children[i], child_namespace);
+  children.push_back(child_namespace);
 
   // If the parent has no source, then attaching it to this child will
   // not change any downstream sources.
@@ -297,12 +299,13 @@ void SurfaceManager::UnregisterSurfaceNamespaceHierarchy(
 
   auto iter = namespace_client_map_.find(parent_namespace);
 
-  auto& children = iter->second.children;
+  std::vector<uint32_t>& children = iter->second.children;
   bool found_child = false;
-  for (auto it = children.begin(); it != children.end(); ++it) {
-    if (*it == child_namespace) {
+  for (size_t i = 0; i < children.size(); ++i) {
+    if (children[i] == child_namespace) {
       found_child = true;
-      children.erase(it);
+      children[i] = children.back();
+      children.resize(children.size() - 1);
       break;
     }
   }
@@ -334,38 +337,6 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) {
   if (it == surface_map_.end())
     return NULL;
   return it->second;
-}
-
-void SurfaceManager::SetParentCallbackForNewChildSurfaceId(
-    uint32_t parent_namespace,
-    const base::Callback<void(uint32_t)>& cb) {
-  parent_callback_for_new_child_surface_id_[parent_namespace] = cb;
-  if (!cb.is_null()) {
-    const auto& children = namespace_client_map_[parent_namespace].children;
-    for (uint32_t child_namespace : children) {
-      if (last_surface_id_.find(child_namespace) != last_surface_id_.end())
-        cb.Run(child_namespace);
-    }
-  }
-}
-
-void SurfaceManager::ReceivedSurfaceIdForNamespace(
-    uint32_t client_id, const SurfaceId& surface_id) {
-  auto& last = last_surface_id_[client_id];
-  if (last == surface_id)
-    return;
-  last = surface_id;
-
-  // Find all parents, tell them about the new surface id.
-  for (const auto& pair : namespace_client_map_) {
-    uint32_t parent_id = pair.first;
-    const auto& mapping = pair.second;
-    if (mapping.children.find(client_id) != mapping.children.end()) {
-      const auto& cb = parent_callback_for_new_child_surface_id_[parent_id];
-      if (!cb.is_null())
-        cb.Run(client_id);
-    }
-  }
 }
 
 bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id) {

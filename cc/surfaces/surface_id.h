@@ -66,8 +66,6 @@ class SurfaceId {
            std::tie(other.client_id_, other.local_id_, other.nonce_);
   }
 
-  explicit operator bool() const { return client_id_ || local_id_ || nonce_; }
-
  private:
   // See SurfaceIdAllocator::GenerateId.
   uint32_t client_id_;

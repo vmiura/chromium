@@ -94,9 +94,5 @@ void ServerWindowSurface::SetBeginFrameSource(
   // TODO(tansell): Implement this.
 }
 
-uint32_t ServerWindowSurface::GetNamespaceId() {
-  return surface_id_allocator_.client_id();
-}
-
 }  // namespace ws
 }  // namespace ui
