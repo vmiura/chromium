@@ -789,6 +789,7 @@ bool SurfaceAggregator::Aggregate(const SurfaceId& surface_id,
   root_damage_rect_ =
       PrewalkTree(surface_id, false, RenderPassId(), &prewalk_result);
   if (prewalk_result.had_missing_surfaces) {
+    LOG(ERROR) << "had_missing_surfaces";
     return false;
   }
 

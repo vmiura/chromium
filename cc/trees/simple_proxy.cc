@@ -164,7 +164,7 @@ void SimpleProxy::SetNextCommitWaitsForActivation() {
 void SimpleProxy::NotifyInputThrottledUntilCommit() {
   DCHECK(IsMainThread());
   // TODO(piman): hackathon ??
-  NOTIMPLEMENTED();
+  //NOTIMPLEMENTED();
 }
 
 void SimpleProxy::SetDeferCommits(bool defer_commits) {
