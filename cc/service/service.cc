@@ -738,6 +738,7 @@ void Service::FinishCommit() {
     surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
     if (output_surface_)
       output_surface_->SetDelegatedSurfaceId(surface_id_);
+    surface_manager_->WillRegisterSurface(surface_id_);
   } else {
     // TODO(hackathon): If the commit was sync (aka changed size) then change
     // the id.
@@ -752,6 +753,7 @@ void Service::FinishCommit() {
           factory_.Create(delegated_surface_id_);
       last_swap_frame_size_ = frame_size;
     }
+    surface_manager_->WillRegisterSurface(surface_id_);
 #endif
   }
 }
