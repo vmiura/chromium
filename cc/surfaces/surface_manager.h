@@ -96,7 +96,7 @@ class CC_SURFACES_EXPORT SurfaceManager {
 
   void SetParentCallbackForNewChildSurfaceId(
       uint32_t parent_namespace,
-      const base::Callback<void(uint32_t, const SurfaceId&)>& cb);
+      const base::Callback<void(uint32_t)>& cb);
 
   void ReceivedSurfaceIdForNamespace(uint32_t client_id, const SurfaceId& surface_id);
 
@@ -151,8 +151,7 @@ class CC_SURFACES_EXPORT SurfaceManager {
 
   // Map from parent namespace to a callback that is run when a child of that
   // parent submits a frame with a previously unseen surface id.
-  std::unordered_map<uint32_t,
-                     base::Callback<void(uint32_t, const cc::SurfaceId&)>>
+  std::unordered_map<uint32_t, base::Callback<void(uint32_t)> >
       parent_callback_for_new_child_surface_id_;
   // The last surface id we've received for each namespace. When this changes,
   // the above callback will be called for any parents.

@@ -259,7 +259,6 @@ Compositor::~Compositor() {
 }
 
 void Compositor::AddSurfaceClient(uint32_t client_id) {
-  // surface_clients_[client_id] = parent_client_id;
   host_->RegisterChildCompositor(client_id);
 #if 0
   // We don't give the client a parent until the ui::Compositor has an
@@ -270,11 +269,11 @@ void Compositor::AddSurfaceClient(uint32_t client_id) {
     context_factory_->GetSurfaceManager()->RegisterSurfaceNamespaceHierarchy(
         parent_client_id, client_id);
   }
+  surface_clients_[client_id] = parent_client_id;
 #endif
 }
 
 void Compositor::RemoveSurfaceClient(uint32_t client_id) {
-  // surface_clients_.erase(client_id);
   host_->UnregisterChildCompositor(client_id);
 #if 0
   auto it = surface_clients_.find(client_id);
@@ -285,10 +284,6 @@ void Compositor::RemoveSurfaceClient(uint32_t client_id) {
   }
   surface_clients_.erase(it);
 #endif
-}
-
-void Compositor::SatisfySurfaceSequence(const cc::SurfaceSequence& sequence) {
-  host_->SatisfySurfaceSequence(sequence);
 }
 
 void Compositor::SetOutputSurface(
@@ -528,16 +523,6 @@ void Compositor::DidCommitAndDrawFrame() {
 void Compositor::DidCompleteSwapBuffers() {
   FOR_EACH_OBSERVER(CompositorObserver, observer_list_,
                     OnCompositingEnded(this));
-}
-
-void Compositor::DidChildCreateNewSurface(
-    const cc::SurfaceId& surface_id,
-    const cc::SurfaceSequence& surface_sequence) {
-  fprintf(stderr, ">>>%s surface_id: %s\n", __PRETTY_FUNCTION__,
-          surface_id.ToString().c_str());
-  FOR_EACH_OBSERVER(
-      CompositorObserver, observer_list_,
-      OnCompositorDidChildCreateNewSurface(this, surface_id, surface_sequence));
 }
 
 void Compositor::DidPostSwapBuffers() {

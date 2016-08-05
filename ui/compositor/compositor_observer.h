@@ -8,11 +8,6 @@
 #include "base/time/time.h"
 #include "ui/compositor/compositor_export.h"
 
-namespace cc {
-class SurfaceId;
-struct SurfaceSequence;
-}  // namespace cc
-
 namespace ui {
 
 class Compositor;
@@ -20,11 +15,6 @@ class Compositor;
 // A compositor observer is notified when compositing completes.
 class COMPOSITOR_EXPORT CompositorObserver {
  public:
-  virtual void OnCompositorDidChildCreateNewSurface(
-      Compositor* compositor,
-      const cc::SurfaceId& surface_id,
-      const cc::SurfaceSequence& sequence) {}
-
   // A commit proxies information from the main thread to the compositor
   // thread. It typically happens when some state changes that will require a
   // composite. In the multi-threaded case, many commits may happen between

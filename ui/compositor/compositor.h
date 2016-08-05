@@ -210,7 +210,6 @@ class COMPOSITOR_EXPORT Compositor
 
   void AddSurfaceClient(uint32_t client_id);
   void RemoveSurfaceClient(uint32_t client_id);
-  void SatisfySurfaceSequence(const cc::SurfaceSequence& sequence);
   const std::unordered_map<uint32_t, uint32_t>& SurfaceClientsForTesting() {
     return surface_clients_;
   }
@@ -354,8 +353,6 @@ class COMPOSITOR_EXPORT Compositor
   void DidCommitAndDrawFrame() override;
   void DidCompleteSwapBuffers() override;
   void DidCompletePageScaleAnimation() override {}
-  void DidChildCreateNewSurface(const cc::SurfaceId& surface_id,
-                                const cc::SurfaceSequence& sequence) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidPostSwapBuffers() override;

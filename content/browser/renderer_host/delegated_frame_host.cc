@@ -80,6 +80,19 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
   factory->GetContextFactory()->AddObserver(this);
   id_allocator_.reset(new cc::SurfaceIdAllocator(
       factory->GetContextFactory()->AllocateSurfaceClientId()));
+  // factory->GetSurfaceManager()->RegisterSurfaceClientId(
+  //    id_allocator_->client_id());
+  // factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
+  //    id_allocator_->client_id(), this);
+  // TODO(hackathon): We should use the frame size not the view size.
+  auto* layer = client_->DelegatedFrameHostGetLayer();
+  if (layer) {
+    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+                          base::Bind(&SatisfyCallback, nullptr),
+                          base::Bind(&RequireCallback, nullptr),
+                          gfx::Size(100, 100), current_scale_factor_,
+                          gfx::Size(100, 100));
+  }
 }
 
 void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
@@ -213,6 +226,15 @@ uint32_t DelegatedFrameHost::GetSurfaceClientId() {
 void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
   id_allocator_.reset(new cc::SurfaceIdAllocator(client_id));
   surface_id_ = cc::SurfaceId(client_id, 1, 1);
+  auto* layer = client_->DelegatedFrameHostGetLayer();
+  fprintf(stderr, ">>>%s layer: %p\n", __PRETTY_FUNCTION__, layer);
+  if (layer) {
+    gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
+    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+                          base::Bind(&SatisfyCallback, nullptr),
+                          base::Bind(&RequireCallback, nullptr), desired_size,
+                          current_scale_factor_, desired_size);
+  }
   if (compositor_)
     compositor_->AddSurfaceClient(client_id);
 }
@@ -274,6 +296,7 @@ bool DelegatedFrameHost::ShouldSkipFrame(gfx::Size size_in_dip) const {
 
 void DelegatedFrameHost::WasResized() {
   // TODO(hackathon): Figure out how resize should work.
+  gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
 #if 0
   if (desired_size !=
           current_frame_size_in_dip_ &&
@@ -282,6 +305,11 @@ void DelegatedFrameHost::WasResized() {
   MaybeCreateResizeLock();
   UpdateGutters();
 #endif
+  client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+      cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+      base::Bind(&SatisfyCallback, nullptr),
+      base::Bind(&RequireCallback, nullptr), desired_size,
+      current_scale_factor_, desired_size);
 }
 
 SkColor DelegatedFrameHost::GetGutterColor() const {
@@ -778,26 +806,6 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceHasResultForVideo(
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost, ui::CompositorObserver implementation:
 
-void DelegatedFrameHost::OnCompositorDidChildCreateNewSurface(
-    ui::Compositor* compositor,
-    const cc::SurfaceId& surface_id,
-    const cc::SurfaceSequence& sequence) {
-  if (surface_id_.client_id() != surface_id.client_id())
-    return;
-  if (surface_id_ != surface_id) {
-    compositor->SatisfySurfaceSequence(surface_sequence_);
-    surface_sequence_ = sequence;
-  }
-  surface_id_ = surface_id;
-  auto* layer = client_->DelegatedFrameHostGetLayer();
-  if (layer) {
-    gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
-    layer->SetShowSurface(surface_id_, base::Bind(&SatisfyCallback, nullptr),
-                          base::Bind(&RequireCallback, nullptr), desired_size,
-                          current_scale_factor_, desired_size);
-  }
-}
-
 void DelegatedFrameHost::OnCompositingDidCommit(ui::Compositor* compositor) {
   if (can_lock_compositor_ == NO_PENDING_COMMIT) {
     can_lock_compositor_ = YES_CAN_LOCK;
@@ -907,13 +915,8 @@ void DelegatedFrameHost::ResetCompositor() {
     vsync_manager_ = NULL;
   }
 
-  if (!surface_id_.is_null()) {
+  if (!surface_id_.is_null())
     compositor_->RemoveSurfaceClient(surface_id_.client_id());
-
-    // Return surface resources.
-    if (surface_sequence_.client_id)
-      compositor_->SatisfySurfaceSequence(surface_sequence_);
-  }
   compositor_ = nullptr;
 }
 

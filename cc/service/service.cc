@@ -25,7 +25,6 @@
 #include "cc/service/service_context_provider.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/display_scheduler.h"
-#include "cc/surfaces/surface.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -189,7 +188,6 @@ Service::Service(const gpu::SurfaceHandle& handle,
       surface_manager_(surface_manager),
       widget_(handle),
       surface_id_allocator_(id),
-      next_sequence_id_(1u),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
                  id,
@@ -219,11 +217,6 @@ Service::Service(const gpu::SurfaceHandle& handle,
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
-  // TODO(fsamuel): Figure out lifetime.
-  surface_manager_->SetParentCallbackForNewChildSurfaceId(
-      surface_id_allocator_.client_id(),
-      base::Bind(&Service::OnNewSurfaceIdForChildCompositor,
-                 base::Unretained(this)));
   compositor_client_->OnCompositorCreated(surface_id_allocator_.client_id());
 }
 
@@ -345,19 +338,17 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
-void Service::OnNewSurfaceIdForChildCompositor(uint32_t client_id,
-                                               const SurfaceId& surface_id) {
-  SurfaceSequence sequence(client_id, next_sequence_id_++);
-  Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
-  surface->AddDestructionDependency(sequence);
-  compositor_client_->OnChildCreatedNewSurface(surface_id, sequence);
-}
+// void Surface::OnNewSurfaceIdForChildCompositor(uint32_t client_id) {
+  // TODO(danakj): A callback to tell compositor_client_ about the new surface
+  // id for our child.
+//}
 
 void Service::RegisterChildCompositor(uint32_t client_id) {
   fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
-  uint32_t parent_client_id = surface_id_allocator_.client_id();
-  surface_manager_->RegisterSurfaceNamespaceHierarchy(parent_client_id,
-                                                      client_id);
+  surface_manager_->RegisterSurfaceNamespaceHierarchy(
+      surface_id_allocator_.client_id(), client_id);
+  // TODO(danakj): SurfaceManager::SetParentCallbackForNewChildSurfaceId so we
+  // hear about new surfaces ids from our children.
 }
 
 void Service::UnregisterChildCompositor(uint32_t client_id) {

@@ -31,7 +31,6 @@ class LayerTreeMutator;
 class OutputSurface;
 struct RendererCapabilities;
 struct ServiceConnection;
-struct SurfaceSequence;
 
 // Abstract interface responsible for proxying commands from the main-thread
 // side of the compositor over to the compositor implementation.
@@ -44,7 +43,6 @@ class CC_EXPORT Proxy {
 
   virtual void RegisterChildCompositor(uint32_t client) {}
   virtual void UnregisterChildCompositor(uint32_t client) {}
-  virtual void SatisfySurfaceSequence(const SurfaceSequence& sequence) {}
 
   virtual void FinishAllRendering() = 0;
 

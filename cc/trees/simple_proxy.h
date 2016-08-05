@@ -41,7 +41,6 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   void InitializeCompositor(std::unique_ptr<ServiceConnection> connection) override;
   void RegisterChildCompositor(uint32_t client_id) override;
   void UnregisterChildCompositor(uint32_t client_id) override;
-  void SatisfySurfaceSequence(const SurfaceSequence& sequence) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;
@@ -84,8 +83,6 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
       const cc::RendererCapabilities& capabilities) override;
   void OnImageDecodeProxyCreated(
       mojom::ImageDecodeRequest decode_request) override;
-  void OnChildCreatedNewSurface(const SurfaceId& surface_id,
-                                const SurfaceSequence& sequence) override;
 
   bool IsMainThread() const;
 
