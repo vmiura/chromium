@@ -67,7 +67,8 @@ class CC_SERVICE_EXPORT DelegatingOutputSurface
   const uint32_t surface_client_id_;
   // TODO(hackathon): This could live on Service, would simplify things a bit.
   SurfaceFactory factory_;
-  SurfaceId delegated_surface_id_;
+  SurfaceId committed_surface_id_;
+  SurfaceId swapped_surface_id_;
   gfx::Size last_swap_frame_size_;
   bool output_surface_lost_ = false;
 

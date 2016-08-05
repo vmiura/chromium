@@ -46,19 +46,28 @@ DelegatingOutputSurface::~DelegatingOutputSurface() {
 }
 
 void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
-  DCHECK(!delegated_surface_id_.is_null());
+  gfx::Size frame_size =
+      frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
+  if (committed_surface_id_.is_null()) {
+    DCHECK(frame_size == last_swap_frame_size_);
+  } else {
+    if (!swapped_surface_id_.is_null())
+      factory_.Destroy(swapped_surface_id_);
+    swapped_surface_id_ = committed_surface_id_;
+    committed_surface_id_ = SurfaceId();
+  }
+
   if (display_) {
-    display_->SetSurfaceId(delegated_surface_id_,
+    display_->SetSurfaceId(swapped_surface_id_,
                            frame.metadata.device_scale_factor);
-    gfx::Size frame_size =
-        frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
     display_->Resize(frame_size);
   }
 
   factory_.SubmitCompositorFrame(
-      delegated_surface_id_, std::move(frame),
+      swapped_surface_id_, std::move(frame),
       base::Bind(&DelegatingOutputSurface::DidDrawCallback,
-                 base::Unretained(this), delegated_surface_id_));
+                 base::Unretained(this), committed_surface_id_));
+  last_swap_frame_size_ = frame_size;
 }
 
 bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
@@ -82,14 +91,16 @@ bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
 
 void DelegatingOutputSurface::ForceReclaimResources() {
   if (capabilities_.can_force_reclaim_resources &&
-      !delegated_surface_id_.is_null()) {
-    factory_.SubmitCompositorFrame(delegated_surface_id_, CompositorFrame(),
+      !committed_surface_id_.is_null()) {
+    factory_.SubmitCompositorFrame(committed_surface_id_, CompositorFrame(),
                                    SurfaceFactory::DrawCallback());
   }
 }
 
 void DelegatingOutputSurface::DetachFromClient() {
   DCHECK(HasClient());
+  if (!swapped_surface_id_.is_null())
+    factory_.Destroy(swapped_surface_id_);
   // Unregister the SurfaceFactoryClient here instead of the dtor so that only
   // one client is alive for this namespace at any given time.
   surface_manager_->UnregisterSurfaceFactoryClient(
@@ -141,11 +152,11 @@ void DelegatingOutputSurface::DidDrawCallback(const SurfaceId& surface_id) {
 }
 
 void DelegatingOutputSurface::SetDelegatedSurfaceId(const SurfaceId& id) {
-  if (!delegated_surface_id_.is_null())
-    factory_.Destroy(delegated_surface_id_);
-  delegated_surface_id_ = id;
+  if (!committed_surface_id_.is_null())
+    factory_.Destroy(committed_surface_id_);
+  committed_surface_id_ = id;
   if (!id.is_null())
-    factory_.Create(delegated_surface_id_);
+    factory_.Create(committed_surface_id_);
 }
 
 }  // namespace cc
