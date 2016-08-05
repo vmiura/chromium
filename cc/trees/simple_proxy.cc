@@ -375,8 +375,11 @@ void SimpleProxy::OnBeginMainFrame(
     {
       TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame compositor->Commit");
       mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-      // TODO(hackathon): need sync if new surface id
-      bool need_sync = false;
+      bool need_sync =
+          frame->device_scale_factor != last_committed_device_scale_factor_ ||
+          frame->device_viewport_size != last_committed_device_viewport_size_;
+      last_committed_device_scale_factor_ = frame->device_scale_factor;
+      last_committed_device_viewport_size_ = frame->device_viewport_size;
       if (!need_sync) {
         compositor_->PrepareCommit(hold_commit_for_activation,
                                    std::move(frame));
