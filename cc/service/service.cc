@@ -351,15 +351,18 @@ void Service::UnregisterChildCompositor(uint32_t client_id) {
 }
 
 void Service::SetNeedsBeginMainFrame() {
+  TRACE_EVENT0("cc", "Service::SetNeedsBeginFrame");
   client_->SetNeedsCommitOnImplThread();
 }
 
 void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
+  TRACE_EVENT0("cc", "Service::SetNeedsRedraw");
   host_impl_.SetViewportDamage(damage_rect);
   scheduler_.SetNeedsRedraw();
 }
 
 void Service::SetVisible(bool visible) {
+  TRACE_EVENT0("cc", "Service::SetVisible");
   host_impl_.SetVisible(visible);
   scheduler_.SetVisible(visible);
 }
@@ -367,6 +370,7 @@ void Service::SetVisible(bool visible) {
 void Service::Commit(bool wait_for_activation,
                      mojom::ContentFramePtr frame,
                      const CommitCallback& callback) {
+  TRACE_EVENT1("cc", "Service::Commit", "wait_for_activation", wait_for_activation);
   DCHECK(!commit_callback_);
   DCHECK(!frame_for_commit_);
   //DCHECK(IsImplThread() && IsMainThreadBlocked());
@@ -386,6 +390,7 @@ void Service::Commit(bool wait_for_activation,
 }
 
 void Service::DidActivateSyncTree() {
+  TRACE_EVENT0("cc", "Service::DidActivateSyncTree");
   if (activation_callback_) {
     activation_callback_.Run();
     activation_callback_.Reset();
@@ -398,6 +403,7 @@ AdditionGroup<gfx::ScrollOffset> ScrollOffsetFromMojom(
 }
 
 void Service::BeginMainFrameAborted(CommitEarlyOutReason reason) {
+  TRACE_EVENT0("cc", "Service::BeginMainFrameAborted");
 #if 0
   // TODO(hackathon):
   if (CommitEarlyOutHandledCommit(reason)) {
@@ -411,6 +417,7 @@ void Service::BeginMainFrameAborted(CommitEarlyOutReason reason) {
 }
 
 void Service::FinishCommit() {
+  TRACE_EVENT0("cc", "Service::FinishCommit");
   mojom::ContentFrame* frame = frame_for_commit_.get();
   LayerTreeImpl* sync_tree = host_impl_.sync_tree();
 
@@ -420,6 +427,7 @@ void Service::FinishCommit() {
   sync_tree->set_source_frame_number(frame->source_frame);
 
   if (frame->needs_full_tree_sync) {
+    TRACE_EVENT0("cc", "Service::FinishCommit full tree sync create layers");
     std::unique_ptr<OwnedLayerImplList> old_pending_layers(
         sync_tree->DetachLayers());
     OwnedLayerImplMap old_pending_layer_map;
@@ -520,83 +528,86 @@ void Service::FinishCommit() {
 
   // Setting property trees must happen before pushing the page scale.
   PropertyTrees* property_trees = sync_tree->property_trees();
-  bool property_trees_sequence_changed = false;
   {
-    auto& source = *frame->property_trees;
-    auto* dest = property_trees;
-    dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
-    dest->changed = source.changed;
-    dest->full_tree_damaged = source.full_tree_damaged;
-    property_trees_sequence_changed = (dest->sequence_number != source.sequence_number);
-    dest->sequence_number = source.sequence_number;
-    dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
-  }
-  {
-    auto& source = *frame->property_trees->transform_tree;
-    auto* dest = &property_trees->transform_tree;
-    dest->source_to_parent_updates_allowed_ = source.source_to_parent_updates_allowed;
-    dest->page_scale_factor_ = source.page_scale_factor;
-    dest->device_scale_factor_ = source.device_scale_factor;
-    dest->device_transform_scale_factor_ = source.device_transform_scale_factor;
-    dest->nodes_affected_by_inner_viewport_bounds_delta_ = source.nodes_affected_by_inner_viewport_bounds_delta;
-    dest->nodes_affected_by_outer_viewport_bounds_delta_ = source.nodes_affected_by_outer_viewport_bounds_delta;
-    size_t vec_bytes = source.nodes.size();
-    DCHECK_EQ(vec_bytes % sizeof(TransformNode), 0u);  // TODO(hackathon): validate
-    dest->nodes_.resize(vec_bytes / sizeof(TransformNode));
-    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
-
-    dest->cached_data_.resize(source.cached_data.size());
-    for (size_t i = 0; i < source.cached_data.size(); ++i) {
-      auto& src_data = *source.cached_data[i];
-      auto* dst_data = &dest->cached_data_[i];
-      dst_data->from_target = src_data.from_target;
-      dst_data->to_target = src_data.to_target;
-      dst_data->from_screen = src_data.from_screen;
-      dst_data->to_screen = src_data.to_screen;
-      dst_data->target_id = src_data.target_id;
-      dst_data->content_target_id = src_data.content_target_id;
+    TRACE_EVENT0("cc", "Service::FinishCommit property trees");
+    bool property_trees_sequence_changed = false;
+    {
+      auto& source = *frame->property_trees;
+      auto* dest = property_trees;
+      dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
+      dest->changed = source.changed;
+      dest->full_tree_damaged = source.full_tree_damaged;
+      property_trees_sequence_changed = (dest->sequence_number != source.sequence_number);
+      dest->sequence_number = source.sequence_number;
+      dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
     }
-  }
-  {
-    auto& source = *frame->property_trees->effect_tree;
-    auto* dest = &property_trees->effect_tree;
-    dest->mask_replica_layer_ids_ = source.mask_replica_layer_ids;
-    size_t vec_bytes = source.nodes.size();
-    DCHECK_EQ(vec_bytes % sizeof(EffectNode), 0u);
-    dest->nodes_.resize(vec_bytes / sizeof(EffectNode));
-    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
-  }
-  {
-    auto& source = *frame->property_trees->scroll_tree;
-    auto* dest = &property_trees->scroll_tree;
-    dest->currently_scrolling_node_id_ = source.currently_scrolling_node_id;
-    // Scroll offsets are done below.
-    size_t vec_bytes = source.nodes.size();
-    DCHECK_EQ(vec_bytes % sizeof(ScrollNode), 0u);
-    dest->nodes_.resize(vec_bytes / sizeof(ScrollNode));
-    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
-  }
-  {
-    auto& source = *frame->property_trees->clip_tree;
-    auto* dest = &property_trees->clip_tree;
-    size_t vec_bytes = source.nodes.size();
-    DCHECK_EQ(vec_bytes % sizeof(ClipNode), 0u);
-    dest->nodes_.resize(vec_bytes / sizeof(ClipNode));
-    memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
-  }
+    {
+      auto& source = *frame->property_trees->transform_tree;
+      auto* dest = &property_trees->transform_tree;
+      dest->source_to_parent_updates_allowed_ = source.source_to_parent_updates_allowed;
+      dest->page_scale_factor_ = source.page_scale_factor;
+      dest->device_scale_factor_ = source.device_scale_factor;
+      dest->device_transform_scale_factor_ = source.device_transform_scale_factor;
+      dest->nodes_affected_by_inner_viewport_bounds_delta_ = source.nodes_affected_by_inner_viewport_bounds_delta;
+      dest->nodes_affected_by_outer_viewport_bounds_delta_ = source.nodes_affected_by_outer_viewport_bounds_delta;
+      size_t vec_bytes = source.nodes.size();
+      DCHECK_EQ(vec_bytes % sizeof(TransformNode), 0u);  // TODO(hackathon): validate
+      dest->nodes_.resize(vec_bytes / sizeof(TransformNode));
+      memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
 
-  // TODO(hackathon) : do this
-  // property_trees->effect_tree.PushCopyRequestsTo(&property_trees_.effect_tree);
-  property_trees->is_main_thread = false;
-  property_trees->is_active = sync_tree->IsActiveTree();
-  property_trees->transform_tree.set_source_to_parent_updates_allowed(false);
-  // The value of some effect node properties (like is_drawn) depends on
-  // whether we are on the active tree or not. So, we need to update the
-  // effect tree.
-  if (sync_tree->IsActiveTree())
-    property_trees->effect_tree.set_needs_update(true);
-  if (property_trees_sequence_changed)
-    property_trees->ResetCachedData();
+      dest->cached_data_.resize(source.cached_data.size());
+      for (size_t i = 0; i < source.cached_data.size(); ++i) {
+        auto& src_data = *source.cached_data[i];
+        auto* dst_data = &dest->cached_data_[i];
+        dst_data->from_target = src_data.from_target;
+        dst_data->to_target = src_data.to_target;
+        dst_data->from_screen = src_data.from_screen;
+        dst_data->to_screen = src_data.to_screen;
+        dst_data->target_id = src_data.target_id;
+        dst_data->content_target_id = src_data.content_target_id;
+      }
+    }
+    {
+      auto& source = *frame->property_trees->effect_tree;
+      auto* dest = &property_trees->effect_tree;
+      dest->mask_replica_layer_ids_ = source.mask_replica_layer_ids;
+      size_t vec_bytes = source.nodes.size();
+      DCHECK_EQ(vec_bytes % sizeof(EffectNode), 0u);
+      dest->nodes_.resize(vec_bytes / sizeof(EffectNode));
+      memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+    }
+    {
+      auto& source = *frame->property_trees->scroll_tree;
+      auto* dest = &property_trees->scroll_tree;
+      dest->currently_scrolling_node_id_ = source.currently_scrolling_node_id;
+      // Scroll offsets are done below.
+      size_t vec_bytes = source.nodes.size();
+      DCHECK_EQ(vec_bytes % sizeof(ScrollNode), 0u);
+      dest->nodes_.resize(vec_bytes / sizeof(ScrollNode));
+      memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+    }
+    {
+      auto& source = *frame->property_trees->clip_tree;
+      auto* dest = &property_trees->clip_tree;
+      size_t vec_bytes = source.nodes.size();
+      DCHECK_EQ(vec_bytes % sizeof(ClipNode), 0u);
+      dest->nodes_.resize(vec_bytes / sizeof(ClipNode));
+      memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
+    }
+
+    // TODO(hackathon) : do this
+    // property_trees->effect_tree.PushCopyRequestsTo(&property_trees_.effect_tree);
+    property_trees->is_main_thread = false;
+    property_trees->is_active = sync_tree->IsActiveTree();
+    property_trees->transform_tree.set_source_to_parent_updates_allowed(false);
+    // The value of some effect node properties (like is_drawn) depends on
+    // whether we are on the active tree or not. So, we need to update the
+    // effect tree.
+    if (sync_tree->IsActiveTree())
+      property_trees->effect_tree.set_needs_update(true);
+    if (property_trees_sequence_changed)
+      property_trees->ResetCachedData();
+  }
 
   sync_tree->PushPageScaleFromMainThread(
       frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
@@ -692,12 +703,15 @@ void Service::FinishCommit() {
   }
   property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map, sync_tree);
 
-  // Hackathon technically only combines one content frame because of reasons.
-  cc::ContentFrame new_content_frame;
-  new_content_frame.Set(*sync_tree);
-  if (display_) {
-    display_->CommitContentFrame(std::move(new_content_frame));
-    AggregatedContentFrame result_frame = display_->AggregateContentFrames();
+  {
+    TRACE_EVENT0("cc", "Service::FinishCommit content frame aggregation");
+    // Hackathon technically only combines one content frame because of reasons.
+    cc::ContentFrame new_content_frame;
+    new_content_frame.Set(*sync_tree);
+    if (display_) {
+      display_->CommitContentFrame(std::move(new_content_frame));
+      AggregatedContentFrame result_frame = display_->AggregateContentFrames();
+    }
   }
 
 #if 0
@@ -707,6 +721,7 @@ void Service::FinishCommit() {
 }
 
 void Service::ScheduledActionCommit() {
+  TRACE_EVENT0("cc", "Service::ScheduledActionCommit");
   DCHECK(commit_callback_);
   host_impl_.BeginCommit();
 
@@ -728,6 +743,7 @@ void Service::ScheduledActionCommit() {
 }
 
 void Service::Destroy(const DestroyCallback& callback) {
+  TRACE_EVENT0("cc", "Service::Destroy");
   scheduler_.SetVisible(false);
   scheduler_.DidLoseOutputSurface();
   host_impl_.ReleaseOutputSurface();

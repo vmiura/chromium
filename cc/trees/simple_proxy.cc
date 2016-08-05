@@ -64,6 +64,7 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 #endif
 
 void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connection) {
+  TRACE_EVENT0("cc", "SimpleProxy::InitializeCompositor");
   compositor_ = std::move(connection->compositor);
   binding_.Bind(std::move(connection->client_request));
   if (needs_begin_frame_when_ready_) {
@@ -81,10 +82,12 @@ void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connec
 }
 
 void SimpleProxy::RegisterChildCompositor(uint32_t client_id) {
+  TRACE_EVENT0("cc", "SimpleProxy::RegisterChildCompositor");
   compositor_->RegisterChildCompositor(client_id);
 }
 
 void SimpleProxy::UnregisterChildCompositor(uint32_t client_id) {
+  TRACE_EVENT0("cc", "SimpleProxy::UnregisterChildCompositor");
   compositor_->UnregisterChildCompositor(client_id);
 }
 
@@ -249,6 +252,7 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 }
 
 void SimpleProxy::SetNeedsBeginFrame() {
+  TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
   DCHECK(IsMainThread());
   if (!compositor_) {
     needs_begin_frame_when_ready_ = true;
@@ -268,11 +272,13 @@ bool SimpleProxy::IsMainThread() const {
 }
 
 void SimpleProxy::OnCompositorCreated(uint32_t client_id) {
+  TRACE_EVENT0("cc", "SimpleProxy::OnCompositorCreated");
   layer_tree_host_->SetSurfaceClientId(client_id);
 }
 
 void SimpleProxy::OnBeginMainFrame(
     uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) {
+  TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame");
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
       benchmark_instrumentation::kDoBeginFrame,
       begin_frame_id);
@@ -366,8 +372,11 @@ void SimpleProxy::OnBeginMainFrame(
 
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
     layer_tree_host_->GetContentFrame(frame.get());
-    mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-    compositor_->Commit(hold_commit_for_activation, std::move(frame));
+    {
+      TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame compositor->Commit");
+      mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
+      compositor_->Commit(hold_commit_for_activation, std::move(frame));
+    }
   }
 
   layer_tree_host_->CommitComplete();
