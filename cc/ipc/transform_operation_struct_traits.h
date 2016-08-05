@@ -138,8 +138,9 @@ struct StructTraits<cc::mojom::TransformOperation, cc::TransformOperation> {
     return operation.rotate.angle;
   }
 
-  static cc::mojom::TransformOperationType type(const cc::TransformOperation& operation) {
-return CCTransformOperationTypeToMojo(operation.type);
+  static cc::mojom::TransformOperationType type(
+      const cc::TransformOperation& operation) {
+    return CCTransformOperationTypeToMojo(operation.type);
   }
 
   static bool Read(cc::mojom::TransformOperationDataView data,
@@ -152,6 +153,44 @@ return CCTransformOperationTypeToMojo(operation.type);
       return false;
 
     out->type = MojoTransformOperationTypeToCC(transform_operation_type);
+
+    switch (out->type) {
+      case cc::TransformOperation::TRANSFORM_OPERATION_TRANSLATE:
+        out->translate.x = data.x();
+        out->translate.y = data.y();
+        out->translate.z = data.z();
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_ROTATE:
+        out->rotate.axis.x = data.x();
+        out->rotate.axis.y = data.y();
+        out->rotate.axis.z = data.z();
+        out->rotate.angle = data.angle();
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_SCALE:
+        out->scale.x = data.x();
+        out->scale.y = data.y();
+        out->scale.z = data.z();
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_SKEW:
+        out->skew.x = data.x();
+        out->skew.y = data.y();
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
+        out->perspective_depth = data.x();
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_MATRIX:
+        if (!data.ReadMatrix(&out->matrix))
+          return false;
+        break;
+
+      case cc::TransformOperation::TRANSFORM_OPERATION_IDENTITY:
+        break;
+    };
 
     return true;
   }
