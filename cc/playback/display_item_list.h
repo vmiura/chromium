@@ -31,6 +31,7 @@ namespace cc {
 class ClientPictureCache;
 class DisplayItem;
 class DrawingDisplayItem;
+typedef std::unordered_map<uint32_t, sk_sp<const SkPicture>> PictureCache;
 
 namespace proto {
 class DisplayItemList;
@@ -125,9 +126,12 @@ class CC_EXPORT DisplayItemList
   }
 
   sk_sp<SkData> Serialize() const;
-  void SerializeToStream(SkWStream* stream) const;
+  void SerializeToStream(SkWStream* stream,
+      const PictureCache& picture_cache) const;
 
-  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*);
+  static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*,
+      PictureCache& old_picture_cache,
+      PictureCache& new_picture_cache);
 
   uint32_t unique_id() const { return id_; }
 

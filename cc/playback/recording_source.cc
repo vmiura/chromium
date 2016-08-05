@@ -257,7 +257,7 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
     mojom->display_list_id = display_list_->unique_id();
     if (last_send_display_list_id_ != display_list_->unique_id()) {
       SkDynamicMemoryWStream write_stream;
-      display_list_->SerializeToStream(&write_stream);
+      display_list_->SerializeToStream(&write_stream, picture_cache);
       mojom->display_list.resize(write_stream.bytesWritten());
       write_stream.copyTo(mojom->display_list.data());
       last_send_display_list_id_ = display_list_->unique_id();
@@ -282,7 +282,10 @@ void RecordingSource::ReadMojom(
   if (!mojom->display_list.empty()) {
     SkMemoryStream read_stream(mojom->display_list.data(),
                                mojom->display_list.size(), false);
-    display_list_ = DisplayItemList::CreateFromStream(&read_stream);
+    PictureCache new_picture_cache;
+    display_list_ = DisplayItemList::CreateFromStream(&read_stream,
+        picture_cache, new_picture_cache);
+    picture_cache = new_picture_cache;
   } else {
     if (last_display_list &&
         last_display_list->unique_id() == mojom->display_list_id)

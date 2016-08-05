@@ -77,6 +77,7 @@ void DrawingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 
 void DrawingDisplayItem::Serialize(SkWStream* stream) const {
   stream->write32(Drawing);
+  stream->write32(picture_->uniqueID());
   DCHECK(picture_); // If this doesn't hold, don't serialize the type either.
   // TODO: Pass an actual pixel serializer.
   picture_->serialize(stream, nullptr);
