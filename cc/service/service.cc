@@ -403,22 +403,17 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
                                 const PrepareCommitSyncCallback& callback) {
   bool viewport_changed_size =
       frame->device_viewport_size != host_impl_.device_viewport_size();
-  // TODO(hackathon): OR device scale factor changed.
-  DCHECK(surface_id_.is_null() || viewport_changed_size);
+  LayerTreeImpl* last_commit_tree = host_impl_.pending_tree();
+  if (!last_commit_tree)
+    last_commit_tree = host_impl_.active_tree();
+  bool dsf_changed =
+      frame->device_scale_factor != last_commit_tree->device_scale_factor();
+  DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
-  if (surface_id_.is_null()) {
-    LOG(ERROR) << "viewport size first commit " << host_impl_.device_viewport_size().ToString();
-    // TODO(danakj): Use surface_id_allocator_ though.
-    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
-    if (output_surface_)
-      output_surface_->SetDelegatedSurfaceId(surface_id_);
-  } else {
-    LOG(ERROR) << "viewport size changed to " << host_impl_.device_viewport_size().ToString();
-    // TODO(danakj): Use surface_id_allocator_ though.
-    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
-    if (output_surface_)
-      output_surface_->SetDelegatedSurfaceId(surface_id_);
-  }
+  // TODO(danakj): Use surface_id_allocator_ though.
+  surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
+  if (output_surface_)
+    output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);
 
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
