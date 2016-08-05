@@ -52,7 +52,7 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
       parent_surface_client_id_(0),
       weak_factory_(this) {
   id_allocator_.reset(new cc::SurfaceIdAllocator(AllocateSurfaceClientId()));
-  GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
+  // GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
   RegisterSurfaceNamespaceId();
 
   host_->SetView(this);
@@ -62,8 +62,8 @@ RenderWidgetHostViewChildFrame::~RenderWidgetHostViewChildFrame() {
   if (!surface_id_.is_null())
     surface_factory_->Destroy(surface_id_);
 
-  if (GetSurfaceManager())
-    GetSurfaceManager()->InvalidateSurfaceClientId(id_allocator_->client_id());
+  // if (GetSurfaceManager())
+  //  GetSurfaceManager()->InvalidateSurfaceClientId(id_allocator_->client_id());
 }
 
 void RenderWidgetHostViewChildFrame::SetCrossProcessFrameConnector(
@@ -73,13 +73,13 @@ void RenderWidgetHostViewChildFrame::SetCrossProcessFrameConnector(
 
   if (frame_connector_) {
     if (parent_surface_client_id_) {
-      GetSurfaceManager()->UnregisterSurfaceNamespaceHierarchy(
-          parent_surface_client_id_, GetSurfaceClientId());
+      // GetSurfaceManager()->UnregisterSurfaceNamespaceHierarchy(
+      //    parent_surface_client_id_, GetSurfaceClientId());
     }
     // Unregister the client here, as it is not guaranteed in tests that the
     // destructor will be called.
-    GetSurfaceManager()->UnregisterSurfaceFactoryClient(
-        id_allocator_->client_id());
+    // GetSurfaceManager()->UnregisterSurfaceFactoryClient(
+    //    id_allocator_->client_id());
 
     parent_surface_client_id_ = 0;
 
@@ -92,15 +92,15 @@ void RenderWidgetHostViewChildFrame::SetCrossProcessFrameConnector(
   }
   frame_connector_ = frame_connector;
   if (frame_connector_) {
-    GetSurfaceManager()->RegisterSurfaceFactoryClient(
-        id_allocator_->client_id(), this);
+    // GetSurfaceManager()->RegisterSurfaceFactoryClient(
+    //    id_allocator_->client_id(), this);
     RenderWidgetHostViewBase* parent_view =
         frame_connector_->GetParentRenderWidgetHostView();
     if (parent_view) {
       parent_surface_client_id_ = parent_view->GetSurfaceClientId();
       DCHECK_NE(parent_surface_client_id_, 0u);
-      GetSurfaceManager()->RegisterSurfaceNamespaceHierarchy(
-          parent_surface_client_id_, GetSurfaceClientId());
+      // GetSurfaceManager()->RegisterSurfaceNamespaceHierarchy(
+      //    parent_surface_client_id_, GetSurfaceClientId());
     }
   }
 }
@@ -362,6 +362,7 @@ void RenderWidgetHostViewChildFrame::SurfaceDrawn(uint32_t output_surface_id) {
 void RenderWidgetHostViewChildFrame::OnSwapCompositorFrame(
     uint32_t output_surface_id,
     cc::CompositorFrame frame) {
+#if 0
   TRACE_EVENT0("content",
                "RenderWidgetHostViewChildFrame::OnSwapCompositorFrame");
 
@@ -420,6 +421,7 @@ void RenderWidgetHostViewChildFrame::OnSwapCompositorFrame(
                                           ack_callback);
 
   ProcessFrameSwappedCallbacks();
+#endif
 }
 
 void RenderWidgetHostViewChildFrame::ProcessFrameSwappedCallbacks() {

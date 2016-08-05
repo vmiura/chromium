@@ -23,10 +23,11 @@ OffscreenCanvasSurfaceImpl::OffscreenCanvasSurfaceImpl(
     mojo::InterfaceRequest<blink::mojom::OffscreenCanvasSurface> request)
     : id_allocator_(new cc::SurfaceIdAllocator(AllocateSurfaceClientId())),
       binding_(this, std::move(request)) {
-  GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
+  // GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
 }
 
 OffscreenCanvasSurfaceImpl::~OffscreenCanvasSurfaceImpl() {
+#if 0
   if (!GetSurfaceManager()) {
     // Inform both members that SurfaceManager's no longer alive to
     // avoid their destruction errors.
@@ -36,6 +37,7 @@ OffscreenCanvasSurfaceImpl::~OffscreenCanvasSurfaceImpl() {
     GetSurfaceManager()->InvalidateSurfaceClientId(id_allocator_->client_id());
   }
   surface_factory_->Destroy(surface_id_);
+#endif
 }
 
 void OffscreenCanvasSurfaceImpl::GetSurfaceId(
@@ -49,15 +51,18 @@ void OffscreenCanvasSurfaceImpl::GetSurfaceId(
 
 void OffscreenCanvasSurfaceImpl::RequestSurfaceCreation(
     const cc::SurfaceId& surface_id) {
+#if 0
   cc::SurfaceManager* manager = GetSurfaceManager();
   if (!surface_factory_) {
     surface_factory_ = base::MakeUnique<cc::SurfaceFactory>(manager, this);
   }
   surface_factory_->Create(surface_id);
+#endif
 }
 
 void OffscreenCanvasSurfaceImpl::Require(const cc::SurfaceId& surface_id,
                                          const cc::SurfaceSequence& sequence) {
+#if 0
   cc::SurfaceManager* manager = GetSurfaceManager();
   cc::Surface* surface = manager->GetSurfaceForId(surface_id);
   if (!surface) {
@@ -65,13 +70,16 @@ void OffscreenCanvasSurfaceImpl::Require(const cc::SurfaceId& surface_id,
     return;
   }
   surface->AddDestructionDependency(sequence);
+#endif
 }
 
 void OffscreenCanvasSurfaceImpl::Satisfy(const cc::SurfaceSequence& sequence) {
+#if 0
   std::vector<uint32_t> sequences;
   sequences.push_back(sequence.sequence);
   cc::SurfaceManager* manager = GetSurfaceManager();
   manager->DidSatisfySequences(sequence.client_id, &sequences);
+#endif
 }
 
 // TODO(619136): Implement cc::SurfaceFactoryClient functions for resources

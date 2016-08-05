@@ -41,9 +41,11 @@ namespace {
 
 void SatisfyCallback(cc::SurfaceManager* manager,
                      const cc::SurfaceSequence& sequence) {
+#if 0
   std::vector<uint32_t> sequences;
   sequences.push_back(sequence.sequence);
   manager->DidSatisfySequences(sequence.client_id, &sequences);
+#endif
 }
 
 void RequireCallback(cc::SurfaceManager* manager,
@@ -78,19 +80,18 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
   factory->GetContextFactory()->AddObserver(this);
   id_allocator_.reset(new cc::SurfaceIdAllocator(
       factory->GetContextFactory()->AllocateSurfaceClientId()));
-  factory->GetSurfaceManager()->RegisterSurfaceClientId(
-      id_allocator_->client_id());
-  factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
-      id_allocator_->client_id(), this);
+  // factory->GetSurfaceManager()->RegisterSurfaceClientId(
+  //    id_allocator_->client_id());
+  // factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
+  //    id_allocator_->client_id(), this);
   // TODO(hackathon): We should use the frame size not the view size.
   auto* layer = client_->DelegatedFrameHostGetLayer();
   if (layer) {
-    layer->SetShowSurface(
-      cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-      base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
-      base::Bind(&RequireCallback,
-                 base::Unretained(factory->GetSurfaceManager())),
-      gfx::Size(100, 100), current_scale_factor_, gfx::Size(100, 100));
+    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+                          base::Bind(&SatisfyCallback, nullptr),
+                          base::Bind(&RequireCallback, nullptr),
+                          gfx::Size(100, 100), current_scale_factor_,
+                          gfx::Size(100, 100));
   }
 }
 
@@ -229,11 +230,10 @@ void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
   fprintf(stderr, ">>>%s layer: %p\n", __PRETTY_FUNCTION__, layer);
   if (layer) {
     gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
-    layer->SetShowSurface(
-        cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-        base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
-        base::Bind(&RequireCallback, base::Unretained(GetSurfaceManager())),
-        desired_size, current_scale_factor_, desired_size);
+    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
+                          base::Bind(&SatisfyCallback, nullptr),
+                          base::Bind(&RequireCallback, nullptr), desired_size,
+                          current_scale_factor_, desired_size);
   }
   if (compositor_)
     compositor_->AddSurfaceClient(client_id);
@@ -243,6 +243,7 @@ cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
     cc::SurfaceHittestDelegate* delegate,
     const gfx::Point& point,
     gfx::Point* transformed_point) {
+#if 0
   if (surface_id_.is_null())
     return surface_id_;
   cc::SurfaceHittest hittest(delegate, GetSurfaceManager());
@@ -253,11 +254,14 @@ cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
   if (!target_surface_id.is_null())
     target_transform.TransformPoint(transformed_point);
   return target_surface_id;
+#endif
+  return cc::SurfaceId();
 }
 
 gfx::Point DelegatedFrameHost::TransformPointToLocalCoordSpace(
     const gfx::Point& point,
     const cc::SurfaceId& original_surface) {
+#if 0
   if (surface_id_.is_null() || original_surface == surface_id_)
     return point;
 
@@ -266,6 +270,8 @@ gfx::Point DelegatedFrameHost::TransformPointToLocalCoordSpace(
   hittest.TransformPointToTargetSurface(original_surface, surface_id_,
                                         &transformed_point);
   return transformed_point;
+#endif
+  return gfx::Point();
 }
 
 gfx::Point DelegatedFrameHost::TransformPointToCoordSpaceForView(
@@ -301,9 +307,9 @@ void DelegatedFrameHost::WasResized() {
 #endif
   client_->DelegatedFrameHostGetLayer()->SetShowSurface(
       cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-      base::Bind(&SatisfyCallback, base::Unretained(GetSurfaceManager())),
-      base::Bind(&RequireCallback, base::Unretained(GetSurfaceManager())),
-      desired_size, current_scale_factor_, desired_size);
+      base::Bind(&SatisfyCallback, nullptr),
+      base::Bind(&RequireCallback, nullptr), desired_size,
+      current_scale_factor_, desired_size);
 }
 
 SkColor DelegatedFrameHost::GetGutterColor() const {
@@ -434,6 +440,7 @@ void DelegatedFrameHost::AttemptFrameSubscriberCapture(
 
 void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
                                             cc::CompositorFrame frame) {
+#if 0
   DCHECK(frame.delegated_frame_data.get());
 #if defined(OS_CHROMEOS)
   DCHECK(!resize_lock_ || !client_->IsAutoResizeEnabled());
@@ -506,7 +513,7 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
     EvictDelegatedFrame();
   } else {
     ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
-    cc::SurfaceManager* manager = factory->GetSurfaceManager();
+    //cc::SurfaceManager* manager = factory->GetSurfaceManager();
     if (!surface_factory_) {
       surface_factory_ =
           base::WrapUnique(new cc::SurfaceFactory(manager, this));
@@ -566,6 +573,7 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
         client_->DelegatedFrameHostIsVisible());
   }
   // Note: the frame may have been evicted immediately.
+#endif
 }
 
 void DelegatedFrameHost::ClearDelegatedFrame() {
@@ -943,13 +951,12 @@ void DelegatedFrameHost::OnLayerRecreated(ui::Layer* old_layer,
   // that should keep our frame. old_layer will be returned to the
   // RecreateLayer caller, and should have a copy.
   if (!surface_id_.is_null()) {
-    ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
-    cc::SurfaceManager* manager = factory->GetSurfaceManager();
+    // ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
+    // cc::SurfaceManager* manager = factory->GetSurfaceManager();
     new_layer->SetShowSurface(
-        surface_id_, base::Bind(&SatisfyCallback, base::Unretained(manager)),
-        base::Bind(&RequireCallback, base::Unretained(manager)),
-        current_surface_size_, current_scale_factor_,
-        current_frame_size_in_dip_);
+        surface_id_, base::Bind(&SatisfyCallback, nullptr),
+        base::Bind(&RequireCallback, nullptr), current_surface_size_,
+        current_scale_factor_, current_frame_size_in_dip_);
   }
 }
 

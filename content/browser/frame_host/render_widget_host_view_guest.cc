@@ -95,6 +95,7 @@ bool RenderWidgetHostViewGuest::OnMessageReceivedFromEmbedder(
 }
 
 void RenderWidgetHostViewGuest::Show() {
+#if 0
   // If the WebContents associated with us showed an interstitial page in the
   // beginning, the teardown path might call WasShown() while |host_| is in
   // the process of destruction. Avoid calling WasShown below in this case.
@@ -124,6 +125,7 @@ void RenderWidgetHostViewGuest::Show() {
                                    sequence);
     }
   }
+#endif
   host_->WasShown(ui::LatencyInfo());
 }
 
@@ -259,6 +261,7 @@ void RenderWidgetHostViewGuest::SetTooltipText(
 void RenderWidgetHostViewGuest::OnSwapCompositorFrame(
     uint32_t output_surface_id,
     cc::CompositorFrame frame) {
+#if 0
   TRACE_EVENT0("content", "RenderWidgetHostViewGuest::OnSwapCompositorFrame");
 
   last_scroll_offset_ = frame.metadata.root_scroll_offset;
@@ -320,6 +323,7 @@ void RenderWidgetHostViewGuest::OnSwapCompositorFrame(
   // no longer need.
   if (!guest_ || !guest_->attached())
     ClearCompositorSurfaceIfNecessary();
+#endif
 }
 
 bool RenderWidgetHostViewGuest::OnMessageReceived(const IPC::Message& msg) {

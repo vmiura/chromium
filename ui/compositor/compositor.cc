@@ -92,10 +92,11 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       compositor_lock_(NULL),
       layer_animator_collection_(this),
       weak_ptr_factory_(this) {
-  if (context_factory->GetSurfaceManager()) {
-    context_factory->GetSurfaceManager()->RegisterSurfaceClientId(
-        surface_id_allocator_->client_id());
-  }
+  // TODO(hackathon): We don't use a SurfaceManager in the browser.
+  // if (context_factory->GetSurfaceManager()) {
+  //  context_factory->GetSurfaceManager()->RegisterSurfaceClientId(
+  //      surface_id_allocator_->client_id());
+  //}
   root_web_layer_ = cc::Layer::Create();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -243,16 +244,18 @@ Compositor::~Compositor() {
   host_.reset();
 
   context_factory_->RemoveCompositor(this);
-  if (context_factory_->GetSurfaceManager()) {
-    for (auto& client : surface_clients_) {
-      if (client.second) {
-        context_factory_->GetSurfaceManager()
-            ->UnregisterSurfaceNamespaceHierarchy(client.second, client.first);
-      }
-    }
-    context_factory_->GetSurfaceManager()->InvalidateSurfaceClientId(
-        surface_id_allocator_->client_id());
-  }
+  // HACKATHON: We do not need SurfaceManager in the browser.
+  // if (context_factory_->GetSurfaceManager()) {
+  //  for (auto& client : surface_clients_) {
+  //    if (client.second) {
+  //      context_factory_->GetSurfaceManager()
+  //          ->UnregisterSurfaceNamespaceHierarchy(client.second,
+  //          client.first);
+  //    }
+  //  }
+  //  context_factory_->GetSurfaceManager()->InvalidateSurfaceClientId(
+  //      surface_id_allocator_->client_id());
+  //}
 }
 
 void Compositor::AddSurfaceClient(uint32_t client_id) {
@@ -418,11 +421,11 @@ gfx::AcceleratedWidget Compositor::ReleaseAcceleratedWidget() {
   DCHECK(!IsVisible());
   if (!host_->output_surface_lost()) {
     host_->ReleaseOutputSurface();
-    for (auto& client : surface_clients_) {
-      context_factory_->GetSurfaceManager()
-          ->UnregisterSurfaceNamespaceHierarchy(client.second, client.first);
-      client.second = 0;
-    }
+    // for (auto& client : surface_clients_) {
+    //  context_factory_->GetSurfaceManager()
+    //      ->UnregisterSurfaceNamespaceHierarchy(client.second, client.first);
+    //  client.second = 0;
+    //}
   }
   context_factory_->RemoveCompositor(this);
   widget_valid_ = false;

@@ -46,7 +46,8 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;
-  cc::SurfaceManager* GetSurfaceManager() override;
+  // HACKATHON: No SurfaceManager in the browser.
+  // cc::SurfaceManager* GetSurfaceManager() override;
   void ResizeDisplay(ui::Compositor* compositor,
                      const gfx::Size& size) override;
   void SetDisplayColorSpace(ui::Compositor* compositor,

@@ -186,7 +186,7 @@ GpuProcessTransportFactory::GpuProcessTransportFactory()
       callback_factory_(this) {
   cc::SetClientNameForMetrics("Browser");
 
-  surface_manager_ = base::WrapUnique(new cc::SurfaceManager);
+  // surface_manager_ = base::WrapUnique(new cc::SurfaceManager);
 
   task_graph_runner_->Start("CompositorTileWorker1",
                             base::SimpleThread::Options());
@@ -588,12 +588,12 @@ void GpuProcessTransportFactory::EstablishedGpuChannel(
   std::unique_ptr<cc::SurfaceDisplayOutputSurface> delegated_output_surface(
       vulkan_context_provider
           ? new cc::SurfaceDisplayOutputSurface(
-                surface_manager_.get(), compositor->surface_id_allocator(),
+                nullptr, compositor->surface_id_allocator(),
                 data->display.get(),
                 static_cast<scoped_refptr<cc::VulkanContextProvider>>(
                     vulkan_context_provider))
           : new cc::SurfaceDisplayOutputSurface(
-                surface_manager_.get(), compositor->surface_id_allocator(),
+                nullptr, compositor->surface_id_allocator(),
                 data->display.get(), context_provider,
                 shared_worker_context_provider_));
   data->display->Resize(compositor->size());
@@ -769,9 +769,11 @@ void GpuProcessTransportFactory::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
+#if 0
 cc::SurfaceManager* GpuProcessTransportFactory::GetSurfaceManager() {
   return surface_manager_.get();
 }
+#endif
 
 display_compositor::GLHelper* GpuProcessTransportFactory::GetGLHelper() {
   if (!gl_helper_ && !per_compositor_data_.empty()) {

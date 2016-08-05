@@ -142,7 +142,7 @@ class COMPOSITOR_EXPORT ContextFactory {
                                     const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
-  virtual cc::SurfaceManager* GetSurfaceManager() = 0;
+  // virtual cc::SurfaceManager* GetSurfaceManager() = 0;
 
   // Resize the display corresponding to this compositor to a particular size.
   virtual void ResizeDisplay(ui::Compositor* compositor,

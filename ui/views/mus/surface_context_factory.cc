@@ -99,10 +99,11 @@ SurfaceContextFactory::CreateServiceCompositorConnection(
   return nullptr;
 }
 
-cc::SurfaceManager* SurfaceContextFactory::GetSurfaceManager() {
-  // NOTIMPLEMENTED();
-  return nullptr;
-}
+// NOT USED in COMPOSITOR PROCESS.
+// cc::SurfaceManager* SurfaceContextFactory::GetSurfaceManager() {
+//  // NOTIMPLEMENTED();
+//  return nullptr;
+//}
 
 void SurfaceContextFactory::ResizeDisplay(ui::Compositor* compositor,
                                           const gfx::Size& size) {

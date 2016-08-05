@@ -97,14 +97,17 @@ void CrossProcessFrameConnector::SetChildFrameSurface(
 void CrossProcessFrameConnector::OnSatisfySequence(
     const cc::SurfaceSequence& sequence) {
   std::vector<uint32_t> sequences;
+#if 0
   sequences.push_back(sequence.sequence);
   cc::SurfaceManager* manager = GetSurfaceManager();
   manager->DidSatisfySequences(sequence.client_id, &sequences);
+#endif
 }
 
 void CrossProcessFrameConnector::OnRequireSequence(
     const cc::SurfaceId& id,
     const cc::SurfaceSequence& sequence) {
+#if 0
   cc::SurfaceManager* manager = GetSurfaceManager();
   cc::Surface* surface = manager->GetSurfaceForId(id);
   if (!surface) {
@@ -112,6 +115,7 @@ void CrossProcessFrameConnector::OnRequireSequence(
     return;
   }
   surface->AddDestructionDependency(sequence);
+#endif
 }
 
 void CrossProcessFrameConnector::OnInitializeChildFrame(float scale_factor) {
@@ -147,6 +151,7 @@ gfx::Point CrossProcessFrameConnector::TransformPointToLocalCoordSpace(
     const gfx::Point& point,
     const cc::SurfaceId& original_surface,
     const cc::SurfaceId& local_surface_id) {
+#if 0
   if (original_surface == local_surface_id)
     return point;
 
@@ -160,6 +165,8 @@ gfx::Point CrossProcessFrameConnector::TransformPointToLocalCoordSpace(
     DCHECK(false);
 
   return gfx::ConvertPointToDIP(device_scale_factor_, transformed_point);
+#endif
+  return gfx::Point();
 }
 
 gfx::Point CrossProcessFrameConnector::TransformPointToCoordSpaceForView(

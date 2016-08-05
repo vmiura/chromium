@@ -167,17 +167,18 @@ uint32_t AllocateSurfaceClientId() {
 #endif
 }
 
-cc::SurfaceManager* GetSurfaceManager() {
-#if defined(OS_ANDROID)
-  return CompositorImpl::GetSurfaceManager();
-#else
-  ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
-  if (factory == NULL)
-    return nullptr;
-  return factory->GetSurfaceManager();
-#endif
-}
-
+// HACKATHON: Not used in browser.
+// cc::SurfaceManager* GetSurfaceManager() {
+//#if defined(OS_ANDROID)
+//  return CompositorImpl::GetSurfaceManager();
+//#else
+//  ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
+//  if (factory == NULL)
+//    return nullptr;
+//  return factory->GetSurfaceManager();
+//#endif
+//}
+//
 void CopyFromCompositingSurfaceHasResult(
     const gfx::Size& dst_size_in_pixel,
     const SkColorType color_type,

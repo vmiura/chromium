@@ -406,16 +406,19 @@ void BrowserPluginGuest::SetChildFrameSurface(
 void BrowserPluginGuest::OnSatisfySequence(
     int instance_id,
     const cc::SurfaceSequence& sequence) {
+#if 0
   std::vector<uint32_t> sequences;
   sequences.push_back(sequence.sequence);
   cc::SurfaceManager* manager = GetSurfaceManager();
   manager->DidSatisfySequences(sequence.client_id, &sequences);
+#endif
 }
 
 void BrowserPluginGuest::OnRequireSequence(
     int instance_id,
     const cc::SurfaceId& id,
     const cc::SurfaceSequence& sequence) {
+#if 0
   cc::SurfaceManager* manager = GetSurfaceManager();
   cc::Surface* surface = manager->GetSurfaceForId(id);
   if (!surface) {
@@ -423,6 +426,7 @@ void BrowserPluginGuest::OnRequireSequence(
     return;
   }
   surface->AddDestructionDependency(sequence);
+#endif
 }
 
 bool BrowserPluginGuest::HandleFindForEmbedder(
