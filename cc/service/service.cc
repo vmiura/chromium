@@ -350,6 +350,12 @@ void Service::UnregisterChildCompositor(uint32_t client_id) {
       surface_id_allocator_.client_id(), client_id);
 }
 
+void Service::SatisfySequence(const SurfaceSequence& sequence) {
+  std::vector<uint32_t> sequences;
+  sequences.push_back(sequence.sequence);
+  surface_manager_->DidSatisfySequences(sequence.client_id, &sequences);
+}
+
 void Service::SetNeedsBeginMainFrame() {
   TRACE_EVENT0("cc", "Service::SetNeedsBeginFrame");
   client_->SetNeedsCommitOnImplThread();
