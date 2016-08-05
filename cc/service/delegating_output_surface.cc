@@ -9,23 +9,22 @@
 #include "cc/output/compositor_frame.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/surface.h"
-#include "cc/surfaces/surface_id_allocator.h"
 #include "cc/surfaces/surface_manager.h"
 
 namespace cc {
 
 DelegatingOutputSurface::DelegatingOutputSurface(
     SurfaceManager* surface_manager,
-    SurfaceIdAllocator* surface_id_allocator,
     Display* display,
+    uint32_t surface_client_id,
     scoped_refptr<ContextProvider> context_provider,
     scoped_refptr<ContextProvider> worker_context_provider)
     : OutputSurface(std::move(context_provider),
                     std::move(worker_context_provider),
                     nullptr),
       surface_manager_(surface_manager),
-      surface_id_allocator_(surface_id_allocator),
       display_(display),
+      surface_client_id_(surface_client_id),
       factory_(surface_manager, this) {
   DCHECK(thread_checker_.CalledOnValidThread());
   capabilities_.delegated_rendering = true;
@@ -47,23 +46,7 @@ DelegatingOutputSurface::~DelegatingOutputSurface() {
 }
 
 void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
-#if 0
-  gfx::Size frame_size =
-      frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
-  if (frame_size.IsEmpty() || frame_size != last_swap_frame_size_) {
-    if (!delegated_surface_id_.is_null()) {
-      factory_.Destroy(delegated_surface_id_);
-    }
-    delegated_surface_id_ = //surface_id_allocator_->GenerateId();
-    factory_.Create(delegated_surface_id_);
-    last_swap_frame_size_ = frame_size;
-  }
-#endif
-  if (delegated_surface_id_.is_null()) {
-    delegated_surface_id_ =
-        cc::SurfaceId(surface_id_allocator_->client_id(), 1, 1);
-    factory_.Create(delegated_surface_id_);
-  }
+  DCHECK(!delegated_surface_id_.is_null());
   if (display_) {
     display_->SetSurfaceId(delegated_surface_id_,
                            frame.metadata.device_scale_factor);
@@ -88,14 +71,12 @@ bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
   // SetBeginFrameSource which assumes a client_.  Probably need to
   // make SurfaceDisplayOutputSurface do this too.
   surface_manager_->RegisterSurfaceFactoryClient(
-      surface_id_allocator_->client_id(), this);
+      surface_client_id_, this);
 
   // Avoid initializing GL context here, as this should be sharing the
   // Display's context.
-  if (display_) {
-    display_->Initialize(this, surface_manager_,
-                         surface_id_allocator_->client_id());
-  }
+  if (display_)
+    display_->Initialize(this, surface_manager_, surface_client_id_);
   return true;
 }
 
@@ -112,9 +93,7 @@ void DelegatingOutputSurface::DetachFromClient() {
   // Unregister the SurfaceFactoryClient here instead of the dtor so that only
   // one client is alive for this namespace at any given time.
   surface_manager_->UnregisterSurfaceFactoryClient(
-      surface_id_allocator_->client_id());
-  if (!delegated_surface_id_.is_null())
-    factory_.Destroy(delegated_surface_id_);
+      surface_client_id_);
 
   OutputSurface::DetachFromClient();
 }
@@ -159,6 +138,14 @@ void DelegatingOutputSurface::DidDrawCallback() {
   // // TODO(danakj): Why the lost check?
   // if (!output_surface_lost_)
   //   client_->DidSwapBuffersComplete();
+}
+
+void DelegatingOutputSurface::SetDelegatedSurfaceId(const SurfaceId& id) {
+  if (!delegated_surface_id_.is_null())
+    factory_.Destroy(delegated_surface_id_);
+  delegated_surface_id_ = id;
+  if (!id.is_null())
+    factory_.Create(delegated_surface_id_);
 }
 
 }  // namespace cc

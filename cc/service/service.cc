@@ -233,6 +233,9 @@ Service::~Service() {
 }
 
 void Service::CreateOutputSurface() {
+  if (output_surface_ && !surface_id_.is_null())
+    output_surface_->SetDelegatedSurfaceId(SurfaceId());
+
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   if (root_compositor) {
     auto begin_frame_source = base::MakeUnique<DelayBasedBeginFrameSource>(
@@ -278,10 +281,14 @@ void Service::CreateOutputSurface() {
   auto local_output_surface = std::move(output_surface_);
 
   output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
-      surface_manager_, &surface_id_allocator_,
+      surface_manager_,
       display_.get(),  // Will be null for non-root compositors.
+      surface_id_allocator_.client_id(),
       std::move(compositor_context), std::move(worker_context));
   host_impl_.InitializeRenderer(output_surface_.get());
+
+  if (!surface_id_.is_null())
+    output_surface_->SetDelegatedSurfaceId(surface_id_);
 
   scheduler_.DidCreateAndInitializeOutputSurface();
 }
@@ -726,6 +733,27 @@ void Service::FinishCommit() {
   // TODO(hackathon): micro benchmarks
   micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
 #endif
+
+  if (surface_id_.is_null()) {
+    surface_id_ = cc::SurfaceId(surface_id_allocator_.client_id(), 1, 1);
+    if (output_surface_)
+      output_surface_->SetDelegatedSurfaceId(surface_id_);
+  } else {
+    // TODO(hackathon): If the commit was sync (aka changed size) then change
+    // the id.
+#if 0
+    gfx::Size frame_size =
+        frame.delegated_frame_data->render_pass_list.back()->output_rect.size();
+    if (frame_size.IsEmpty() || frame_size != last_swap_frame_size_) {
+      if (!delegated_surface_id_.is_null()) {
+        factory_.Destroy(delegated_surface_id_);
+      }
+      delegated_surface_id_ = //surface_id_allocator_->GenerateId();
+          factory_.Create(delegated_surface_id_);
+      last_swap_frame_size_ = frame_size;
+    }
+#endif
+  }
 }
 
 void Service::ScheduledActionCommit() {
