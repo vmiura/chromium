@@ -58,16 +58,14 @@ void Surface::QueueFrame(CompositorFrame frame, const DrawCallback& callback) {
 
   CompositorFrame previous_frame = std::move(current_frame_);
   current_frame_ = std::move(frame);
+  DCHECK(current_frame_.delegated_frame_data);
 
-  if (current_frame_.delegated_frame_data) {
-    factory_->ReceiveFromChild(
-        current_frame_.delegated_frame_data->resource_list);
-  }
+  factory_->ReceiveFromChild(
+      current_frame_.delegated_frame_data->resource_list);
 
   // Empty frames shouldn't be drawn and shouldn't contribute damage, so don't
   // increment frame index for them.
-  if (current_frame_.delegated_frame_data &&
-      !current_frame_.delegated_frame_data->render_pass_list.empty()) {
+  if (!current_frame_.delegated_frame_data->render_pass_list.empty()) {
     ++frame_index_;
   }
 
