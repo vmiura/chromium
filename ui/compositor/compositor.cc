@@ -428,6 +428,7 @@ gfx::AcceleratedWidget Compositor::ReleaseAcceleratedWidget() {
     //}
   }
   context_factory_->RemoveCompositor(this);
+  // TODO(hackathon): Synchronously destroy the service compositor.
   widget_valid_ = false;
   gfx::AcceleratedWidget widget = widget_;
   widget_ = gfx::kNullAcceleratedWidget;

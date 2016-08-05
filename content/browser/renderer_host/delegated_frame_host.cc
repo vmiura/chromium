@@ -893,7 +893,8 @@ void DelegatedFrameHost::SetCompositor(ui::Compositor* compositor) {
   vsync_manager_ = compositor_->vsync_manager();
   vsync_manager_->AddObserver(this);
 
-  // compositor_->AddSurfaceClient(id_allocator_->client_id());
+  if (!surface_id_.is_null())
+    compositor_->AddSurfaceClient(id_allocator_->client_id());
 }
 
 void DelegatedFrameHost::ResetCompositor() {
@@ -910,7 +911,6 @@ void DelegatedFrameHost::ResetCompositor() {
     vsync_manager_ = NULL;
   }
 
-  // compositor_->RemoveSurfaceClient(id_allocator_->client_id());
   if (!surface_id_.is_null())
     compositor_->RemoveSurfaceClient(surface_id_.client_id());
   compositor_ = nullptr;
