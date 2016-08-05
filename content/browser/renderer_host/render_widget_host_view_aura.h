@@ -506,6 +506,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnSetNeedsBeginFrames(bool needs_begin_frames);
 
   void OnSetSurfaceClientId(uint32_t client_id);
+  void OnDidGetNewSurface(const gfx::Size& size,
+                          const cc::SurfaceId& surface_id);
 
   RenderFrameHostImpl* GetFocusedFrame();
 

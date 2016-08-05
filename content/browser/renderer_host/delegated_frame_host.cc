@@ -84,15 +84,6 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
   //    id_allocator_->client_id());
   // factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
   //    id_allocator_->client_id(), this);
-  // TODO(hackathon): We should use the frame size not the view size.
-  auto* layer = client_->DelegatedFrameHostGetLayer();
-  if (layer) {
-    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-                          base::Bind(&SatisfyCallback, nullptr),
-                          base::Bind(&RequireCallback, nullptr),
-                          gfx::Size(100, 100), current_scale_factor_,
-                          gfx::Size(100, 100));
-  }
 }
 
 void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
@@ -225,16 +216,6 @@ uint32_t DelegatedFrameHost::GetSurfaceClientId() {
 
 void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
   id_allocator_.reset(new cc::SurfaceIdAllocator(client_id));
-  surface_id_ = cc::SurfaceId(client_id, 1, 1);
-  auto* layer = client_->DelegatedFrameHostGetLayer();
-  fprintf(stderr, ">>>%s layer: %p\n", __PRETTY_FUNCTION__, layer);
-  if (layer) {
-    gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
-    layer->SetShowSurface(cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-                          base::Bind(&SatisfyCallback, nullptr),
-                          base::Bind(&RequireCallback, nullptr), desired_size,
-                          current_scale_factor_, desired_size);
-  }
   if (compositor_)
     compositor_->AddSurfaceClient(client_id);
 }
@@ -297,19 +278,12 @@ bool DelegatedFrameHost::ShouldSkipFrame(gfx::Size size_in_dip) const {
 void DelegatedFrameHost::WasResized() {
   // TODO(hackathon): Figure out how resize should work.
   gfx::Size desired_size = client_->DelegatedFrameHostDesiredSizeInDIP();
-#if 0
   if (desired_size !=
           current_frame_size_in_dip_ &&
       !client_->DelegatedFrameHostIsVisible())
     EvictDelegatedFrame();
   MaybeCreateResizeLock();
   UpdateGutters();
-#endif
-  client_->DelegatedFrameHostGetLayer()->SetShowSurface(
-      cc::SurfaceId(id_allocator_->client_id(), 1, 1),
-      base::Bind(&SatisfyCallback, nullptr),
-      base::Bind(&RequireCallback, nullptr), desired_size,
-      current_scale_factor_, desired_size);
 }
 
 SkColor DelegatedFrameHost::GetGutterColor() const {
@@ -550,6 +524,7 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
     surface_factory_->SubmitCompositorFrame(surface_id_, std::move(frame),
                                             ack_callback);
   }
+  surface_id_ = surface_id;
   released_front_lock_ = NULL;
   current_frame_size_in_dip_ = frame_size_in_dip;
   CheckResizeLock();
@@ -574,6 +549,40 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
   }
   // Note: the frame may have been evicted immediately.
 #endif
+}
+
+void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
+                                          const cc::SurfaceId& surface_id) {
+  if (ShouldSkipFrame(size)) {
+    skipped_frames_ = true;
+    return;
+  }
+
+  // TODO(hackathon): latency info things.
+  // TODO(hackathon): background_color_
+  // background_color_ = frame.metadata.root_background_color;
+
+  if (size.IsEmpty()) {
+    EvictDelegatedFrame();
+  } else {
+    // TODO(hackathon): DSF!!
+    client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+        surface_id, base::Bind(&SatisfyCallback, nullptr),
+        base::Bind(&RequireCallback, nullptr), size, 1.f, size);
+    surface_id_ = surface_id;
+    current_surface_size_ = size;
+    current_scale_factor_ = 1.f;
+  }
+  released_front_lock_ = NULL;
+  current_frame_size_in_dip_ = size;
+  CheckResizeLock();
+
+  UpdateGutters();
+
+  if (!surface_id.is_null()) {
+    delegated_frame_evictor_->SwappedFrame(
+        client_->DelegatedFrameHostIsVisible());
+  }
 }
 
 void DelegatedFrameHost::ClearDelegatedFrame() {
@@ -893,6 +902,7 @@ void DelegatedFrameHost::SetCompositor(ui::Compositor* compositor) {
   vsync_manager_ = compositor_->vsync_manager();
   vsync_manager_->AddObserver(this);
 
+  // TODO(hackathon)
   if (!surface_id_.is_null())
     compositor_->AddSurfaceClient(id_allocator_->client_id());
 }

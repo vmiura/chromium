@@ -182,6 +182,7 @@ class CONTENT_EXPORT RenderWidgetCompositor
   void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override;
   void DidSetSurfaceClientId(uint32_t client_id) override;
+  void DidGetNewSurface(const cc::SurfaceId& new_surface) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void RequestScheduleAnimation() override;

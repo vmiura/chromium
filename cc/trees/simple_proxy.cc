@@ -387,8 +387,7 @@ void SimpleProxy::OnBeginMainFrame(
         SurfaceId new_surface_id;
         compositor_->PrepareCommitSync(hold_commit_for_activation,
                                        std::move(frame), &new_surface_id);
-        LOG(ERROR) << "new_surface_id " << new_surface_id.ToString();
-        // TODO(hackathon): do somethign with new_surface_id
+        layer_tree_host_->DidGetNewSurface(new_surface_id);
       }
       if (hold_commit_for_activation)
         compositor_->WaitForActivation();

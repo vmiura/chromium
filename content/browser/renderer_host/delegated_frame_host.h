@@ -131,6 +131,7 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   void SwapDelegatedFrame(uint32_t output_surface_id,
                           cc::CompositorFrame frame);
+  void DidGetNewSurface(const gfx::Size& size, const cc::SurfaceId& surface_id);
   void ClearDelegatedFrame();
   void WasHidden();
   void WasShown(const ui::LatencyInfo& latency_info);

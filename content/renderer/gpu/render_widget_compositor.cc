@@ -1107,6 +1107,11 @@ void RenderWidgetCompositor::DidSetSurfaceClientId(uint32_t client_id) {
   delegate_->DidSetSurfaceClientId(client_id);
 }
 
+void RenderWidgetCompositor::DidGetNewSurface(const cc::SurfaceId& surface_id) {
+  delegate_->DidGetNewSurface(surface_id);
+}
+
+
 void RenderWidgetCompositor::RequestScheduleAnimation() {
   delegate_->RequestScheduleAnimation();
 }

@@ -14,6 +14,7 @@ namespace cc {
 class BeginFrameSource;
 class CopyOutputRequest;
 class OutputSurface;
+class SurfaceId;
 class SwapPromise;
 }
 
@@ -58,6 +59,8 @@ class CONTENT_EXPORT RenderWidgetCompositorDelegate {
 
   // Notifies that the client has acquired an ID.
   virtual void DidSetSurfaceClientId(uint32_t client) {}
+
+  virtual void DidGetNewSurface(const cc::SurfaceId& surface_id) {}
 
   // Called by the compositor to forward a proto that represents serialized
   // compositor state.

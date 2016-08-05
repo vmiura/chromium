@@ -777,6 +777,10 @@ void RenderWidget::DidSetSurfaceClientId(uint32_t client_id) {
   Send(new ViewHostMsg_SetSurfaceClientId(routing_id_, client_id));
 }
 
+void RenderWidget::DidGetNewSurface(const cc::SurfaceId& surface_id) {
+  Send(new ViewHostMsg_DidGetNewSurface(routing_id_, size_, surface_id));
+}
+
 void RenderWidget::ForwardCompositorProto(const std::vector<uint8_t>& proto) {
   Send(new ViewHostMsg_ForwardCompositorProto(routing_id_, proto));
 }

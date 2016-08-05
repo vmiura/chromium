@@ -1340,6 +1340,10 @@ void LayerTreeHost::SetSurfaceClientId(uint32_t client_id) {
   client_->DidSetSurfaceClientId(client_id);
 }
 
+void LayerTreeHost::DidGetNewSurface(SurfaceId surface_id) {
+  client_->DidGetNewSurface(surface_id);
+}
+
 void LayerTreeHost::RegisterChildCompositor(uint32_t client_id) {
   proxy_->RegisterChildCompositor(client_id);
 }

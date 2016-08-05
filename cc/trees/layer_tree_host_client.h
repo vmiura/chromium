@@ -60,6 +60,7 @@ class LayerTreeHostClient {
   virtual void DidCompleteSwapBuffers(const SurfaceId& surface_id) = 0;
   virtual void DidCompletePageScaleAnimation() = 0;
   virtual void DidSetSurfaceClientId(uint32_t client_id) {}
+  virtual void DidGetNewSurface(const cc::SurfaceId& new_surface) {}
 
  protected:
   virtual ~LayerTreeHostClient() {}

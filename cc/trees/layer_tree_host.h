@@ -356,6 +356,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   size_t num_queued_swap_promises() const { return swap_promise_list_.size(); }
 
   void SetSurfaceClientId(uint32_t client_id);
+  void DidGetNewSurface(SurfaceId surface_id);
   void RegisterChildCompositor(uint32_t client_id);
   void UnregisterChildCompositor(uint32_t client_id);
   SurfaceSequence CreateSurfaceSequence();
