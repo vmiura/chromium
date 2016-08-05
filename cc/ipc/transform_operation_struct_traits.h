@@ -11,6 +11,7 @@
 namespace mojo {
 
 namespace {
+
 cc::mojom::TransformOperationType CCTransformOperationTypeToMojo(
     const cc::TransformOperation::Type& type) {
   switch (type) {
@@ -56,6 +57,14 @@ cc::TransformOperation::Type MojoTransformOperationTypeToCC(
 }
 
 }  // namespace
+
+template <>
+struct EnumTraits<cc::mojom::TargetProperty, cc::TargetProperty::Type> {
+  static cc::mojom::TargetProperty ToMojom(
+      cc::TargetProperty::Type target_property);
+  static bool FromMojom(cc::mojom::TargetProperty input,
+                        cc::TargetProperty::Type* out);
+};
 
 template <>
 struct StructTraits<cc::mojom::TransformOperation, cc::TransformOperation> {
