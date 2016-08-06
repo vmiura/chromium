@@ -1643,26 +1643,26 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
 std::unique_ptr<cc::ServiceConnection>
 RenderThreadImpl::CreateServiceCompositorConnection(
     const cc::LayerTreeSettings& settings) {
-  if (!compositor_factory_) {
+  if (!compositor_channel_) {
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
         CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
     // TODO(hackathon): Deal with failure, this should be an async function.
     CHECK(gpu_channel_host) << "Sad times in sad land. Gpu process required.";
-    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_factory_);
+    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_channel_);
   }
-  DCHECK(compositor_factory_);
+  DCHECK(compositor_channel_);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
-  compositor_factory_->CreateCompositor(
+  compositor_channel_->CreateCompositor(
       gfx::kNullAcceleratedWidget /* offscreen */, settings.ToMojom(),
       mojo::GetProxy(&connection->compositor), std::move(client));
   return connection;
 }
 
 void RenderThreadImpl::AddTempRefOnSurfaceId(const cc::SurfaceId& id) {
-  if (compositor_factory_ && !id.is_null())
-    compositor_factory_->AddTempRefOnSurfaceId(id);
+  if (compositor_channel_ && !id.is_null())
+    compositor_channel_->AddTempRefOnSurfaceId(id);
 }
 
 void RenderThreadImpl::OnRAILModeChanged(v8::RAILMode rail_mode) {
@@ -1801,7 +1801,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
     if (!gpu_channel_->IsLost())
       return gpu_channel_;
 
-    compositor_factory_.reset();
+    compositor_channel_.reset();
 
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();

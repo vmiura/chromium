@@ -18,13 +18,13 @@ namespace cc {
 class LayerTreeSettings;
 class ServiceFactory;
 
-class CompositorChannel : public cc::mojom::CompositorFactory {
+class CompositorChannel : public cc::mojom::CompositorChannel {
  public:
   CompositorChannel(ServiceFactory* factory, gpu::GpuChannel* channel,
                     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
   ~CompositorChannel() override;
 
-  // cc::mojom::Compositor implementation.
+  // cc::mojom::CompositorChannel implementation.
   void CreateCompositor(
       const gpu::SurfaceHandle& handle,
       cc::mojom::LayerTreeSettingsPtr settings,
@@ -38,12 +38,12 @@ class CompositorChannel : public cc::mojom::CompositorFactory {
   ServiceFactory* factory() { return factory_; }
 
  private:
-  void BindCompositorFactoryRequest(
-      cc::mojom::CompositorFactoryAssociatedRequest request);
+  void BindCompositorChannelRequest(
+      cc::mojom::CompositorChannelAssociatedRequest request);
 
   ServiceFactory* const factory_;
   gpu::GpuChannel* const channel_;
-  mojo::AssociatedBinding<cc::mojom::CompositorFactory> binding_;
+  mojo::AssociatedBinding<cc::mojom::CompositorChannel> binding_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   DISALLOW_COPY_AND_ASSIGN(CompositorChannel);
 };

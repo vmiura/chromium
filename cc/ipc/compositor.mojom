@@ -14,7 +14,7 @@ import "cc/ipc/image_decode.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
-interface CompositorFactory {
+interface CompositorChannel {
   CreateCompositor(gpu.mojom.SurfaceHandle widget,
                    cc.mojom.LayerTreeSettings settings,
                    Compositor& compositor,

@@ -714,8 +714,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   bool is_renderer_suspended_;
 
-  mojo::AssociatedInterfacePtr<cc::mojom::CompositorFactory>
-      compositor_factory_;
+  mojo::AssociatedInterfacePtr<cc::mojom::CompositorChannel>
+      compositor_channel_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderThreadImpl);
 };

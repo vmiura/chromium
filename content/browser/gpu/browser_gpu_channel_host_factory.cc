@@ -265,7 +265,7 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   shutdown_event_->Signal();
   if (gpu_channel_) {
     gpu_channel_->DestroyChannel();
-    compositor_factory_.reset();
+    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 }
@@ -313,7 +313,7 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     DCHECK(!pending_request_.get());
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
-    compositor_factory_.reset();
+    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 
@@ -344,19 +344,19 @@ std::unique_ptr<cc::ServiceConnection>
 BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
-  if (!compositor_factory_) {
+  if (!compositor_channel_) {
     // TODO(hackathon): Synchronous is bad mmkay?
     if (!gpu_channel_ || gpu_channel_->IsLost())
       EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
-    gpu_channel_->GetRemoteAssociatedInterface(&compositor_factory_);
+    gpu_channel_->GetRemoteAssociatedInterface(&compositor_channel_);
   }
-  DCHECK(compositor_factory_);
+  DCHECK(compositor_channel_);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
   // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
   gpu::SurfaceHandle handle = widget;
-  compositor_factory_->CreateCompositor(handle, settings.ToMojom(),
+  compositor_channel_->CreateCompositor(handle, settings.ToMojom(),
                                         mojo::GetProxy(&connection->compositor),
                                         std::move(client));
   return connection;
@@ -364,20 +364,20 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
 
 void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
     const cc::SurfaceId& id) {
-  if (compositor_factory_ && !id.is_null())
-    compositor_factory_->AddRefOnSurfaceId(id);
+  if (compositor_channel_ && !id.is_null())
+    compositor_channel_->AddRefOnSurfaceId(id);
 }
 
 void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
     const cc::SurfaceId& id) {
-  if (compositor_factory_ && !id.is_null())
-    compositor_factory_->MoveTempRefToRefOnSurfaceId(id);
+  if (compositor_channel_ && !id.is_null())
+    compositor_channel_->MoveTempRefToRefOnSurfaceId(id);
 }
 
 void BrowserGpuChannelHostFactory::RemoveRefOnSurfaceId(
     const cc::SurfaceId& id) {
-  if (compositor_factory_ && !id.is_null())
-    compositor_factory_->RemoveRefOnSurfaceId(id);
+  if (compositor_channel_ && !id.is_null())
+    compositor_channel_->RemoveRefOnSurfaceId(id);
 }
 
 void BrowserGpuChannelHostFactory::GpuChannelEstablished() {

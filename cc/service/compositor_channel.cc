@@ -16,7 +16,7 @@ CompositorChannel::CompositorChannel(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
     : factory_(factory), channel_(channel), binding_(this), compositor_task_runner_(compositor_task_runner) {
   channel_->AddAssociatedInterface(
-      base::Bind(&CompositorChannel::BindCompositorFactoryRequest,
+      base::Bind(&CompositorChannel::BindCompositorChannelRequest,
                  base::Unretained(this)));
 }
 
@@ -116,8 +116,8 @@ void CompositorChannel::RemoveRefOnSurfaceId(const SurfaceId& id) {
         factory_, id));
 }
 
-void CompositorChannel::BindCompositorFactoryRequest(
-    cc::mojom::CompositorFactoryAssociatedRequest request) {
+void CompositorChannel::BindCompositorChannelRequest(
+    cc::mojom::CompositorChannelAssociatedRequest request) {
   binding_.Bind(std::move(request));
 }
 

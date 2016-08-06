@@ -86,8 +86,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
 
-  mojo::AssociatedInterfacePtr<cc::mojom::CompositorFactory>
-      compositor_factory_;
+  mojo::AssociatedInterfacePtr<cc::mojom::CompositorChannel>
+      compositor_channel_;
 
   static BrowserGpuChannelHostFactory* instance_;
 
