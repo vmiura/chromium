@@ -132,7 +132,8 @@ void SurfaceManager::GarbageCollectSurfaces() {
     auto& refs = surface_refs_[(*dest_it)->surface_id()];
     if (refs.refs)
       continue;
-    DCHECK(!refs.temp_refs);
+    if (refs.temp_refs)
+      continue;
 
     if (!live_surfaces_set.count((*dest_it)->surface_id())) {
       std::unique_ptr<Surface> surf(std::move(*dest_it));
@@ -373,8 +374,6 @@ void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   auto& refs = surface_refs_[id];
   DCHECK_GE(refs.refs, 0);
   refs.refs--;
-  if (!refs.refs)
-    DCHECK_EQ(refs.temp_refs, 0);
 }
 
 }  // namespace cc
