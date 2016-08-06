@@ -108,6 +108,8 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
 
   bool defer_commits_;
   bool begin_frame_requested_;
+  bool needs_update_layers_ = false;
+  bool needs_commit_ = false;
 
   gfx::Size last_committed_device_viewport_size_;
   float last_committed_device_scale_factor_ = 0.f;

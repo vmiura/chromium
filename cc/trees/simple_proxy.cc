@@ -128,26 +128,24 @@ const RendererCapabilities& SimpleProxy::GetRendererCapabilities() const {
 
 void SimpleProxy::SetNeedsAnimate() {
   DCHECK(IsMainThread());
-  // TODO(piman): hackathon ??
   SetNeedsBeginFrame();
 }
 
 void SimpleProxy::SetNeedsUpdateLayers() {
   DCHECK(IsMainThread());
-  // TODO(piman): hackathon ??
+  needs_update_layers_ = true;
   SetNeedsBeginFrame();
 }
 
 void SimpleProxy::SetNeedsCommit() {
   DCHECK(IsMainThread());
-  // TODO(piman): hackathon ??
+  needs_commit_ = true;
   SetNeedsBeginFrame();
 }
 
 void SimpleProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsRedraw");
   DCHECK(IsMainThread());
-  // TODO(piman): hackathon ??
   if (!compositor_) {
     needs_redraw_when_ready_ = true;
     needs_redraw_rect_when_ready_ = damage_rect;
@@ -333,10 +331,13 @@ void SimpleProxy::OnBeginMainFrame(
   layer_tree_host_->RequestMainFrameUpdate();
   TRACE_EVENT_SYNTHETIC_DELAY_END("cc.BeginMainFrame");
 
-  bool can_cancel_this_commit = false;  // TODO(piman): hackathon ??
 
-  bool should_update_layers = true;  // TODO(piman): hackathon ??
+  bool should_update_layers = needs_update_layers_ || needs_commit_;
+  needs_update_layers_ = false;
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
+
+  bool can_cancel_this_commit = !needs_commit_;
+  needs_commit_ = false;
 
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
