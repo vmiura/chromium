@@ -556,10 +556,12 @@ gfx::Rect SurfaceAggregator::PrewalkTree(const SurfaceId& surface_id,
     return gfx::Rect();
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   if (!surface) {
+    LOG(ERROR) << "Surface pointer is null walking SurfaceId " << surface_id.ToString();
     contained_surfaces_[surface_id] = 0;
     return gfx::Rect();
   }
   if (!surface->HasValidFrame()) {
+    LOG(ERROR) << "Missing surface walking SurfaceId " << surface_id.ToString() << " for surface with SurfaceId " << surface->surface_id().ToString();
     result->had_missing_surfaces = true;
   }
   contained_surfaces_[surface_id] = surface->frame_index();

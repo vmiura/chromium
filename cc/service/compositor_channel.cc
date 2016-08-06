@@ -72,6 +72,50 @@ void CompositorChannel::CreateCompositor(
                  factory_->surface_manager(), factory_->task_graph_runner()));
 }
 
+void CompositorChannel::AddRefOnSurfaceId(const SurfaceId& id) {
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
+          factory->surface_manager()->AddRefOnSurfaceId(id);
+        },
+        // If factory_ is destroyed, the compositor_task_runner_'s thread is
+        // joined.
+        factory_, id));
+}
+
+void CompositorChannel::AddTempRefOnSurfaceId(const SurfaceId& id) {
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
+          factory->surface_manager()->AddTempRefOnSurfaceId(id);
+        },
+        // If factory_ is destroyed, the compositor_task_runner_'s thread is
+        // joined.
+        factory_, id));
+}
+
+void CompositorChannel::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
+          factory->surface_manager()->MoveTempRefToRefOnSurfaceId(id);
+        },
+        // If factory_ is destroyed, the compositor_task_runner_'s thread is
+        // joined.
+        factory_, id));
+}
+
+void CompositorChannel::RemoveRefOnSurfaceId(const SurfaceId& id) {
+  compositor_task_runner_->PostTask(
+      FROM_HERE,
+      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
+          factory->surface_manager()->RemoveRefOnSurfaceId(id);
+        },
+        // If factory_ is destroyed, the compositor_task_runner_'s thread is
+        // joined.
+        factory_, id));
+}
+
 void CompositorChannel::BindCompositorFactoryRequest(
     cc::mojom::CompositorFactoryAssociatedRequest request) {
   binding_.Bind(std::move(request));

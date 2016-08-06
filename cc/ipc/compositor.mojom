@@ -19,6 +19,10 @@ interface CompositorFactory {
                    cc.mojom.LayerTreeSettings settings,
                    Compositor& compositor,
                    CompositorClient client);
+  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
+  AddTempRefOnSurfaceId(cc.mojom.SurfaceId id);
+  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
+  RemoveRefOnSurfaceId(cc.mojom.SurfaceId id);
 };
 
 interface Compositor {

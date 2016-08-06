@@ -92,6 +92,11 @@ class CC_SURFACES_EXPORT SurfaceManager {
   void UnregisterSurfaceNamespaceHierarchy(uint32_t parent_namespace,
                                            uint32_t child_namespace);
 
+  void AddRefOnSurfaceId(const SurfaceId& id);
+  void AddTempRefOnSurfaceId(const SurfaceId& id);
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
+  void RemoveRefOnSurfaceId(const SurfaceId& id);
+
  private:
   void RecursivelyAttachBeginFrameSource(uint32_t client_id,
                                          BeginFrameSource* source);
@@ -140,6 +145,14 @@ class CC_SURFACES_EXPORT SurfaceManager {
   // that is implicitly using this namespace must be reachable by the
   // parent in the dag.
   std::unordered_map<BeginFrameSource*, uint32_t> registered_sources_;
+
+  struct SurfaceRefs {
+    SurfaceRefs() = default;
+
+    int refs = 0;
+    int temp_refs = 0;  // Per renderer?
+  };
+  std::unordered_map<SurfaceId, SurfaceRefs, SurfaceIdHash> surface_refs_;
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceManager);
 };

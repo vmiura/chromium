@@ -129,6 +129,11 @@ void SurfaceManager::GarbageCollectSurfaces() {
   // Destroy all remaining unreachable surfaces.
   for (SurfaceDestroyList::iterator dest_it = surfaces_to_destroy_.begin();
        dest_it != surfaces_to_destroy_.end();) {
+    auto& refs = surface_refs_[(*dest_it)->surface_id()];
+    if (refs.refs)
+      continue;
+    DCHECK(!refs.temp_refs);
+
     if (!live_surfaces_set.count((*dest_it)->surface_id())) {
       std::unique_ptr<Surface> surf(std::move(*dest_it));
       DeregisterSurface(surf->surface_id());
@@ -345,6 +350,31 @@ bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id) {
   FOR_EACH_OBSERVER(SurfaceDamageObserver, observer_list_,
                     OnSurfaceDamaged(surface_id, &changed));
   return changed;
+}
+
+void SurfaceManager::AddRefOnSurfaceId(const SurfaceId& id) {
+  auto& refs = surface_refs_[id];
+  refs.refs++;
+}
+
+void SurfaceManager::AddTempRefOnSurfaceId(const SurfaceId& id) {
+  auto& refs = surface_refs_[id];
+  refs.temp_refs++;
+}
+
+void SurfaceManager::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  auto& refs = surface_refs_[id];
+  DCHECK_GT(refs.temp_refs, 0);
+  refs.temp_refs--;
+  refs.refs++;
+}
+
+void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
+  auto& refs = surface_refs_[id];
+  DCHECK_GE(refs.refs, 0);
+  refs.refs--;
+  if (!refs.refs)
+    DCHECK_EQ(refs.temp_refs, 0);
 }
 
 }  // namespace cc

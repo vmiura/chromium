@@ -415,6 +415,7 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
   if (output_surface_)
     output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);
+  LOG(ERROR) << &host_impl_ << " New SurfaceID " << surface_id_.ToString();
 
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }

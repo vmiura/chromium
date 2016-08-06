@@ -37,6 +37,7 @@ component("surfaces") {
     "surface_hittest_delegate.h",
     "surface_id_allocator.cc",
     "surface_id_allocator.h",
+    "surface_id_ref.h",
     "surface_manager.cc",
     "surface_manager.h",
     "surface_resource_holder.cc",

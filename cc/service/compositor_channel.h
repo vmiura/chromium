@@ -30,6 +30,10 @@ class CompositorChannel : public cc::mojom::CompositorFactory {
       cc::mojom::LayerTreeSettingsPtr settings,
       cc::mojom::CompositorRequest compositor,
       cc::mojom::CompositorClientPtr compositor_client) override;
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void AddTempRefOnSurfaceId(const SurfaceId& id) override;
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
+  void RemoveRefOnSurfaceId(const SurfaceId& id) override;
 
   ServiceFactory* factory() { return factory_; }
 
