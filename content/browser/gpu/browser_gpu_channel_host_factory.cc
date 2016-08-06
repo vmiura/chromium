@@ -362,6 +362,24 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   return connection;
 }
 
+void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
+    const cc::SurfaceId& id) {
+  if (compositor_factory_ && !id.is_null())
+    compositor_factory_->AddRefOnSurfaceId(id);
+}
+
+void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
+    const cc::SurfaceId& id) {
+  if (compositor_factory_ && !id.is_null())
+    compositor_factory_->MoveTempRefToRefOnSurfaceId(id);
+}
+
+void BrowserGpuChannelHostFactory::RemoveRefOnSurfaceId(
+    const cc::SurfaceId& id) {
+  if (compositor_factory_ && !id.is_null())
+    compositor_factory_->RemoveRefOnSurfaceId(id);
+}
+
 void BrowserGpuChannelHostFactory::GpuChannelEstablished() {
   DCHECK(IsMainThread());
   DCHECK(pending_request_.get());

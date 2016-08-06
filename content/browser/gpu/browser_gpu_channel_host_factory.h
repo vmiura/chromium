@@ -56,6 +56,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings);
 
+  void AddRefOnSurfaceId(const cc::SurfaceId& id);
+  void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
+  void RemoveRefOnSurfaceId(const cc::SurfaceId& id);
+
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();
 

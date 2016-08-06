@@ -117,6 +117,9 @@ Layer::~Layer() {
   cc_layer_->RemoveFromParent();
   if (mailbox_release_callback_)
     mailbox_release_callback_->Run(gpu::SyncToken(), false);
+
+  if (surface_layer_)
+    release_surface_id_callback_.Run();
 }
 
 const Compositor* Layer::GetCompositor() const {
@@ -501,6 +504,8 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   content_layer_ = NULL;
   solid_color_layer_ = NULL;
   texture_layer_ = NULL;
+  if (surface_layer_)
+    release_surface_id_callback_.Run();
   surface_layer_ = NULL;
 
   for (size_t i = 0; i < children_.size(); ++i) {
@@ -593,6 +598,8 @@ void Layer::SetShowSurface(
     const cc::SurfaceId& surface_id,
     const cc::SurfaceLayer::SatisfyCallback& satisfy_callback,
     const cc::SurfaceLayer::RequireCallback& require_callback,
+    const base::Closure& add_ref_callback,
+    const base::Closure& release_callback,
     gfx::Size surface_size,
     float scale,
     gfx::Size frame_size_in_dip) {
@@ -602,7 +609,11 @@ void Layer::SetShowSurface(
       cc::SurfaceLayer::Create(satisfy_callback, require_callback);
   new_layer->SetSurfaceId(surface_id, scale, surface_size);
   SwitchToLayer(new_layer);
+  if (surface_layer_)
+    release_surface_id_callback_.Run();
   surface_layer_ = new_layer;
+  release_surface_id_callback_ = release_callback;
+  add_ref_surface_id_callback_ = add_ref_callback;
 
   frame_size_in_dip_ = frame_size_in_dip;
   RecomputeDrawsContentAndUVRect();

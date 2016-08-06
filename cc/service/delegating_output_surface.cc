@@ -52,14 +52,14 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
     DCHECK(frame_size == last_swap_frame_size_);
   } else {
     if (!swapped_surface_id_.is_null()) {
-      LOG(ERROR) << client_ << " Destroying in Swap SurfaceId " << swapped_surface_id_.ToString();
+      LOG(ERROR) << "Destroying in Swap SurfaceId " << swapped_surface_id_.ToString();
       factory_.Destroy(swapped_surface_id_);
     }
     swapped_surface_id_ = committed_surface_id_;
     committed_surface_id_ = SurfaceId();
   }
 
-  LOG(ERROR) << client_ << " Swapping SurfaceId " << swapped_surface_id_.ToString();
+  LOG(ERROR) << "Swapping SurfaceId " << swapped_surface_id_.ToString();
   if (display_) {
     display_->SetSurfaceId(swapped_surface_id_,
                            frame.metadata.device_scale_factor);

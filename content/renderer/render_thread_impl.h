@@ -228,6 +228,7 @@ class CONTENT_EXPORT RenderThreadImpl
   bool IsThreadedAnimationEnabled() override;
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
       const cc::LayerTreeSettings& settings) override;
+  void AddTempRefOnSurfaceId(const cc::SurfaceId& id);
 
   // scheduler::RendererScheduler::RAILModeObserver implementation.
   void OnRAILModeChanged(v8::RAILMode rail_mode) override;

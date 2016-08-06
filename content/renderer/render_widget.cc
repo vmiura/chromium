@@ -778,6 +778,7 @@ void RenderWidget::DidSetSurfaceClientId(uint32_t client_id) {
 }
 
 void RenderWidget::DidGetNewSurface(const cc::SurfaceId& surface_id) {
+  RenderThreadImpl::current()->AddTempRefOnSurfaceId(surface_id);
   Send(new ViewHostMsg_DidGetNewSurface(routing_id_, size_, surface_id));
 }
 

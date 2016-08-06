@@ -229,6 +229,7 @@ Service::~Service() {
   host_impl_.ReleaseOutputSurface();
   output_surface_.reset();
 
+  surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   surface_manager_->InvalidateSurfaceClientId(
       surface_id_allocator_.client_id());
 }
@@ -411,11 +412,13 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
       frame->device_scale_factor != last_commit_tree->device_scale_factor();
   DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
+  surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   surface_id_ = surface_id_allocator_.GenerateId();
+  surface_manager_->AddRefOnSurfaceId(surface_id_);
   if (output_surface_)
     output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);
-  LOG(ERROR) << &host_impl_ << " New SurfaceID " << surface_id_.ToString();
+  LOG(ERROR) << "New SurfaceID " << surface_id_.ToString();
 
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }

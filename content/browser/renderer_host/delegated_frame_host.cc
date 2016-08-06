@@ -23,6 +23,7 @@
 #include "cc/surfaces/surface_manager.h"
 #include "components/display_compositor/gl_helper.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/resize_lock.h"
 #include "content/public/browser/render_widget_host_view_frame_subscriber.h"
@@ -58,6 +59,16 @@ void RequireCallback(cc::SurfaceManager* manager,
   //  return;
   //}
   //surface->AddDestructionDependency(sequence);
+}
+
+void AddRefSurfaceId(const cc::SurfaceId& id) {
+  BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
+      id);
+}
+
+void ReleaseSurfaceId(const cc::SurfaceId& id) {
+  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+      id);
 }
 
 }  // namespace
@@ -553,8 +564,13 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
 
 void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
                                           const cc::SurfaceId& surface_id) {
+  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
+      surface_id);
+
   if (ShouldSkipFrame(size)) {
     skipped_frames_ = true;
+    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+        surface_id);
     return;
   }
 
@@ -566,9 +582,16 @@ void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
     EvictDelegatedFrame();
   } else {
     // TODO(hackathon): DSF!!
+    BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
+        surface_id_);
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         surface_id, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr), size, 1.f, size);
+        base::Bind(&RequireCallback, nullptr),
+        base::Bind(&AddRefSurfaceId, surface_id),
+        base::Bind(&ReleaseSurfaceId, surface_id),
+        size, 1.f, size);
+    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+        surface_id_);
     surface_id_ = surface_id;
     current_surface_size_ = size;
     current_scale_factor_ = 1.f;
@@ -639,6 +662,8 @@ void DelegatedFrameHost::EvictDelegatedFrame() {
   client_->DelegatedFrameHostGetLayer()->SetShowSolidColorContent();
   if (!surface_id_.is_null()) {
     surface_factory_->Destroy(surface_id_);
+    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+        surface_id_);
     surface_id_ = cc::SurfaceId();
   }
   delegated_frame_evictor_->DiscardedFrame();
@@ -878,6 +903,9 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   DCHECK(!compositor_);
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
+
+  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+      surface_id_);
 #if 0
   if (surface_factory_) {
     // HACKATHON: surface_factory_ is always null and unused.
@@ -963,9 +991,13 @@ void DelegatedFrameHost::OnLayerRecreated(ui::Layer* old_layer,
   if (!surface_id_.is_null()) {
     // ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
     // cc::SurfaceManager* manager = factory->GetSurfaceManager();
+    BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
+        surface_id_);
     new_layer->SetShowSurface(
         surface_id_, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr), current_surface_size_,
+        base::Bind(&RequireCallback, nullptr),
+        base::Bind(&AddRefSurfaceId, surface_id_),
+        base::Bind(&ReleaseSurfaceId, surface_id_), current_surface_size_,
         current_scale_factor_, current_frame_size_in_dip_);
   }
 }

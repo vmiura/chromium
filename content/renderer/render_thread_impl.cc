@@ -1660,6 +1660,11 @@ RenderThreadImpl::CreateServiceCompositorConnection(
   return connection;
 }
 
+void RenderThreadImpl::AddTempRefOnSurfaceId(const cc::SurfaceId& id) {
+  if (compositor_factory_ && !id.is_null())
+    compositor_factory_->AddTempRefOnSurfaceId(id);
+}
+
 void RenderThreadImpl::OnRAILModeChanged(v8::RAILMode rail_mode) {
   blink::mainThreadIsolate()->SetRAILMode(rail_mode);
   blink::setRAILModeOnWorkerThreadIsolates(rail_mode);

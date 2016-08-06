@@ -74,6 +74,10 @@ void SurfaceFactory::SubmitCompositorFrame(const SurfaceId& surface_id,
   DCHECK(it != surface_map_.end());
   DCHECK(it->second->factory().get() == this);
   it->second->QueueFrame(std::move(frame), callback);
+  // TODO(hackathon): References were added in ui::Compositor::DidCommit. Now we
+  // will keep the SurfaceId alive in DelegatingOutputSurface.
+  //for (const SurfaceId& surface : it->second->referenced_surfaces())
+  //  manager_->RemoveRefOnSurfaceId(surface);
   if (!manager_->SurfaceModified(surface_id)) {
     TRACE_EVENT_INSTANT0("cc", "Damage not visible.", TRACE_EVENT_SCOPE_THREAD);
     it->second->RunDrawCallbacks();

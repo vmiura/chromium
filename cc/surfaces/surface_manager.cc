@@ -137,6 +137,7 @@ void SurfaceManager::GarbageCollectSurfaces() {
 
     if (!live_surfaces_set.count((*dest_it)->surface_id())) {
       std::unique_ptr<Surface> surf(std::move(*dest_it));
+      LOG(ERROR) << "** DELETING SurfaceId " << surf->surface_id().ToString();
       DeregisterSurface(surf->surface_id());
       dest_it = surfaces_to_destroy_.erase(dest_it);
       to_destroy.push_back(std::move(surf));
@@ -354,26 +355,36 @@ bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id) {
 }
 
 void SurfaceManager::AddRefOnSurfaceId(const SurfaceId& id) {
+  if (id.is_null()) return;
   auto& refs = surface_refs_[id];
   refs.refs++;
+  LOG(ERROR) << "Add ref on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 
 void SurfaceManager::AddTempRefOnSurfaceId(const SurfaceId& id) {
+  if (id.is_null()) return;
   auto& refs = surface_refs_[id];
+  // TODO(hackathon): Record which renderer made the temp ref, and reap them
+  // after a timeout if the renderer dies.
   refs.temp_refs++;
+  LOG(ERROR) << "Add temp ref on SurfaceId " << id.ToString() << " " << refs.temp_refs;;
 }
 
 void SurfaceManager::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  if (id.is_null()) return;
   auto& refs = surface_refs_[id];
   DCHECK_GT(refs.temp_refs, 0);
   refs.temp_refs--;
   refs.refs++;
+  LOG(ERROR) << "Make temp ref real on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 
 void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
+  if (id.is_null()) return;
   auto& refs = surface_refs_[id];
   DCHECK_GE(refs.refs, 0);
   refs.refs--;
+  LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 
 }  // namespace cc
