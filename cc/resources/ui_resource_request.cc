@@ -5,6 +5,7 @@
 #include "cc/resources/ui_resource_request.h"
 
 #include "base/memory/ptr_util.h"
+#include "cc/ipc/ui_resource.mojom.h"
 
 namespace cc {
 
@@ -37,5 +38,25 @@ UIResourceRequest& UIResourceRequest::operator=(
 }
 
 UIResourceRequest::~UIResourceRequest() {}
+
+void UIResourceRequest::WriteMojom(
+    cc::mojom::UIResourceRequestProperties* mojom) {
+  mojom->uid = id_;
+  switch (type_) {
+    case UIResourceRequestType::UI_RESOURCE_CREATE:
+      mojom->type = cc::mojom::UIResourceRequestType::CREATE;
+      break;
+    case UIResourceRequestType::UI_RESOURCE_DELETE:
+      mojom->type = cc::mojom::UIResourceRequestType::DELETE;
+      break;
+    case UIResourceRequestType::UI_RESOURCE_INVALID_REQUEST:
+      mojom->type = cc::mojom::UIResourceRequestType::INVALID;
+      break;
+  }
+  if (bitmap_) {
+    mojom->bitmap = mojom::UIResourceBitmap::New();
+    bitmap_->WriteMojom(mojom->bitmap.get());
+  }
+}
 
 }  // namespace cc
