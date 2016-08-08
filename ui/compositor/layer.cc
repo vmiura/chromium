@@ -609,8 +609,6 @@ void Layer::SetShowSurface(
       cc::SurfaceLayer::Create(satisfy_callback, require_callback);
   new_layer->SetSurfaceId(surface_id, scale, surface_size);
   SwitchToLayer(new_layer);
-  if (surface_layer_)
-    release_surface_id_callback_.Run();
   surface_layer_ = new_layer;
   release_surface_id_callback_ = release_callback;
   add_ref_surface_id_callback_ = add_ref_callback;

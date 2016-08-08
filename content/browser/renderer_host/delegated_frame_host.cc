@@ -582,8 +582,6 @@ void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
     EvictDelegatedFrame();
   } else {
     // TODO(hackathon): DSF!!
-    BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
-        surface_id_);
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         surface_id, base::Bind(&SatisfyCallback, nullptr),
         base::Bind(&RequireCallback, nullptr),
