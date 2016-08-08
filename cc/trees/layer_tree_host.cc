@@ -1956,17 +1956,14 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
   }
 #endif
 
-  // TODO(hackathon): UI resources but no bitmap
+#if 0
+  // TODO(hackathon): UI resources
   if (!ui_resource_request_queue_.empty()) {
-    frame->ui_resource_request_queue = cc::mojom::UIResourceRequestQueue::New();
-    for (auto ui_resource_request : ui_resource_request_queue_) {
-      auto mojom = cc::mojom::UIResourceRequestProperties::New();
-      ui_resource_request.WriteMojom(mojom.get());
-      frame->ui_resource_request_queue->ui_resource_requests.push_back(
-          std::move(mojom));
-    }
+    sync_tree->set_ui_resource_request_queue(ui_resource_request_queue_);
     ui_resource_request_queue_.clear();
   }
+#endif
+
 
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");

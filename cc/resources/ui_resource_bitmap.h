@@ -18,10 +18,6 @@ class SkBitmap;
 
 namespace cc {
 
-namespace mojom {
-class UIResourceBitmap;
-}
-
 class ETC1PixelRef;
 
 // A bitmap class that contains a ref-counted reference to a SkPixelRef that
@@ -48,10 +44,6 @@ class CC_EXPORT UIResourceBitmap {
   UIResourceBitmap(sk_sp<SkPixelRef> pixel_ref, const gfx::Size& size);
   UIResourceBitmap(const UIResourceBitmap& other);
   ~UIResourceBitmap();
-
-  void WriteMojom(cc::mojom::UIResourceBitmap* mojom);
-  static std::unique_ptr<UIResourceBitmap> CreateFromMojom(
-      cc::mojom::UIResourceBitmap* mojom);
 
  private:
   friend class AutoLockUIResourceBitmap;

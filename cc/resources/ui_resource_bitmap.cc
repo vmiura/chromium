@@ -9,12 +9,9 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "cc/ipc/ui_resource.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/core/SkWriteBuffer.h"
 
 namespace cc {
 namespace {
@@ -84,48 +81,6 @@ UIResourceBitmap::UIResourceBitmap(sk_sp<SkPixelRef> pixel_ref,
 UIResourceBitmap::UIResourceBitmap(const UIResourceBitmap& other) = default;
 
 UIResourceBitmap::~UIResourceBitmap() {}
-
-void UIResourceBitmap::WriteMojom(cc::mojom::UIResourceBitmap* mojom) {
-  SkBinaryWriteBuffer buffer;
-  SkBitmap bitmap;
-  SkAlphaType alphaType = opaque_ ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
-  SkImageInfo info =
-      SkImageInfo::MakeN32(size_.width(), size_.height(), alphaType);
-  bitmap.setInfo(info);
-  SkColorType sk_type = kN32_SkColorType;
-  switch (format_) {
-    case UIResourceBitmap::RGBA8:
-      sk_type = kN32_SkColorType;
-      break;
-    case UIResourceBitmap::ALPHA_8:
-      sk_type = kAlpha_8_SkColorType;
-      break;
-    default:
-      NOTREACHED() << "Invalid UIResourceBitmap format for SkColorType: "
-                   << format_;
-      break;
-  }
-  pixel_ref_->lockPixels();
-  pixel_ref_->readPixels(&bitmap, sk_type);
-  bitmap.setPixelRef(pixel_ref_.get());
-  buffer.writeBitmap(bitmap);
-  SkDynamicMemoryWStream stream;
-  buffer.writeToStream(&stream);
-  int bytes = stream.bytesWritten();
-  mojom->bitmap.resize(bytes);
-  stream.copyTo(mojom->bitmap.data());
-  pixel_ref_->unlockPixels();
-}
-
-// static
-std::unique_ptr<UIResourceBitmap> UIResourceBitmap::CreateFromMojom(
-    cc::mojom::UIResourceBitmap* mojom) {
-  LOG(ERROR) << "bitmap size: " << mojom->bitmap.size();
-  SkMemoryStream read_stream(mojom->bitmap.data(), mojom->bitmap.size(), true);
-  SkBitmap bitmap;
-  read_stream.readBitmap(&bitmap);
-  return base::WrapUnique(new UIResourceBitmap(bitmap));
-}
 
 AutoLockUIResourceBitmap::AutoLockUIResourceBitmap(
     const UIResourceBitmap& bitmap) : bitmap_(bitmap) {

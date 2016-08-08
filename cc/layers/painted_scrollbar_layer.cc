@@ -310,36 +310,4 @@ UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
   return UIResourceBitmap(skbitmap);
 }
 
-void PaintedScrollbarLayer::WriteStructureMojom(
-    cc::mojom::LayerStructure* mojom) {
-  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
-  mojom->layer_type = cc::mojom::LayerType::PAINTED_SCROLLBAR;
-  mojom->scrollbar_orientation_is_horizontal =
-      orientation() == ScrollbarOrientation::HORIZONTAL;
-}
-
-void PaintedScrollbarLayer::WritePropertiesMojom(
-    cc::mojom::LayerProperties* mojom) {
-  Layer::WritePropertiesMojom(mojom);
-  mojom->painted_scrollbar_state = mojom::PaintedScrollbarLayerState::New();
-  mojom::PaintedScrollbarLayerState* painted_scrollbar_state =
-      mojom->painted_scrollbar_state.get();
-
-  painted_scrollbar_state->scroll_layer_id = scroll_layer_id_;
-  painted_scrollbar_state->internal_contents_scale = internal_contents_scale_;
-  painted_scrollbar_state->internal_content_bounds = internal_content_bounds_;
-  painted_scrollbar_state->thumb_thickness = thumb_thickness_;
-  painted_scrollbar_state->thumb_length = thumb_length_;
-  painted_scrollbar_state->track_start = orientation() == HORIZONTAL
-                                             ? track_rect_.x() - location_.x()
-                                             : track_rect_.y() - location_.y();
-  painted_scrollbar_state->track_length =
-      orientation() == HORIZONTAL ? track_rect_.width() : track_rect_.height();
-  painted_scrollbar_state->thumb_opacity = thumb_opacity_;
-  painted_scrollbar_state->track_ui_resource_id =
-      track_resource_ ? track_resource_->id() : 0;
-  painted_scrollbar_state->thumb_ui_resource_id =
-      thumb_resource_ ? thumb_resource_->id() : 0;
-}
-
 }  // namespace cc

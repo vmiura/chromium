@@ -29,7 +29,6 @@ class SharedBitmapManager;
 class DelegatingOutputSurface;
 class SurfaceManager;
 class TaskGraphRunner;
-class UIResourceRequest;
 
 class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
  public:

@@ -58,7 +58,6 @@ mojom("compositor_interfaces") {
     "layer_tree_settings.mojom",
     "renderer_capabilities.mojom",
     "resource_format.mojom",
-    "ui_resource.mojom",
   ]
   public_deps = [
     ":interfaces_surfaceid_only",
