@@ -130,10 +130,10 @@ void SurfaceManager::GarbageCollectSurfaces() {
   for (SurfaceDestroyList::iterator dest_it = surfaces_to_destroy_.begin();
        dest_it != surfaces_to_destroy_.end();) {
     auto& refs = surface_refs_[(*dest_it)->surface_id()];
-    if (refs.refs)
+    if (refs.refs || refs.temp_refs) {
+      ++dest_it;
       continue;
-    if (refs.temp_refs)
-      continue;
+    }
 
     if (!live_surfaces_set.count((*dest_it)->surface_id())) {
       std::unique_ptr<Surface> surf(std::move(*dest_it));
