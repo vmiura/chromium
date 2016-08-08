@@ -14,6 +14,10 @@
 
 namespace cc {
 
+namespace mojom {
+class UIResourceRequestProperties;
+}
+
 class CC_EXPORT UIResourceRequest {
  public:
   enum UIResourceRequestType {
@@ -38,6 +42,8 @@ class CC_EXPORT UIResourceRequest {
   }
 
   UIResourceRequest& operator=(const UIResourceRequest& request);
+
+  void WriteMojom(cc::mojom::UIResourceRequestProperties* mojom);
 
  private:
   UIResourceRequestType type_;

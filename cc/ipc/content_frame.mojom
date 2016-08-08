@@ -1,6 +1,7 @@
 module cc.mojom;
 
 import "cc/ipc/layer.mojom";
+import "cc/ipc/ui_resource.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/transform.mojom";
 
@@ -71,6 +72,7 @@ enum LayerType {
   // TODO(hackathon): PICTURE_IMAGE,
   SOLID_COLOR,
   // TODO(hackathon): SOLID_COLOR_SCROLLBAR
+  PAINTED_SCROLLBAR,
   // TODO(hackathon): NINE_PATCH,
   SURFACE,
   // TODO(hackathon): TEXTURE,
@@ -82,10 +84,15 @@ struct LayerStructure {
   LayerType layer_type;
   int32 layer_id;
   bool is_mask;  // Only for PictureLayer
+  bool scrollbar_orientation_is_horizontal;  // Only for ScrollbarLayer
 };
 
 struct LayerTree {
   array<cc.mojom.LayerStructure> layers;
+};
+
+struct UIResourceRequestQueue {
+  array<cc.mojom.UIResourceRequestProperties> ui_resource_requests;
 };
 
 struct ContentFrame {
@@ -113,6 +120,8 @@ struct ContentFrame {
   // This exists iff needs_full_tree_sync is true.
   LayerTree? layer_tree;
   array<cc.mojom.LayerProperties> layer_properties;
+
+  UIResourceRequestQueue? ui_resource_request_queue;
 };
 
 enum CommitEarlyOutReason {

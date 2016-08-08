@@ -9,6 +9,7 @@
 #include "cc/ipc/content_frame.mojom.h"
 #include "cc/ipc/layer.mojom.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
@@ -16,6 +17,8 @@
 #include "cc/output/renderer.h"
 #include "cc/output/texture_mailbox_deleter.h"
 #include "cc/output/content_frame.h"
+#include "cc/resources/ui_resource_bitmap.h"
+#include "cc/resources/ui_resource_request.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/compositor_timing_history.h"
 #include "cc/scheduler/delay_based_time_source.h"
@@ -514,6 +517,12 @@ void Service::FinishCommit() {
           case cc::mojom::LayerType::PICTURE:
             layer = PictureLayerImpl::Create( sync_tree, id, mojom->is_mask);
             break;
+          case cc::mojom::LayerType::PAINTED_SCROLLBAR:
+            layer = PaintedScrollbarLayerImpl::Create(
+                sync_tree, id, mojom->scrollbar_orientation_is_horizontal
+                                   ? ScrollbarOrientation::HORIZONTAL
+                                   : ScrollbarOrientation::VERTICAL);
+            break;
           case cc::mojom::LayerType::SOLID_COLOR:
             layer = SolidColorLayerImpl::Create(sync_tree, id);
             break;
@@ -718,13 +727,42 @@ void Service::FinishCommit() {
   }
 #endif
 
-#if 0
   // TODO(hackathon): UI resources
-  if (!ui_resource_request_queue_.empty()) {
-    sync_tree->set_ui_resource_request_queue(ui_resource_request_queue_);
-    ui_resource_request_queue_.clear();
+  UIResourceRequestQueue ui_resource_request_queue;
+  auto& ui_resource_requests = frame->ui_resource_request_queue;
+  auto create_ui_resource_request =
+      [](cc::mojom::UIResourceRequestProperties* mojom) {
+        int uid = mojom->uid;
+        std::unique_ptr<UIResourceRequest> request;
+        std::unique_ptr<UIResourceBitmap> bitmap;
+        switch (mojom->type) {
+          case cc::mojom::UIResourceRequestType::CREATE:
+            DCHECK(mojom->bitmap);
+            bitmap = cc::UIResourceBitmap::CreateFromMojom(mojom->bitmap.get());
+            request = base::WrapUnique(new UIResourceRequest(
+                UIResourceRequest::UI_RESOURCE_CREATE, uid, *bitmap.get()));
+            break;
+          case cc::mojom::UIResourceRequestType::DELETE:
+            request = base::WrapUnique(new UIResourceRequest(
+                UIResourceRequest::UI_RESOURCE_DELETE, uid));
+            break;
+          case cc::mojom::UIResourceRequestType::INVALID:
+            // NOTREACHED.
+            break;
+        }
+        return request;
+      };
+
+  if (ui_resource_requests) {
+    for (const auto& request : ui_resource_requests->ui_resource_requests) {
+      auto ui_resource_request = create_ui_resource_request(request.get());
+      if (ui_resource_request)
+        ui_resource_request_queue.push_back(*ui_resource_request.get());
+    }
   }
-#endif
+  if (!ui_resource_request_queue.empty()) {
+    sync_tree->set_ui_resource_request_queue(ui_resource_request_queue);
+  }
 
   DCHECK(!sync_tree->ViewportSizeInvalid());
 

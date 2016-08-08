@@ -198,4 +198,23 @@ const char* PaintedScrollbarLayerImpl::LayerTypeAsString() const {
   return "cc::PaintedScrollbarLayerImpl";
 }
 
+void PaintedScrollbarLayerImpl::ReadPropertiesMojom(
+    cc::mojom::LayerProperties* mojom) {
+  LayerImpl::ReadPropertiesMojom(mojom);
+  DCHECK(mojom->painted_scrollbar_state);
+  mojom::PaintedScrollbarLayerState* painted_scrollbar_state =
+      mojom->painted_scrollbar_state.get();
+
+  SetScrollLayerId(painted_scrollbar_state->scroll_layer_id);
+  internal_contents_scale_ = painted_scrollbar_state->internal_contents_scale;
+  internal_content_bounds_ = painted_scrollbar_state->internal_content_bounds;
+  thumb_thickness_ = painted_scrollbar_state->thumb_thickness;
+  thumb_length_ = painted_scrollbar_state->thumb_length;
+  track_start_ = painted_scrollbar_state->track_start;
+  track_length_ = painted_scrollbar_state->track_length;
+  thumb_opacity_ = painted_scrollbar_state->thumb_opacity;
+  track_ui_resource_id_ = painted_scrollbar_state->track_ui_resource_id;
+  thumb_ui_resource_id_ = painted_scrollbar_state->thumb_ui_resource_id;
+}
+
 }  // namespace cc
