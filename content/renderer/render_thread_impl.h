@@ -173,6 +173,10 @@ class CONTENT_EXPORT RenderThreadImpl
   // changed.
   static void NotifyTimezoneChange();
 
+  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+      int32_t routing_id,
+      const cc::LayerTreeSettings& settings);
+
   // RenderThread implementation:
   bool Send(IPC::Message* msg) override;
   IPC::SyncChannel* GetChannel() override;
@@ -226,8 +230,6 @@ class CONTENT_EXPORT RenderThreadImpl
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool AreImageDecodeTasksEnabled() override;
   bool IsThreadedAnimationEnabled() override;
-  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      const cc::LayerTreeSettings& settings) override;
   void AddTempRefOnSurfaceId(const cc::SurfaceId& id);
 
   // scheduler::RendererScheduler::RAILModeObserver implementation.
@@ -714,6 +716,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   bool is_renderer_suspended_;
 
+  mojo::InterfacePtr<cc::mojom::DisplayCompositorHost> display_compositor_host_;
   mojo::AssociatedInterfacePtr<cc::mojom::CompositorChannel>
       compositor_channel_;
 

@@ -13,9 +13,11 @@ struct WebScreenInfo;
 namespace cc {
 class BeginFrameSource;
 class CopyOutputRequest;
+class LayerTreeSettings;
 class OutputSurface;
 class SurfaceId;
 class SwapPromise;
+struct ServiceConnection;
 }
 
 namespace content {
@@ -43,6 +45,10 @@ class CONTENT_EXPORT RenderWidgetCompositorDelegate {
   // Requests an external BeginFrameSource from the delegate.
   virtual std::unique_ptr<cc::BeginFrameSource>
   CreateExternalBeginFrameSource() = 0;
+
+  // Requests a new compositor service connection.
+  virtual std::unique_ptr<cc::ServiceConnection>
+  CreateServiceCompositorConnection(const cc::LayerTreeSettings& settings) = 0;
 
   // Notifies that the draw commands for a committed frame have been issued.
   virtual void DidCommitAndDrawCompositorFrame() = 0;

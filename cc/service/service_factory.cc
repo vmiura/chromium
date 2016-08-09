@@ -1,6 +1,7 @@
 #include "cc/service/service_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "cc/service/display_compositor.h"
 #include "cc/service/service.h"
 #include "cc/service/service_context_provider.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -23,6 +24,19 @@ ServiceFactory::ServiceFactory(
 }
 
 ServiceFactory::~ServiceFactory() = default;
+
+void ServiceFactory::BindDisplayCompositorFactoryRequest(
+    cc::mojom::DisplayCompositorFactoryRequest request) {
+  bindings_.AddBinding(this, std::move(request));
+}
+
+void ServiceFactory::CreateDisplayCompositor(
+    cc::mojom::DisplayCompositorRequest display_compositor,
+    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+  display_compositors_.insert(base::WrapUnique(new cc::DisplayCompositor(
+      this, std::move(display_compositor), std::move(display_compositor_client),
+      compositor_thread_.task_runner())));
+}
 
 void ServiceFactory::AddChannel(gpu::GpuChannel* channel) {
   std::unique_ptr<CompositorChannel> compositor_channel(

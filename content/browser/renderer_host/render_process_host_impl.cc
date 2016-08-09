@@ -44,6 +44,8 @@
 #include "base/tracked_objects.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "cc/host/display_compositor_host.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/output/buffer_to_texture_target_map.h"
 #include "components/memory_coordinator/browser/memory_coordinator.h"
 #include "components/memory_coordinator/common/memory_coordinator_features.h"
@@ -247,6 +249,36 @@
 
 namespace content {
 namespace {
+
+class DisplayCompositorGenerator : public cc::DisplayCompositorHost::Delegate {
+ public:
+  DisplayCompositorGenerator() {
+    fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+  }
+  ~DisplayCompositorGenerator() = default;
+
+  cc::DisplayCompositorConnection GetDisplayCompositorConnection() override {
+    if (!display_compositor_factory_) {
+      GpuProcessHost* host =
+          GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
+                              CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
+
+      host->GetRemoteInterfaces()->GetInterface(&display_compositor_factory_);
+    }
+    fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+
+    cc::mojom::DisplayCompositorClientPtr display_compositor_client;
+    cc::DisplayCompositorConnection connection;
+    connection.client_request = mojo::GetProxy(&display_compositor_client);
+    display_compositor_factory_->CreateDisplayCompositor(
+        mojo::GetProxy(&connection.compositor),
+        std::move(display_compositor_client));
+    return connection;
+  }
+
+ private:
+  cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory_;
+};
 
 const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
@@ -1064,6 +1096,15 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   GetInterfaceRegistry()->AddInterface(
       base::Bind(&OffscreenCanvasSurfaceImpl::Create));
 
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
+      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+  std::unique_ptr<cc::DisplayCompositorHost::Delegate> delegate(
+      new DisplayCompositorGenerator);
+  GetInterfaceRegistry()->AddInterface(
+      base::Bind(&cc::DisplayCompositorHost::Create, GetID(),
+                 base::Passed(&delegate)),
+      io_task_runner);
+
   GetInterfaceRegistry()->AddInterface(base::Bind(
       &BackgroundSyncContext::CreateService,
       base::Unretained(storage_partition_impl_->GetBackgroundSyncContext())));
@@ -1092,8 +1133,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::Bind(&hyphenation::HyphenationImpl::Create), file_task_runner);
 #endif
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
   GetInterfaceRegistry()->AddInterface(base::Bind(&DeviceLightHost::Create),
                                        io_task_runner);
   GetInterfaceRegistry()->AddInterface(base::Bind(&DeviceMotionHost::Create),

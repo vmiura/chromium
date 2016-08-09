@@ -65,8 +65,6 @@ class CompositorDependencies {
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
   virtual bool AreImageDecodeTasksEnabled() = 0;
   virtual bool IsThreadedAnimationEnabled() = 0;
-  virtual std::unique_ptr<cc::ServiceConnection>
-  CreateServiceCompositorConnection(const cc::LayerTreeSettings& settings) = 0;
 
   virtual ~CompositorDependencies() {}
 };

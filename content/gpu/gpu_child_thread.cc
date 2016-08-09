@@ -15,6 +15,7 @@
 #include "base/threading/thread_local.h"
 #include "base/threading/worker_pool.h"
 #include "build/build_config.h"
+#include "cc/service/display_compositor.h"
 #include "cc/service/service_factory.h"
 #include "content/child/child_discardable_shared_memory_manager.h"
 #include "content/child/child_gpu_memory_buffer_manager.h"
@@ -383,6 +384,7 @@ void GpuChildThread::OnInitialize(const gpu::GpuPreferences& gpu_preferences) {
       ChildProcess::current()->io_task_runner(),
       ChildProcess::current()->GetShutDownEvent(), sync_point_manager,
       gpu_memory_buffer_factory_));
+
   service_compositor_factory_.reset(new cc::ServiceFactory(
       shared_bitmap_manager(), gpu_memory_buffer_manager(),
       gpu_memory_buffer_factory_ ? gpu_memory_buffer_factory_->AsImageFactory()
@@ -402,6 +404,10 @@ void GpuChildThread::OnInitialize(const gpu::GpuPreferences& gpu_preferences) {
 
   GetInterfaceRegistry()->AddInterface(base::Bind(
       &GpuChildThread::BindProcessControlRequest, base::Unretained(this)));
+
+  GetInterfaceRegistry()->AddInterface(
+      base::Bind(&cc::ServiceFactory::BindDisplayCompositorFactoryRequest,
+                 base::Unretained(service_compositor_factory_.get())));
 
   if (GetContentClient()->gpu()) {  // NULL in tests.
     GetContentClient()->gpu()->ExposeInterfacesToBrowser(

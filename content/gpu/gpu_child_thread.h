@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/process_control.mojom.h"
 #include "gpu/command_buffer/service/gpu_preferences.h"
@@ -31,6 +32,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace cc {
+class DisplayCompositor;
 class ServiceFactory;
 }
 
@@ -171,6 +173,10 @@ class GpuChildThread : public ChildThreadImpl,
 
   // Process control for Mojo application hosting.
   std::unique_ptr<GpuProcessControlImpl> process_control_;
+
+  // Bindings to cc::mojom::DisplayCompositorFactory.
+  mojo::BindingSet<cc::mojom::DisplayCompositor>
+      display_compositor_factory_bindings_;
 
   // Bindings to the mojom::ProcessControl impl.
   mojo::BindingSet<mojom::ProcessControl> process_control_bindings_;

@@ -9,6 +9,8 @@ component("service") {
     "compositor_channel.h",
     "delegating_output_surface.cc",
     "delegating_output_surface.h",
+    "display_compositor.cc",
+    "display_compositor.h",
     "display_output_surface.cc",
     "display_output_surface.h",
     "service.cc",

@@ -1316,6 +1316,32 @@ void RenderThreadImpl::NotifyTimezoneChange() {
       base::Bind(&NotifyTimezoneChangeOnThisThread));
 }
 
+std::unique_ptr<cc::ServiceConnection>
+RenderThreadImpl::CreateServiceCompositorConnection(
+    int32_t routing_id,
+    const cc::LayerTreeSettings& settings) {
+  fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
+  if (!compositor_channel_) {
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
+        EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
+    // TODO(hackathon): Deal with failure, this should be an async function.
+    CHECK(gpu_channel_host) << "Sad times in sad land. Gpu process required.";
+    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_channel_);
+  }
+  if (!display_compositor_host_)
+    GetRemoteInterfaces()->GetInterface(&display_compositor_host_);
+  DCHECK(display_compositor_host_);
+  DCHECK(compositor_channel_);
+  auto connection = base::MakeUnique<cc::ServiceConnection>();
+  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
+  connection->client_request = mojo::GetProxy(&client);
+  display_compositor_host_->CreateCompositor(
+      routing_id, settings.ToMojom(), mojo::GetProxy(&connection->compositor),
+      std::move(client));
+  fprintf(stderr, "[1] >>%s\n", __PRETTY_FUNCTION__);
+  return connection;
+}
+
 void RenderThreadImpl::RecordAction(const base::UserMetricsAction& action) {
   Send(new ViewHostMsg_UserMetricsRecordAction(action.str_));
 }
@@ -1640,26 +1666,6 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
   return is_threaded_animation_enabled_;
 }
 
-std::unique_ptr<cc::ServiceConnection>
-RenderThreadImpl::CreateServiceCompositorConnection(
-    const cc::LayerTreeSettings& settings) {
-  if (!compositor_channel_) {
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
-        CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
-    // TODO(hackathon): Deal with failure, this should be an async function.
-    CHECK(gpu_channel_host) << "Sad times in sad land. Gpu process required.";
-    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_channel_);
-  }
-  DCHECK(compositor_channel_);
-  auto connection = base::MakeUnique<cc::ServiceConnection>();
-  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
-  connection->client_request = mojo::GetProxy(&client);
-  compositor_channel_->CreateCompositor(
-      gfx::kNullAcceleratedWidget /* offscreen */, settings.ToMojom(),
-      mojo::GetProxy(&connection->compositor), std::move(client));
-  return connection;
-}
-
 void RenderThreadImpl::AddTempRefOnSurfaceId(const cc::SurfaceId& id) {
   if (compositor_channel_ && !id.is_null())
     compositor_channel_->AddTempRefOnSurfaceId(id);
@@ -1802,6 +1808,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
       return gpu_channel_;
 
     compositor_channel_.reset();
+    display_compositor_host_.reset();
 
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();

@@ -14,6 +14,33 @@ import "cc/ipc/image_decode.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
+// Renderer to Browser
+interface DisplayCompositorHost {
+  CreateCompositor(int32 routing_id,
+                   cc.mojom.LayerTreeSettings settings,
+                   Compositor& compositor,
+                   CompositorClient client);
+};
+
+interface DisplayCompositorClient {
+};
+
+// This is the main interface that the DisplayCompositor host uses
+// to connect to the Display Compositor service.
+interface DisplayCompositorFactory {
+  CreateDisplayCompositor(DisplayCompositor& display_compositor,
+                          DisplayCompositorClient display_compositor_client);
+};
+
+// Browser to GPU
+interface DisplayCompositor {
+  CreateCompositor(uint32 client_id,
+                   gpu.mojom.SurfaceHandle widget,
+                   cc.mojom.LayerTreeSettings settings,
+                   Compositor& compositor,
+                   CompositorClient client);
+};
+
 interface CompositorChannel {
   CreateCompositor(gpu.mojom.SurfaceHandle widget,
                    cc.mojom.LayerTreeSettings settings,

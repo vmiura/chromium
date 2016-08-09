@@ -2,25 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/service/compositor_channel.h"
+#include "cc/service/display_compositor.h"
 
 #include "cc/service/service.h"
 #include "cc/service/service_factory.h"
-#include "gpu/ipc/service/gpu_channel.h"
+#include "cc/trees/layer_tree_settings.h"
 
 namespace cc {
 
-CompositorChannel::CompositorChannel(
-    ServiceFactory* factory,
-    gpu::GpuChannel* channel,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
-    : factory_(factory), channel_(channel), binding_(this), compositor_task_runner_(compositor_task_runner) {
-  channel_->AddAssociatedInterface(
-      base::Bind(&CompositorChannel::BindCompositorChannelRequest,
-                 base::Unretained(this)));
-}
-
-CompositorChannel::~CompositorChannel() = default;
+namespace {
 
 static void CreateServiceOnThread(
     const gpu::SurfaceHandle& handle,
@@ -45,19 +35,35 @@ static void CreateServiceOnThread(
   new Service(handle, std::move(compositor), std::move(client_ptr), settings,
               id, shared_bitmap_manager, gpu_mem, image_factory,
               surface_manager, task_graph_runner);
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+}
 }
 
-void CompositorChannel::CreateCompositor(
+DisplayCompositor::DisplayCompositor(
+    ServiceFactory* factory,
+    mojom::DisplayCompositorRequest request,
+    mojom::DisplayCompositorClientPtr client,
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
+    : factory_(factory),
+      compositor_task_runner_(compositor_task_runner),
+      client_(std::move(client)),
+      binding_(this, std::move(request)) {}
+
+DisplayCompositor::~DisplayCompositor() = default;
+
+void DisplayCompositor::CreateCompositor(
+    uint32_t client_id,
     const gpu::SurfaceHandle& handle,
-    cc::mojom::LayerTreeSettingsPtr settings,
-    cc::mojom::CompositorRequest compositor,
-    cc::mojom::CompositorClientPtr compositor_client) {
+    mojom::LayerTreeSettingsPtr settings,
+    mojom::CompositorRequest compositor,
+    mojom::CompositorClientPtr compositor_client) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   compositor_task_runner_->PostTask(
       FROM_HERE,
       base::Bind(&CreateServiceOnThread, handle, base::Passed(&settings),
                  base::Passed(&compositor),
                  base::Passed(compositor_client.PassInterface()),
+                 // client_id,
                  factory_->NextServiceCompositorId(),
                  // TODO(hackathon): Better be threadsafe.
                  factory_->shared_bitmap_manager(),
@@ -71,55 +77,6 @@ void CompositorChannel::CreateCompositor(
                  // used on the compositor thread which is joined before they
                  // are destroyed.
                  factory_->surface_manager(), factory_->task_graph_runner()));
-}
-
-void CompositorChannel::AddRefOnSurfaceId(const SurfaceId& id) {
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
-          factory->surface_manager()->AddRefOnSurfaceId(id);
-        },
-        // If factory_ is destroyed, the compositor_task_runner_'s thread is
-        // joined.
-        factory_, id));
-}
-
-void CompositorChannel::AddTempRefOnSurfaceId(const SurfaceId& id) {
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
-          factory->surface_manager()->AddTempRefOnSurfaceId(id);
-        },
-        // If factory_ is destroyed, the compositor_task_runner_'s thread is
-        // joined.
-        factory_, id));
-}
-
-void CompositorChannel::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
-          factory->surface_manager()->MoveTempRefToRefOnSurfaceId(id);
-        },
-        // If factory_ is destroyed, the compositor_task_runner_'s thread is
-        // joined.
-        factory_, id));
-}
-
-void CompositorChannel::RemoveRefOnSurfaceId(const SurfaceId& id) {
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind([](ServiceFactory* factory, const SurfaceId& id) {
-          factory->surface_manager()->RemoveRefOnSurfaceId(id);
-        },
-        // If factory_ is destroyed, the compositor_task_runner_'s thread is
-        // joined.
-        factory_, id));
-}
-
-void CompositorChannel::BindCompositorChannelRequest(
-    cc::mojom::CompositorChannelAssociatedRequest request) {
-  binding_.Bind(std::move(request));
 }
 
 }  // namespace cc

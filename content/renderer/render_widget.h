@@ -70,6 +70,7 @@ struct WebPoint;
 namespace cc {
 class OutputSurface;
 class SwapPromise;
+struct ServiceConnection;
 }
 
 namespace gfx {
@@ -192,6 +193,8 @@ class CONTENT_EXPORT RenderWidget
       bool fallback) override;
   std::unique_ptr<cc::BeginFrameSource> CreateExternalBeginFrameSource()
       override;
+  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+      const cc::LayerTreeSettings& settings) override;
   void DidCommitAndDrawCompositorFrame() override;
   void DidCommitCompositorFrame() override;
   void DidCompletePageScaleAnimation() override;

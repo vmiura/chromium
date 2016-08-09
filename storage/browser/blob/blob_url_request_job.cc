@@ -264,7 +264,7 @@ void BlobURLRequestJob::NotifyFailure(int error_code) {
     case net::ERR_FAILED:
       break;
     default:
-      DCHECK(false);
+      // DCHECK(false);
       break;
   }
   HeadersCompleted(status_code);
