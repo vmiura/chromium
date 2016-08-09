@@ -250,12 +250,11 @@
 namespace content {
 namespace {
 
-class DisplayCompositorGenerator : public cc::DisplayCompositorHost::Delegate {
+class DisplayCompositorFactory : public cc::DisplayCompositorHost::Delegate {
  public:
-  DisplayCompositorGenerator() {
+  DisplayCompositorFactory() {
     fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   }
-  ~DisplayCompositorGenerator() = default;
 
   cc::DisplayCompositorConnection GetDisplayCompositorConnection() override {
     if (!display_compositor_factory_) {
@@ -277,7 +276,13 @@ class DisplayCompositorGenerator : public cc::DisplayCompositorHost::Delegate {
   }
 
  private:
+  ~DisplayCompositorFactory() override = default;
+
+  friend class base::RefCounted<DisplayCompositorFactory>;
+
   cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(DisplayCompositorFactory);
 };
 
 const char kSiteProcessMapKeyName[] = "content_site_process_map";
@@ -1098,11 +1103,11 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
-  std::unique_ptr<cc::DisplayCompositorHost::Delegate> delegate(
-      new DisplayCompositorGenerator);
+  scoped_refptr<cc::DisplayCompositorHost::Delegate> display_compositor_factory(
+      new DisplayCompositorFactory);
   GetInterfaceRegistry()->AddInterface(
       base::Bind(&cc::DisplayCompositorHost::Create, GetID(),
-                 base::Passed(&delegate)),
+                 display_compositor_factory),
       io_task_runner);
 
   GetInterfaceRegistry()->AddInterface(base::Bind(

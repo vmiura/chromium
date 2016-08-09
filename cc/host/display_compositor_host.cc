@@ -15,11 +15,10 @@ DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
 void DisplayCompositorHost::Create(
     int32_t process_id,
-    std::unique_ptr<Delegate> delegate,
+    scoped_refptr<Delegate> delegate,
     mojom::DisplayCompositorHostRequest request) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-  new DisplayCompositorHost(process_id, std::move(delegate),
-                            std::move(request));
+  new DisplayCompositorHost(process_id, delegate, std::move(request));
 }
 
 DisplayCompositorHost::~DisplayCompositorHost() = default;
@@ -46,10 +45,10 @@ void DisplayCompositorHost::CreateCompositor(
 
 DisplayCompositorHost::DisplayCompositorHost(
     int32_t process_id,
-    std::unique_ptr<Delegate> delegate,
+    scoped_refptr<Delegate> delegate,
     mojom::DisplayCompositorHostRequest request)
     : process_id_(process_id),
-      delegate_(std::move(delegate)),
+      delegate_(delegate),
       client_binding_(this),
       binding_(this, std::move(request)) {}
 

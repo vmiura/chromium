@@ -22,13 +22,18 @@ struct DisplayCompositorConnection {
 class DisplayCompositorHost : public mojom::DisplayCompositorHost,
                               public mojom::DisplayCompositorClient {
  public:
-  class Delegate {
+  class Delegate : public base::RefCounted<Delegate> {
    public:
-    ~Delegate() {}
     virtual DisplayCompositorConnection GetDisplayCompositorConnection() = 0;
+
+   protected:
+    virtual ~Delegate() {}
+
+   private:
+    friend class base::RefCounted<Delegate>;
   };
   static void Create(int32_t process_id,
-                     std::unique_ptr<Delegate> delegate,
+                     scoped_refptr<Delegate> delegate,
                      mojom::DisplayCompositorHostRequest request);
 
   ~DisplayCompositorHost() override;
@@ -43,11 +48,11 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
 
  private:
   DisplayCompositorHost(int32_t process_id,
-                        std::unique_ptr<Delegate> delegate,
+                        scoped_refptr<Delegate> delegate,
                         mojom::DisplayCompositorHostRequest request);
 
   const int32_t process_id_;
-  std::unique_ptr<Delegate> delegate_;
+  scoped_refptr<Delegate> delegate_;
   uint32_t next_compositor_id_ = 1;
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
