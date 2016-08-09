@@ -91,6 +91,7 @@ void ImageDecodeProxy::OnDecodeImageCompleted(CompletionEvent* event) {
 bool ImageDecodeProxy::DecodeImage(uint32_t unique_id,
                                    const SkImageInfo& info,
                                    void* data) {
+  TRACE_EVENT1("cc", "ImageDecodeProxy::DecodeImage", "unique_id", unique_id);
   size_t size = info.getSafeSize(info.minRowBytes());
 
   // Allocate shared memory buffer.

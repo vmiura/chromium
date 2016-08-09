@@ -80,7 +80,7 @@ class CC_EXPORT RecordingSource {
   void ReadMojom(mojom::PictureLayerState* mojom,
                  scoped_refptr<DisplayItemList> last_display_list);
 
-  PictureCache picture_cache;
+  PictureCache picture_cache_;
 
  protected:
   void Clear();

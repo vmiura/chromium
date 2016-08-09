@@ -247,6 +247,8 @@ void RecordingSource::Clear() {
 }
 
 void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
+  TRACE_EVENT1("cc", "RecordingSource::WriteMojom", "opcount",
+               display_list_ ? display_list_->ApproximateOpCount() : 0);
   mojom->recorded_viewport = recorded_viewport_;
   mojom->size = size_;
   mojom->requires_clear = requires_clear_;
@@ -257,9 +259,16 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
     mojom->display_list_id = display_list_->unique_id();
     if (last_send_display_list_id_ != display_list_->unique_id()) {
       SkDynamicMemoryWStream write_stream;
-      display_list_->SerializeToStream(&write_stream, picture_cache);
-      mojom->display_list.resize(write_stream.bytesWritten());
-      write_stream.copyTo(mojom->display_list.data());
+      {
+        TRACE_EVENT0("cc", "RecordingSource::WriteMojom serialization");
+        display_list_->SerializeToStream(&write_stream, picture_cache_);
+      }
+      {
+        TRACE_EVENT1("cc", "RecordingSource::WriteMojom copy", "size",
+                     write_stream.bytesWritten());
+        mojom->display_list.resize(write_stream.bytesWritten());
+        write_stream.copyTo(mojom->display_list.data());
+      }
       last_send_display_list_id_ = display_list_->unique_id();
     } else {
       mojom->display_list.clear();
@@ -273,6 +282,7 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
 void RecordingSource::ReadMojom(
     mojom::PictureLayerState* mojom,
     scoped_refptr<DisplayItemList> last_display_list) {
+  TRACE_EVENT0("cc", "RecordingSource::WriteMojom");
   recorded_viewport_ = mojom->recorded_viewport;
   size_ = mojom->size;
   requires_clear_ = mojom->requires_clear;
@@ -280,12 +290,14 @@ void RecordingSource::ReadMojom(
   solid_color_ = mojom->solid_color;
   background_color_ = mojom->background_color;
   if (!mojom->display_list.empty()) {
+    TRACE_EVENT1("cc", "RecordingSource::WriteMojom deserialization", "size",
+                 mojom->display_list.size());
     SkMemoryStream read_stream(mojom->display_list.data(),
                                mojom->display_list.size(), false);
     PictureCache new_picture_cache;
     display_list_ = DisplayItemList::CreateFromStream(&read_stream,
-        picture_cache, new_picture_cache);
-    picture_cache = new_picture_cache;
+        picture_cache_, new_picture_cache);
+    picture_cache_ = std::move(new_picture_cache);
   } else {
     if (last_display_list &&
         last_display_list->unique_id() == mojom->display_list_id)
