@@ -382,8 +382,11 @@ void SurfaceManager::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
 void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   if (id.is_null()) return;
   auto& refs = surface_refs_[id];
-  DCHECK_GE(refs.refs, 0);
+  DCHECK_GT(refs.refs, 0);
   refs.refs--;
+  // If this SurfaceId has no refs then we can garbage collect it.
+  if (!refs.refs && !refs.temp_refs)
+    GarbageCollectSurfaces();
   LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 

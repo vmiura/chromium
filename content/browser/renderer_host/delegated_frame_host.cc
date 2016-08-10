@@ -588,8 +588,6 @@ void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
         base::Bind(&AddRefSurfaceId, surface_id),
         base::Bind(&ReleaseSurfaceId, surface_id),
         size, 1.f, size);
-    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-        surface_id_);
     surface_id_ = surface_id;
     current_surface_size_ = size;
     current_scale_factor_ = 1.f;
@@ -902,8 +900,9 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
 
-  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-      surface_id_);
+// The ref will be removed in the SurfaceLayer callback.
+//  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+//      surface_id_);
 #if 0
   if (surface_factory_) {
     // HACKATHON: surface_factory_ is always null and unused.
