@@ -136,6 +136,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   virtual ~LayerTreeHost();
 
+  void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
+
   void InitializeServiceConnection(
       std::unique_ptr<ServiceConnection> connection);
 
@@ -621,6 +623,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   uint32_t surface_client_id_;
   uint32_t next_surface_sequence_;
   uint32_t num_consecutive_frames_suitable_for_gpu_ = 0;
+
+  std::vector<SurfaceId> released_surfaces_;
 
   // Layer tree that hold layers.
   LayerTree layer_tree_;

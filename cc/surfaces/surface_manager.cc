@@ -387,7 +387,8 @@ void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   // If this SurfaceId has no refs then we can garbage collect it.
   if (!refs.refs && !refs.temp_refs)
     GarbageCollectSurfaces();
-  LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs;
+  LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs
+             << " " << refs.temp_refs;
 }
 
 }  // namespace cc

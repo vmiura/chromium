@@ -214,6 +214,8 @@ class COMPOSITOR_EXPORT Compositor
     return surface_clients_;
   }
 
+  void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
+
   void SetOutputSurface(std::unique_ptr<cc::OutputSurface> surface);
 
   // Schedules a redraw of the layer tree associated with this compositor.

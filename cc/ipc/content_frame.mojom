@@ -2,6 +2,7 @@ module cc.mojom;
 
 import "cc/ipc/layer.mojom";
 import "cc/ipc/ui_resource.mojom";
+import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/transform.mojom";
 
@@ -120,6 +121,7 @@ struct ContentFrame {
   // This exists iff needs_full_tree_sync is true.
   LayerTree? layer_tree;
   array<cc.mojom.LayerProperties> layer_properties;
+  array<cc.mojom.SurfaceId> released_surfaces;
 
   UIResourceRequestQueue? ui_resource_request_queue;
 };

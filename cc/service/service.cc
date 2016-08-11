@@ -68,6 +68,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
       const SurfaceId& surface_id) override {
     owner_->scheduler()->DidSwapBuffersComplete();
     owner_->compositor_client()->OnDidCompleteSwapBuffers(surface_id);
+    owner_->ReleaseSurfaces();
   }
   void OnCanDrawStateChanged(bool can_draw) override {
     owner_->scheduler()->SetCanDraw(can_draw);
@@ -235,6 +236,15 @@ Service::~Service() {
   surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   surface_manager_->InvalidateSurfaceClientId(
       surface_id_allocator_.client_id());
+}
+
+void Service::ReleaseSurfaces() {
+  for (const SurfaceId& surface_id : released_surfaces_) {
+    surface_manager_->RemoveRefOnSurfaceId(surface_id);
+    fprintf(stderr, ">>>%s surface_id: %s\n", __PRETTY_FUNCTION__,
+            surface_id.ToString().c_str());
+  }
+  released_surfaces_.clear();
 }
 
 void Service::CreateOutputSurface() {
@@ -415,9 +425,11 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
       frame->device_scale_factor != last_commit_tree->device_scale_factor();
   DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
-  surface_manager_->RemoveRefOnSurfaceId(surface_id_);
-  surface_id_ = surface_id_allocator_.GenerateId();
-  surface_manager_->AddRefOnSurfaceId(surface_id_);
+  cc::SurfaceId new_surface_id = surface_id_allocator_.GenerateId();
+  surface_manager_->AddRefOnSurfaceId(new_surface_id);
+  if (!surface_id_.is_null())
+    surface_manager_->RemoveRefOnSurfaceId(surface_id_);
+  surface_id_ = new_surface_id;
   if (output_surface_)
     output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);
@@ -428,6 +440,11 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
 
 void Service::PrepareCommitInternal(bool will_wait_for_activation,
                                     mojom::ContentFramePtr frame) {
+  if (frame->released_surfaces.size() > 0) {
+    released_surfaces_.insert(released_surfaces_.end(),
+                              frame->released_surfaces.begin(),
+                              frame->released_surfaces.end());
+  }
   frame_for_commit_ = std::move(frame);
   if (will_wait_for_activation)
     wait_for_activation_state_ = kWaitForActivationPrepared;

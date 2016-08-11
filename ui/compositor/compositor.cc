@@ -286,6 +286,10 @@ void Compositor::RemoveSurfaceClient(uint32_t client_id) {
 #endif
 }
 
+void Compositor::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
+  host_->ReleaseSurfaceId(surface_id);
+}
+
 void Compositor::SetOutputSurface(
     std::unique_ptr<cc::OutputSurface> output_surface) {
 #if 0

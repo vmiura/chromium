@@ -66,11 +66,6 @@ void AddRefSurfaceId(const cc::SurfaceId& id) {
       id);
 }
 
-void ReleaseSurfaceId(const cc::SurfaceId& id) {
-  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-      id);
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -134,6 +129,12 @@ void DelegatedFrameHost::MaybeCreateResizeLock() {
 
   resize_lock_ =
       client_->DelegatedFrameHostCreateResizeLock(defer_compositor_lock);
+}
+
+void DelegatedFrameHost::ReleaseSurfaceId(const cc::SurfaceId& id) {
+  if (!compositor_)
+    return;
+  compositor_->ReleaseSurfaceId(id);
 }
 
 bool DelegatedFrameHost::ShouldCreateResizeLock() {
@@ -564,15 +565,15 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
 
 void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
                                           const cc::SurfaceId& surface_id) {
-  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
-      surface_id);
-
   if (ShouldSkipFrame(size)) {
     skipped_frames_ = true;
-    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-        surface_id);
+    // BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
+    //    surface_id);
     return;
   }
+
+  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
+      surface_id);
 
   // TODO(hackathon): latency info things.
   // TODO(hackathon): background_color_
@@ -586,7 +587,8 @@ void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
         surface_id, base::Bind(&SatisfyCallback, nullptr),
         base::Bind(&RequireCallback, nullptr),
         base::Bind(&AddRefSurfaceId, surface_id),
-        base::Bind(&ReleaseSurfaceId, surface_id),
+        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
+                   surface_id),
         size, 1.f, size);
     surface_id_ = surface_id;
     current_surface_size_ = size;
@@ -990,12 +992,14 @@ void DelegatedFrameHost::OnLayerRecreated(ui::Layer* old_layer,
     // cc::SurfaceManager* manager = factory->GetSurfaceManager();
     BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
         surface_id_);
-    new_layer->SetShowSurface(
-        surface_id_, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr),
-        base::Bind(&AddRefSurfaceId, surface_id_),
-        base::Bind(&ReleaseSurfaceId, surface_id_), current_surface_size_,
-        current_scale_factor_, current_frame_size_in_dip_);
+    new_layer->SetShowSurface(surface_id_,
+                              base::Bind(&SatisfyCallback, nullptr),
+                              base::Bind(&RequireCallback, nullptr),
+                              base::Bind(&AddRefSurfaceId, surface_id_),
+                              base::Bind(&DelegatedFrameHost::ReleaseSurfaceId,
+                                         AsWeakPtr(), surface_id_),
+                              current_surface_size_, current_scale_factor_,
+                              current_frame_size_in_dip_);
   }
 }
 

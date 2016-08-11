@@ -426,6 +426,10 @@ LayerTreeHost::~LayerTreeHost() {
   }
 }
 
+void LayerTreeHost::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
+  released_surfaces_.push_back(surface_id);
+}
+
 void LayerTreeHost::InitializeServiceConnection(
     std::unique_ptr<ServiceConnection> connection) {
   proxy_->InitializeCompositor(std::move(connection));
@@ -1742,6 +1746,7 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
   frame->next_commit_forces_redraw = next_commit_forces_redraw_;
   next_commit_forces_redraw_ = false;
   frame->source_frame = source_frame_number_;
+  frame->released_surfaces.swap(released_surfaces_);
 
   if (needs_full_tree_sync_ && root_layer()) {
     TRACE_EVENT0("cc", "LayerTreeHost::GetContentFrame full sync layer walk");

@@ -206,6 +206,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   RenderWidgetHostViewFrameSubscriber* frame_subscriber() const {
     return frame_subscriber_.get();
   }
+
+  void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
   bool ShouldCreateResizeLock();
   void LockResources();
   void UnlockResources();

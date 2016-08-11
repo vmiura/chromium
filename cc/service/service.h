@@ -46,6 +46,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   ~Service() override;
 
   // ClientImpl access.
+  void ReleaseSurfaces();
   LayerTreeHostImpl* host_impl() { return &host_impl_; }
   Scheduler* scheduler() { return &scheduler_; }
   cc::mojom::CompositorClientPtr& compositor_client() { return compositor_client_; }
@@ -126,6 +127,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   mojom::ContentFramePtr frame_for_commit_;
   WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;
   WaitForActivationCallback activation_callback_;
+  std::vector<SurfaceId> released_surfaces_;
 
   // This is null for non-root service compositors.
   std::unique_ptr<Display> display_;
