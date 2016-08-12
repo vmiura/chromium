@@ -65,6 +65,7 @@
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/compositor/display_compositor_factory.h"
 #include "content/browser/device_sensors/device_sensor_host.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/dom_storage_message_filter.h"
@@ -249,41 +250,6 @@
 
 namespace content {
 namespace {
-
-class DisplayCompositorFactory : public cc::DisplayCompositorHost::Delegate {
- public:
-  DisplayCompositorFactory() {
-    fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-  }
-
-  cc::DisplayCompositorConnection GetDisplayCompositorConnection() override {
-    if (!display_compositor_factory_) {
-      GpuProcessHost* host =
-          GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
-                              CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
-
-      host->GetRemoteInterfaces()->GetInterface(&display_compositor_factory_);
-    }
-    fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-
-    cc::mojom::DisplayCompositorClientPtr display_compositor_client;
-    cc::DisplayCompositorConnection connection;
-    connection.client_request = mojo::GetProxy(&display_compositor_client);
-    display_compositor_factory_->CreateDisplayCompositor(
-        mojo::GetProxy(&connection.compositor),
-        std::move(display_compositor_client));
-    return connection;
-  }
-
- private:
-  ~DisplayCompositorFactory() override = default;
-
-  friend class base::RefCounted<DisplayCompositorFactory>;
-
-  cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayCompositorFactory);
-};
 
 const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
