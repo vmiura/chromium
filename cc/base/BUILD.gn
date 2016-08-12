@@ -6,6 +6,8 @@ source_set("base") {
   visibility = [ "//cc", "//cc:transport" ]
 
   sources = [
+    "bulk_buffer_queue.h",
+    "bulk_buffer_queue.cc",
     "completion_event.h",
     "container_util.h",
     "contiguous_container.cc",
