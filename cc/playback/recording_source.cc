@@ -9,12 +9,15 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
+#include "cc/base/bulk_buffer_queue.h"
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
+#include "cc/layers/layer_impl.h"
 #include "cc/playback/display_item_list.h"
 #include "cc/playback/raster_source.h"
 #include "cc/proto/gfx_conversions.h"
 #include "cc/proto/recording_source.pb.h"
+#include "cc/trees/layer_tree_host.h"
 #include "skia/ext/analysis_canvas.h"
 #include "third_party/skia/include/core/SkStream.h"
 
@@ -29,6 +32,70 @@ const bool kDefaultClearCanvasSetting = true;
 }  // namespace
 
 namespace cc {
+
+namespace {
+
+class BulkBufferWStream : public SkWStream {
+ public:
+  explicit BulkBufferWStream(BulkBufferWriter* writer) : writer_(writer) {
+    writer_->BeginBuffer();
+  }
+
+  ~BulkBufferWStream() override {}
+
+   bool write(const void* buffer, size_t size) override {
+     DCHECK(!finalized_);
+     writer_->AppendToCurrentBuffer(size, buffer);
+     size_ += size;
+     return true;
+   }
+
+   size_t bytesWritten() const override { return size_; }
+
+   BulkBuffer Finalize() {
+     DCHECK(!finalized_);
+     finalized_ = true;
+     return writer_->EndBuffer();
+   }
+
+ private:
+  BulkBufferWriter* writer_;
+  size_t size_ = 0;
+  bool finalized_ = false;
+};
+
+class BulkBufferStream : public SkStream {
+ public:
+  explicit BulkBufferStream(const BulkBufferReader& reader, BulkBuffer buffer)
+      : reader_(reader), view_(reader_.MakeView(std::move(buffer))) {}
+
+  ~BulkBufferStream() override {}
+    size_t read(void* buffer, size_t size) override {
+      size = std::min(size, view_.size() - offset_);
+      if (buffer)
+        view_.Read(offset_, size, buffer);
+      offset_ += size;
+      return size;
+    }
+
+    size_t peek(void* buffer, size_t size) const override {
+      DCHECK(buffer);
+      size = std::min(size, view_.size() - offset_);
+      view_.Read(offset_, size, buffer);
+      return size;
+    }
+
+    bool isAtEnd() const override { return offset_ == view_.size(); }
+
+    size_t size() const { return view_.size(); }
+
+ private:
+  const BulkBufferReader& reader_;
+  const BulkBufferReader::View view_;
+  size_t offset_ = 0;
+};
+
+}  // anonymous namespace
 
 RecordingSource::RecordingSource()
     : slow_down_raster_scale_factor_for_debug_(0),
@@ -246,7 +313,8 @@ void RecordingSource::Clear() {
   is_solid_color_ = false;
 }
 
-void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
+void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
+                                 mojom::PictureLayerState* mojom) {
   TRACE_EVENT1("cc", "RecordingSource::WriteMojom", "opcount",
                display_list_ ? display_list_->ApproximateOpCount() : 0);
   mojom->recorded_viewport = recorded_viewport_;
@@ -258,45 +326,49 @@ void RecordingSource::WriteMojom(mojom::PictureLayerState* mojom) {
   if (display_list_) {
     mojom->display_list_id = display_list_->unique_id();
     if (last_send_display_list_id_ != display_list_->unique_id()) {
-      SkDynamicMemoryWStream write_stream;
+      BulkBufferWStream stream(context.bulk_buffer_writer);
       {
         TRACE_EVENT0("cc", "RecordingSource::WriteMojom serialization");
-        display_list_->SerializeToStream(&write_stream, picture_cache_);
+        display_list_->SerializeToStream(&stream, picture_cache_);
       }
       {
-        TRACE_EVENT1("cc", "RecordingSource::WriteMojom copy", "size",
-                     write_stream.bytesWritten());
-        mojom->display_list.resize(write_stream.bytesWritten());
-        write_stream.copyTo(mojom->display_list.data());
+        TRACE_EVENT1("cc", "RecordingSource::WriteMojom finalize", "size",
+                     stream.bytesWritten());
+        BulkBuffer buffer = stream.Finalize();
+        mojom->display_list = mojom::BulkBuffer::New();
+        mojom->display_list->backings = std::move(buffer.backings);
+        mojom->display_list->first_backing_begin = buffer.first_backing_begin;
+        mojom->display_list->last_backing_end = buffer.last_backing_end;
       }
       last_send_display_list_id_ = display_list_->unique_id();
-    } else {
-      mojom->display_list.clear();
     }
   } else {
-      mojom->display_list_id = 0;
-      mojom->display_list.clear();
+    mojom->display_list_id = 0;
   }
 }
 
 void RecordingSource::ReadMojom(
+    const ContentFrameReaderContext& context,
     mojom::PictureLayerState* mojom,
     scoped_refptr<DisplayItemList> last_display_list) {
-  TRACE_EVENT0("cc", "RecordingSource::WriteMojom");
+  TRACE_EVENT0("cc", "RecordingSource::ReadMojom");
   recorded_viewport_ = mojom->recorded_viewport;
   size_ = mojom->size;
   requires_clear_ = mojom->requires_clear;
   is_solid_color_ = mojom->is_solid_color;
   solid_color_ = mojom->solid_color;
   background_color_ = mojom->background_color;
-  if (!mojom->display_list.empty()) {
-    TRACE_EVENT1("cc", "RecordingSource::WriteMojom deserialization", "size",
-                 mojom->display_list.size());
-    SkMemoryStream read_stream(mojom->display_list.data(),
-                               mojom->display_list.size(), false);
+  if (mojom->display_list) {
+    BulkBuffer buffer;
+    buffer.backings = std::move(mojom->display_list->backings);
+    buffer.first_backing_begin = mojom->display_list->first_backing_begin;
+    buffer.last_backing_end = mojom->display_list->last_backing_end;
+    BulkBufferStream stream(context.bulk_buffer_reader, std::move(buffer));
+    TRACE_EVENT1("cc", "RecordingSource::ReadMojom deserialization", "size",
+                 stream.size());
     PictureCache new_picture_cache;
-    display_list_ = DisplayItemList::CreateFromStream(&read_stream,
-        picture_cache_, new_picture_cache);
+    display_list_ = DisplayItemList::CreateFromStream(&stream, picture_cache_,
+                                                      new_picture_cache);
     picture_cache_ = std::move(new_picture_cache);
   } else {
     if (last_display_list &&

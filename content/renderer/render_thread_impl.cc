@@ -1325,6 +1325,8 @@ RenderThreadImpl::CreateServiceCompositorConnection(
     GetRemoteInterfaces()->GetInterface(&display_compositor_host_);
   DCHECK(display_compositor_host_);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
+  connection->shm_allocator = base::Bind(
+      &RenderThreadImpl::AllocateSharedMemory, base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
   display_compositor_host_->CreateContentFrameSink(

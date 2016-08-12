@@ -1732,7 +1732,7 @@ AnimationHost* LayerTreeHost::animation_host() const {
   return layer_tree_.animation_host();
 }
 
-void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
+void LayerTreeHost::GetContentFrame(const ContentFrameBuilderContext& context) {
   TRACE_EVENT0("cc", "LayerTreeHost::GetContentFrame");
   bool is_new_trace;
   TRACE_EVENT_IS_NEW_TRACE(&is_new_trace);
@@ -1742,6 +1742,7 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     LayerTreeHostCommon::CallFunctionForEveryLayer(
         this, [](Layer* layer) { layer->DidBeginTracing(); });
   }
+  mojom::ContentFrame* frame = context.frame;
 
   frame->next_commit_forces_redraw = next_commit_forces_redraw_;
   next_commit_forces_redraw_ = false;
@@ -1752,9 +1753,9 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     TRACE_EVENT0("cc", "LayerTreeHost::GetContentFrame full sync layer walk");
     auto tree = cc::mojom::LayerTree::New();
 
-    auto write_layer = [&tree](Layer* layer) {
+    auto write_layer = [&context, &tree](Layer* layer) {
       auto mojom = cc::mojom::LayerStructure::New();
-      layer->WriteStructureMojom(mojom.get());
+      layer->WriteStructureMojom(context, mojom.get());
       tree->layers.push_back(std::move(mojom));
     };
 
@@ -1979,7 +1980,7 @@ void LayerTreeHost::GetContentFrame(mojom::ContentFrame* frame) {
     auto layers = layer_tree_.LayersThatShouldPushProperties();
     for (auto* layer : layers) {
       auto mojom = cc::mojom::LayerProperties::New();
-      layer->WritePropertiesMojom(mojom.get());
+      layer->WritePropertiesMojom(context, mojom.get());
       frame->layer_properties.push_back(std::move(mojom));
     }
 

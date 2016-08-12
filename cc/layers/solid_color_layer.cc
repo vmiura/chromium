@@ -27,8 +27,10 @@ void SolidColorLayer::SetBackgroundColor(SkColor color) {
   Layer::SetBackgroundColor(color);
 }
 
-void SolidColorLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
-  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
+void SolidColorLayer::WriteStructureMojom(
+    const ContentFrameBuilderContext& context,
+    cc::mojom::LayerStructure* mojom) {
+  Layer::WriteStructureMojom(context, mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::SOLID_COLOR;
 }
 

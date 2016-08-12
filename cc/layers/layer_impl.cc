@@ -1202,7 +1202,8 @@ float LayerImpl::GetIdealContentsScale() const {
   return std::max(transform_scales.x(), transform_scales.y());
 }
 
-void LayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
+void LayerImpl::ReadPropertiesMojom(const ContentFrameReaderContext& context,
+                                    cc::mojom::LayerProperties* mojom) {
   position_ = mojom->position;
   SetBackgroundColor(mojom->background_color);
   SetBounds(mojom->bounds);

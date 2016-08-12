@@ -38,6 +38,7 @@ struct CC_EXPORT BulkBufferBackingHandle {
 
 class CC_EXPORT BulkBufferWriter {
  public:
+  static const size_t kDefaultBackingSize = 2<<20;
   using AllocatorCallback =
       base::Callback<std::unique_ptr<base::SharedMemory>(size_t)>;
   explicit BulkBufferWriter(size_t backing_size,

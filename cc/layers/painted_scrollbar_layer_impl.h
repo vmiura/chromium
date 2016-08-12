@@ -52,7 +52,8 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
     internal_content_bounds_ = content_bounds;
   }
 
-  void ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) override;
+  void ReadPropertiesMojom(const ContentFrameReaderContext& context,
+                           cc::mojom::LayerProperties* mojom) override;
 
  protected:
   PaintedScrollbarLayerImpl(LayerTreeImpl* tree_impl,

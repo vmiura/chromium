@@ -6,6 +6,7 @@
 #define CC_TREES_SERVICE_CONNECTION_H_
 
 #include "cc/ipc/compositor.mojom.h"
+#include "cc/base/bulk_buffer_queue.h"
 #include "cc/base/cc_export.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
@@ -17,6 +18,7 @@ struct CC_EXPORT ServiceConnection {
   ServiceConnection();
   ~ServiceConnection();
 
+  BulkBufferWriter::AllocatorCallback shm_allocator;
   mojo::InterfacePtr<cc::mojom::ContentFrameSink> content_frame_sink;
   mojo::InterfaceRequest<cc::mojom::ContentFrameSinkClient> client_request;
 };

@@ -96,7 +96,14 @@ struct UIResourceRequestQueue {
   array<cc.mojom.UIResourceRequestProperties> ui_resource_requests;
 };
 
+struct BulkBufferBackingHandle {
+  uint32 id;
+  handle shm_handle;
+};
+
 struct ContentFrame {
+  array<BulkBufferBackingHandle> new_handles;
+  array<uint32> backings;
   uint32 source_frame;
   bool next_commit_forces_redraw;
   bool needs_full_tree_sync;

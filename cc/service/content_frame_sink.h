@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
+#include "cc/base/bulk_buffer_queue.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/ipc/content_frame.mojom.h"
@@ -75,6 +76,7 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
                          mojom::ContentFramePtr frame,
                          const PrepareCommitSyncCallback& callback) override;
   void WaitForActivation(const WaitForActivationCallback& callback) override;
+  void DeleteBackings(const std::vector<uint32_t>& backings) override;
   void Destroy(const DestroyCallback& callback) override;
 
   void PrepareCommitInternal(bool will_wait_for_activation,
@@ -126,6 +128,7 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
   SetImplThread its_the_impl_thread_i_promise_;
   std::unique_ptr<AnimationHost> main_thread_animation_host_lol_;
   LayerTreeHostImpl host_impl_;
+  BulkBufferReader bulk_buffer_reader_;
   cc::mojom::ContentFrameSinkClientPtr content_frame_sink_client_;
   mojo::StrongBinding<cc::mojom::ContentFrameSink> binding_;
   mojom::ContentFramePtr frame_for_commit_;

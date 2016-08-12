@@ -62,8 +62,10 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceScale(surface_scale_);
 }
 
-void SurfaceLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
-  LayerImpl::ReadPropertiesMojom(mojom);
+void SurfaceLayerImpl::ReadPropertiesMojom(
+    const ContentFrameReaderContext& context,
+    cc::mojom::LayerProperties* mojom) {
+  LayerImpl::ReadPropertiesMojom(context, mojom);
   DCHECK(mojom->surface_state);
   mojom::SurfaceLayerState* surface_state = mojom->surface_state.get();
 

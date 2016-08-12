@@ -58,13 +58,17 @@ SurfaceLayer::~SurfaceLayer() {
   DCHECK(destroy_sequence_.is_null());
 }
 
-void SurfaceLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
-  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
+void SurfaceLayer::WriteStructureMojom(
+    const ContentFrameBuilderContext& context,
+    cc::mojom::LayerStructure* mojom) {
+  Layer::WriteStructureMojom(context, mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::SURFACE;
 }
 
-void SurfaceLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
-  Layer::WritePropertiesMojom(mojom);
+void SurfaceLayer::WritePropertiesMojom(
+    const ContentFrameBuilderContext& context,
+    cc::mojom::LayerProperties* mojom) {
+  Layer::WritePropertiesMojom(context, mojom);
   mojom->surface_state = mojom::SurfaceLayerState::New();
   mojom::SurfaceLayerState* surface_state = mojom->surface_state.get();
   surface_state->id = surface_id_;

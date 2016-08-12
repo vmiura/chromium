@@ -60,6 +60,7 @@ namespace cc {
 class AnimationEvents;
 class AnimationHost;
 class BeginFrameSource;
+class BulkBufferWriter;
 class HeadsUpDisplayLayer;
 class ImageSerializationProcessor;
 class Layer;
@@ -88,6 +89,11 @@ class ContentFrame;
 namespace proto {
 class LayerTreeHost;
 }
+
+struct ContentFrameBuilderContext {
+  mojom::ContentFrame* frame;
+  BulkBufferWriter* bulk_buffer_writer;
+};
 
 class CC_EXPORT LayerTreeHost : public MutatorHostClient {
  public:
@@ -424,7 +430,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // the protobuf, the normal commit-flow should continue.
   void FromProtobufForCommit(const proto::LayerTreeHost& proto);
 
-  void GetContentFrame(mojom::ContentFrame* proto);
+  void GetContentFrame(const ContentFrameBuilderContext& context);
 
   bool IsSingleThreaded() const;
   bool IsThreaded() const;

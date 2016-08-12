@@ -199,8 +199,9 @@ const char* PaintedScrollbarLayerImpl::LayerTypeAsString() const {
 }
 
 void PaintedScrollbarLayerImpl::ReadPropertiesMojom(
+    const ContentFrameReaderContext& context,
     cc::mojom::LayerProperties* mojom) {
-  LayerImpl::ReadPropertiesMojom(mojom);
+  LayerImpl::ReadPropertiesMojom(context, mojom);
   DCHECK(mojom->painted_scrollbar_state);
   mojom::PaintedScrollbarLayerState* painted_scrollbar_state =
       mojom->painted_scrollbar_state.get();

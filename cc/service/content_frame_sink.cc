@@ -38,6 +38,7 @@
 #include "cc/trees/tree_synchronizer.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace cc {
 
@@ -209,6 +210,7 @@ ContentFrameSink::ContentFrameSink(
                  id,
                  std::unique_ptr<ImageDecodeProxy>(
                      new ImageDecodeProxy(client.get()))),
+      bulk_buffer_reader_(BulkBufferWriter::kDefaultBackingSize),
       content_frame_sink_client_(std::move(client)),
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
@@ -390,11 +392,10 @@ void ContentFrameSink::SetVisible(bool visible) {
 
 void ContentFrameSink::PrepareCommit(bool will_wait_for_activation,
                                      mojom::ContentFramePtr frame) {
-  TRACE_EVENT1("cc", "ContentFrameSink::Commit", "wait_for_activation",
+  TRACE_EVENT1("cc", "ContentFrameSink::PrepareCommit", "wait_for_activation",
                will_wait_for_activation);
   DCHECK_EQ(wait_for_activation_state_, kWaitForActivationNone);
   DCHECK(!frame_for_commit_);
-  // DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
 
   bool viewport_changed_size =
@@ -411,6 +412,8 @@ void ContentFrameSink::PrepareCommitSync(
     bool will_wait_for_activation,
     mojom::ContentFramePtr frame,
     const PrepareCommitSyncCallback& callback) {
+  TRACE_EVENT1("cc", "ContentFrameSink::PrepareCommitSync",
+               "wait_for_activation", will_wait_for_activation);
   bool viewport_changed_size =
       frame->device_viewport_size != host_impl_.device_viewport_size();
   LayerTreeImpl* last_commit_tree = host_impl_.pending_tree();
@@ -443,6 +446,29 @@ void ContentFrameSink::PrepareCommitInternal(bool will_wait_for_activation,
                               frame->released_surfaces.begin(),
                               frame->released_surfaces.end());
   }
+
+  {
+    TRACE_EVENT1("cc", "BulkBufferBackingHandle import", "count",
+                 frame->new_handles.size());
+    std::vector<BulkBufferBackingHandle> new_handles;
+    new_handles.reserve(frame->new_handles.size());
+    for (auto& new_handle : frame->new_handles) {
+      base::PlatformFile platform_file;
+      MojoResult unwrap_result = mojo::UnwrapPlatformFile(
+          std::move(new_handle->shm_handle), &platform_file);
+      CHECK_EQ(unwrap_result, MOJO_RESULT_OK);
+#if defined(OS_WIN)
+      base::SharedMemoryHandle shm_handle =
+          base::SharedMemoryHandle(platform_file, base::GetCurrentProcId());
+#else
+      base::SharedMemoryHandle shm_handle =
+          base::SharedMemoryHandle(platform_file, true);
+#endif
+      new_handles.emplace_back(new_handle->id, shm_handle);
+    }
+    bool result = bulk_buffer_reader_.ImportBackings(std::move(new_handles));
+    CHECK(result);
+  }
   frame_for_commit_ = std::move(frame);
   if (will_wait_for_activation)
     wait_for_activation_state_ = kWaitForActivationPrepared;
@@ -451,8 +477,6 @@ void ContentFrameSink::PrepareCommitInternal(bool will_wait_for_activation,
       base::TimeTicks() /* TODO(hackathon): main_thread_start_time */);
   host_impl_.ReadyToCommit();
 
-  // DCHECK(!blocked_main_commit().layer_tree_host);
-  // blocked_main_commit().layer_tree_host = layer_tree_host;
   scheduler_.NotifyReadyToCommit();
 }
 
@@ -797,11 +821,13 @@ void ContentFrameSink::FinishCommit() {
   {
     TRACE_EVENT0("cc", "ContentFrameSink::PushProperties");
 
+    ContentFrameReaderContext context = {frame, bulk_buffer_reader_};
+
     for (const auto& layer_properties : frame->layer_properties) {
       ProxyImageGenerator::ScopedBindFactory scoped_bind(
           host_impl_.image_decode_proxy());
       LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
-      layer->ReadPropertiesMojom(layer_properties.get());
+      layer->ReadPropertiesMojom(context, layer_properties.get());
     }
 
     // This must happen after synchronizing property trees and after push
@@ -840,6 +866,10 @@ void ContentFrameSink::FinishCommit() {
   property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map,
                                                     sync_tree);
 
+  // Done deserializing, can return backings to client.
+  if (!frame->backings.empty())
+    content_frame_sink_client_->OnBackingsReturned(std::move(frame->backings));
+
   // TODO(weiliangc): This crashes once surface ids start changing.
   // The surface ID changed during BeginCommitSync.
   if (0) {
@@ -874,6 +904,10 @@ void ContentFrameSink::ScheduledActionCommit() {
 
   scheduler_.DidCommit();
   host_impl_.CommitComplete();
+}
+
+void ContentFrameSink::DeleteBackings(const std::vector<uint32_t>& backings) {
+  bulk_buffer_reader_.DeleteBackings(backings);
 }
 
 void ContentFrameSink::Destroy(const DestroyCallback& callback) {

@@ -261,8 +261,10 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
   }
 }
 
-void PictureLayer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
-  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
+void PictureLayer::WriteStructureMojom(
+    const ContentFrameBuilderContext& context,
+    cc::mojom::LayerStructure* mojom) {
+  Layer::WriteStructureMojom(context, mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::PICTURE;
   mojom->is_mask = is_mask_;
 }
@@ -275,8 +277,10 @@ static mojom::RegionPtr RegionToMojom(const Region& region) {
   return mojom;
 }
 
-void PictureLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
-  Layer::WritePropertiesMojom(mojom);
+void PictureLayer::WritePropertiesMojom(
+    const ContentFrameBuilderContext& context,
+    cc::mojom::LayerProperties* mojom) {
+  Layer::WritePropertiesMojom(context, mojom);
   DropRecordingSourceContentIfInvalid();
   mojom->picture_state = mojom::PictureLayerState::New();
   mojom::PictureLayerState* picture_state = mojom->picture_state.get();
@@ -285,7 +289,7 @@ void PictureLayer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
   picture_state->gpu_raster_max_texture_size =
       layer_tree_host()->device_viewport_size();
   picture_state->nearest_neighbor = picture_layer_inputs_.nearest_neighbor;
-  recording_source_->WriteMojom(picture_state);
+  recording_source_->WriteMojom(context, picture_state);
 }
 
 }  // namespace cc

@@ -373,6 +373,9 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   gpu::SurfaceHandle surface_handle = widget;
   ConnectToDisplayCompositorHostIfNecessary(surface_handle);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
+  connection->shm_allocator =
+      base::Bind(&BrowserGpuChannelHostFactory::AllocateSharedMemory,
+                 base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
   display_compositor_host_->CreateContentFrameSink(

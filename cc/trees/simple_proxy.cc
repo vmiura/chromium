@@ -23,6 +23,7 @@
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/threaded_channel.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace cc {
 
@@ -65,6 +66,8 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 
 void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connection) {
   TRACE_EVENT0("cc", "SimpleProxy::InitializeCompositor");
+  bulk_buffer_writer_ = base::MakeUnique<BulkBufferWriter>(
+      BulkBufferWriter::kDefaultBackingSize, connection->shm_allocator);
   compositor_ = std::move(connection->content_frame_sink);
   binding_.Bind(std::move(connection->client_request));
   if (needs_begin_frame_when_ready_) {
@@ -117,6 +120,7 @@ void SimpleProxy::SetVisible(bool visible) {
     needs_set_visible_value_when_ready_ = visible;
     return;
   }
+  MaybeTrimBulkBufferWriter();
   compositor_->SetVisible(visible);
 }
 
@@ -274,6 +278,11 @@ void SimpleProxy::OnCompositorCreated(uint32_t client_id) {
   layer_tree_host_->SetSurfaceClientId(client_id);
 }
 
+void SimpleProxy::OnBackingsReturned(const std::vector<uint32_t>& backings) {
+  bulk_buffer_writer_->ReturnBackings(backings);
+  MaybeTrimBulkBufferWriter();
+}
+
 void SimpleProxy::OnBeginMainFrame(
     uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) {
   TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame");
@@ -372,7 +381,29 @@ void SimpleProxy::OnBeginMainFrame(
     commit_waits_for_activation_ = false;
 
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
-    layer_tree_host_->GetContentFrame(frame.get());
+    ContentFrameBuilderContext context = {frame.get(),
+                                          bulk_buffer_writer_.get()};
+    layer_tree_host_->GetContentFrame(context);
+    {
+      TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame serialize BulkBuffer handles");
+      std::vector<BulkBufferBackingHandle> new_handles;
+      bulk_buffer_writer_->Flush(&frame->backings, &new_handles);
+      frame->new_handles.reserve(new_handles.size());
+      for (auto new_handle : new_handles) {
+        auto mojom = mojom::BulkBufferBackingHandle::New();
+        mojom->id = new_handle.id;
+        base::PlatformFile platform_file;
+#if defined(OS_WIN)
+        platform_file = new_handle.handle.GetHandle();
+#else
+        DCHECK(new_handle.handle.auto_close || new_handle.handle.fd == -1);
+        platform_file = new_handle.handle.fd;
+#endif
+        mojom->shm_handle = mojo::WrapPlatformFile(platform_file);
+        frame->new_handles.push_back(std::move(mojom));
+      }
+    }
+
     {
       TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame compositor->Commit");
       mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
@@ -428,6 +459,13 @@ void SimpleProxy::OnRendererCapabilities(
 void SimpleProxy::OnImageDecodeProxyCreated(
     mojom::ImageDecodeRequest decode_request) {
   layer_tree_host_->BindImageDecodePtr(std::move(decode_request));
+}
+
+void SimpleProxy::MaybeTrimBulkBufferWriter() {
+  if (layer_tree_host_->visible())
+    return;
+  DCHECK(compositor_);
+  compositor_->DeleteBackings(bulk_buffer_writer_->Trim());
 }
 
 }  // namespace cc

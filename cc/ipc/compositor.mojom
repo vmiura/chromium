@@ -70,12 +70,14 @@ interface ContentFrameSink {
   PrepareCommit(bool will_wait_for_cativation, ContentFrame frame);
   [Sync] PrepareCommitSync(bool will_wait_for_cativation, ContentFrame frame) => (cc.mojom.SurfaceId surface_id);
   [Sync] WaitForActivation() => ();
+  DeleteBackings(array<uint32> backings);
   [Sync] Destroy() => ();
 };
 
 // A ContentFrameSinkClient corresponds to a LTHI=>LTH interface.
 interface ContentFrameSinkClient {
   OnCompositorCreated(uint32 client_id);
+  OnBackingsReturned(array<uint32> backings);
   OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
   OnBeginMainFrameNotExpectedSoon();
   OnDidCompletePageScaleAnimation();

@@ -32,8 +32,10 @@ class CC_EXPORT SurfaceLayer : public Layer {
       const SatisfyCallback& satisfy_callback,
       const RequireCallback& require_callback);
 
-  void WriteStructureMojom(cc::mojom::LayerStructure* mojom) override;
-  void WritePropertiesMojom(cc::mojom::LayerProperties* mojom) override;
+  void WriteStructureMojom(const ContentFrameBuilderContext& context,
+                           cc::mojom::LayerStructure* mojom) override;
+  void WritePropertiesMojom(const ContentFrameBuilderContext& context,
+                            cc::mojom::LayerProperties* mojom) override;
 
   void SetSurfaceId(const SurfaceId& surface_id,
                     float scale,

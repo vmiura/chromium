@@ -9,6 +9,12 @@ import "cc/ipc/surface_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/transform.mojom";
 
+struct BulkBuffer {
+  array<uint32> backings;
+  uint32 first_backing_begin;
+  uint32 last_backing_end;
+};
+
 struct NinePatchLayerState {
   gfx.mojom.Rect border;
   bool fill_center;
@@ -32,7 +38,7 @@ struct PictureLayerState {
   uint32 solid_color;
   uint32 background_color;
   uint32 display_list_id;
-  array<int8> display_list;
+  BulkBuffer? display_list;
 };
 
 struct SurfaceLayerState {

@@ -54,6 +54,7 @@ class DictionaryValue;
 namespace cc {
 
 class AnimationHost;
+class BulkBufferReader;
 class LayerTreeHostImpl;
 class LayerTreeImpl;
 class MicroBenchmarkImpl;
@@ -70,10 +71,16 @@ class TransformTree;
 class ScrollState;
 
 namespace mojom {
+class ContentFrame;
 class LayerProperties;
 }
 
 struct AppendQuadsData;
+
+struct ContentFrameReaderContext {
+  mojom::ContentFrame* frame;
+  const BulkBufferReader& bulk_buffer_reader;
+};
 
 enum DrawMode {
   DRAW_MODE_NONE,
@@ -470,7 +477,8 @@ class CC_EXPORT LayerImpl {
 
   ElementListType GetElementTypeForAnimation() const;
 
-  virtual void ReadPropertiesMojom(cc::mojom::LayerProperties* mojom);
+  virtual void ReadPropertiesMojom(const ContentFrameReaderContext& context,
+                                   cc::mojom::LayerProperties* mojom);
 
  protected:
   LayerImpl(LayerTreeImpl* layer_impl,

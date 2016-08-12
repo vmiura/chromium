@@ -15,6 +15,9 @@ BulkBuffer& BulkBuffer::operator=(const BulkBuffer&) = default;
 BulkBuffer::BulkBuffer(BulkBuffer&&) = default;
 BulkBuffer& BulkBuffer::operator=(BulkBuffer&&) = default;
 
+
+const size_t BulkBufferWriter::kDefaultBackingSize;
+
 BulkBufferWriter::BulkBufferWriter(size_t backing_size,
                                    AllocatorCallback allocator)
     : backing_size_(backing_size), allocator_(allocator) {}

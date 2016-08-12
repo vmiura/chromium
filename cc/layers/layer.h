@@ -52,6 +52,7 @@ class ConvertableToTraceFormat;
 namespace cc {
 
 class AnimationHost;
+struct ContentFrameBuilderContext;
 class CopyOutputRequest;
 class LayerAnimationEventObserver;
 class LayerClient;
@@ -501,8 +502,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   ElementListType GetElementTypeForAnimation() const;
 
-  virtual void WriteStructureMojom(cc::mojom::LayerStructure* mojom);
-  virtual void WritePropertiesMojom(cc::mojom::LayerProperties* mojom);
+  virtual void WriteStructureMojom(const ContentFrameBuilderContext& context, 
+                                   cc::mojom::LayerStructure* mojom);
+  virtual void WritePropertiesMojom(const ContentFrameBuilderContext& context,
+                                    cc::mojom::LayerProperties* mojom);
 
  protected:
   friend class LayerImpl;

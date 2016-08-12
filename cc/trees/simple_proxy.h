@@ -6,6 +6,7 @@
 #define CC_TREES_SIMPLE_PROXY_H_
 
 #include "base/macros.h"
+#include "cc/base/bulk_buffer_queue.h"
 #include "cc/base/cc_export.h"
 #include "cc/input/top_controls_state.h"
 #include "cc/ipc/compositor.mojom.h"
@@ -75,6 +76,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
 
   // mojom::ContentFrameSinkClient implementation
   void OnCompositorCreated(uint32_t client_id) override;
+  void OnBackingsReturned(const std::vector<uint32_t>& backings) override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;
@@ -88,6 +90,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
   bool IsMainThread() const;
 
   void SetNeedsBeginFrame();
+  void MaybeTrimBulkBufferWriter();
 
   bool needs_begin_frame_when_ready_= false;
   bool needs_redraw_when_ready_ = false;
@@ -118,6 +121,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
   RendererCapabilities renderer_capabilities_;
 
  private:
+  std::unique_ptr<BulkBufferWriter> bulk_buffer_writer_;
   mojo::InterfacePtr<cc::mojom::ContentFrameSink> compositor_;
   mojo::Binding<cc::mojom::ContentFrameSinkClient> binding_;
 

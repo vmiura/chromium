@@ -311,16 +311,18 @@ UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
 }
 
 void PaintedScrollbarLayer::WriteStructureMojom(
+    const ContentFrameBuilderContext& context,
     cc::mojom::LayerStructure* mojom) {
-  Layer::WriteStructureMojom(mojom);  // Before we override stuff.
+  Layer::WriteStructureMojom(context, mojom);  // Before we override stuff.
   mojom->layer_type = cc::mojom::LayerType::PAINTED_SCROLLBAR;
   mojom->scrollbar_orientation_is_horizontal =
       orientation() == ScrollbarOrientation::HORIZONTAL;
 }
 
 void PaintedScrollbarLayer::WritePropertiesMojom(
+    const ContentFrameBuilderContext& context,
     cc::mojom::LayerProperties* mojom) {
-  Layer::WritePropertiesMojom(mojom);
+  Layer::WritePropertiesMojom(context, mojom);
   mojom->painted_scrollbar_state = mojom::PaintedScrollbarLayerState::New();
   mojom::PaintedScrollbarLayerState* painted_scrollbar_state =
       mojom->painted_scrollbar_state.get();

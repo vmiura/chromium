@@ -1320,8 +1320,10 @@ static Region RegionFromMojom(const mojom::Region* mojom) {
   return region;
 }
 
-void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
-  LayerImpl::ReadPropertiesMojom(mojom);
+void PictureLayerImpl::ReadPropertiesMojom(
+    const ContentFrameReaderContext& context,
+    cc::mojom::LayerProperties* mojom) {
+  LayerImpl::ReadPropertiesMojom(context, mojom);
   DCHECK(mojom->picture_state);
   mojom::PictureLayerState* picture_state = mojom->picture_state.get();
 
@@ -1333,7 +1335,8 @@ void PictureLayerImpl::ReadPropertiesMojom(cc::mojom::LayerProperties* mojom) {
   scoped_refptr<DisplayItemList> last_display_list =
       raster_source_ ? raster_source_->display_list() : nullptr;
   RecordingSource recording_source;
-  recording_source.ReadMojom(picture_state, std::move(last_display_list));
+  recording_source.ReadMojom(context, picture_state,
+                             std::move(last_display_list));
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource(RasterSourceUsesLCDText());
   UpdateRasterSource(raster_source, &invalidation, nullptr);

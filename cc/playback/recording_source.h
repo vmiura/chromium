@@ -29,6 +29,8 @@ class ContentLayerClient;
 class DisplayItemList;
 class RasterSource;
 class Region;
+struct ContentFrameBuilderContext;
+struct ContentFrameReaderContext;
 typedef std::unordered_map<uint32_t, sk_sp<const SkPicture>> PictureCache;
 
 class CC_EXPORT RecordingSource {
@@ -76,8 +78,10 @@ class CC_EXPORT RecordingSource {
 
   const DisplayItemList* GetDisplayItemList();
 
-  void WriteMojom(mojom::PictureLayerState* mojom);
-  void ReadMojom(mojom::PictureLayerState* mojom,
+  void WriteMojom(const ContentFrameBuilderContext& context,
+                  mojom::PictureLayerState* mojom);
+  void ReadMojom(const ContentFrameReaderContext& context,
+                 mojom::PictureLayerState* mojom,
                  scoped_refptr<DisplayItemList> last_display_list);
 
   PictureCache picture_cache_;

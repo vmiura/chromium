@@ -1889,12 +1889,14 @@ LayerTree* Layer::GetLayerTree() const {
   return layer_tree_;
 }
 
-void Layer::WriteStructureMojom(cc::mojom::LayerStructure* mojom) {
+void Layer::WriteStructureMojom(const ContentFrameBuilderContext& context,
+                                cc::mojom::LayerStructure* mojom) {
   mojom->layer_id = inputs_.layer_id;
   mojom->layer_type = cc::mojom::LayerType::BASE;
 }
 
-void Layer::WritePropertiesMojom(cc::mojom::LayerProperties* mojom) {
+void Layer::WritePropertiesMojom(const ContentFrameBuilderContext& context,
+                                 cc::mojom::LayerProperties* mojom) {
   mojom->layer_id = inputs_.layer_id;
   bool use_paint_properties = paint_properties_.source_frame_number ==
                               layer_tree_host_->source_frame_number();

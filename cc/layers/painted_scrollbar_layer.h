@@ -44,8 +44,10 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerInterface,
     return internal_content_bounds_;
   }
 
-  void WriteStructureMojom(cc::mojom::LayerStructure* mojom) override;
-  void WritePropertiesMojom(cc::mojom::LayerProperties* mojom) override;
+  void WriteStructureMojom(const ContentFrameBuilderContext& context,
+                           cc::mojom::LayerStructure* mojom) override;
+  void WritePropertiesMojom(const ContentFrameBuilderContext& context,
+                            cc::mojom::LayerProperties* mojom) override;
 
  protected:
   PaintedScrollbarLayer(std::unique_ptr<Scrollbar> scrollbar,
