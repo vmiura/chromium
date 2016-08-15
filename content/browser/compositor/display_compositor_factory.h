@@ -21,7 +21,7 @@ class DisplayCompositorFactory : public cc::DisplayCompositorHost::Delegate {
  private:
   ~DisplayCompositorFactory() override;
 
-  friend class base::RefCounted<DisplayCompositorFactory>;
+  friend class base::RefCountedThreadSafe<DisplayCompositorFactory>;
 
   cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory_;
 

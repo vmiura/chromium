@@ -565,15 +565,16 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
 
 void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
                                           const cc::SurfaceId& surface_id) {
-  if (ShouldSkipFrame(size)) {
-    skipped_frames_ = true;
-    // BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-    //    surface_id);
-    return;
-  }
-
   BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
       surface_id);
+
+  if (ShouldSkipFrame(size)) {
+    // TODO(fsamuel): Could we end up in cases where compositor_ is nullptr?
+    if (compositor_)
+      compositor_->ReleaseSurfaceId(surface_id);
+    skipped_frames_ = true;
+    return;
+  }
 
   // TODO(hackathon): latency info things.
   // TODO(hackathon): background_color_
@@ -660,8 +661,6 @@ void DelegatedFrameHost::EvictDelegatedFrame() {
   client_->DelegatedFrameHostGetLayer()->SetShowSolidColorContent();
   if (!surface_id_.is_null()) {
     surface_factory_->Destroy(surface_id_);
-    BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-        surface_id_);
     surface_id_ = cc::SurfaceId();
   }
   delegated_frame_evictor_->DiscardedFrame();
@@ -902,9 +901,7 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
 
-// The ref will be removed in the SurfaceLayer callback.
-//  BrowserGpuChannelHostFactory::instance()->RemoveRefOnSurfaceId(
-//      surface_id_);
+// The surface ID ref will be removed in the SurfaceLayer callback.
 #if 0
   if (surface_factory_) {
     // HACKATHON: surface_factory_ is always null and unused.

@@ -1666,11 +1666,6 @@ bool RenderThreadImpl::IsThreadedAnimationEnabled() {
   return is_threaded_animation_enabled_;
 }
 
-void RenderThreadImpl::AddTempRefOnSurfaceId(const cc::SurfaceId& id) {
-  if (compositor_channel_ && !id.is_null())
-    compositor_channel_->AddTempRefOnSurfaceId(id);
-}
-
 void RenderThreadImpl::OnRAILModeChanged(v8::RAILMode rail_mode) {
   blink::mainThreadIsolate()->SetRAILMode(rail_mode);
   blink::setRAILModeOnWorkerThreadIsolates(rail_mode);

@@ -782,12 +782,10 @@ void RenderWidget::DidCompleteSwapBuffers() {
 }
 
 void RenderWidget::DidSetSurfaceClientId(uint32_t client_id) {
-  fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
   Send(new ViewHostMsg_SetSurfaceClientId(routing_id_, client_id));
 }
 
 void RenderWidget::DidGetNewSurface(const cc::SurfaceId& surface_id) {
-  RenderThreadImpl::current()->AddTempRefOnSurfaceId(surface_id);
   Send(new ViewHostMsg_DidGetNewSurface(routing_id_, size_, surface_id));
 }
 

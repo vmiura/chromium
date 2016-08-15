@@ -257,7 +257,6 @@ const char kSiteProcessMapKeyName[] = "content_site_process_map";
 const base::FilePath::CharType kAecDumpFileNameAddition[] =
     FILE_PATH_LITERAL("aec_dump");
 #endif
-
 void CacheShaderInfo(int32_t id, base::FilePath path) {
   ShaderCacheFactory::GetInstance()->SetCacheInfo(id, path);
 }
@@ -1072,8 +1071,8 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   scoped_refptr<cc::DisplayCompositorHost::Delegate> display_compositor_factory(
       new DisplayCompositorFactory);
   GetInterfaceRegistry()->AddInterface(
-      base::Bind(&cc::DisplayCompositorHost::Create, GetID(),
-                 display_compositor_factory),
+      base::Bind(&cc::DisplayCompositorHost::Create, gpu::kNullSurfaceHandle,
+                 GetID(), display_compositor_factory),
       io_task_runner);
 
   GetInterfaceRegistry()->AddInterface(base::Bind(

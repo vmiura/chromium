@@ -4,8 +4,10 @@
 
 source_set("host") {
   sources = [
-    "display_compositor.h",
+    "display_compositor_host.h",
     "display_compositor_host.cc",
+    "display_compositor_host_proxy.h",
+    "display_compositor_host_proxy.cc",
   ]
 
   public_deps = [

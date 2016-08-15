@@ -20,30 +20,29 @@ class ServiceFactory;
 
 class CompositorChannel : public cc::mojom::CompositorChannel {
  public:
-  CompositorChannel(ServiceFactory* factory, gpu::GpuChannel* channel,
-                    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
+  CompositorChannel(
+      cc::mojom::CompositorChannelAssociatedRequest request,
+      ServiceFactory* factory,
+      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
+
+  CompositorChannel(
+      cc::mojom::CompositorChannelRequest request,
+      ServiceFactory* factory,
+      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
+
   ~CompositorChannel() override;
 
   // cc::mojom::CompositorChannel implementation.
-  void CreateCompositor(
-      const gpu::SurfaceHandle& handle,
-      cc::mojom::LayerTreeSettingsPtr settings,
-      cc::mojom::CompositorRequest compositor,
-      cc::mojom::CompositorClientPtr compositor_client) override;
   void AddRefOnSurfaceId(const SurfaceId& id) override;
-  void AddTempRefOnSurfaceId(const SurfaceId& id) override;
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
-  void RemoveRefOnSurfaceId(const SurfaceId& id) override;
 
   ServiceFactory* factory() { return factory_; }
 
  private:
-  void BindCompositorChannelRequest(
-      cc::mojom::CompositorChannelAssociatedRequest request);
-
   ServiceFactory* const factory_;
-  gpu::GpuChannel* const channel_;
-  mojo::AssociatedBinding<cc::mojom::CompositorChannel> binding_;
+  std::unique_ptr<mojo::Binding<cc::mojom::CompositorChannel>> binding_;
+  std::unique_ptr<mojo::AssociatedBinding<cc::mojom::CompositorChannel>>
+      assoc_binding_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   DISALLOW_COPY_AND_ASSIGN(CompositorChannel);
 };

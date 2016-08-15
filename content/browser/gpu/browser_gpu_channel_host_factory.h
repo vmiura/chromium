@@ -22,6 +22,7 @@
 #include "ipc/message_filter.h"
 
 namespace cc {
+class DisplayCompositorHostProxy;
 class LayerTreeSettings;
 struct ServiceConnection;
 }
@@ -58,7 +59,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
 
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
-  void RemoveRefOnSurfaceId(const cc::SurfaceId& id);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();
@@ -70,6 +70,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   BrowserGpuChannelHostFactory();
   ~BrowserGpuChannelHostFactory() override;
 
+  void ConnectToDisplayCompositorHostIfNecessary(
+      gpu::SurfaceHandle surface_handle);
   void GpuChannelEstablished();
 
   static void AddFilterOnIO(int gpu_host_id,
@@ -86,8 +88,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
 
-  mojo::AssociatedInterfacePtr<cc::mojom::CompositorChannel>
-      compositor_channel_;
+  cc::mojom::CompositorChannelPtr compositor_channel_;
+  std::unique_ptr<cc::DisplayCompositorHostProxy> display_compositor_host_;
 
   static BrowserGpuChannelHostFactory* instance_;
 

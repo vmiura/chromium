@@ -430,6 +430,9 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
   if (!surface_id_.is_null())
     surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   surface_id_ = new_surface_id;
+  // TODO(fsamuel): This temp ref ought to be tied to the lifetime of the
+  // connection. If a connection goes away, then so should the temp ref.
+  surface_manager_->AddTempRefOnSurfaceId(surface_id_);
   if (output_surface_)
     output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);

@@ -22,7 +22,7 @@ struct DisplayCompositorConnection {
 class DisplayCompositorHost : public mojom::DisplayCompositorHost,
                               public mojom::DisplayCompositorClient {
  public:
-  class Delegate : public base::RefCounted<Delegate> {
+  class Delegate : public base::RefCountedThreadSafe<Delegate> {
    public:
     virtual DisplayCompositorConnection GetDisplayCompositorConnection() = 0;
 
@@ -30,9 +30,11 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
     virtual ~Delegate() {}
 
    private:
-    friend class base::RefCounted<Delegate>;
+    friend class base::RefCountedThreadSafe<Delegate>;
   };
-  static void Create(int32_t process_id,
+  // Create on IO thread.
+  static void Create(gpu::SurfaceHandle surface_handle,
+                     int32_t process_id,
                      scoped_refptr<Delegate> delegate,
                      mojom::DisplayCompositorHostRequest request);
 
@@ -41,22 +43,29 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   int32_t process_id() const { return process_id_; }
 
   // DisplayCompositorHost implementation.
+  void CreateCompositorChannel(
+      mojom::CompositorChannelRequest compositor_channel) override;
+
   void CreateCompositor(int32_t routing_id,
                         mojom::LayerTreeSettingsPtr settings,
                         mojom::CompositorRequest compositor,
                         mojom::CompositorClientPtr client) override;
 
  private:
-  DisplayCompositorHost(int32_t process_id,
+  DisplayCompositorHost(gpu::SurfaceHandle surface_handle,
+                        int32_t process_id,
                         scoped_refptr<Delegate> delegate,
                         mojom::DisplayCompositorHostRequest request);
 
+  void ConnectToDisplayCompositorIfNecessary();
+
+  const gpu::SurfaceHandle surface_handle_;
   const int32_t process_id_;
   scoped_refptr<Delegate> delegate_;
   uint32_t next_compositor_id_ = 1;
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
-  mojo::Binding<mojom::DisplayCompositorHost> binding_;
+  mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorHost);
 };

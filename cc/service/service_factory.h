@@ -65,6 +65,10 @@ class CC_SERVICE_EXPORT ServiceFactory
   int NextServiceCompositorId() { return next_service_id_++; }
 
  private:
+  void AddChannelInternal(
+      int32_t client_id,
+      cc::mojom::CompositorChannelAssociatedRequest request);
+
   SharedBitmapManager* shared_bitmap_manager_;
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   gpu::ImageFactory* image_factory_;
@@ -82,6 +86,8 @@ class CC_SERVICE_EXPORT ServiceFactory
   std::set<std::unique_ptr<DisplayCompositor>> display_compositors_;
   // Bindings to cc::mojom::DisplayCompositorFactory.
   mojo::BindingSet<cc::mojom::DisplayCompositorFactory> bindings_;
+
+  base::WeakPtrFactory<ServiceFactory> weak_factory_;
 };
 
 }  // namespace cc

@@ -35,9 +35,9 @@ static void CreateServiceOnThread(
   new Service(handle, std::move(compositor), std::move(client_ptr), settings,
               id, shared_bitmap_manager, gpu_mem, image_factory,
               surface_manager, task_graph_runner);
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
 }
-}
+
+}  // namespace
 
 DisplayCompositor::DisplayCompositor(
     ServiceFactory* factory,
@@ -51,13 +51,19 @@ DisplayCompositor::DisplayCompositor(
 
 DisplayCompositor::~DisplayCompositor() = default;
 
+void DisplayCompositor::CreateCompositorChannel(
+    mojom::CompositorChannelRequest compositor_channel) {
+  // TODO(fsamuel): Figure out lifetime management.
+  new CompositorChannel(std::move(compositor_channel), factory_,
+                        compositor_task_runner_);
+}
+
 void DisplayCompositor::CreateCompositor(
     uint32_t client_id,
     const gpu::SurfaceHandle& handle,
     mojom::LayerTreeSettingsPtr settings,
     mojom::CompositorRequest compositor,
     mojom::CompositorClientPtr compositor_client) {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   compositor_task_runner_->PostTask(
       FROM_HERE,
       base::Bind(&CreateServiceOnThread, handle, base::Passed(&settings),

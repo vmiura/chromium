@@ -41,6 +41,8 @@ class DisplayCompositor : public mojom::DisplayCompositor {
   ~DisplayCompositor() override;
 
   // mojom::DisplayCompositor implementation.
+  void CreateCompositorChannel(
+      mojom::CompositorChannelRequest compositor_channel) override;
   void CreateCompositor(uint32_t client_id,
                         const gpu::SurfaceHandle& handle,
                         mojom::LayerTreeSettingsPtr settings,

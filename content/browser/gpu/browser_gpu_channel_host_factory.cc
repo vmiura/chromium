@@ -16,8 +16,12 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/host/display_compositor_host.h"
+#include "cc/host/display_compositor_host_proxy.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/service_connection.h"
+#include "content/browser/compositor/display_compositor_factory.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -38,6 +42,19 @@
 #endif
 
 namespace content {
+
+namespace {
+
+void CreateDisplayCompositorHostOnIO(
+    gpu::SurfaceHandle surface_handle,
+    cc::mojom::DisplayCompositorHostRequest request) {
+  scoped_refptr<cc::DisplayCompositorHost::Delegate> display_compositor_factory(
+      new DisplayCompositorFactory);
+  cc::DisplayCompositorHost::Create(
+      surface_handle, 0, display_compositor_factory, std::move(request));
+}
+
+}  // namespace
 
 BrowserGpuChannelHostFactory* BrowserGpuChannelHostFactory::instance_ = NULL;
 
@@ -265,7 +282,6 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   shutdown_event_->Signal();
   if (gpu_channel_) {
     gpu_channel_->DestroyChannel();
-    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 }
@@ -313,7 +329,6 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     DCHECK(!pending_request_.get());
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
-    compositor_channel_.reset();
     gpu_channel_ = NULL;
   }
 
@@ -344,21 +359,15 @@ std::unique_ptr<cc::ServiceConnection>
 BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
-  if (!compositor_channel_) {
-    // TODO(hackathon): Synchronous is bad mmkay?
-    if (!gpu_channel_ || gpu_channel_->IsLost())
-      EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
-    gpu_channel_->GetRemoteAssociatedInterface(&compositor_channel_);
-  }
-  DCHECK(compositor_channel_);
+  // TODO(fsamuel): A surface_handle is not always a widget.
+  gpu::SurfaceHandle surface_handle = widget;
+  ConnectToDisplayCompositorHostIfNecessary(surface_handle);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
-  // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
-  gpu::SurfaceHandle handle = widget;
-  compositor_channel_->CreateCompositor(handle, settings.ToMojom(),
-                                        mojo::GetProxy(&connection->compositor),
-                                        std::move(client));
+  display_compositor_host_->CreateCompositor(
+      0 /* routing_id */, settings.ToMojom(),
+      mojo::GetProxy(&connection->compositor), std::move(client));
   return connection;
 }
 
@@ -374,10 +383,25 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
     compositor_channel_->MoveTempRefToRefOnSurfaceId(id);
 }
 
-void BrowserGpuChannelHostFactory::RemoveRefOnSurfaceId(
-    const cc::SurfaceId& id) {
-  if (compositor_channel_ && !id.is_null())
-    compositor_channel_->RemoveRefOnSurfaceId(id);
+void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
+    gpu::SurfaceHandle surface_handle) {
+  if (!display_compositor_host_) {
+    cc::mojom::DisplayCompositorHostPtr host;
+    cc::mojom::DisplayCompositorHostRequest request = mojo::GetProxy(&host);
+    // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
+    display_compositor_host_.reset(
+        new cc::DisplayCompositorHostProxy(0, std::move(host)));
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+    // PostTask outside the constructor to ensure at least one reference exists.
+    task_runner->PostTask(
+        FROM_HERE, base::Bind(&CreateDisplayCompositorHostOnIO, surface_handle,
+                              base::Passed(&request)));
+  }
+  if (!compositor_channel_) {
+    display_compositor_host_->CreateCompositorChannel(
+        mojo::GetProxy(&compositor_channel_));
+  }
 }
 
 void BrowserGpuChannelHostFactory::GpuChannelEstablished() {

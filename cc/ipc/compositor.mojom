@@ -16,12 +16,18 @@ import "ui/gfx/geometry/mojo/geometry.mojom";
 
 // Renderer to Browser
 interface DisplayCompositorHost {
+  // TODO(fsamuel): There should be one channel per process.
+  // Maybe the routing ID ("client ID") is part of the Compositor,
+  // and not the CompositorChannel.
+  CreateCompositorChannel(CompositorChannel& compositor_channel);
+                    
   CreateCompositor(int32 routing_id,
                    cc.mojom.LayerTreeSettings settings,
                    Compositor& compositor,
                    CompositorClient client);
 };
 
+// GPU to browser.
 interface DisplayCompositorClient {
 };
 
@@ -34,6 +40,8 @@ interface DisplayCompositorFactory {
 
 // Browser to GPU
 interface DisplayCompositor {
+  CreateCompositorChannel(CompositorChannel& channel);
+
   CreateCompositor(uint32 client_id,
                    gpu.mojom.SurfaceHandle widget,
                    cc.mojom.LayerTreeSettings settings,
@@ -42,14 +50,8 @@ interface DisplayCompositor {
 };
 
 interface CompositorChannel {
-  CreateCompositor(gpu.mojom.SurfaceHandle widget,
-                   cc.mojom.LayerTreeSettings settings,
-                   Compositor& compositor,
-                   CompositorClient client);
   AddRefOnSurfaceId(cc.mojom.SurfaceId id);
-  AddTempRefOnSurfaceId(cc.mojom.SurfaceId id);
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
-  RemoveRefOnSurfaceId(cc.mojom.SurfaceId id);
 };
 
 interface Compositor {
