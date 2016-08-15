@@ -39,26 +39,4 @@ void ServiceFactory::CreateDisplayCompositor(
       compositor_thread_.task_runner())));
 }
 
-void ServiceFactory::AddChannel(gpu::GpuChannel* channel) {
-  channel->AddAssociatedInterface(
-      base::Bind(&ServiceFactory::AddChannelInternal,
-                 weak_factory_.GetWeakPtr(), channel->client_id()));
-}
-
-void ServiceFactory::RemoveChannel(int32_t client_id) {
-  compositor_channels_.erase(client_id);
-}
-
-void ServiceFactory::DestroyAllChannels() {
-  compositor_channels_.clear();
-}
-
-void ServiceFactory::AddChannelInternal(
-    int32_t client_id,
-    cc::mojom::CompositorChannelAssociatedRequest request) {
-  std::unique_ptr<CompositorChannel> compositor_channel(new CompositorChannel(
-      std::move(request), this, compositor_thread_.task_runner()));
-  compositor_channels_.set(client_id, std::move(compositor_channel));
-}
-
 }  // namespace cc

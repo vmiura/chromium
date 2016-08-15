@@ -11,23 +11,12 @@
 namespace cc {
 
 CompositorChannel::CompositorChannel(
-    cc::mojom::CompositorChannelAssociatedRequest request,
-    ServiceFactory* factory,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
-    : factory_(factory), compositor_task_runner_(compositor_task_runner) {
-  assoc_binding_.reset(
-      new mojo::AssociatedBinding<cc::mojom::CompositorChannel>(
-          this, std::move(request)));
-}
-
-CompositorChannel::CompositorChannel(
     cc::mojom::CompositorChannelRequest request,
     ServiceFactory* factory,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
-    : factory_(factory), compositor_task_runner_(compositor_task_runner) {
-  binding_.reset(new mojo::Binding<cc::mojom::CompositorChannel>(
-      this, std::move(request)));
-}
+    : factory_(factory),
+      compositor_task_runner_(compositor_task_runner),
+      binding_(this, std::move(request)) {}
 
 CompositorChannel::~CompositorChannel() = default;
 

@@ -7,7 +7,6 @@
 #include "base/threading/thread.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
-#include "cc/service/compositor_channel.h"
 #include "cc/service/service_export.h"
 #include "cc/surfaces/surface_manager.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
@@ -46,10 +45,6 @@ class CC_SERVICE_EXPORT ServiceFactory
       cc::mojom::DisplayCompositorRequest display_compositor,
       cc::mojom::DisplayCompositorClientPtr display_compositor_client) override;
 
-  void AddChannel(gpu::GpuChannel* channel);
-  void RemoveChannel(int32_t client_id);
-  void DestroyAllChannels();
-
   // Accessors for CompositorChannel to use for creating a Service.
   SharedBitmapManager* shared_bitmap_manager() {
     return shared_bitmap_manager_;
@@ -65,15 +60,9 @@ class CC_SERVICE_EXPORT ServiceFactory
   int NextServiceCompositorId() { return next_service_id_++; }
 
  private:
-  void AddChannelInternal(
-      int32_t client_id,
-      cc::mojom::CompositorChannelAssociatedRequest request);
-
   SharedBitmapManager* shared_bitmap_manager_;
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   gpu::ImageFactory* image_factory_;
-  base::ScopedPtrHashMap<int32_t, std::unique_ptr<CompositorChannel>>
-      compositor_channels_;
 
   int next_service_id_ = 1;
 

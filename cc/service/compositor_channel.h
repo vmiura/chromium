@@ -21,11 +21,6 @@ class ServiceFactory;
 class CompositorChannel : public cc::mojom::CompositorChannel {
  public:
   CompositorChannel(
-      cc::mojom::CompositorChannelAssociatedRequest request,
-      ServiceFactory* factory,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
-
-  CompositorChannel(
       cc::mojom::CompositorChannelRequest request,
       ServiceFactory* factory,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
@@ -40,10 +35,8 @@ class CompositorChannel : public cc::mojom::CompositorChannel {
 
  private:
   ServiceFactory* const factory_;
-  std::unique_ptr<mojo::Binding<cc::mojom::CompositorChannel>> binding_;
-  std::unique_ptr<mojo::AssociatedBinding<cc::mojom::CompositorChannel>>
-      assoc_binding_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
+  mojo::Binding<cc::mojom::CompositorChannel> binding_;
   DISALLOW_COPY_AND_ASSIGN(CompositorChannel);
 };
 
