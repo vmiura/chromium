@@ -360,6 +360,8 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   // TODO(fsamuel): A surface_handle is not always a widget.
+  // TODO(fsamuel): In Mus+Ash the widget does not come from here. It is owned
+  // by the DisplayCompositorHost.
   gpu::SurfaceHandle surface_handle = widget;
   ConnectToDisplayCompositorHostIfNecessary(surface_handle);
   auto connection = base::MakeUnique<cc::ServiceConnection>();

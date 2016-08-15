@@ -1321,17 +1321,9 @@ RenderThreadImpl::CreateServiceCompositorConnection(
     int32_t routing_id,
     const cc::LayerTreeSettings& settings) {
   fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
-  if (!compositor_channel_) {
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
-        EstablishGpuChannelSync(CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP));
-    // TODO(hackathon): Deal with failure, this should be an async function.
-    CHECK(gpu_channel_host) << "Sad times in sad land. Gpu process required.";
-    gpu_channel_host->GetRemoteAssociatedInterface(&compositor_channel_);
-  }
   if (!display_compositor_host_)
     GetRemoteInterfaces()->GetInterface(&display_compositor_host_);
   DCHECK(display_compositor_host_);
-  DCHECK(compositor_channel_);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   mojo::InterfacePtr<cc::mojom::CompositorClient> client;
   connection->client_request = mojo::GetProxy(&client);
@@ -1802,7 +1794,6 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
     if (!gpu_channel_->IsLost())
       return gpu_channel_;
 
-    compositor_channel_.reset();
     display_compositor_host_.reset();
 
     // Recreate the channel if it has been lost.
