@@ -26,19 +26,19 @@ void DisplayCompositorHost::RequestSurfaceManager(
   display_compositor_->RequestSurfaceManager(std::move(surface_manager));
 }
 
-void DisplayCompositorHost::CreateCompositor(
+void DisplayCompositorHost::CreateContentFrameSink(
     int32_t routing_id,
     mojom::LayerTreeSettingsPtr settings,
-    mojom::CompositorRequest compositor,
-    mojom::CompositorClientPtr client) {
+    mojom::ContentFrameSinkRequest content_frame_sink,
+    mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   fprintf(stderr, ">>>>%s routing_id: %d", __PRETTY_FUNCTION__, routing_id);
   ConnectToDisplayCompositorIfNecessary();
   // TODO(fsamuel): (process_id, routing_id) uniquely identifies a
   // RenderWidgetHost and thus a RenderWidgetHostView and thus
   // a DelegatedFrameHost. We can map compositor_id => DelegatedFrameHost.
-  display_compositor_->CreateCompositor(
+  display_compositor_->CreateContentFrameSink(
       next_compositor_id_++, surface_handle_, std::move(settings),
-      std::move(compositor), std::move(client));
+      std::move(content_frame_sink), std::move(content_frame_sink_client));
 }
 
 DisplayCompositorHost::DisplayCompositorHost(

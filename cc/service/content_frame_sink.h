@@ -1,5 +1,9 @@
-#ifndef CC_SERVICE_SERVICE_H_
-#define CC_SERVICE_SERVICE_H_
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CC_SERVICE_CONTENT_FRAME_SINK_H_
+#define CC_SERVICE_CONTENT_FRAME_SINK_H_
 
 #include <memory>
 
@@ -31,33 +35,35 @@ class SurfaceManager;
 class TaskGraphRunner;
 class UIResourceRequest;
 
-class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
+class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
  public:
-  Service(const gpu::SurfaceHandle& handle,
-          cc::mojom::CompositorRequest request,
-          cc::mojom::CompositorClientPtr client,
-          const cc::LayerTreeSettings& settings,
-          int id,
-          SharedBitmapManager* shared_bitmap_manager,
-          gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-          gpu::ImageFactory* image_factory,
-          SurfaceManager* surface_manager,
-          TaskGraphRunner* task_graph_runner);
-  ~Service() override;
+  ContentFrameSink(const gpu::SurfaceHandle& handle,
+                   cc::mojom::ContentFrameSinkRequest request,
+                   cc::mojom::ContentFrameSinkClientPtr client,
+                   const cc::LayerTreeSettings& settings,
+                   int id,
+                   SharedBitmapManager* shared_bitmap_manager,
+                   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                   gpu::ImageFactory* image_factory,
+                   SurfaceManager* surface_manager,
+                   TaskGraphRunner* task_graph_runner);
+  ~ContentFrameSink() override;
 
   // ClientImpl access.
   void ReleaseSurfaces();
   LayerTreeHostImpl* host_impl() { return &host_impl_; }
   Scheduler* scheduler() { return &scheduler_; }
-  cc::mojom::CompositorClientPtr& compositor_client() { return compositor_client_; }
+  cc::mojom::ContentFrameSinkClientPtr& content_frame_sink_client() {
+    return content_frame_sink_client_;
+  }
   void CreateOutputSurface();
   DrawResult DrawAndSwap(bool forced_draw);
   void DidActivateSyncTree();
   void ScheduledActionCommit();
 
-  // cc::mojom::Compositor implementation.
-  void RegisterChildCompositor(uint32_t client_id) override;
-  void UnregisterChildCompositor(uint32_t client_id) override;
+  // cc::mojom::ContentFrameSink implementation.
+  void RegisterChild(uint32_t client_id) override;
+  void UnregisterChild(uint32_t client_id) override;
   void SatisfySequence(const SurfaceSequence& sequence) override;
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
@@ -86,9 +92,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
       p_->SetCurrentThreadIsImplThread(true);
     }
 
-    ~SetImplThread() {
-      p_->SetCurrentThreadIsImplThread(false);
-    }
+    ~SetImplThread() { p_->SetCurrentThreadIsImplThread(false); }
 
    private:
     TaskRunnerProvider* p_;
@@ -101,7 +105,7 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
     kWaitForActivationCommitted,
     kWaitForActivationActivated,
   };
-  
+
   void FinishCommit();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -122,8 +126,8 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   SetImplThread its_the_impl_thread_i_promise_;
   std::unique_ptr<AnimationHost> main_thread_animation_host_lol_;
   LayerTreeHostImpl host_impl_;
-  cc::mojom::CompositorClientPtr compositor_client_;
-  mojo::StrongBinding<cc::mojom::Compositor> binding_;
+  cc::mojom::ContentFrameSinkClientPtr content_frame_sink_client_;
+  mojo::StrongBinding<cc::mojom::ContentFrameSink> binding_;
   mojom::ContentFramePtr frame_for_commit_;
   WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;
   WaitForActivationCallback activation_callback_;
@@ -135,9 +139,9 @@ class CC_SERVICE_EXPORT Service : public cc::mojom::Compositor {
   // TODO(hackathon): Should be owned by LTHI but le sigh.
   std::unique_ptr<DelegatingOutputSurface> output_surface_;
 
-  DISALLOW_COPY_AND_ASSIGN(Service);
+  DISALLOW_COPY_AND_ASSIGN(ContentFrameSink);
 };
 
 }  // namespace cc
 
-#endif  // CC_SERVICE_SERVICE_H_
+#endif  // CC_SERVICE_CONTENT_FRAME_SINK_H_

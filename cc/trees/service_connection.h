@@ -12,17 +12,13 @@
 
 
 namespace cc {
-namespace mojom {
-class Compositor;
-class CompositorClient;
-}
 
 struct CC_EXPORT ServiceConnection {
   ServiceConnection();
   ~ServiceConnection();
 
-  mojo::InterfacePtr<cc::mojom::Compositor> compositor;
-  mojo::InterfaceRequest<cc::mojom::CompositorClient> client_request;
+  mojo::InterfacePtr<cc::mojom::ContentFrameSink> content_frame_sink;
+  mojo::InterfaceRequest<cc::mojom::ContentFrameSinkClient> client_request;
 };
 
 }  // namespace cc

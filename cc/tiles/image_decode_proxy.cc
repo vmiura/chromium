@@ -34,11 +34,12 @@ ImageDecodeProxy::ImageDecodeProxy(ImageDecodeService* service)
   s_proxy = this;
 };
 
-ImageDecodeProxy::ImageDecodeProxy(mojom::CompositorClient* compositor_client)
+ImageDecodeProxy::ImageDecodeProxy(
+    mojom::ContentFrameSinkClient* content_frame_sink_client)
     : proxy_thread_("ImageDecodeProxy") {
   base::ThreadRestrictions::SetIOAllowed(true);
   cc::mojom::ImageDecodePtr image_decode_ptr;
-  compositor_client->OnImageDecodeProxyCreated(
+  content_frame_sink_client->OnImageDecodeProxyCreated(
       mojo::GetProxy(&image_decode_ptr));
 
   cc::mojom::ImageDecodePtrInfo ptr_info = image_decode_ptr.PassInterface();

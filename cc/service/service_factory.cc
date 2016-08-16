@@ -3,7 +3,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/service/display_compositor.h"
-#include "cc/service/service.h"
 #include "cc/service/service_context_provider.h"
 #include "gpu/ipc/service/gpu_channel.h"
 

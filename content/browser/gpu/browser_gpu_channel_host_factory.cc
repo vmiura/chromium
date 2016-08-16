@@ -373,11 +373,11 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   gpu::SurfaceHandle surface_handle = widget;
   ConnectToDisplayCompositorHostIfNecessary(surface_handle);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
-  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
+  cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
-  display_compositor_host_->CreateCompositor(
+  display_compositor_host_->CreateContentFrameSink(
       0 /* routing_id */, settings.ToMojom(),
-      mojo::GetProxy(&connection->compositor), std::move(client));
+      mojo::GetProxy(&connection->content_frame_sink), std::move(client));
   return connection;
 }
 

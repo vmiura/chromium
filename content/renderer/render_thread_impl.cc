@@ -1325,11 +1325,11 @@ RenderThreadImpl::CreateServiceCompositorConnection(
     GetRemoteInterfaces()->GetInterface(&display_compositor_host_);
   DCHECK(display_compositor_host_);
   auto connection = base::MakeUnique<cc::ServiceConnection>();
-  mojo::InterfacePtr<cc::mojom::CompositorClient> client;
+  cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
-  display_compositor_host_->CreateCompositor(
-      routing_id, settings.ToMojom(), mojo::GetProxy(&connection->compositor),
-      std::move(client));
+  display_compositor_host_->CreateContentFrameSink(
+      routing_id, settings.ToMojom(),
+      mojo::GetProxy(&connection->content_frame_sink), std::move(client));
   fprintf(stderr, "[1] >>%s\n", __PRETTY_FUNCTION__);
   return connection;
 }

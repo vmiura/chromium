@@ -19,10 +19,10 @@ import "ui/gfx/geometry/mojo/geometry.mojom";
 interface DisplayCompositorHost {
   RequestSurfaceManager(SurfaceManager& surface_manager);
                     
-  CreateCompositor(int32 routing_id,
-                   cc.mojom.LayerTreeSettings settings,
-                   Compositor& compositor,
-                   CompositorClient client);
+  CreateContentFrameSink(int32 routing_id,
+                         cc.mojom.LayerTreeSettings settings,
+                         ContentFrameSink& content_frame_sink,
+                         ContentFrameSinkClient content_frame_sink_client);
 };
 
 // GPU to browser.
@@ -41,11 +41,11 @@ interface DisplayCompositorFactory {
 interface DisplayCompositor {
   RequestSurfaceManager(SurfaceManager& surface_manager);
 
-  CreateCompositor(uint32 client_id,
-                   gpu.mojom.SurfaceHandle widget,
-                   cc.mojom.LayerTreeSettings settings,
-                   Compositor& compositor,
-                   CompositorClient client);
+  CreateContentFrameSink(uint32 client_id,
+                         gpu.mojom.SurfaceHandle widget,
+                         cc.mojom.LayerTreeSettings settings,
+                         ContentFrameSink& content_frame_sink,
+                         ContentFrameSinkClient content_frame_sink_client);
 };
 
 // Unprivileged SurfaceManager API
@@ -56,9 +56,12 @@ interface SurfaceManager {
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 };
 
-interface Compositor {
-  RegisterChildCompositor(uint32 client_id);
-  UnregisterChildCompositor(uint32 client_id);
+// A ContentFrameSink corresponds to a LTH=>LTHI interface.
+interface ContentFrameSink {
+  // TODO(fsamuel): These seem like things that only the display compositor host
+  // should be allowed to do. These should probably not live here.
+  RegisterChild(uint32 client_id);
+  UnregisterChild(uint32 client_id);
   SatisfySequence(SurfaceSequence sequence);
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
@@ -70,7 +73,8 @@ interface Compositor {
   [Sync] Destroy() => ();
 };
 
-interface CompositorClient {
+// A ContentFrameSinkClient corresponds to a LTHI=>LTH interface.
+interface ContentFrameSinkClient {
   OnCompositorCreated(uint32 client_id);
   OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
   OnBeginMainFrameNotExpectedSoon();

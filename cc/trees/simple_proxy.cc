@@ -65,7 +65,7 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 
 void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connection) {
   TRACE_EVENT0("cc", "SimpleProxy::InitializeCompositor");
-  compositor_ = std::move(connection->compositor);
+  compositor_ = std::move(connection->content_frame_sink);
   binding_.Bind(std::move(connection->client_request));
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
@@ -83,12 +83,12 @@ void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connec
 
 void SimpleProxy::RegisterChildCompositor(uint32_t client_id) {
   TRACE_EVENT0("cc", "SimpleProxy::RegisterChildCompositor");
-  compositor_->RegisterChildCompositor(client_id);
+  compositor_->RegisterChild(client_id);
 }
 
 void SimpleProxy::UnregisterChildCompositor(uint32_t client_id) {
   TRACE_EVENT0("cc", "SimpleProxy::UnregisterChildCompositor");
-  compositor_->UnregisterChildCompositor(client_id);
+  compositor_->UnregisterChild(client_id);
 }
 
 void SimpleProxy::FinishAllRendering() {

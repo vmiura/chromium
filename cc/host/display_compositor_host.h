@@ -40,10 +40,11 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost {
   void RequestSurfaceManager(
       mojom::SurfaceManagerRequest surface_manager) override;
 
-  void CreateCompositor(int32_t routing_id,
-                        mojom::LayerTreeSettingsPtr settings,
-                        mojom::CompositorRequest compositor,
-                        mojom::CompositorClientPtr client) override;
+  void CreateContentFrameSink(
+      int32_t routing_id,
+      mojom::LayerTreeSettingsPtr settings,
+      mojom::ContentFrameSinkRequest content_frame_sink,
+      mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
  private:
   DisplayCompositorHost(gpu::SurfaceHandle surface_handle,

@@ -20,10 +20,10 @@ class DisplayCompositorHostProxy : public mojom::DisplayCompositorHost {
   // DisplayCompositorHost implementation.
   void RequestSurfaceManager(
       mojom::SurfaceManagerRequest surface_manager) override;
-  void CreateCompositor(int32_t routing_id,
-                        mojom::LayerTreeSettingsPtr settings,
-                        mojom::CompositorRequest compositor,
-                        mojom::CompositorClientPtr client) override;
+  void CreateContentFrameSink(int32_t routing_id,
+                              mojom::LayerTreeSettingsPtr settings,
+                              mojom::ContentFrameSinkRequest compositor,
+                              mojom::ContentFrameSinkClientPtr client) override;
 
  private:
   mojom::DisplayCompositorHostPtr host_;

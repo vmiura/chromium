@@ -19,15 +19,15 @@ void DisplayCompositorConnection::RequestSurfaceManager(
   display_compositor_->RequestSurfaceManager(std::move(surface_manager));
 }
 
-void DisplayCompositorConnection::CreateCompositor(
+void DisplayCompositorConnection::CreateContentFrameSink(
     uint32_t client_id,
     const gpu::SurfaceHandle& handle,
     mojom::LayerTreeSettingsPtr settings,
-    mojom::CompositorRequest compositor,
-    mojom::CompositorClientPtr compositor_client) {
-  display_compositor_->CreateCompositor(client_id, handle, std::move(settings),
-                                        std::move(compositor),
-                                        std::move(compositor_client));
+    mojom::ContentFrameSinkRequest content_frame_sink,
+    mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
+  display_compositor_->CreateContentFrameSink(
+      client_id, handle, std::move(settings), std::move(content_frame_sink),
+      std::move(content_frame_sink_client));
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(

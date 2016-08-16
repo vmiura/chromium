@@ -24,11 +24,12 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
   ~DisplayCompositorConnection() override;
 
   void RequestSurfaceManager(mojom::SurfaceManagerRequest surface_manager);
-  void CreateCompositor(uint32_t client_id,
-                        const gpu::SurfaceHandle& handle,
-                        mojom::LayerTreeSettingsPtr settings,
-                        mojom::CompositorRequest compositor,
-                        mojom::CompositorClientPtr compositor_client);
+  void CreateContentFrameSink(
+      uint32_t client_id,
+      const gpu::SurfaceHandle& handle,
+      mojom::LayerTreeSettingsPtr settings,
+      mojom::ContentFrameSinkRequest content_frame_sink,
+      mojom::ContentFrameSinkClientPtr content_frame_sink_client);
 
   // cc::mojom::DisplayCompositorClient implementation:
   void OnSurfaceCreated(const gfx::Size& frame_size,

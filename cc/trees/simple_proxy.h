@@ -29,7 +29,8 @@ class LayerTreeMutator;
 // This class aggregates all interactions that the impl side of the compositor
 // needs to have with the main side.
 // The class is created and lives on the main thread.
-class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
+class CC_EXPORT SimpleProxy : public Proxy,
+                              public cc::mojom::ContentFrameSinkClient {
  public:
   static std::unique_ptr<SimpleProxy> Create(
       LayerTreeHost* layer_tree_host,
@@ -72,7 +73,7 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   SimpleProxy(LayerTreeHost* layer_tree_host,
               TaskRunnerProvider* task_runner_provider);
 
-  // mojom::CompositorClient implementation
+  // mojom::ContentFrameSinkClient implementation
   void OnCompositorCreated(uint32_t client_id) override;
   void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
@@ -117,8 +118,8 @@ class CC_EXPORT SimpleProxy : public Proxy, public cc::mojom::CompositorClient {
   RendererCapabilities renderer_capabilities_;
 
  private:
-  mojo::InterfacePtr<cc::mojom::Compositor> compositor_;
-  mojo::Binding<cc::mojom::CompositorClient> binding_;
+  mojo::InterfacePtr<cc::mojom::ContentFrameSink> compositor_;
+  mojo::Binding<cc::mojom::ContentFrameSinkClient> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleProxy);
 };

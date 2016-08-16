@@ -15,13 +15,14 @@ void DisplayCompositorHostProxy::RequestSurfaceManager(
   host_->RequestSurfaceManager(std::move(surface_manager));
 }
 
-void DisplayCompositorHostProxy::CreateCompositor(
+void DisplayCompositorHostProxy::CreateContentFrameSink(
     int32_t routing_id,
     mojom::LayerTreeSettingsPtr settings,
-    mojom::CompositorRequest compositor,
-    mojom::CompositorClientPtr client) {
-  host_->CreateCompositor(routing_id, std::move(settings),
-                          std::move(compositor), std::move(client));
+    mojom::ContentFrameSinkRequest compositor_frame_sink,
+    mojom::ContentFrameSinkClientPtr compositor_frame_sink_client) {
+  host_->CreateContentFrameSink(routing_id, std::move(settings),
+                                std::move(compositor_frame_sink),
+                                std::move(compositor_frame_sink_client));
 }
 
 DisplayCompositorHostProxy::DisplayCompositorHostProxy(

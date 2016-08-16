@@ -19,8 +19,8 @@ namespace cc {
 
 class CC_EXPORT ImageDecodeProxy {
  public:
-  ImageDecodeProxy(mojom::CompositorClient* compositor_client);
-  ImageDecodeProxy(ImageDecodeService* compositor_client);
+  ImageDecodeProxy(mojom::ContentFrameSinkClient* content_frame_sink_client);
+  ImageDecodeProxy(ImageDecodeService* service);
   ~ImageDecodeProxy();
 
   // For now, just use a singleton.

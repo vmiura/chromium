@@ -45,12 +45,13 @@ class DisplayCompositor : public mojom::SurfaceManager,
 
   // mojom::DisplayCompositor implementation.
   void RequestSurfaceManager(
-      mojom::SurfaceManagerRequest compositor_channel) override;
-  void CreateCompositor(uint32_t client_id,
-                        const gpu::SurfaceHandle& handle,
-                        mojom::LayerTreeSettingsPtr settings,
-                        mojom::CompositorRequest compositor,
-                        mojom::CompositorClientPtr compositor_client) override;
+      mojom::SurfaceManagerRequest surface_manager) override;
+  void CreateContentFrameSink(
+      uint32_t client_id,
+      const gpu::SurfaceHandle& handle,
+      mojom::LayerTreeSettingsPtr settings,
+      mojom::ContentFrameSinkRequest content_frame_sink,
+      mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
   // mojom::SurfaceManager implementation.
   void AddRefOnSurfaceId(const SurfaceId& id) override;

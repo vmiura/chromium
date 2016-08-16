@@ -1,4 +1,4 @@
-#include "cc/service/service.h"
+#include "cc/service/content_frame_sink.h"
 
 #include <stack>
 
@@ -41,16 +41,16 @@
 
 namespace cc {
 
-class Service::ClientImpl : public LayerTreeHostImplClient,
-                            public SchedulerClient {
+class ContentFrameSink::ClientImpl : public LayerTreeHostImplClient,
+                                     public SchedulerClient {
  public:
-  ClientImpl(Service* owner,
+  ClientImpl(ContentFrameSink* owner,
              const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
       : owner_(owner), task_runner_(task_runner) {}
 
   // LayerTreeHostImplClient implementation.
   void UpdateRendererCapabilitiesOnImplThread() override {
-    owner_->compositor_client()->OnRendererCapabilities(
+    owner_->content_frame_sink_client()->OnRendererCapabilities(
         owner_->host_impl_.GetRendererCapabilities().MainThreadCapabilities());
   }
   void DidLoseOutputSurfaceOnImplThread() override {
@@ -67,7 +67,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
   void DidSwapBuffersCompleteOnImplThread(
       const SurfaceId& surface_id) override {
     owner_->scheduler()->DidSwapBuffersComplete();
-    owner_->compositor_client()->OnDidCompleteSwapBuffers(surface_id);
+    owner_->content_frame_sink_client()->OnDidCompleteSwapBuffers(surface_id);
     owner_->ReleaseSurfaces();
   }
   void OnCanDrawStateChanged(bool can_draw) override {
@@ -102,9 +102,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
       std::unique_ptr<AnimationEvents> events) override {
     // TODO(hackathon): back to main
   }
-  bool IsInsideDraw() override {
-    return inside_draw_;
-  }
+  bool IsInsideDraw() override { return inside_draw_; }
   void RenewTreePriority() override {
     // TODO(hackathon): Default priority fine for now?
   }
@@ -112,20 +110,14 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
                                             base::TimeDelta delay) override {
     task_runner_->PostDelayedTask(FROM_HERE, task, delay);
   }
-  void DidActivateSyncTree() override {
-    owner_->DidActivateSyncTree();
-  }
-  void WillPrepareTiles() override {
-    owner_->scheduler()->WillPrepareTiles();
-  }
-  void DidPrepareTiles() override {
-    owner_->scheduler()->DidPrepareTiles();
-  }
+  void DidActivateSyncTree() override { owner_->DidActivateSyncTree(); }
+  void WillPrepareTiles() override { owner_->scheduler()->WillPrepareTiles(); }
+  void DidPrepareTiles() override { owner_->scheduler()->DidPrepareTiles(); }
   void DidCompletePageScaleAnimationOnImplThread() override {
-    owner_->compositor_client()->OnDidCompletePageScaleAnimation();
+    owner_->content_frame_sink_client()->OnDidCompletePageScaleAnimation();
   }
   void OnDrawForOutputSurface(bool resourceless_software_draw) override {
-    NOTREACHED(); // webivew only
+    NOTREACHED();  // webivew only
   }
 
   // SchedulerClient implementation.
@@ -133,7 +125,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->WillBeginImplFrame(args);
   }
   void ScheduledActionSendBeginMainFrame(const BeginFrameArgs& args) override {
-    owner_->compositor_client()->OnBeginMainFrame(0, args);
+    owner_->content_frame_sink_client()->OnBeginMainFrame(0, args);
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
     bool forced_draw = false;
@@ -145,9 +137,7 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     base::AutoReset<bool> mark_inside(&inside_draw_, true);
     return owner_->DrawAndSwap(forced_draw);
   }
-  void ScheduledActionCommit() override {
-    owner_->ScheduledActionCommit();
-  }
+  void ScheduledActionCommit() override { owner_->ScheduledActionCommit(); }
   void ScheduledActionActivateSyncTree() override {
     owner_->host_impl()->ActivateSyncTree();
   }
@@ -158,33 +148,34 @@ class Service::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->PrepareTiles();
   }
   void ScheduledActionInvalidateOutputSurface() override {
-    NOTREACHED(); // webivew only
+    NOTREACHED();  // webivew only
   }
   void DidFinishImplFrame() override {
     owner_->host_impl()->DidFinishImplFrame();
   }
   void SendBeginMainFrameNotExpectedSoon() override {
-    owner_->compositor_client()->OnBeginMainFrameNotExpectedSoon();
+    owner_->content_frame_sink_client()->OnBeginMainFrameNotExpectedSoon();
   }
 
  private:
-  Service* const owner_;
+  ContentFrameSink* const owner_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool inside_draw_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
-Service::Service(const gpu::SurfaceHandle& handle,
-                 cc::mojom::CompositorRequest request,
-                 cc::mojom::CompositorClientPtr client,
-                 const cc::LayerTreeSettings& settings,
-                 int id,
-                 SharedBitmapManager* shared_bitmap_manager,
-                 gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                 gpu::ImageFactory* image_factory,
-                 SurfaceManager* surface_manager,
-                 TaskGraphRunner* task_graph_runner)
+ContentFrameSink::ContentFrameSink(
+    const gpu::SurfaceHandle& handle,
+    cc::mojom::ContentFrameSinkRequest request,
+    cc::mojom::ContentFrameSinkClientPtr client,
+    const cc::LayerTreeSettings& settings,
+    int id,
+    SharedBitmapManager* shared_bitmap_manager,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gpu::ImageFactory* image_factory,
+    SurfaceManager* surface_manager,
+    TaskGraphRunner* task_graph_runner)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       client_(new ClientImpl(this, task_runner_)),
       shared_bitmap_manager_(shared_bitmap_manager),
@@ -217,15 +208,16 @@ Service::Service(const gpu::SurfaceHandle& handle,
                  id,
                  std::unique_ptr<ImageDecodeProxy>(
                      new ImageDecodeProxy(client.get()))),
-      compositor_client_(std::move(client)),
+      content_frame_sink_client_(std::move(client)),
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
   surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
-  compositor_client_->OnCompositorCreated(surface_id_allocator_.client_id());
+  content_frame_sink_client_->OnCompositorCreated(
+      surface_id_allocator_.client_id());
 }
 
-Service::~Service() {
+ContentFrameSink::~ContentFrameSink() {
   LOG(ERROR) << "~Service compositor " << this;
 
   scheduler_.SetVisible(false);
@@ -238,7 +230,7 @@ Service::~Service() {
       surface_id_allocator_.client_id());
 }
 
-void Service::ReleaseSurfaces() {
+void ContentFrameSink::ReleaseSurfaces() {
   for (const SurfaceId& surface_id : released_surfaces_) {
     surface_manager_->RemoveRefOnSurfaceId(surface_id);
     fprintf(stderr, ">>>%s surface_id: %s\n", __PRETTY_FUNCTION__,
@@ -247,7 +239,7 @@ void Service::ReleaseSurfaces() {
   released_surfaces_.clear();
 }
 
-void Service::CreateOutputSurface() {
+void ContentFrameSink::CreateOutputSurface() {
   if (output_surface_ && !surface_id_.is_null())
     output_surface_->SetDelegatedSurfaceId(SurfaceId());
 
@@ -298,8 +290,8 @@ void Service::CreateOutputSurface() {
   output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
       surface_manager_,
       display_.get(),  // Will be null for non-root compositors.
-      surface_id_allocator_.client_id(),
-      std::move(compositor_context), std::move(worker_context));
+      surface_id_allocator_.client_id(), std::move(compositor_context),
+      std::move(worker_context));
   host_impl_.InitializeRenderer(output_surface_.get());
 
   if (!surface_id_.is_null())
@@ -308,7 +300,7 @@ void Service::CreateOutputSurface() {
   scheduler_.DidCreateAndInitializeOutputSurface();
 }
 
-DrawResult Service::DrawAndSwap(bool forced_draw) {
+DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
   if (host_impl_.pending_tree()) {
     bool update_lcd_text = false;
     host_impl_.pending_tree()->UpdateDrawProperties(update_lcd_text);
@@ -354,53 +346,54 @@ DrawResult Service::DrawAndSwap(bool forced_draw) {
       scheduler_.DidSwapBuffers();
   }
 
-  compositor_client_->OnDidCommitAndDrawFrame();
+  content_frame_sink_client_->OnDidCommitAndDrawFrame();
 
   DCHECK_NE(INVALID_RESULT, result);
   return result;
 }
 
-void Service::RegisterChildCompositor(uint32_t client_id) {
+void ContentFrameSink::RegisterChild(uint32_t client_id) {
   fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
   surface_manager_->RegisterSurfaceNamespaceHierarchy(
       surface_id_allocator_.client_id(), client_id);
 }
 
-void Service::UnregisterChildCompositor(uint32_t client_id) {
+void ContentFrameSink::UnregisterChild(uint32_t client_id) {
   fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
   surface_manager_->UnregisterSurfaceNamespaceHierarchy(
       surface_id_allocator_.client_id(), client_id);
 }
 
-void Service::SatisfySequence(const SurfaceSequence& sequence) {
+void ContentFrameSink::SatisfySequence(const SurfaceSequence& sequence) {
   std::vector<uint32_t> sequences;
   sequences.push_back(sequence.sequence);
   surface_manager_->DidSatisfySequences(sequence.client_id, &sequences);
 }
 
-void Service::SetNeedsBeginMainFrame() {
-  TRACE_EVENT0("cc", "Service::SetNeedsBeginFrame");
+void ContentFrameSink::SetNeedsBeginMainFrame() {
+  TRACE_EVENT0("cc", "ContentFrameSink::SetNeedsBeginFrame");
   client_->SetNeedsCommitOnImplThread();
 }
 
-void Service::SetNeedsRedraw(const gfx::Rect& damage_rect) {
-  TRACE_EVENT0("cc", "Service::SetNeedsRedraw");
+void ContentFrameSink::SetNeedsRedraw(const gfx::Rect& damage_rect) {
+  TRACE_EVENT0("cc", "ContentFrameSink::SetNeedsRedraw");
   host_impl_.SetViewportDamage(damage_rect);
   scheduler_.SetNeedsRedraw();
 }
 
-void Service::SetVisible(bool visible) {
-  TRACE_EVENT0("cc", "Service::SetVisible");
+void ContentFrameSink::SetVisible(bool visible) {
+  TRACE_EVENT0("cc", "ContentFrameSink::SetVisible");
   host_impl_.SetVisible(visible);
   scheduler_.SetVisible(visible);
 }
 
-void Service::PrepareCommit(bool will_wait_for_activation,
-                            mojom::ContentFramePtr frame) {
-  TRACE_EVENT1("cc", "Service::Commit", "wait_for_activation", will_wait_for_activation);
+void ContentFrameSink::PrepareCommit(bool will_wait_for_activation,
+                                     mojom::ContentFramePtr frame) {
+  TRACE_EVENT1("cc", "ContentFrameSink::Commit", "wait_for_activation",
+               will_wait_for_activation);
   DCHECK_EQ(wait_for_activation_state_, kWaitForActivationNone);
   DCHECK(!frame_for_commit_);
-  //DCHECK(IsImplThread() && IsMainThreadBlocked());
+  // DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_.CommitPending());
 
   bool viewport_changed_size =
@@ -413,9 +406,10 @@ void Service::PrepareCommit(bool will_wait_for_activation,
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }
 
-void Service::PrepareCommitSync(bool will_wait_for_activation,
-                                mojom::ContentFramePtr frame,
-                                const PrepareCommitSyncCallback& callback) {
+void ContentFrameSink::PrepareCommitSync(
+    bool will_wait_for_activation,
+    mojom::ContentFramePtr frame,
+    const PrepareCommitSyncCallback& callback) {
   bool viewport_changed_size =
       frame->device_viewport_size != host_impl_.device_viewport_size();
   LayerTreeImpl* last_commit_tree = host_impl_.pending_tree();
@@ -441,8 +435,8 @@ void Service::PrepareCommitSync(bool will_wait_for_activation,
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }
 
-void Service::PrepareCommitInternal(bool will_wait_for_activation,
-                                    mojom::ContentFramePtr frame) {
+void ContentFrameSink::PrepareCommitInternal(bool will_wait_for_activation,
+                                             mojom::ContentFramePtr frame) {
   if (frame->released_surfaces.size() > 0) {
     released_surfaces_.insert(released_surfaces_.end(),
                               frame->released_surfaces.begin(),
@@ -456,13 +450,13 @@ void Service::PrepareCommitInternal(bool will_wait_for_activation,
       base::TimeTicks() /* TODO(hackathon): main_thread_start_time */);
   host_impl_.ReadyToCommit();
 
-  //DCHECK(!blocked_main_commit().layer_tree_host);
-  //blocked_main_commit().layer_tree_host = layer_tree_host;
+  // DCHECK(!blocked_main_commit().layer_tree_host);
+  // blocked_main_commit().layer_tree_host = layer_tree_host;
   scheduler_.NotifyReadyToCommit();
 }
 
-void Service::DidActivateSyncTree() {
-  TRACE_EVENT0("cc", "Service::DidActivateSyncTree");
+void ContentFrameSink::DidActivateSyncTree() {
+  TRACE_EVENT0("cc", "ContentFrameSink::DidActivateSyncTree");
   DCHECK(wait_for_activation_state_ == kWaitForActivationNone ||
          wait_for_activation_state_ == kWaitForActivationCommitted);
   if (activation_callback_) {
@@ -476,7 +470,8 @@ void Service::DidActivateSyncTree() {
   }
 }
 
-void Service::WaitForActivation(const WaitForActivationCallback& callback) {
+void ContentFrameSink::WaitForActivation(
+    const WaitForActivationCallback& callback) {
   DCHECK_NE(wait_for_activation_state_, kWaitForActivationNone);
   DCHECK(!activation_callback_);
   if (wait_for_activation_state_ == kWaitForActivationActivated) {
@@ -489,11 +484,12 @@ void Service::WaitForActivation(const WaitForActivationCallback& callback) {
 
 AdditionGroup<gfx::ScrollOffset> ScrollOffsetFromMojom(
     const gfx::mojom::ScrollOffsetPtr& mojom) {
-  return AdditionGroup<gfx::ScrollOffset>(gfx::ScrollOffset(mojom->x, mojom->y));
+  return AdditionGroup<gfx::ScrollOffset>(
+      gfx::ScrollOffset(mojom->x, mojom->y));
 }
 
-void Service::BeginMainFrameAborted(CommitEarlyOutReason reason) {
-  TRACE_EVENT0("cc", "Service::BeginMainFrameAborted");
+void ContentFrameSink::BeginMainFrameAborted(CommitEarlyOutReason reason) {
+  TRACE_EVENT0("cc", "ContentFrameSink::BeginMainFrameAborted");
 #if 0
   // TODO(hackathon):
   if (CommitEarlyOutHandledCommit(reason)) {
@@ -506,8 +502,8 @@ void Service::BeginMainFrameAborted(CommitEarlyOutReason reason) {
   scheduler_.BeginMainFrameAborted(reason);
 }
 
-void Service::FinishCommit() {
-  TRACE_EVENT0("cc", "Service::FinishCommit");
+void ContentFrameSink::FinishCommit() {
+  TRACE_EVENT0("cc", "ContentFrameSink::FinishCommit");
   mojom::ContentFrame* frame = frame_for_commit_.get();
   LayerTreeImpl* sync_tree = host_impl_.sync_tree();
 
@@ -517,25 +513,25 @@ void Service::FinishCommit() {
   sync_tree->set_source_frame_number(frame->source_frame);
 
   if (frame->needs_full_tree_sync) {
-    TRACE_EVENT0("cc", "Service::FinishCommit full tree sync create layers");
+    TRACE_EVENT0("cc",
+                 "ContentFrameSink::FinishCommit full tree sync create layers");
     std::unique_ptr<OwnedLayerImplList> old_pending_layers(
         sync_tree->DetachLayers());
     OwnedLayerImplMap old_pending_layer_map;
     for (auto& it : *old_pending_layers)
       old_pending_layer_map[it->id()] = std::move(it);
 
-    auto create_layer = [&old_pending_layer_map, sync_tree](
-        cc::mojom::LayerStructure* mojom) {
+    auto create_layer = [&old_pending_layer_map,
+                         sync_tree](cc::mojom::LayerStructure* mojom) {
       int id = mojom->layer_id;
-      std::unique_ptr<LayerImpl> layer =
-          std::move(old_pending_layer_map[id]);
+      std::unique_ptr<LayerImpl> layer = std::move(old_pending_layer_map[id]);
       if (!layer) {
         switch (mojom->layer_type) {
           case cc::mojom::LayerType::BASE:
             layer = LayerImpl::Create(sync_tree, id);
             break;
           case cc::mojom::LayerType::PICTURE:
-            layer = PictureLayerImpl::Create( sync_tree, id, mojom->is_mask);
+            layer = PictureLayerImpl::Create(sync_tree, id, mojom->is_mask);
             break;
           case cc::mojom::LayerType::PAINTED_SCROLLBAR:
             layer = PaintedScrollbarLayerImpl::Create(
@@ -594,10 +590,8 @@ void Service::FinishCommit() {
 #endif
 
   sync_tree->SetViewportLayersFromIds(
-      frame->overscroll_elasticity_layer,
-      frame->page_scale_layer,
-      frame->inner_viewport_scroll_layer,
-      frame->outer_viewport_scroll_layer);
+      frame->overscroll_elasticity_layer, frame->page_scale_layer,
+      frame->inner_viewport_scroll_layer, frame->outer_viewport_scroll_layer);
 
 #if 0
   // TODO(hackathon): selection
@@ -625,7 +619,7 @@ void Service::FinishCommit() {
   // Setting property trees must happen before pushing the page scale.
   PropertyTrees* property_trees = sync_tree->property_trees();
   {
-    TRACE_EVENT0("cc", "Service::FinishCommit property trees");
+    TRACE_EVENT0("cc", "ContentFrameSink::FinishCommit property trees");
     bool property_trees_sequence_changed = false;
     {
       auto& source = *frame->property_trees;
@@ -633,21 +627,28 @@ void Service::FinishCommit() {
       dest->non_root_surfaces_enabled = source.non_root_surfaces_enabled;
       dest->changed = source.changed;
       dest->full_tree_damaged = source.full_tree_damaged;
-      property_trees_sequence_changed = (dest->sequence_number != source.sequence_number);
+      property_trees_sequence_changed =
+          (dest->sequence_number != source.sequence_number);
       dest->sequence_number = source.sequence_number;
-      dest->verify_transform_tree_calculations = source.verify_transform_tree_calculations;
+      dest->verify_transform_tree_calculations =
+          source.verify_transform_tree_calculations;
     }
     {
       auto& source = *frame->property_trees->transform_tree;
       auto* dest = &property_trees->transform_tree;
-      dest->source_to_parent_updates_allowed_ = source.source_to_parent_updates_allowed;
+      dest->source_to_parent_updates_allowed_ =
+          source.source_to_parent_updates_allowed;
       dest->page_scale_factor_ = source.page_scale_factor;
       dest->device_scale_factor_ = source.device_scale_factor;
-      dest->device_transform_scale_factor_ = source.device_transform_scale_factor;
-      dest->nodes_affected_by_inner_viewport_bounds_delta_ = source.nodes_affected_by_inner_viewport_bounds_delta;
-      dest->nodes_affected_by_outer_viewport_bounds_delta_ = source.nodes_affected_by_outer_viewport_bounds_delta;
+      dest->device_transform_scale_factor_ =
+          source.device_transform_scale_factor;
+      dest->nodes_affected_by_inner_viewport_bounds_delta_ =
+          source.nodes_affected_by_inner_viewport_bounds_delta;
+      dest->nodes_affected_by_outer_viewport_bounds_delta_ =
+          source.nodes_affected_by_outer_viewport_bounds_delta;
       size_t vec_bytes = source.nodes.size();
-      DCHECK_EQ(vec_bytes % sizeof(TransformNode), 0u);  // TODO(hackathon): validate
+      DCHECK_EQ(vec_bytes % sizeof(TransformNode),
+                0u);  // TODO(hackathon): validate
       dest->nodes_.resize(vec_bytes / sizeof(TransformNode));
       memcpy(dest->nodes_.data(), source.nodes.data(), vec_bytes);
 
@@ -705,9 +706,11 @@ void Service::FinishCommit() {
       property_trees->ResetCachedData();
   }
 
-  sync_tree->PushPageScaleFromMainThread(
-      frame->page_scale_factor, frame->min_page_scale_factor, frame->max_page_scale_factor);
-  sync_tree->elastic_overscroll()->PushFromMainThread(frame->elastic_overscroll);
+  sync_tree->PushPageScaleFromMainThread(frame->page_scale_factor,
+                                         frame->min_page_scale_factor,
+                                         frame->max_page_scale_factor);
+  sync_tree->elastic_overscroll()->PushFromMainThread(
+      frame->elastic_overscroll);
   if (sync_tree->IsActiveTree())
     sync_tree->elastic_overscroll()->PushPendingToActive();
 
@@ -724,7 +727,8 @@ void Service::FinishCommit() {
   sync_tree->PushTopControlsFromMainThread(top_controls_shown_ratio_);
 #endif
 
-  host_impl_.SetHasGpuRasterizationTrigger(frame->has_gpu_rasterization_trigger);
+  host_impl_.SetHasGpuRasterizationTrigger(
+      frame->has_gpu_rasterization_trigger);
   host_impl_.SetContentIsSuitableForGpuRasterization(
       frame->content_is_suitable_for_gpu_rasterization);
 
@@ -733,7 +737,8 @@ void Service::FinishCommit() {
   // properties are set, since those trigger an update of GPU rasterization
   // status, which depends on the device scale factor. (crbug.com/535700)
   sync_tree->SetDeviceScaleFactor(frame->device_scale_factor);
-  sync_tree->set_painted_device_scale_factor(frame->painted_device_scale_factor);
+  sync_tree->set_painted_device_scale_factor(
+      frame->painted_device_scale_factor);
 #if 0
   // TODO(hackathon): debug state
   host_impl->SetDebugState(debug_state_);
@@ -789,7 +794,7 @@ void Service::FinishCommit() {
   sync_tree->set_has_ever_been_drawn(false);
 
   {
-    TRACE_EVENT0("cc", "Service::PushProperties");
+    TRACE_EVENT0("cc", "ContentFrameSink::PushProperties");
 
     for (const auto& layer_properties : frame->layer_properties) {
       ProxyImageGenerator::ScopedBindFactory scoped_bind(
@@ -805,7 +810,7 @@ void Service::FinishCommit() {
     // property tree scrolling and animation.
     sync_tree->UpdatePropertyTreeScrollingAndAnimationFromMainThread();
 
-    TRACE_EVENT0("cc", "Service::AnimationHost::PushProperties");
+    TRACE_EVENT0("cc", "ContentFrameSink::AnimationHost::PushProperties");
 #if 0
     // TODO(hackathon): animations
     DCHECK(host_impl->animation_host());
@@ -818,22 +823,27 @@ void Service::FinishCommit() {
 
   // TODO(hackathon): pending/active business seems really wrong...
   ScrollTree::ScrollOffsetMap new_scroll_offset_map;
-  for (const auto& pair : frame->property_trees->scroll_tree->layer_id_to_scroll_offset_map) {
+  for (const auto& pair :
+       frame->property_trees->scroll_tree->layer_id_to_scroll_offset_map) {
     scoped_refptr<SyncedScrollOffset> synced = new SyncedScrollOffset;
     synced->pending_base_ = ScrollOffsetFromMojom(pair.second->pending_base);
     synced->active_base_ = ScrollOffsetFromMojom(pair.second->active_base);
     synced->active_delta_ = ScrollOffsetFromMojom(pair.second->active_delta);
-    synced->reflected_delta_in_main_tree_ = ScrollOffsetFromMojom(pair.second->reflected_delta_in_main_tree);
-    synced->reflected_delta_in_pending_tree_ = ScrollOffsetFromMojom(pair.second->reflected_delta_in_pending_tree);
+    synced->reflected_delta_in_main_tree_ =
+        ScrollOffsetFromMojom(pair.second->reflected_delta_in_main_tree);
+    synced->reflected_delta_in_pending_tree_ =
+        ScrollOffsetFromMojom(pair.second->reflected_delta_in_pending_tree);
     synced->clobber_active_value_ = pair.second->clobber_active_value;
     new_scroll_offset_map[pair.first] = synced;
   }
-  property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map, sync_tree);
+  property_trees->scroll_tree.UpdateScrollOffsetMap(&new_scroll_offset_map,
+                                                    sync_tree);
 
   // TODO(weiliangc): This crashes once surface ids start changing.
   // The surface ID changed during BeginCommitSync.
   if (0) {
-    TRACE_EVENT0("cc", "Service::FinishCommit content frame aggregation");
+    TRACE_EVENT0("cc",
+                 "ContentFrameSink::FinishCommit content frame aggregation");
     // Hackathon technically only combines one content frame because of reasons.
     cc::ContentFrame new_content_frame;
     new_content_frame.Set(*sync_tree);
@@ -849,8 +859,8 @@ void Service::FinishCommit() {
 #endif
 }
 
-void Service::ScheduledActionCommit() {
-  TRACE_EVENT0("cc", "Service::ScheduledActionCommit");
+void ContentFrameSink::ScheduledActionCommit() {
+  TRACE_EVENT0("cc", "ContentFrameSink::ScheduledActionCommit");
   DCHECK(wait_for_activation_state_ == kWaitForActivationNone ||
          wait_for_activation_state_ == kWaitForActivationPrepared);
   host_impl_.BeginCommit();
@@ -865,8 +875,8 @@ void Service::ScheduledActionCommit() {
   host_impl_.CommitComplete();
 }
 
-void Service::Destroy(const DestroyCallback& callback) {
-  TRACE_EVENT0("cc", "Service::Destroy");
+void ContentFrameSink::Destroy(const DestroyCallback& callback) {
+  TRACE_EVENT0("cc", "ContentFrameSink::Destroy");
   scheduler_.SetVisible(false);
   scheduler_.DidLoseOutputSurface();
   host_impl_.ReleaseOutputSurface();

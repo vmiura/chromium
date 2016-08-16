@@ -9,7 +9,7 @@
 
 namespace cc {
 class LayerTreeHost;  // HACKATHON: For serialization.
-class Service;  // HACKATHON: For serialization.
+class ContentFrameSink;  // HACKATHON: For serialization.
 
 // This class is the basic primitive used for impl-thread scrolling.  Its job is
 // to sanely resolve the case where both the main and impl thread are
@@ -118,7 +118,7 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
 
  private:
   friend class LayerTreeHost;  // HACKATHON: For serialization.
-  friend class Service;  // HACKATHON: For serialization.
+  friend class ContentFrameSink;  // HACKATHON: For serialization.
 
   // Value last committed to the pending tree.
   T pending_base_;
