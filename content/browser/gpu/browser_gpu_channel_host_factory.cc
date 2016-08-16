@@ -383,14 +383,14 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
 
 void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
     const cc::SurfaceId& id) {
-  if (compositor_channel_ && !id.is_null())
-    compositor_channel_->AddRefOnSurfaceId(id);
+  if (surface_manager_ && !id.is_null())
+    surface_manager_->AddRefOnSurfaceId(id);
 }
 
 void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
     const cc::SurfaceId& id) {
-  if (compositor_channel_ && !id.is_null())
-    compositor_channel_->MoveTempRefToRefOnSurfaceId(id);
+  if (surface_manager_ && !id.is_null())
+    surface_manager_->MoveTempRefToRefOnSurfaceId(id);
 }
 
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
@@ -409,9 +409,9 @@ void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
         base::Bind(&CreateDisplayCompositorHostOnIO, surface_handle,
                    GetDisplayCompositorFactory(), base::Passed(&request)));
   }
-  if (!compositor_channel_) {
-    display_compositor_host_->CreateCompositorChannel(
-        mojo::GetProxy(&compositor_channel_));
+  if (!surface_manager_) {
+    display_compositor_host_->RequestSurfaceManager(
+        mojo::GetProxy(&surface_manager_));
   }
 }
 

@@ -10,9 +10,9 @@ namespace cc {
 
 DisplayCompositorHostProxy::~DisplayCompositorHostProxy() = default;
 
-void DisplayCompositorHostProxy::CreateCompositorChannel(
-    mojom::CompositorChannelRequest compositor_channel) {
-  host_->CreateCompositorChannel(std::move(compositor_channel));
+void DisplayCompositorHostProxy::RequestSurfaceManager(
+    mojom::SurfaceManagerRequest surface_manager) {
+  host_->RequestSurfaceManager(std::move(surface_manager));
 }
 
 void DisplayCompositorHostProxy::CreateCompositor(

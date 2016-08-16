@@ -14,9 +14,9 @@ DisplayCompositorConnection::DisplayCompositorConnection(
 
 DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
-void DisplayCompositorConnection::CreateCompositorChannel(
-    mojom::CompositorChannelRequest compositor_channel) {
-  display_compositor_->CreateCompositorChannel(std::move(compositor_channel));
+void DisplayCompositorConnection::RequestSurfaceManager(
+    mojom::SurfaceManagerRequest surface_manager) {
+  display_compositor_->RequestSurfaceManager(std::move(surface_manager));
 }
 
 void DisplayCompositorConnection::CreateCompositor(

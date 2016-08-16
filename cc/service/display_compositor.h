@@ -30,9 +30,9 @@ class LayerTreeSettings;
 class ServiceFactory;
 class SharedBitmapManager;
 
-class DisplayCompositor : public mojom::CompositorChannel,
+class DisplayCompositor : public mojom::SurfaceManager,
                           public mojom::DisplayCompositor,
-                          public cc::SurfaceManager::Delegate {
+                          public SurfaceManager::Delegate {
  public:
   // TODO(fsamuel): Merge ServiceFactory and DisplayCompositor.
   DisplayCompositor(
@@ -44,21 +44,21 @@ class DisplayCompositor : public mojom::CompositorChannel,
   ~DisplayCompositor() override;
 
   // mojom::DisplayCompositor implementation.
-  void CreateCompositorChannel(
-      mojom::CompositorChannelRequest compositor_channel) override;
+  void RequestSurfaceManager(
+      mojom::SurfaceManagerRequest compositor_channel) override;
   void CreateCompositor(uint32_t client_id,
                         const gpu::SurfaceHandle& handle,
                         mojom::LayerTreeSettingsPtr settings,
                         mojom::CompositorRequest compositor,
                         mojom::CompositorClientPtr compositor_client) override;
 
-  // cc::mojom::CompositorChannel implementation.
+  // mojom::SurfaceManager implementation.
   void AddRefOnSurfaceId(const SurfaceId& id) override;
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
 
   // SurfaceManager::Delegate implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
-                        const cc::SurfaceId& surface_id) override;
+                        const SurfaceId& surface_id) override;
 
  private:
   ServiceFactory* const factory_;
@@ -67,9 +67,9 @@ class DisplayCompositor : public mojom::CompositorChannel,
 
   int next_service_id_ = 1;
   SingleThreadTaskGraphRunner task_graph_runner_;
-  SurfaceManager surface_manager_;
+  cc::SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;
-  mojo::BindingSet<cc::mojom::CompositorChannel> compositor_channel_bindings_;
+  mojo::BindingSet<mojom::SurfaceManager> surface_manager_bindings_;
   mojo::Binding<mojom::DisplayCompositor> display_compositor_binding_;
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositor);
 };

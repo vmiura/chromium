@@ -37,8 +37,8 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost {
   int32_t process_id() const { return process_id_; }
 
   // DisplayCompositorHost implementation.
-  void CreateCompositorChannel(
-      mojom::CompositorChannelRequest compositor_channel) override;
+  void RequestSurfaceManager(
+      mojom::SurfaceManagerRequest surface_manager) override;
 
   void CreateCompositor(int32_t routing_id,
                         mojom::LayerTreeSettingsPtr settings,

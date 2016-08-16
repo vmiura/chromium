@@ -18,8 +18,8 @@ class DisplayCompositorHostProxy : public mojom::DisplayCompositorHost {
   ~DisplayCompositorHostProxy() override;
 
   // DisplayCompositorHost implementation.
-  void CreateCompositorChannel(
-      mojom::CompositorChannelRequest compositor_channel) override;
+  void RequestSurfaceManager(
+      mojom::SurfaceManagerRequest surface_manager) override;
   void CreateCompositor(int32_t routing_id,
                         mojom::LayerTreeSettingsPtr settings,
                         mojom::CompositorRequest compositor,

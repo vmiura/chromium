@@ -14,12 +14,10 @@ import "cc/ipc/image_decode.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
-// Renderer to Browser
+// Unprivileged DisplayCompositor API for clients implemented by the browser or
+// window server.
 interface DisplayCompositorHost {
-  // TODO(fsamuel): There should be one channel per process.
-  // Maybe the routing ID ("client ID") is part of the Compositor,
-  // and not the CompositorChannel.
-  CreateCompositorChannel(CompositorChannel& compositor_channel);
+  RequestSurfaceManager(SurfaceManager& surface_manager);
                     
   CreateCompositor(int32 routing_id,
                    cc.mojom.LayerTreeSettings settings,
@@ -39,9 +37,9 @@ interface DisplayCompositorFactory {
                           DisplayCompositorClient display_compositor_client);
 };
 
-// Browser to GPU
+// Browser (or Window Server) to GPU
 interface DisplayCompositor {
-  CreateCompositorChannel(CompositorChannel& channel);
+  RequestSurfaceManager(SurfaceManager& surface_manager);
 
   CreateCompositor(uint32 client_id,
                    gpu.mojom.SurfaceHandle widget,
@@ -50,7 +48,10 @@ interface DisplayCompositor {
                    CompositorClient client);
 };
 
-interface CompositorChannel {
+// Unprivileged SurfaceManager API
+// TODO(fsamuel): This is currently only used in BrowserGpuChannelHostFactory.
+// Consider if we can merge this into DisplayCompositor?
+interface SurfaceManager {
   AddRefOnSurfaceId(cc.mojom.SurfaceId id);
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 };

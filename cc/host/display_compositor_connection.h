@@ -23,8 +23,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
 
   ~DisplayCompositorConnection() override;
 
-  void CreateCompositorChannel(
-      mojom::CompositorChannelRequest compositor_channel);
+  void RequestSurfaceManager(mojom::SurfaceManagerRequest surface_manager);
   void CreateCompositor(uint32_t client_id,
                         const gpu::SurfaceHandle& handle,
                         mojom::LayerTreeSettingsPtr settings,

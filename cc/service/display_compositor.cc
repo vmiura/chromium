@@ -25,9 +25,9 @@ DisplayCompositor::DisplayCompositor(
 
 DisplayCompositor::~DisplayCompositor() = default;
 
-void DisplayCompositor::CreateCompositorChannel(
-    mojom::CompositorChannelRequest compositor_channel) {
-  compositor_channel_bindings_.AddBinding(this, std::move(compositor_channel));
+void DisplayCompositor::RequestSurfaceManager(
+    mojom::SurfaceManagerRequest compositor_channel) {
+  surface_manager_bindings_.AddBinding(this, std::move(compositor_channel));
 }
 
 void DisplayCompositor::CreateCompositor(

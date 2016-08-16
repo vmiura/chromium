@@ -20,10 +20,10 @@ void DisplayCompositorHost::Create(
 
 DisplayCompositorHost::~DisplayCompositorHost() = default;
 
-void DisplayCompositorHost::CreateCompositorChannel(
-    mojom::CompositorChannelRequest compositor_channel) {
+void DisplayCompositorHost::RequestSurfaceManager(
+    mojom::SurfaceManagerRequest surface_manager) {
   ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->CreateCompositorChannel(std::move(compositor_channel));
+  display_compositor_->RequestSurfaceManager(std::move(surface_manager));
 }
 
 void DisplayCompositorHost::CreateCompositor(
