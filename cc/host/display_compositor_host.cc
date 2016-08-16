@@ -4,14 +4,9 @@
 
 #include "cc/host/display_compositor_host.h"
 
+#include "cc/host/display_compositor_connection.h"
+
 namespace cc {
-
-DisplayCompositorConnection::DisplayCompositorConnection() = default;
-
-DisplayCompositorConnection::DisplayCompositorConnection(
-    DisplayCompositorConnection&& other) = default;
-
-DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
 void DisplayCompositorHost::Create(
     gpu::SurfaceHandle surface_handle,
@@ -58,12 +53,8 @@ DisplayCompositorHost::DisplayCompositorHost(
       binding_(this, std::move(request)) {}
 
 void DisplayCompositorHost::ConnectToDisplayCompositorIfNecessary() {
-  if (!display_compositor_) {
-    DisplayCompositorConnection connection =
-        delegate_->GetDisplayCompositorConnection();
-    display_compositor_ = std::move(connection.compositor);
-    client_binding_.Bind(std::move(connection.client_request));
-  }
+  if (!display_compositor_)
+    display_compositor_ = delegate_->GetDisplayCompositorConnection();
 }
 
 }  // namespace cc

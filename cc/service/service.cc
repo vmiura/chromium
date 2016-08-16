@@ -271,7 +271,7 @@ void Service::CreateOutputSurface() {
 
     display_.reset(new Display(
         shared_bitmap_manager_, gpu_memory_buffer_manager_,
-        // btw, cc_unittests pixel tests expect default RendeererSettings to
+        // btw, cc_unittests pixel tests expect default RendererSettings to
         // pass.
         host_impl_.settings().renderer_settings, std::move(begin_frame_source),
         std::move(output_surface), std::move(display_scheduler),

@@ -21,6 +21,10 @@
 #include "cc/surfaces/surface_sequence.h"
 #include "cc/surfaces/surfaces_export.h"
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace cc {
 class BeginFrameSource;
 class CompositorFrame;
@@ -29,7 +33,13 @@ class SurfaceFactoryClient;
 
 class CC_SURFACES_EXPORT SurfaceManager {
  public:
-  SurfaceManager();
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnSurfaceCreated(const gfx::Size& size,
+                                  const SurfaceId& surface_id) = 0;
+  };
+  SurfaceManager(Delegate* delegate);
   ~SurfaceManager();
 
   void RegisterSurface(Surface* surface);
@@ -49,6 +59,8 @@ class CC_SURFACES_EXPORT SurfaceManager {
   }
 
   bool SurfaceModified(const SurfaceId& surface_id);
+
+  void DidCreateNewSurface(const gfx::Size& size, const SurfaceId& surface_id);
 
   // A frame for a surface satisfies a set of sequence numbers in a particular
   // id namespace.
@@ -107,6 +119,7 @@ class CC_SURFACES_EXPORT SurfaceManager {
 
   void GarbageCollectSurfaces();
 
+  Delegate* const delegate_;
   using SurfaceMap = std::unordered_map<SurfaceId, Surface*, SurfaceIdHash>;
   SurfaceMap surface_map_;
   base::ObserverList<SurfaceDamageObserver> observer_list_;

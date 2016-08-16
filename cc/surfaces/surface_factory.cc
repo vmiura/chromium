@@ -73,6 +73,12 @@ void SurfaceFactory::SubmitCompositorFrame(const SurfaceId& surface_id,
   OwningSurfaceMap::iterator it = surface_map_.find(surface_id);
   DCHECK(it != surface_map_.end());
   DCHECK(it->second->factory().get() == this);
+  const CompositorFrame& previous_frame = it->second->GetEligibleFrame();
+  if (!previous_frame.delegated_frame_data) {
+    gfx::Size frame_size =
+        frame.delegated_frame_data->render_pass_list[0]->output_rect.size();
+    manager_->DidCreateNewSurface(frame_size, it->second->surface_id());
+  }
   it->second->QueueFrame(std::move(frame), callback);
   // TODO(hackathon): References were added in ui::Compositor::DidCommit. Now we
   // will keep the SurfaceId alive in DelegatingOutputSurface.

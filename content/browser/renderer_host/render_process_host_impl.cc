@@ -71,6 +71,7 @@
 #include "content/browser/dom_storage/dom_storage_message_filter.h"
 #include "content/browser/fileapi/fileapi_message_filter.h"
 #include "content/browser/frame_host/render_frame_message_filter.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -1068,11 +1069,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
-  scoped_refptr<cc::DisplayCompositorHost::Delegate> display_compositor_factory(
-      new DisplayCompositorFactory);
   GetInterfaceRegistry()->AddInterface(
       base::Bind(&cc::DisplayCompositorHost::Create, gpu::kNullSurfaceHandle,
-                 GetID(), display_compositor_factory),
+                 GetID(), BrowserGpuChannelHostFactory::instance()
+                              ->GetDisplayCompositorFactory()),
       io_task_runner);
 
   GetInterfaceRegistry()->AddInterface(base::Bind(

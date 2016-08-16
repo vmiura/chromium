@@ -25,7 +25,7 @@ SurfaceManager::ClientSourceMapping::~ClientSourceMapping() {
                      << ", children: " << children.size();
 }
 
-SurfaceManager::SurfaceManager() {
+SurfaceManager::SurfaceManager(Delegate* delegate) : delegate_(delegate) {
   thread_checker_.DetachFromThread();
 }
 
@@ -352,6 +352,12 @@ bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id) {
   FOR_EACH_OBSERVER(SurfaceDamageObserver, observer_list_,
                     OnSurfaceDamaged(surface_id, &changed));
   return changed;
+}
+
+void SurfaceManager::DidCreateNewSurface(const gfx::Size& size,
+                                         const SurfaceId& surface_id) {
+  if (delegate_)
+    delegate_->OnSurfaceCreated(size, surface_id);
 }
 
 void SurfaceManager::AddRefOnSurfaceId(const SurfaceId& id) {

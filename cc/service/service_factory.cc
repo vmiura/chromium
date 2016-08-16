@@ -17,6 +17,7 @@ ServiceFactory::ServiceFactory(
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
+      surface_manager_(this),
       compositor_thread_("compositor"),
       weak_factory_(this) {
   ServiceContextProvider::SetupThread(sync_point_manager, mailbox_manager);
@@ -30,6 +31,9 @@ void ServiceFactory::BindDisplayCompositorFactoryRequest(
     cc::mojom::DisplayCompositorFactoryRequest request) {
   bindings_.AddBinding(this, std::move(request));
 }
+
+void ServiceFactory::OnSurfaceCreated(const gfx::Size& size,
+                                      const SurfaceId& surface_id) {}
 
 void ServiceFactory::CreateDisplayCompositor(
     cc::mojom::DisplayCompositorRequest display_compositor,

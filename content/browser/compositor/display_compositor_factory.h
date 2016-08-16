@@ -10,20 +10,19 @@
 
 namespace content {
 
-// TODO(fsamuel): This should probably be content/browser/compositor not gpu.
 class DisplayCompositorFactory : public cc::DisplayCompositorHost::Delegate {
  public:
   DisplayCompositorFactory();
 
   // DisplayCompositorHost::Delegate implementation:
-  cc::DisplayCompositorConnection GetDisplayCompositorConnection() override;
+  cc::DisplayCompositorConnection* GetDisplayCompositorConnection() override;
 
  private:
   ~DisplayCompositorFactory() override;
 
   friend class base::RefCountedThreadSafe<DisplayCompositorFactory>;
 
-  cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory_;
+  std::unique_ptr<cc::DisplayCompositorConnection> display_compositor_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorFactory);
 };

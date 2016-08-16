@@ -39,6 +39,7 @@ Surface::~Surface() {
 }
 
 void Surface::SetPreviousFrameSurface(Surface* surface) {
+  // TODO(fsamuel): What does this do?
   DCHECK(surface);
   frame_index_ = surface->frame_index() + 1;
   previous_frame_surface_id_ = surface->surface_id();

@@ -11,20 +11,15 @@
 
 namespace cc {
 
-struct DisplayCompositorConnection {
-  DisplayCompositorConnection();
-  DisplayCompositorConnection(DisplayCompositorConnection&& other);
-  ~DisplayCompositorConnection();
-  mojom::DisplayCompositorPtr compositor;
-  mojom::DisplayCompositorClientRequest client_request;
-};
+class DisplayCompositorConnection;
 
 class DisplayCompositorHost : public mojom::DisplayCompositorHost,
                               public mojom::DisplayCompositorClient {
  public:
   class Delegate : public base::RefCountedThreadSafe<Delegate> {
    public:
-    virtual DisplayCompositorConnection GetDisplayCompositorConnection() = 0;
+    // Perhaps this should be a const ref instead to be idempotent.
+    virtual DisplayCompositorConnection* GetDisplayCompositorConnection() = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -63,7 +58,7 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   const int32_t process_id_;
   scoped_refptr<Delegate> delegate_;
   uint32_t next_compositor_id_ = 1;
-  mojom::DisplayCompositorPtr display_compositor_;
+  DisplayCompositorConnection* display_compositor_ = nullptr;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
   mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;
 

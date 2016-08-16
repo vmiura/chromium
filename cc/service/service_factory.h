@@ -28,7 +28,8 @@ class SurfaceIdAllocator;
 class SurfaceManager;
 
 class CC_SERVICE_EXPORT ServiceFactory
-    : public cc::mojom::DisplayCompositorFactory {
+    : public cc::mojom::DisplayCompositorFactory,
+      public cc::SurfaceManager::Delegate {
  public:
   ServiceFactory(SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -39,6 +40,10 @@ class CC_SERVICE_EXPORT ServiceFactory
 
   void BindDisplayCompositorFactoryRequest(
       cc::mojom::DisplayCompositorFactoryRequest request);
+
+  // cc::SurfaceManager::Delegate implementation.
+  void OnSurfaceCreated(const gfx::Size& size,
+                        const SurfaceId& surface_id) override;
 
   // cc::mojom::DisplayCompositorFactory implementation.
   void CreateDisplayCompositor(

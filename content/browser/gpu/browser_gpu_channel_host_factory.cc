@@ -47,11 +47,12 @@ namespace {
 
 void CreateDisplayCompositorHostOnIO(
     gpu::SurfaceHandle surface_handle,
+    scoped_refptr<cc::DisplayCompositorHost::Delegate>
+        display_compositor_factory,
     cc::mojom::DisplayCompositorHostRequest request) {
-  scoped_refptr<cc::DisplayCompositorHost::Delegate> display_compositor_factory(
-      new DisplayCompositorFactory);
-  cc::DisplayCompositorHost::Create(
-      surface_handle, 0, display_compositor_factory, std::move(request));
+  cc::DisplayCompositorHost::Create(surface_handle, 0 /* process_id */,
+                                    display_compositor_factory,
+                                    std::move(request));
 }
 
 }  // namespace
@@ -286,6 +287,13 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   }
 }
 
+scoped_refptr<cc::DisplayCompositorHost::Delegate>
+BrowserGpuChannelHostFactory::GetDisplayCompositorFactory() {
+  if (!display_compositor_factory_)
+    display_compositor_factory_ = new DisplayCompositorFactory;
+  return display_compositor_factory_;
+}
+
 bool BrowserGpuChannelHostFactory::IsMainThread() {
   return BrowserThread::CurrentlyOn(BrowserThread::UI);
 }
@@ -397,8 +405,9 @@ void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
         BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
     // PostTask outside the constructor to ensure at least one reference exists.
     task_runner->PostTask(
-        FROM_HERE, base::Bind(&CreateDisplayCompositorHostOnIO, surface_handle,
-                              base::Passed(&request)));
+        FROM_HERE,
+        base::Bind(&CreateDisplayCompositorHostOnIO, surface_handle,
+                   GetDisplayCompositorFactory(), base::Passed(&request)));
   }
   if (!compositor_channel_) {
     display_compositor_host_->CreateCompositorChannel(

@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "cc/host/display_compositor_host.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
@@ -36,6 +37,9 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
   static BrowserGpuChannelHostFactory* instance() { return instance_; }
+
+  scoped_refptr<cc::DisplayCompositorHost::Delegate>
+  GetDisplayCompositorFactory();
 
   // Overridden from gpu::GpuChannelHostFactory:
   bool IsMainThread() override;
@@ -89,6 +93,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   std::vector<base::Closure> established_callbacks_;
 
   cc::mojom::CompositorChannelPtr compositor_channel_;
+  scoped_refptr<cc::DisplayCompositorHost::Delegate>
+      display_compositor_factory_;
   std::unique_ptr<cc::DisplayCompositorHostProxy> display_compositor_host_;
 
   static BrowserGpuChannelHostFactory* instance_;
