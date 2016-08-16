@@ -1,12 +1,30 @@
 #include "cc/service/service_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "cc/service/display_compositor.h"
 #include "cc/service/service.h"
 #include "cc/service/service_context_provider.h"
 #include "gpu/ipc/service/gpu_channel.h"
 
 namespace cc {
+
+namespace {
+
+static void CreateDisplayCompositorOnCompositorThread(
+    ServiceFactory* factory,
+    std::unique_ptr<DisplayCompositor>* display_compositor,
+    cc::mojom::DisplayCompositorRequest display_compositor_request,
+    cc::mojom::DisplayCompositorClientPtrInfo display_compositor_client_info) {
+  CHECK_EQ(nullptr, display_compositor->get());
+  cc::mojom::DisplayCompositorClientPtr client_ptr;
+  client_ptr.Bind(std::move(display_compositor_client_info));
+  *display_compositor = base::WrapUnique(new cc::DisplayCompositor(
+      factory, std::move(display_compositor_request), std::move(client_ptr),
+      base::ThreadTaskRunnerHandle::Get()));
+}
+
+}  // namespace
 
 ServiceFactory::ServiceFactory(
     SharedBitmapManager* shared_bitmap_manager,
@@ -17,11 +35,9 @@ ServiceFactory::ServiceFactory(
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
-      surface_manager_(this),
       compositor_thread_("compositor"),
       weak_factory_(this) {
   ServiceContextProvider::SetupThread(sync_point_manager, mailbox_manager);
-  task_graph_runner_.Start("CompositorWorker", base::SimpleThread::Options());
   compositor_thread_.Start();
 }
 
@@ -32,15 +48,16 @@ void ServiceFactory::BindDisplayCompositorFactoryRequest(
   bindings_.AddBinding(this, std::move(request));
 }
 
-void ServiceFactory::OnSurfaceCreated(const gfx::Size& size,
-                                      const SurfaceId& surface_id) {}
-
 void ServiceFactory::CreateDisplayCompositor(
     cc::mojom::DisplayCompositorRequest display_compositor,
     cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
-  display_compositors_.insert(base::WrapUnique(new cc::DisplayCompositor(
-      this, std::move(display_compositor), std::move(display_compositor_client),
-      compositor_thread_.task_runner())));
+  CHECK_EQ(nullptr, display_compositor_.get());
+  // Create the display compositor on the compositor thread.
+  compositor_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::Bind(&CreateDisplayCompositorOnCompositorThread, this,
+                 &display_compositor_, base::Passed(&display_compositor),
+                 base::Passed(display_compositor_client.PassInterface())));
 }
 
 }  // namespace cc

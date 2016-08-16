@@ -13,8 +13,7 @@ namespace cc {
 
 class DisplayCompositorConnection;
 
-class DisplayCompositorHost : public mojom::DisplayCompositorHost,
-                              public mojom::DisplayCompositorClient {
+class DisplayCompositorHost : public mojom::DisplayCompositorHost {
  public:
   class Delegate : public base::RefCountedThreadSafe<Delegate> {
    public:
@@ -59,7 +58,6 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   scoped_refptr<Delegate> delegate_;
   uint32_t next_compositor_id_ = 1;
   DisplayCompositorConnection* display_compositor_ = nullptr;
-  mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
   mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorHost);

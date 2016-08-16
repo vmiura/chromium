@@ -49,7 +49,6 @@ DisplayCompositorHost::DisplayCompositorHost(
     : surface_handle_(surface_handle),
       process_id_(process_id),
       delegate_(delegate),
-      client_binding_(this),
       binding_(this, std::move(request)) {}
 
 void DisplayCompositorHost::ConnectToDisplayCompositorIfNecessary() {

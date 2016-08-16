@@ -5,8 +5,6 @@
 component("service") {
   output_name = "cc_service"
   sources = [
-    "compositor_channel.cc",
-    "compositor_channel.h",
     "delegating_output_surface.cc",
     "delegating_output_surface.h",
     "display_compositor.cc",

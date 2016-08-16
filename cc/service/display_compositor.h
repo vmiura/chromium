@@ -8,9 +8,9 @@
 #include "base/containers/scoped_ptr_hash_map.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
-#include "cc/service/compositor_channel.h"
 #include "cc/surfaces/surface_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
 namespace gpu {
@@ -27,9 +27,12 @@ class MailboxManager;
 namespace cc {
 
 class LayerTreeSettings;
+class ServiceFactory;
 class SharedBitmapManager;
 
-class DisplayCompositor : public mojom::DisplayCompositor {
+class DisplayCompositor : public mojom::CompositorChannel,
+                          public mojom::DisplayCompositor,
+                          public cc::SurfaceManager::Delegate {
  public:
   // TODO(fsamuel): Merge ServiceFactory and DisplayCompositor.
   DisplayCompositor(
@@ -49,13 +52,25 @@ class DisplayCompositor : public mojom::DisplayCompositor {
                         mojom::CompositorRequest compositor,
                         mojom::CompositorClientPtr compositor_client) override;
 
+  // cc::mojom::CompositorChannel implementation.
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
+
+  // SurfaceManager::Delegate implementation.
+  void OnSurfaceCreated(const gfx::Size& frame_size,
+                        const cc::SurfaceId& surface_id) override;
+
  private:
   ServiceFactory* const factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
+  int next_service_id_ = 1;
+  SingleThreadTaskGraphRunner task_graph_runner_;
+  SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;
-  mojo::Binding<mojom::DisplayCompositor> binding_;
+  mojo::BindingSet<cc::mojom::CompositorChannel> compositor_channel_bindings_;
+  mojo::Binding<mojom::DisplayCompositor> display_compositor_binding_;
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositor);
 };
 

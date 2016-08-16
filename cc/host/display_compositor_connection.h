@@ -31,6 +31,10 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
                         mojom::CompositorRequest compositor,
                         mojom::CompositorClientPtr compositor_client);
 
+  // cc::mojom::DisplayCompositorClient implementation:
+  void OnSurfaceCreated(const gfx::Size& frame_size,
+                        const cc::SurfaceId& surface_id) override;
+
  private:
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;

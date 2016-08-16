@@ -29,6 +29,7 @@ interface DisplayCompositorHost {
 
 // GPU to browser.
 interface DisplayCompositorClient {
+  OnSurfaceCreated(gfx.mojom.Size frame_size, cc.mojom.SurfaceId surface_id);
 };
 
 // This is the main interface that the DisplayCompositor host uses

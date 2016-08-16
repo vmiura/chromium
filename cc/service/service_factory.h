@@ -28,8 +28,7 @@ class SurfaceIdAllocator;
 class SurfaceManager;
 
 class CC_SERVICE_EXPORT ServiceFactory
-    : public cc::mojom::DisplayCompositorFactory,
-      public cc::SurfaceManager::Delegate {
+    : public cc::mojom::DisplayCompositorFactory {
  public:
   ServiceFactory(SharedBitmapManager* shared_bitmap_manager,
                  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -40,10 +39,6 @@ class CC_SERVICE_EXPORT ServiceFactory
 
   void BindDisplayCompositorFactoryRequest(
       cc::mojom::DisplayCompositorFactoryRequest request);
-
-  // cc::SurfaceManager::Delegate implementation.
-  void OnSurfaceCreated(const gfx::Size& size,
-                        const SurfaceId& surface_id) override;
 
   // cc::mojom::DisplayCompositorFactory implementation.
   void CreateDisplayCompositor(
@@ -58,26 +53,16 @@ class CC_SERVICE_EXPORT ServiceFactory
     return gpu_memory_buffer_manager_;
   }
   gpu::ImageFactory* image_factory() { return image_factory_; }
-  SingleThreadTaskGraphRunner* task_graph_runner() {
-    return &task_graph_runner_;
-  }
-  SurfaceManager* surface_manager() { return &surface_manager_; }
-  int NextServiceCompositorId() { return next_service_id_++; }
 
  private:
   SharedBitmapManager* shared_bitmap_manager_;
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   gpu::ImageFactory* image_factory_;
 
-  int next_service_id_ = 1;
-
-  // Used on the compositor thread.
-  SingleThreadTaskGraphRunner task_graph_runner_;
-  SurfaceManager surface_manager_;
-
   base::Thread compositor_thread_;
 
-  std::set<std::unique_ptr<DisplayCompositor>> display_compositors_;
+  std::unique_ptr<DisplayCompositor> display_compositor_;
+
   // Bindings to cc::mojom::DisplayCompositorFactory.
   mojo::BindingSet<cc::mojom::DisplayCompositorFactory> bindings_;
 

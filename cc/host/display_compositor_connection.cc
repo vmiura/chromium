@@ -30,4 +30,12 @@ void DisplayCompositorConnection::CreateCompositor(
                                         std::move(compositor_client));
 }
 
+void DisplayCompositorConnection::OnSurfaceCreated(
+    const gfx::Size& frame_size,
+    const cc::SurfaceId& surface_id) {
+  fprintf(stderr, ">>>>OnSurfaceCreated frame_size(%d, %d) surface_id: %s\n",
+          frame_size.width(), frame_size.height(),
+          surface_id.ToString().c_str());
+}
+
 }  // namespace cc

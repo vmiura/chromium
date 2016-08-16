@@ -10,35 +10,6 @@
 
 namespace cc {
 
-namespace {
-
-static void CreateServiceOnThread(
-    const gpu::SurfaceHandle& handle,
-    cc::mojom::LayerTreeSettingsPtr settings_mojom,
-    cc::mojom::CompositorRequest compositor,
-    cc::mojom::CompositorClientPtrInfo compositor_client_info,
-    int id,
-    SharedBitmapManager* shared_bitmap_manager,
-    gpu::GpuMemoryBufferManager* gpu_mem,
-    gpu::ImageFactory* image_factory,
-    SurfaceManager* surface_manager,
-    TaskGraphRunner* task_graph_runner) {
-  LayerTreeSettings settings(settings_mojom.get());
-  // HACKATHON: The service compositor uses this mode to give out a
-  // BeginFrameSource, and the browser/renderer should have no control or input
-  // on this decision anymore.
-  settings.use_output_surface_begin_frame_source = true;
-  DCHECK(!settings.renderer_settings.buffer_to_texture_target_map.empty());
-  // Deletes itself.
-  cc::mojom::CompositorClientPtr client_ptr;
-  client_ptr.Bind(std::move(compositor_client_info));
-  new Service(handle, std::move(compositor), std::move(client_ptr), settings,
-              id, shared_bitmap_manager, gpu_mem, image_factory,
-              surface_manager, task_graph_runner);
-}
-
-}  // namespace
-
 DisplayCompositor::DisplayCompositor(
     ServiceFactory* factory,
     mojom::DisplayCompositorRequest request,
@@ -46,16 +17,17 @@ DisplayCompositor::DisplayCompositor(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
     : factory_(factory),
       compositor_task_runner_(compositor_task_runner),
+      surface_manager_(this),
       client_(std::move(client)),
-      binding_(this, std::move(request)) {}
+      display_compositor_binding_(this, std::move(request)) {
+  task_graph_runner_.Start("CompositorWorker", base::SimpleThread::Options());
+}
 
 DisplayCompositor::~DisplayCompositor() = default;
 
 void DisplayCompositor::CreateCompositorChannel(
     mojom::CompositorChannelRequest compositor_channel) {
-  // TODO(fsamuel): Figure out lifetime management.
-  new CompositorChannel(std::move(compositor_channel), factory_,
-                        compositor_task_runner_);
+  compositor_channel_bindings_.AddBinding(this, std::move(compositor_channel));
 }
 
 void DisplayCompositor::CreateCompositor(
@@ -64,25 +36,30 @@ void DisplayCompositor::CreateCompositor(
     mojom::LayerTreeSettingsPtr settings,
     mojom::CompositorRequest compositor,
     mojom::CompositorClientPtr compositor_client) {
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind(&CreateServiceOnThread, handle, base::Passed(&settings),
-                 base::Passed(&compositor),
-                 base::Passed(compositor_client.PassInterface()),
-                 // client_id,
-                 factory_->NextServiceCompositorId(),
-                 // TODO(hackathon): Better be threadsafe.
-                 factory_->shared_bitmap_manager(),
-                 // TODO(hackathon): Better be threadsafe.
-                 factory_->gpu_memory_buffer_manager(),
-                 // This image factory is going to the wrong thread, but the
-                 // ServiceContextProvider will only use it on the main thread
-                 // thanks to our custom InProcessCommandBuffer::Service.
-                 factory_->image_factory(),
-                 // These two are owned on the main thread, but will only be
-                 // used on the compositor thread which is joined before they
-                 // are destroyed.
-                 factory_->surface_manager(), factory_->task_graph_runner()));
+  LayerTreeSettings layer_tree_settings(settings.get());
+  new Service(handle, std::move(compositor), std::move(compositor_client),
+              layer_tree_settings,
+              // TODO(fsamuel): Move to display compositor.
+              next_service_id_++, factory_->shared_bitmap_manager(),
+              factory_->gpu_memory_buffer_manager(),
+              // This image factory is going to the wrong thread, but the
+              // ServiceContextProvider will only use it on the main thread
+              // thanks to our custom InProcessCommandBuffer::Service.
+              factory_->image_factory(), &surface_manager_,
+              &task_graph_runner_);
+}
+
+void DisplayCompositor::AddRefOnSurfaceId(const SurfaceId& id) {
+  surface_manager_.AddRefOnSurfaceId(id);
+}
+
+void DisplayCompositor::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  surface_manager_.MoveTempRefToRefOnSurfaceId(id);
+}
+
+void DisplayCompositor::OnSurfaceCreated(const gfx::Size& size,
+                                         const cc::SurfaceId& surface_id) {
+  client_->OnSurfaceCreated(size, surface_id);
 }
 
 }  // namespace cc
