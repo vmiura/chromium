@@ -20,7 +20,7 @@
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/service_connection.h"
-#include "content/browser/compositor/display_compositor_factory.h"
+#include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -46,11 +46,11 @@ namespace {
 
 void CreateDisplayCompositorHostOnIOThread(
     gpu::SurfaceHandle surface_handle,
-    scoped_refptr<cc::DisplayCompositorHost::Delegate>
-        display_compositor_factory,
+    scoped_refptr<cc::DisplayCompositorConnectionFactory>
+        display_compositor_connection_factory,
     cc::mojom::DisplayCompositorHostRequest request) {
   cc::DisplayCompositorHost::Create(surface_handle, 0 /* process_id */,
-                                    display_compositor_factory,
+                                    display_compositor_connection_factory,
                                     std::move(request));
 }
 
@@ -286,11 +286,12 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   }
 }
 
-scoped_refptr<cc::DisplayCompositorHost::Delegate>
-BrowserGpuChannelHostFactory::GetDisplayCompositorFactory() {
-  if (!display_compositor_factory_)
-    display_compositor_factory_ = new DisplayCompositorFactory;
-  return display_compositor_factory_;
+scoped_refptr<cc::DisplayCompositorConnectionFactory>
+BrowserGpuChannelHostFactory::GetDisplayCompositorConnectionFactory() {
+  if (!display_compositor_connection_factory_)
+    display_compositor_connection_factory_ =
+        new DisplayCompositorConnectionFactoryImpl;
+  return display_compositor_connection_factory_;
 }
 
 bool BrowserGpuChannelHostFactory::IsMainThread() {
@@ -407,7 +408,8 @@ void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
     io_task_runner->PostTask(
         FROM_HERE,
         base::Bind(&CreateDisplayCompositorHostOnIOThread, surface_handle,
-                   GetDisplayCompositorFactory(), base::Passed(&request)));
+                   GetDisplayCompositorConnectionFactory(),
+                   base::Passed(&request)));
   }
   if (!surface_manager_) {
     display_compositor_host_->RequestSurfaceManager(

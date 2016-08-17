@@ -6,6 +6,7 @@ source_set("host") {
   sources = [
     "display_compositor_connection.cc",
     "display_compositor_connection.h",
+    "display_compostior_connection_factory.h",
     "display_compositor_host.h",
     "display_compositor_host.cc",
   ]

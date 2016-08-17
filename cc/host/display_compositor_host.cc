@@ -11,10 +11,10 @@ namespace cc {
 void DisplayCompositorHost::Create(
     gpu::SurfaceHandle surface_handle,
     int32_t process_id,
-    scoped_refptr<Delegate> delegate,
+    scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
     mojom::DisplayCompositorHostRequest request) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-  new DisplayCompositorHost(surface_handle, process_id, delegate,
+  new DisplayCompositorHost(surface_handle, process_id, connection_factory,
                             std::move(request));
 }
 
@@ -44,16 +44,16 @@ void DisplayCompositorHost::CreateContentFrameSink(
 DisplayCompositorHost::DisplayCompositorHost(
     gpu::SurfaceHandle surface_handle,
     int32_t process_id,
-    scoped_refptr<Delegate> delegate,
+    scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
     mojom::DisplayCompositorHostRequest request)
     : surface_handle_(surface_handle),
       process_id_(process_id),
-      delegate_(delegate),
+      connection_factory_(connection_factory),
       binding_(this, std::move(request)) {}
 
 void DisplayCompositorHost::ConnectToDisplayCompositorIfNecessary() {
   if (!display_compositor_)
-    display_compositor_ = delegate_->GetDisplayCompositorConnection();
+    display_compositor_ = connection_factory_->GetDisplayCompositorConnection();
 }
 
 }  // namespace cc

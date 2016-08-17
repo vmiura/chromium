@@ -1694,8 +1694,8 @@
     'compositor_browser_sources': [
       'browser/compositor/browser_compositor_output_surface.cc',
       'browser/compositor/browser_compositor_output_surface.h',
-      'browser/compositor/display_compositor_factory.cc',
-      'browser/compositor/display_compositor_factory.h',
+      'browser/compositor/display_compositor_connection_factory_impl.cc',
+      'browser/compositor/display_compositor_connection_factory_impl.h',
       'browser/compositor/gpu_browser_compositor_output_surface.cc',
       'browser/compositor/gpu_browser_compositor_output_surface.h',
       'browser/compositor/gpu_output_surface_mac.h',

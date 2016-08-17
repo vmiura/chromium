@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/compositor/display_compositor_factory.h"
+#include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 
 #include "cc/host/display_compositor_connection.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -10,10 +10,11 @@
 
 namespace content {
 
-DisplayCompositorFactory::DisplayCompositorFactory() {}
+DisplayCompositorConnectionFactoryImpl::
+    DisplayCompositorConnectionFactoryImpl() {}
 
 cc::DisplayCompositorConnection*
-DisplayCompositorFactory::GetDisplayCompositorConnection() {
+DisplayCompositorConnectionFactoryImpl::GetDisplayCompositorConnection() {
   if (display_compositor_)
     return display_compositor_.get();
 
@@ -21,7 +22,8 @@ DisplayCompositorFactory::GetDisplayCompositorConnection() {
   GpuProcessHost* host =
       GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
                           CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
-  // Request a DisplayCompositorFactory interface from the GPU process.
+  // Request a DisplayCompositorConnectionFactoryImpl interface from the GPU
+  // process.
   host->GetRemoteInterfaces()->GetInterface(&display_compositor_factory);
 
   cc::mojom::DisplayCompositorClientPtr display_compositor_client;
@@ -44,6 +46,7 @@ DisplayCompositorFactory::GetDisplayCompositorConnection() {
   return display_compositor_.get();
 }
 
-DisplayCompositorFactory::~DisplayCompositorFactory() = default;
+DisplayCompositorConnectionFactoryImpl::
+    ~DisplayCompositorConnectionFactoryImpl() = default;
 
 }  // namespace content

@@ -5,6 +5,7 @@
 #ifndef CC_HOST_DISPLAY_COMPOSITOR_HOST_H_
 #define CC_HOST_DISPLAY_COMPOSITOR_HOST_H_
 
+#include "cc/host/display_compositor_connection_factory.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -15,22 +16,12 @@ class DisplayCompositorConnection;
 
 class DisplayCompositorHost : public mojom::DisplayCompositorHost {
  public:
-  class Delegate : public base::RefCountedThreadSafe<Delegate> {
-   public:
-    // Perhaps this should be a const ref instead to be idempotent.
-    virtual DisplayCompositorConnection* GetDisplayCompositorConnection() = 0;
-
-   protected:
-    virtual ~Delegate() {}
-
-   private:
-    friend class base::RefCountedThreadSafe<Delegate>;
-  };
   // Create on IO thread.
-  static void Create(gpu::SurfaceHandle surface_handle,
-                     int32_t process_id,
-                     scoped_refptr<Delegate> delegate,
-                     mojom::DisplayCompositorHostRequest request);
+  static void Create(
+      gpu::SurfaceHandle surface_handle,
+      int32_t process_id,
+      scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
+      mojom::DisplayCompositorHostRequest request);
 
   ~DisplayCompositorHost() override;
 
@@ -47,16 +38,17 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost {
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
  private:
-  DisplayCompositorHost(gpu::SurfaceHandle surface_handle,
-                        int32_t process_id,
-                        scoped_refptr<Delegate> delegate,
-                        mojom::DisplayCompositorHostRequest request);
+  DisplayCompositorHost(
+      gpu::SurfaceHandle surface_handle,
+      int32_t process_id,
+      scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
+      mojom::DisplayCompositorHostRequest request);
 
   void ConnectToDisplayCompositorIfNecessary();
 
   const gpu::SurfaceHandle surface_handle_;
   const int32_t process_id_;
-  scoped_refptr<Delegate> delegate_;
+  scoped_refptr<DisplayCompositorConnectionFactory> connection_factory_;
   uint32_t next_compositor_id_ = 1;
   DisplayCompositorConnection* display_compositor_ = nullptr;
   mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;

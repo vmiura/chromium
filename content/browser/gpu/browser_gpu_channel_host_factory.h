@@ -38,8 +38,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   static void Terminate();
   static BrowserGpuChannelHostFactory* instance() { return instance_; }
 
-  scoped_refptr<cc::DisplayCompositorHost::Delegate>
-  GetDisplayCompositorFactory();
+  scoped_refptr<cc::DisplayCompositorConnectionFactory>
+  GetDisplayCompositorConnectionFactory();
 
   // Overridden from gpu::GpuChannelHostFactory:
   bool IsMainThread() override;
@@ -93,8 +93,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   std::vector<base::Closure> established_callbacks_;
 
   cc::mojom::SurfaceManagerPtr surface_manager_;
-  scoped_refptr<cc::DisplayCompositorHost::Delegate>
-      display_compositor_factory_;
+  scoped_refptr<cc::DisplayCompositorConnectionFactory>
+      display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;
 
   static BrowserGpuChannelHostFactory* instance_;

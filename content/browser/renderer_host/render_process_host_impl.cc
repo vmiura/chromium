@@ -65,7 +65,7 @@
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/compositor/display_compositor_factory.h"
+#include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 #include "content/browser/device_sensors/device_sensor_host.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/dom_storage_message_filter.h"
@@ -1072,7 +1072,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   GetInterfaceRegistry()->AddInterface(
       base::Bind(&cc::DisplayCompositorHost::Create, gpu::kNullSurfaceHandle,
                  GetID(), BrowserGpuChannelHostFactory::instance()
-                              ->GetDisplayCompositorFactory()),
+                              ->GetDisplayCompositorConnectionFactory()),
       io_task_runner);
 
   GetInterfaceRegistry()->AddInterface(base::Bind(
