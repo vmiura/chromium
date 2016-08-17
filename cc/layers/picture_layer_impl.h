@@ -164,6 +164,8 @@ class CC_EXPORT PictureLayerImpl
   // exist.
   std::vector<PictureLayerTiling*> last_append_quads_tilings_;
 
+  PictureCache picture_cache_;
+
   DISALLOW_COPY_AND_ASSIGN(PictureLayerImpl);
 };
 

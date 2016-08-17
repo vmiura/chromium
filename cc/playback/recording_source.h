@@ -32,6 +32,7 @@ class Region;
 struct ContentFrameBuilderContext;
 struct ContentFrameReaderContext;
 typedef std::unordered_map<uint32_t, sk_sp<const SkPicture>> PictureCache;
+typedef std::unordered_set<uint32_t> PictureIdCache;
 
 class CC_EXPORT RecordingSource {
  public:
@@ -82,9 +83,8 @@ class CC_EXPORT RecordingSource {
                   mojom::PictureLayerState* mojom);
   void ReadMojom(const ContentFrameReaderContext& context,
                  mojom::PictureLayerState* mojom,
-                 scoped_refptr<DisplayItemList> last_display_list);
-
-  PictureCache picture_cache_;
+                 scoped_refptr<DisplayItemList> last_display_list,
+                 PictureCache* picture_cache);
 
  protected:
   void Clear();
@@ -101,6 +101,8 @@ class CC_EXPORT RecordingSource {
 
   scoped_refptr<DisplayItemList> display_list_;
   uint32_t last_send_display_list_id_;
+  PictureIdCache picture_id_cache_;
+
   size_t painter_reported_memory_usage_;
 
  private:

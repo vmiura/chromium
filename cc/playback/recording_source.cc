@@ -329,7 +329,10 @@ void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
       BulkBufferWStream stream(context.bulk_buffer_writer);
       {
         TRACE_EVENT0("cc", "RecordingSource::WriteMojom serialization");
-        display_list_->SerializeToStream(&stream, picture_cache_);
+        PictureIdCache new_picture_id_cache;
+        display_list_->SerializeToStream(&stream, &picture_id_cache_,
+                                         &new_picture_id_cache);
+        picture_id_cache_ = std::move(new_picture_id_cache);
       }
       {
         TRACE_EVENT1("cc", "RecordingSource::WriteMojom finalize", "size",
@@ -350,7 +353,8 @@ void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
 void RecordingSource::ReadMojom(
     const ContentFrameReaderContext& context,
     mojom::PictureLayerState* mojom,
-    scoped_refptr<DisplayItemList> last_display_list) {
+    scoped_refptr<DisplayItemList> last_display_list,
+    PictureCache* picture_cache) {
   TRACE_EVENT0("cc", "RecordingSource::ReadMojom");
   recorded_viewport_ = mojom->recorded_viewport;
   size_ = mojom->size;
@@ -367,9 +371,9 @@ void RecordingSource::ReadMojom(
     TRACE_EVENT1("cc", "RecordingSource::ReadMojom deserialization", "size",
                  stream.size());
     PictureCache new_picture_cache;
-    display_list_ = DisplayItemList::CreateFromStream(&stream, picture_cache_,
-                                                      new_picture_cache);
-    picture_cache_ = std::move(new_picture_cache);
+    display_list_ = DisplayItemList::CreateFromStream(
+        &stream, picture_cache, &new_picture_cache);
+    *picture_cache = std::move(new_picture_cache);
   } else {
     if (last_display_list &&
         last_display_list->unique_id() == mojom->display_list_id)

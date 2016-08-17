@@ -84,8 +84,8 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromData(sk_sp<SkData> dat
 
 scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
     SkStream* stream,
-    PictureCache& old_picture_cache,
-    PictureCache& new_picture_cache) {
+    PictureCache* old_picture_cache,
+    PictureCache* new_picture_cache) {
   DisplayItemListSettings settings;
   // TODO: Also find id from stream.
   scoped_refptr<DisplayItemList> display_item_list =
@@ -100,8 +100,6 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
     gfx::Rect visual_rect(x, y, width, height);
     DisplayItem::ItemType item_type =
         static_cast<DisplayItem::ItemType>(stream->readU32());
-    sk_sp<const SkPicture> picture;
-    uint32_t picture_id;
     switch(item_type) {
       case DisplayItem::Clip:
         ClipDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
@@ -121,17 +119,27 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
       case DisplayItem::EndCompositing:
         EndCompositingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
         break;
-      case DisplayItem::Drawing:
-        picture_id = stream->readU32();
-        if (old_picture_cache.find(picture_id) == old_picture_cache.end()) {
-          DrawingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+      case DisplayItem::Drawing: {
+        uint32_t picture_id = stream->readU32();
+        auto it = new_picture_cache->find(picture_id);
+        if (it == new_picture_cache->end()) {
+          sk_sp<const SkPicture> picture;
+          it = old_picture_cache->find(picture_id);
+          if (it == old_picture_cache->end()) {
+            DrawingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+            picture = display_item_list->inputs_.items.last().GetPicture();
+          } else {
+            picture = std::move(it->second);
+            display_item_list->CreateAndAppendItem<DrawingDisplayItem>(
+                visual_rect, picture);
+          }
+          (*new_picture_cache)[picture_id] = std::move(picture);
         } else {
           display_item_list->CreateAndAppendItem<DrawingDisplayItem>(
-              visual_rect, std::move(old_picture_cache[picture_id]));
+              visual_rect, it->second);
         }
-        picture = display_item_list->inputs_.items.last().GetPicture();
-        new_picture_cache[picture->uniqueID()] = picture;
         break;
+      }
       case DisplayItem::Filter:
         FilterDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
         break;
@@ -423,7 +431,8 @@ void DisplayItemList::GetDiscardableImagesInRect(
 }
 
 void DisplayItemList::SerializeToStream(SkWStream* stream,
-    const PictureCache& picture_cache) const {
+    PictureIdCache* old_picture_cache,
+    PictureIdCache* new_picture_cache) const {
   stream->write32(id_);
   stream->write32(inputs_.items.size());
   DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
@@ -432,11 +441,19 @@ void DisplayItemList::SerializeToStream(SkWStream* stream,
     stream->write32(inputs_.visual_rects[i].y());
     stream->write32(inputs_.visual_rects[i].width());
     stream->write32(inputs_.visual_rects[i].height());
-    if (inputs_.items[i].GetPicture()) {
-      uint32_t picture_id = inputs_.items[i].GetPicture()->uniqueID();
-      if (picture_cache.find(picture_id) ==
-          picture_cache.end()) {
-        inputs_.items[i].Serialize(stream);
+    sk_sp<const SkPicture> picture = inputs_.items[i].GetPicture();
+    if (picture) {
+      uint32_t picture_id = picture->uniqueID();
+      auto it = new_picture_cache->find(picture_id);
+      if (it == new_picture_cache->end()) {
+        it = old_picture_cache->find(picture_id);
+        if (it == old_picture_cache->end()) {
+          inputs_.items[i].Serialize(stream);
+        } else {
+          stream->write32(DisplayItem::Drawing);
+          stream->write32(picture_id);
+        }
+        new_picture_cache->insert(picture_id);
       } else {
         stream->write32(DisplayItem::Drawing);
         stream->write32(picture_id);
@@ -450,7 +467,9 @@ void DisplayItemList::SerializeToStream(SkWStream* stream,
 sk_sp<SkData> DisplayItemList::Serialize() const {
   // TODO: not used, delete it.
   SkDynamicMemoryWStream write_stream;
-  SerializeToStream(&write_stream, PictureCache());
+  PictureIdCache old_cache;
+  PictureIdCache new_cache;
+  SerializeToStream(&write_stream, &old_cache, &new_cache);
   sk_sp<SkData> data(write_stream.copyToData());
   return data;
 }

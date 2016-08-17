@@ -1336,7 +1336,7 @@ void PictureLayerImpl::ReadPropertiesMojom(
       raster_source_ ? raster_source_->display_list() : nullptr;
   RecordingSource recording_source;
   recording_source.ReadMojom(context, picture_state,
-                             std::move(last_display_list));
+                             std::move(last_display_list), &picture_cache_);
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource(RasterSourceUsesLCDText());
   UpdateRasterSource(raster_source, &invalidation, nullptr);
