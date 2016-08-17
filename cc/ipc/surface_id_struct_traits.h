@@ -16,12 +16,15 @@ template <typename T>
 struct StructTraits<T, cc::SurfaceId> {
   static uint32_t client_id(const cc::SurfaceId& id) { return id.client_id(); }
 
+  static uint32_t sink_id(const cc::SurfaceId& id) { return id.sink_id(); }
+
   static uint32_t local_id(const cc::SurfaceId& id) { return id.local_id(); }
 
   static uint64_t nonce(const cc::SurfaceId& id) { return id.nonce(); }
 
   static bool Read(typename T::DataView data, cc::SurfaceId* out) {
-    *out = cc::SurfaceId(data.client_id(), data.local_id(), data.nonce());
+    *out = cc::SurfaceId(data.client_id(), data.sink_id(), data.local_id(),
+                         data.nonce());
     return true;
   }
 };

@@ -84,8 +84,10 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
       delegated_frame_evictor_(new DelegatedFrameEvictor(this)) {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->AddObserver(this);
-  id_allocator_.reset(new cc::SurfaceIdAllocator(
-      factory->GetContextFactory()->AllocateSurfaceClientId()));
+
+  surface_client_id_ = factory->GetContextFactory()->AllocateSurfaceClientId();
+  // id_allocator_.reset(new cc::SurfaceIdAllocator(
+  //    factory->GetContextFactory()->AllocateSurfaceClientId()));
   // factory->GetSurfaceManager()->RegisterSurfaceClientId(
   //    id_allocator_->client_id());
   // factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
@@ -223,11 +225,11 @@ void DelegatedFrameHost::EndFrameSubscription() {
 }
 
 uint32_t DelegatedFrameHost::GetSurfaceClientId() {
-  return id_allocator_->client_id();
+  return surface_client_id_;
 }
 
 void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
-  id_allocator_.reset(new cc::SurfaceIdAllocator(client_id));
+  surface_client_id_ = client_id;
   if (compositor_)
     compositor_->AddSurfaceClient(client_id);
 }
@@ -928,7 +930,7 @@ void DelegatedFrameHost::SetCompositor(ui::Compositor* compositor) {
 
   // TODO(hackathon)
   if (!surface_id_.is_null())
-    compositor_->AddSurfaceClient(id_allocator_->client_id());
+    compositor_->AddSurfaceClient(surface_client_id_);
 }
 
 void DelegatedFrameHost::ResetCompositor() {

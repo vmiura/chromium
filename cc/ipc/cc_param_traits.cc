@@ -577,6 +577,7 @@ void ParamTraits<cc::SurfaceId>::GetSize(base::PickleSizer* s,
 
 void ParamTraits<cc::SurfaceId>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.client_id());
+  WriteParam(m, p.sink_id());
   WriteParam(m, p.local_id());
   WriteParam(m, p.nonce());
 }
@@ -588,6 +589,10 @@ bool ParamTraits<cc::SurfaceId>::Read(const base::Pickle* m,
   if (!ReadParam(m, iter, &client_id))
     return false;
 
+  uint32_t sink_id;
+  if (!ReadParam(m, iter, &sink_id))
+    return false;
+
   uint32_t local_id;
   if (!ReadParam(m, iter, &local_id))
     return false;
@@ -596,13 +601,15 @@ bool ParamTraits<cc::SurfaceId>::Read(const base::Pickle* m,
   if (!ReadParam(m, iter, &nonce))
     return false;
 
-  *p = cc::SurfaceId(client_id, local_id, nonce);
+  *p = cc::SurfaceId(client_id, sink_id, local_id, nonce);
   return true;
 }
 
 void ParamTraits<cc::SurfaceId>::Log(const param_type& p, std::string* l) {
   l->append("SurfaceId(");
   LogParam(p.client_id(), l);
+  l->append(", ");
+  LogParam(p.sink_id(), l);
   l->append(", ");
   LogParam(p.local_id(), l);
   l->append(", ");

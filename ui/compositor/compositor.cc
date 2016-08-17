@@ -83,8 +83,9 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       widget_(gfx::kNullAcceleratedWidget),
       widget_valid_(false),
       output_surface_requested_(false),
-      surface_id_allocator_(new cc::SurfaceIdAllocator(
-          context_factory->AllocateSurfaceClientId())),
+      surface_id_allocator_(
+          new cc::SurfaceIdAllocator(context_factory->AllocateSurfaceClientId(),
+                                     0 /* sink_id */)),
       task_runner_(task_runner),
       vsync_manager_(new CompositorVSyncManager()),
       device_scale_factor_(0.0f),

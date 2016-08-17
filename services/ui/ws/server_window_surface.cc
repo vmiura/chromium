@@ -22,7 +22,8 @@ ServerWindowSurface::ServerWindowSurface(
     mojom::SurfaceClientPtr client)
     : manager_(manager),
       surface_id_allocator_(
-          manager->window()->delegate()->GetSurfacesState()->next_client_id()),
+          manager->window()->delegate()->GetSurfacesState()->next_client_id(),
+          0 /* sink_id */),
       surface_factory_(manager_->GetSurfaceManager(), this),
       client_(std::move(client)),
       binding_(this, std::move(request)) {

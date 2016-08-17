@@ -209,7 +209,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   RenderWidgetHostImpl* host_;
 
   // Surface-related state.
-  std::unique_ptr<cc::SurfaceIdAllocator> id_allocator_;
+  // std::unique_ptr<cc::SurfaceIdAllocator> id_allocator_;
+  uint32_t surface_client_id_ = 0;
   std::unique_ptr<cc::SurfaceFactory> surface_factory_;
   cc::SurfaceId surface_id_;
   uint32_t next_surface_sequence_;

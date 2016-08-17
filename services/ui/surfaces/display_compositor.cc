@@ -29,7 +29,7 @@ DisplayCompositor::DisplayCompositor(
     : task_runner_(task_runner),
       surfaces_state_(surfaces_state),
       factory_(surfaces_state->manager(), this),
-      allocator_(surfaces_state->next_client_id()) {
+      allocator_(surfaces_state->next_client_id(), 0 /* sink_id */) {
   surfaces_state_->manager()->RegisterSurfaceClientId(allocator_.client_id());
   surfaces_state_->manager()->RegisterSurfaceFactoryClient(
       allocator_.client_id(), this);

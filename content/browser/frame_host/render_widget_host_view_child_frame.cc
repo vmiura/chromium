@@ -51,7 +51,8 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
       observing_begin_frame_source_(false),
       parent_surface_client_id_(0),
       weak_factory_(this) {
-  id_allocator_.reset(new cc::SurfaceIdAllocator(AllocateSurfaceClientId()));
+  surface_client_id_ = AllocateSurfaceClientId();
+  // id_allocator_.reset(new cc::SurfaceIdAllocator(AllocateSurfaceClientId()));
   // GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
   RegisterSurfaceNamespaceId();
 
@@ -482,7 +483,7 @@ bool RenderWidgetHostViewChildFrame::IsMouseLocked() {
 }
 
 uint32_t RenderWidgetHostViewChildFrame::GetSurfaceClientId() {
-  return id_allocator_->client_id();
+  return surface_client_id_;  // id_allocator_->client_id();
 }
 
 void RenderWidgetHostViewChildFrame::ProcessKeyboardEvent(

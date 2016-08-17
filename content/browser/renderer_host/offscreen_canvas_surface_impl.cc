@@ -21,7 +21,8 @@ void OffscreenCanvasSurfaceImpl::Create(
 
 OffscreenCanvasSurfaceImpl::OffscreenCanvasSurfaceImpl(
     mojo::InterfaceRequest<blink::mojom::OffscreenCanvasSurface> request)
-    : id_allocator_(new cc::SurfaceIdAllocator(AllocateSurfaceClientId())),
+    : id_allocator_(new cc::SurfaceIdAllocator(AllocateSurfaceClientId(),
+                                               0 /* sink_id */)),
       binding_(this, std::move(request)) {
   // GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
 }

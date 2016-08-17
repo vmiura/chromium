@@ -17,7 +17,7 @@ CompositorFrameSinkFactoryImpl::CompositorFrameSinkFactoryImpl(
     const scoped_refptr<SurfacesState>& surfaces_state)
     : client_id_(client_id),
       surfaces_state_(surfaces_state),
-      allocator_(client_id),
+      allocator_(client_id, 0 /* sink_id */),
       binding_(this, std::move(request)) {}
 
 CompositorFrameSinkFactoryImpl::~CompositorFrameSinkFactoryImpl() {}

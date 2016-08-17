@@ -14,22 +14,6 @@ import "cc/ipc/image_decode.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
-// Unprivileged DisplayCompositor API for clients implemented by the browser or
-// window server.
-interface DisplayCompositorHost {
-  RequestSurfaceManager(SurfaceManager& surface_manager);
-                    
-  CreateContentFrameSink(int32 routing_id,
-                         cc.mojom.LayerTreeSettings settings,
-                         ContentFrameSink& content_frame_sink,
-                         ContentFrameSinkClient content_frame_sink_client);
-};
-
-// GPU to browser.
-interface DisplayCompositorClient {
-  OnSurfaceCreated(gfx.mojom.Size frame_size, cc.mojom.SurfaceId surface_id);
-};
-
 // This is the main interface that the DisplayCompositor host uses
 // to connect to the Display Compositor service.
 interface DisplayCompositorFactory {
@@ -37,12 +21,28 @@ interface DisplayCompositorFactory {
                           DisplayCompositorClient display_compositor_client);
 };
 
-// Browser (or Window Server) to GPU
+// GPU to browser/window server ("display compositor host").
+interface DisplayCompositorClient {
+  OnSurfaceCreated(gfx.mojom.Size frame_size, cc.mojom.SurfaceId surface_id);
+};
+
+// Browser or Window Server ("display compositor host") to GPU
 interface DisplayCompositor {
   RequestSurfaceManager(SurfaceManager& surface_manager);
 
   CreateContentFrameSink(uint32 client_id,
                          gpu.mojom.SurfaceHandle widget,
+                         cc.mojom.LayerTreeSettings settings,
+                         ContentFrameSink& content_frame_sink,
+                         ContentFrameSinkClient content_frame_sink_client);
+};
+
+// Unprivileged DisplayCompositor API for clients implemented by the browser or
+// window server.
+interface DisplayCompositorHost {
+  RequestSurfaceManager(SurfaceManager& surface_manager);
+
+  CreateContentFrameSink(int32 routing_id,
                          cc.mojom.LayerTreeSettings settings,
                          ContentFrameSink& content_frame_sink,
                          ContentFrameSinkClient content_frame_sink_client);

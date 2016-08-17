@@ -183,7 +183,8 @@ ContentFrameSink::ContentFrameSink(
       image_factory_(image_factory),
       surface_manager_(surface_manager),
       widget_(handle),
-      surface_id_allocator_(id),
+      // TODO(fsamuel): This is wrong. Client ID + Sink ID
+      surface_id_allocator_(id, 0 /* sink_id */),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
                  id,

@@ -4,10 +4,12 @@
 
 module cc.mojom;
 
-// A surface ID is composed of three parts: a client ID, a local ID, and a
-// nonce. The local part and nonce are allocated by the client using any scheme
-// that avoids duplicates and makes IDs unguessable respectively. The client ID
-// is allocated by the service and will be different for each client.
+// A surface ID is composed of four parts: a client ID, a sink ID, a local ID, 
+// and a nonce. The local part and nonce are allocated by the client using any
+// scheme that avoids duplicates and makes IDs unguessable respectively.
+// The client ID is allocated by the service and will be different for each
+// client. The sink ID uniquely identifies a CompositorFrameSink within a
+// client.
 //
 // The special client_id value 0 is equivalent to the current client.
 // This can be used to create, destroy and submit frames to surfaces before
@@ -17,6 +19,8 @@ module cc.mojom;
 struct SurfaceId {
   // A service allocated ID identifying a client.
   uint32 client_id;
+
+  uint32 sink_id;
 
   // An identifier allocated by the client uniquely identifying a surface within
   // a client process.
