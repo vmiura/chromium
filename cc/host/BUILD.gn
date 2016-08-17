@@ -8,8 +8,6 @@ source_set("host") {
     "display_compositor_connection.h",
     "display_compositor_host.h",
     "display_compositor_host.cc",
-    "display_compositor_host_proxy.h",
-    "display_compositor_host_proxy.cc",
   ]
 
   public_deps = [

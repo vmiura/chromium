@@ -95,7 +95,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   cc::mojom::SurfaceManagerPtr surface_manager_;
   scoped_refptr<cc::DisplayCompositorHost::Delegate>
       display_compositor_factory_;
-  std::unique_ptr<cc::DisplayCompositorHostProxy> display_compositor_host_;
+  cc::mojom::DisplayCompositorHostPtr display_compositor_host_;
 
   static BrowserGpuChannelHostFactory* instance_;
 

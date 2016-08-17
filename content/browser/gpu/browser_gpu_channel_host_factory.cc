@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/host/display_compositor_host.h"
-#include "cc/host/display_compositor_host_proxy.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/service_connection.h"
@@ -45,7 +44,7 @@ namespace content {
 
 namespace {
 
-void CreateDisplayCompositorHostOnIO(
+void CreateDisplayCompositorHostOnIOThread(
     gpu::SurfaceHandle surface_handle,
     scoped_refptr<cc::DisplayCompositorHost::Delegate>
         display_compositor_factory,
@@ -399,17 +398,15 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
     gpu::SurfaceHandle surface_handle) {
   if (!display_compositor_host_) {
-    cc::mojom::DisplayCompositorHostPtr host;
-    cc::mojom::DisplayCompositorHostRequest request = mojo::GetProxy(&host);
-    // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
-    display_compositor_host_.reset(
-        new cc::DisplayCompositorHostProxy(0, std::move(host)));
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+    cc::mojom::DisplayCompositorHostRequest request =
+        mojo::GetProxy(&display_compositor_host_);
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
         BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
     // PostTask outside the constructor to ensure at least one reference exists.
-    task_runner->PostTask(
+    // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
+    io_task_runner->PostTask(
         FROM_HERE,
-        base::Bind(&CreateDisplayCompositorHostOnIO, surface_handle,
+        base::Bind(&CreateDisplayCompositorHostOnIOThread, surface_handle,
                    GetDisplayCompositorFactory(), base::Passed(&request)));
   }
   if (!surface_manager_) {
