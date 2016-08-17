@@ -27,19 +27,17 @@ class MailboxManager;
 namespace cc {
 
 class LayerTreeSettings;
-class ServiceFactory;
+class DisplayCompositorFactory;
 class SharedBitmapManager;
 
 class DisplayCompositor : public mojom::SurfaceManager,
                           public mojom::DisplayCompositor,
                           public SurfaceManager::Delegate {
  public:
-  // TODO(fsamuel): Merge ServiceFactory and DisplayCompositor.
-  DisplayCompositor(
-      ServiceFactory* factory,
-      mojom::DisplayCompositorRequest request,
-      mojom::DisplayCompositorClientPtr client,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
+  // TODO(fsamuel): Merge DisplayCompositorFactory and DisplayCompositor.
+  DisplayCompositor(DisplayCompositorFactory* factory,
+                    mojom::DisplayCompositorRequest request,
+                    mojom::DisplayCompositorClientPtr client);
 
   ~DisplayCompositor() override;
 
@@ -62,7 +60,7 @@ class DisplayCompositor : public mojom::SurfaceManager,
                         const SurfaceId& surface_id) override;
 
  private:
-  ServiceFactory* const factory_;
+  DisplayCompositorFactory* const factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 

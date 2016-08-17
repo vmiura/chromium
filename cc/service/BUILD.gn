@@ -11,13 +11,13 @@ component("service") {
     "delegating_output_surface.h",
     "display_compositor.cc",
     "display_compositor.h",
+    "display_compositor_factory.cc",
+    "display_compositor_factory.h",
     "display_output_surface.cc",
     "display_output_surface.h",
     "service_context_provider.cc",
     "service_context_provider.h",
     "service_export.h",
-    "service_factory.cc",
-    "service_factory.h",
   ]
 
   defines = [ "CC_SERVICE_IMPLEMENTATION=1" ]

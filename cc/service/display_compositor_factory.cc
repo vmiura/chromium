@@ -1,4 +1,8 @@
-#include "cc/service/service_factory.h"
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "cc/service/display_compositor_factory.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -11,7 +15,7 @@ namespace cc {
 namespace {
 
 static void CreateDisplayCompositorOnCompositorThread(
-    ServiceFactory* factory,
+    DisplayCompositorFactory* factory,
     std::unique_ptr<DisplayCompositor>* display_compositor,
     cc::mojom::DisplayCompositorRequest display_compositor_request,
     cc::mojom::DisplayCompositorClientPtrInfo display_compositor_client_info) {
@@ -19,13 +23,12 @@ static void CreateDisplayCompositorOnCompositorThread(
   cc::mojom::DisplayCompositorClientPtr client_ptr;
   client_ptr.Bind(std::move(display_compositor_client_info));
   *display_compositor = base::WrapUnique(new cc::DisplayCompositor(
-      factory, std::move(display_compositor_request), std::move(client_ptr),
-      base::ThreadTaskRunnerHandle::Get()));
+      factory, std::move(display_compositor_request), std::move(client_ptr)));
 }
 
 }  // namespace
 
-ServiceFactory::ServiceFactory(
+DisplayCompositorFactory::DisplayCompositorFactory(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
@@ -34,20 +37,19 @@ ServiceFactory::ServiceFactory(
     : shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
-      compositor_thread_("compositor"),
-      weak_factory_(this) {
+      compositor_thread_("compositor") {
   ServiceContextProvider::SetupThread(sync_point_manager, mailbox_manager);
   compositor_thread_.Start();
 }
 
-ServiceFactory::~ServiceFactory() = default;
+DisplayCompositorFactory::~DisplayCompositorFactory() = default;
 
-void ServiceFactory::BindDisplayCompositorFactoryRequest(
+void DisplayCompositorFactory::Bind(
     cc::mojom::DisplayCompositorFactoryRequest request) {
   bindings_.AddBinding(this, std::move(request));
 }
 
-void ServiceFactory::CreateDisplayCompositor(
+void DisplayCompositorFactory::CreateDisplayCompositor(
     cc::mojom::DisplayCompositorRequest display_compositor,
     cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
   CHECK_EQ(nullptr, display_compositor_.get());

@@ -1,5 +1,9 @@
-#ifndef CC_SERVICE_SERVICE_FACTORY_H_
-#define CC_SERVICE_SERVICE_FACTORY_H_
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CC_SERVICE_DISPLAY_COMPOSITOR_FACTORY_H_
+#define CC_SERVICE_DISPLAY_COMPOSITOR_FACTORY_H_
 
 #include <memory>
 
@@ -8,11 +12,9 @@
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
 #include "cc/service/service_export.h"
-#include "cc/surfaces/surface_manager.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 
 namespace gpu {
-class GpuChannel;
 class GpuMemoryBufferManager;
 class ImageFactory;
 class SyncPointManager;
@@ -25,20 +27,19 @@ namespace cc {
 class DisplayCompositor;
 class SharedBitmapManager;
 class SurfaceIdAllocator;
-class SurfaceManager;
 
-class CC_SERVICE_EXPORT ServiceFactory
+class CC_SERVICE_EXPORT DisplayCompositorFactory
     : public cc::mojom::DisplayCompositorFactory {
  public:
-  ServiceFactory(SharedBitmapManager* shared_bitmap_manager,
-                 gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                 gpu::ImageFactory* image_factory,
-                 gpu::SyncPointManager* sync_point_manager,
-                 gpu::gles2::MailboxManager* mailbox_manager);
-  ~ServiceFactory() override;
+  DisplayCompositorFactory(
+      SharedBitmapManager* shared_bitmap_manager,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      gpu::ImageFactory* image_factory,
+      gpu::SyncPointManager* sync_point_manager,
+      gpu::gles2::MailboxManager* mailbox_manager);
+  ~DisplayCompositorFactory() override;
 
-  void BindDisplayCompositorFactoryRequest(
-      cc::mojom::DisplayCompositorFactoryRequest request);
+  void Bind(cc::mojom::DisplayCompositorFactoryRequest request);
 
   // cc::mojom::DisplayCompositorFactory implementation.
   void CreateDisplayCompositor(
@@ -65,10 +66,8 @@ class CC_SERVICE_EXPORT ServiceFactory
 
   // Bindings to cc::mojom::DisplayCompositorFactory.
   mojo::BindingSet<cc::mojom::DisplayCompositorFactory> bindings_;
-
-  base::WeakPtrFactory<ServiceFactory> weak_factory_;
 };
 
 }  // namespace cc
 
-#endif  // CC_SERVICE_SERVICE_FACTORY_H_
+#endif  // CC_SERVICE_DISPLAY_COMPOSITOR_FACTORY_H_

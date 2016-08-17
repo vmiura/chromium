@@ -33,7 +33,7 @@
 
 namespace cc {
 class DisplayCompositor;
-class ServiceFactory;
+class DisplayCompositorFactory;
 }
 
 namespace gpu {
@@ -154,7 +154,7 @@ class GpuChildThread : public ChildThreadImpl,
   // Can be null if overridden by ContentGpuClient.
   std::unique_ptr<gpu::SyncPointManager> owned_sync_point_manager_;
 
-  std::unique_ptr<cc::ServiceFactory> service_compositor_factory_;
+  std::unique_ptr<cc::DisplayCompositorFactory> display_compositor_factory_;
   std::unique_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
 
   std::unique_ptr<media::MediaService> media_service_;

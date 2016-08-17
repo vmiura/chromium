@@ -5,18 +5,15 @@
 #include "cc/service/display_compositor.h"
 
 #include "cc/service/content_frame_sink.h"
-#include "cc/service/service_factory.h"
+#include "cc/service/display_compositor_factory.h"
 #include "cc/trees/layer_tree_settings.h"
 
 namespace cc {
 
-DisplayCompositor::DisplayCompositor(
-    ServiceFactory* factory,
-    mojom::DisplayCompositorRequest request,
-    mojom::DisplayCompositorClientPtr client,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
+DisplayCompositor::DisplayCompositor(DisplayCompositorFactory* factory,
+                                     mojom::DisplayCompositorRequest request,
+                                     mojom::DisplayCompositorClientPtr client)
     : factory_(factory),
-      compositor_task_runner_(compositor_task_runner),
       surface_manager_(this),
       client_(std::move(client)),
       display_compositor_binding_(this, std::move(request)) {
