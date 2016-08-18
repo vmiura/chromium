@@ -74,8 +74,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   BrowserGpuChannelHostFactory();
   ~BrowserGpuChannelHostFactory() override;
 
-  void ConnectToDisplayCompositorHostIfNecessary(
-      gpu::SurfaceHandle surface_handle);
+  void ConnectToDisplayCompositorHostIfNecessary();
   void GpuChannelEstablished();
 
   static void AddFilterOnIO(int gpu_host_id,
@@ -96,6 +95,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<cc::DisplayCompositorConnectionFactory>
       display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;
+  cc::mojom::DisplayCompositorHostPrivatePtr display_compositor_host_private_;
 
   static BrowserGpuChannelHostFactory* instance_;
 

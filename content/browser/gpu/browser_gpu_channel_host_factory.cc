@@ -45,13 +45,13 @@ namespace content {
 namespace {
 
 void CreateDisplayCompositorHostOnIOThread(
-    gpu::SurfaceHandle surface_handle,
     scoped_refptr<cc::DisplayCompositorConnectionFactory>
         display_compositor_connection_factory,
-    cc::mojom::DisplayCompositorHostRequest request) {
-  cc::DisplayCompositorHost::Create(surface_handle, 0 /* process_id */,
-                                    display_compositor_connection_factory,
-                                    std::move(request));
+    cc::mojom::DisplayCompositorHostRequest request,
+    cc::mojom::DisplayCompositorHostPrivateRequest private_request) {
+  cc::DisplayCompositorHost::CreatePrivate(
+      0 /* process_id */, display_compositor_connection_factory,
+      std::move(request), std::move(private_request));
 }
 
 }  // namespace
@@ -371,15 +371,15 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   // TODO(fsamuel): In Mus+Ash the widget does not come from here. It is owned
   // by the DisplayCompositorHost.
   gpu::SurfaceHandle surface_handle = widget;
-  ConnectToDisplayCompositorHostIfNecessary(surface_handle);
+  ConnectToDisplayCompositorHostIfNecessary();
   auto connection = base::MakeUnique<cc::ServiceConnection>();
   connection->shm_allocator =
       base::Bind(&BrowserGpuChannelHostFactory::AllocateSharedMemory,
                  base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
-  display_compositor_host_->CreateContentFrameSink(
-      0 /* routing_id */, settings.ToMojom(),
+  display_compositor_host_private_->CreateContentFrameSinkWithHandle(
+      surface_handle, settings.ToMojom(),
       mojo::GetProxy(&connection->content_frame_sink), std::move(client));
   return connection;
 }
@@ -396,20 +396,22 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
     surface_manager_->MoveTempRefToRefOnSurfaceId(id);
 }
 
-void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary(
-    gpu::SurfaceHandle surface_handle) {
+void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
   if (!display_compositor_host_) {
     cc::mojom::DisplayCompositorHostRequest request =
         mojo::GetProxy(&display_compositor_host_);
+    cc::mojom::DisplayCompositorHostPrivateRequest private_request =
+        mojo::GetProxy(&display_compositor_host_private_);
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
         BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
     // PostTask outside the constructor to ensure at least one reference exists.
     // TODO(hackathon): |widget| is not always a gpu::SurfaceHandle.
     io_task_runner->PostTask(
         FROM_HERE,
-        base::Bind(&CreateDisplayCompositorHostOnIOThread, surface_handle,
+        base::Bind(&CreateDisplayCompositorHostOnIOThread,
                    GetDisplayCompositorConnectionFactory(),
-                   base::Passed(&request)));
+                   base::Passed(&request),
+                   base::Passed(&private_request)));
   }
   if (!surface_manager_) {
     display_compositor_host_->RequestSurfaceManager(

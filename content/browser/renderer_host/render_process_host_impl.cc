@@ -1070,9 +1070,9 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
   GetInterfaceRegistry()->AddInterface(
-      base::Bind(&cc::DisplayCompositorHost::Create, gpu::kNullSurfaceHandle,
-                 GetID(), BrowserGpuChannelHostFactory::instance()
-                              ->GetDisplayCompositorConnectionFactory()),
+      base::Bind(&cc::DisplayCompositorHost::Create, GetID(),
+                 BrowserGpuChannelHostFactory::instance()
+                     ->GetDisplayCompositorConnectionFactory()),
       io_task_runner);
 
   GetInterfaceRegistry()->AddInterface(base::Bind(
