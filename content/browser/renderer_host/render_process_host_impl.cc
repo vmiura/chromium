@@ -1069,6 +1069,8 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+  // TODO(fsamuel): This uses the process ID as the client ID
+  // component of the ContentFrameSink/CompositorFrameSink.
   GetInterfaceRegistry()->AddInterface(
       base::Bind(&cc::DisplayCompositorHost::Create, GetID(),
                  BrowserGpuChannelHostFactory::instance()

@@ -36,7 +36,17 @@ interface DisplayCompositor {
 
   UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
 
+  // A ContentFrameSink (and, similarly, this would apply for
+  // CompositorFrameSink) is uniquely identified by two 32-bit quantities:
+  // |client_id| and |sink_id|. |client_id| is a display compositor host
+  // allocated ID that uniquely identifies a DisplayCompositorHost connection.
+  // In Chrome, this is the RenderProcessHost ID. |sink_id| is a
+  // client-allocated ID that uniquely identifies a sink for a given
+  // DisplayCompositorHost connection. In Chrome, this is the routing ID.
+  // TODO(fsamuel): We may wish to create more than one sink per view, and so
+  // it might be useful to make the sink_id a 64-bit quantity.
   CreateContentFrameSink(uint32 client_id,
+                         int32 sink_id,
                          gpu.mojom.SurfaceHandle widget,
                          cc.mojom.LayerTreeSettings settings,
                          ContentFrameSink& content_frame_sink,
@@ -46,7 +56,9 @@ interface DisplayCompositor {
 // Unprivileged DisplayCompositor API for clients implemented by the browser (on
 // the IO thread) or window server.
 interface DisplayCompositorHost {
-  CreateContentFrameSink(int32 routing_id,
+  // There is a fixed client_id for a DisplayCompositorHost connection and thus
+  // clients of this connection cannot allocate a new client_id.
+  CreateContentFrameSink(int32 sink_id,
                          cc.mojom.LayerTreeSettings settings,
                          ContentFrameSink& content_frame_sink,
                          ContentFrameSinkClient content_frame_sink_client);
@@ -67,6 +79,7 @@ interface DisplayCompositorHostPrivate {
   UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
 
   CreateContentFrameSinkWithHandle(
+      int32 sink_id,
       gpu.mojom.SurfaceHandle widget,
       cc.mojom.LayerTreeSettings settings,
       ContentFrameSink & content_frame_sink,
@@ -80,7 +93,8 @@ interface ContentFrameSink {
   SetVisible(bool visible);
   BeginMainFrameAborted(cc.mojom.CommitEarlyOutReason reason);
   PrepareCommit(bool will_wait_for_cativation, ContentFrame frame);
-  [Sync] PrepareCommitSync(bool will_wait_for_cativation, ContentFrame frame) => (cc.mojom.SurfaceId surface_id);
+  [Sync] PrepareCommitSync(bool will_wait_for_cativation, ContentFrame frame) =>
+      (cc.mojom.SurfaceId surface_id);
   [Sync] WaitForActivation() => ();
   DeleteBackings(array<uint32> backings);
   [Sync] Destroy() => ();

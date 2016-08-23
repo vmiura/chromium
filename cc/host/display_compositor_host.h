@@ -19,22 +19,23 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
  public:
   // Create on IO thread.
   static void Create(
-      int32_t process_id,
+      int32_t client_id,
       scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
       mojom::DisplayCompositorHostRequest request);
+
   static void CreatePrivate(
-      int32_t process_id,
+      int32_t client_id,
       scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
       mojom::DisplayCompositorHostRequest request,
       mojom::DisplayCompositorHostPrivateRequest private_request);
 
   ~DisplayCompositorHost() override;
 
-  int32_t process_id() const { return process_id_; }
+  int32_t client_id() const { return client_id_; }
 
   // DisplayCompositorHost implementation.
   void CreateContentFrameSink(
-      int32_t routing_id,
+      int32_t sink_id,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
@@ -49,6 +50,7 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   void UnregisterClientHierarchy(uint32_t parent_client_id,
                                  uint32_t child_client_id) override;
   void CreateContentFrameSinkWithHandle(
+      int32_t sink_id,
       const gpu::SurfaceHandle& surface_handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
@@ -56,16 +58,15 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
 
  private:
   DisplayCompositorHost(
-      int32_t process_id,
+      int32_t client_id,
       scoped_refptr<DisplayCompositorConnectionFactory> connection_factory,
       mojom::DisplayCompositorHostRequest request,
       mojom::DisplayCompositorHostPrivateRequest private_request);
 
   void ConnectToDisplayCompositorIfNecessary();
 
-  const int32_t process_id_;
+  const int32_t client_id_;
   scoped_refptr<DisplayCompositorConnectionFactory> connection_factory_;
-  uint32_t next_compositor_id_ = 1;
   DisplayCompositorConnection* display_compositor_ = nullptr;
   mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;
   mojo::Binding<mojom::DisplayCompositorHostPrivate> private_binding_;

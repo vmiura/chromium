@@ -14,6 +14,16 @@ DisplayCompositorConnection::DisplayCompositorConnection(
 
 DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
+void DisplayCompositorConnection::AddObserver(
+    DisplayCompositorConnectionObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DisplayCompositorConnection::RemoveObserver(
+    DisplayCompositorConnectionObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void DisplayCompositorConnection::AddRefOnSurfaceId(const SurfaceId& id) {
   display_compositor_->AddRefOnSurfaceId(id);
 }
@@ -39,21 +49,23 @@ void DisplayCompositorConnection::UnregisterClientHierarchy(
 
 void DisplayCompositorConnection::CreateContentFrameSink(
     uint32_t client_id,
+    int32_t sink_id,
     const gpu::SurfaceHandle& handle,
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   display_compositor_->CreateContentFrameSink(
-      client_id, handle, std::move(settings), std::move(content_frame_sink),
-      std::move(content_frame_sink_client));
+      client_id, sink_id, handle, std::move(settings),
+      std::move(content_frame_sink), std::move(content_frame_sink_client));
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(
     const gfx::Size& frame_size,
     const cc::SurfaceId& surface_id) {
-  fprintf(stderr, ">>>>OnSurfaceCreated frame_size(%d, %d) surface_id: %s\n",
-          frame_size.width(), frame_size.height(),
-          surface_id.ToString().c_str());
+  // TODO(fsamuel): Adding an observer list here and in ConnectionFactory is
+  // probably overkill. This should be cleaned up.
+  FOR_EACH_OBSERVER(DisplayCompositorConnectionObserver, observers_,
+                    OnSurfaceCreated(frame_size, surface_id));
 }
 
 }  // namespace cc

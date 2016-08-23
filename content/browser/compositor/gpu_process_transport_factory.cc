@@ -704,6 +704,18 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
   return next_surface_client_id_++;
 }
 
+void GpuProcessTransportFactory::AddDisplayCompositorObserver(
+    cc::DisplayCompositorConnectionObserver* observer) {
+  BrowserGpuChannelHostFactory::instance()->AddDisplayCompositorObserver(
+      observer);
+}
+
+void GpuProcessTransportFactory::RemoveDisplayCompositorObserver(
+    cc::DisplayCompositorConnectionObserver* observer) {
+  BrowserGpuChannelHostFactory::instance()->RemoveDisplayCompositorObserver(
+      observer);
+}
+
 std::unique_ptr<cc::ServiceConnection>
 GpuProcessTransportFactory::CreateServiceCompositorConnection(
     gfx::AcceleratedWidget widget,

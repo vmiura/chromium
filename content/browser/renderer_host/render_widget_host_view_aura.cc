@@ -29,6 +29,7 @@
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/compositor_resize_lock_aura.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -469,6 +470,7 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(RenderWidgetHost* host,
       device_scale_factor_(0.0f),
       disable_input_event_router_for_testing_(false),
       weak_ptr_factory_(this) {
+  BrowserGpuChannelHostFactory::instance()->AddDisplayCompositorObserver(this);
   if (!is_guest_view_hack_)
     host_->SetView(this);
 
@@ -775,6 +777,25 @@ const cc::BeginFrameArgs& RenderWidgetHostViewAura::LastUsedBeginFrameArgs()
 
 void RenderWidgetHostViewAura::OnBeginFrameSourcePausedChanged(bool paused) {
   // Only used on Android WebView.
+}
+
+void RenderWidgetHostViewAura::OnSurfaceCreated(
+    const gfx::Size& frame_size,
+    const cc::SurfaceId& surface_id) {
+  // TODO(fsamuel): Deal with these potentially unsafe casts.
+  if ((surface_id.client_id() !=
+       static_cast<uint32_t>(host_->GetProcess()->GetID())) ||
+      (surface_id.sink_id() != static_cast<uint32_t>(host_->GetRoutingID()))) {
+    return;
+  }
+  // This is coming from the gpu process, flowing through the IO thread
+  // and passed on to the UI thread.
+  fprintf(stderr,
+          ">>>%s frame_size(%d, %d) surface_id: %s "
+          "process_id: %d routing_id: %d\n",
+          __PRETTY_FUNCTION__, frame_size.width(), frame_size.height(),
+          surface_id.ToString().c_str(), host_->GetProcess()->GetID(),
+          host_->GetRoutingID());
 }
 
 void RenderWidgetHostViewAura::SetKeyboardFocus() {
@@ -2364,6 +2385,9 @@ void RenderWidgetHostViewAura::OnHostMoved(const aura::WindowTreeHost* host,
 // RenderWidgetHostViewAura, private:
 
 RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
+  BrowserGpuChannelHostFactory::instance()->RemoveDisplayCompositorObserver(
+      this);
+
   // Ask the RWH to drop reference to us.
   if (!is_guest_view_hack_)
     host_->ViewDestroyed();

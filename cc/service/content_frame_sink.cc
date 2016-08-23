@@ -167,11 +167,12 @@ class ContentFrameSink::ClientImpl : public LayerTreeHostImplClient,
 };
 
 ContentFrameSink::ContentFrameSink(
+    uint32_t client_id,
+    int32_t sink_id,
     const gpu::SurfaceHandle& handle,
     cc::mojom::ContentFrameSinkRequest request,
     cc::mojom::ContentFrameSinkClientPtr client,
     const cc::LayerTreeSettings& settings,
-    int id,
     SharedBitmapManager* shared_bitmap_manager,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
@@ -185,10 +186,10 @@ ContentFrameSink::ContentFrameSink(
       surface_manager_(surface_manager),
       widget_(handle),
       // TODO(fsamuel): This is wrong. Client ID + Sink ID
-      surface_id_allocator_(id, 0 /* sink_id */),
+      surface_id_allocator_(client_id, sink_id),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
-                 id,
+                 client_id,
                  task_runner_.get(),
                  nullptr /* begin_frame_source */,
                  base::MakeUnique<CompositorTimingHistory>(
@@ -207,7 +208,7 @@ ContentFrameSink::ContentFrameSink(
                  task_graph_runner,
                  main_thread_animation_host_lol_->CreateImplInstance(
                      false /* supports_impl_scrolling */),
-                 id,
+                 client_id,
                  std::unique_ptr<ImageDecodeProxy>(
                      new ImageDecodeProxy(client.get()))),
       bulk_buffer_reader_(BulkBufferWriter::kDefaultBackingSize),
@@ -768,7 +769,7 @@ void ContentFrameSink::FinishCommit() {
         std::unique_ptr<UIResourceRequest> request;
         std::unique_ptr<UIResourceBitmap> bitmap;
         switch (mojom->type) {
-          case cc::mojom::UIResourceRequestType::CREATE:
+          case cc::mojom::UIResourceRequestType::CREATE_REQUEST:
             DCHECK(mojom->bitmap);
             bitmap = cc::UIResourceBitmap::CreateFromMojom(mojom->bitmap.get());
             request = base::WrapUnique(new UIResourceRequest(

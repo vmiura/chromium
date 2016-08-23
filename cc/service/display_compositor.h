@@ -49,6 +49,7 @@ class DisplayCompositor : public mojom::DisplayCompositor,
                                  uint32_t child_client_id) override;
   void CreateContentFrameSink(
       uint32_t client_id,
+      int32_t sink_id,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
@@ -63,7 +64,6 @@ class DisplayCompositor : public mojom::DisplayCompositor,
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
-  int next_service_id_ = 1;
   SingleThreadTaskGraphRunner task_graph_runner_;
   cc::SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;

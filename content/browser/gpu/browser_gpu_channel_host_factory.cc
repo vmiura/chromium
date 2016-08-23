@@ -49,6 +49,7 @@ void CreateDisplayCompositorHostOnIOThread(
         display_compositor_connection_factory,
     cc::mojom::DisplayCompositorHostRequest request,
     cc::mojom::DisplayCompositorHostPrivateRequest private_request) {
+  // Giving the browser process a process ID of 0.
   cc::DisplayCompositorHost::CreatePrivate(
       0 /* process_id */, display_compositor_connection_factory,
       std::move(request), std::move(private_request));
@@ -288,9 +289,11 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
 
 scoped_refptr<cc::DisplayCompositorConnectionFactory>
 BrowserGpuChannelHostFactory::GetDisplayCompositorConnectionFactory() {
-  if (!display_compositor_connection_factory_)
+  if (!display_compositor_connection_factory_) {
     display_compositor_connection_factory_ =
         new DisplayCompositorConnectionFactoryImpl;
+    display_compositor_connection_factory_->AddObserver(this);
+  }
   return display_compositor_connection_factory_;
 }
 
@@ -379,9 +382,23 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
   display_compositor_host_private_->CreateContentFrameSinkWithHandle(
-      surface_handle, settings.ToMojom(),
+      next_sink_id_++, surface_handle, settings.ToMojom(),
       mojo::GetProxy(&connection->content_frame_sink), std::move(client));
   return connection;
+}
+
+void BrowserGpuChannelHostFactory::AddDisplayCompositorObserver(
+    cc::DisplayCompositorConnectionObserver* observer) {
+  static_cast<DisplayCompositorConnectionFactoryImpl*>(
+      GetDisplayCompositorConnectionFactory().get())
+      ->AddObserver(observer);
+}
+
+void BrowserGpuChannelHostFactory::RemoveDisplayCompositorObserver(
+    cc::DisplayCompositorConnectionObserver* observer) {
+  static_cast<DisplayCompositorConnectionFactoryImpl*>(
+      GetDisplayCompositorConnectionFactory().get())
+      ->RemoveObserver(observer);
 }
 
 void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
@@ -419,6 +436,10 @@ void BrowserGpuChannelHostFactory::UnregisterSurfaceClientHierarchy(
   display_compositor_host_private_->UnregisterClientHierarchy(parent_client_id,
                                                               child_client_id);
 }
+
+void BrowserGpuChannelHostFactory::OnSurfaceCreated(
+    const gfx::Size& frame_size,
+    const cc::SurfaceId& surface_id) {}
 
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
   if (display_compositor_host_)

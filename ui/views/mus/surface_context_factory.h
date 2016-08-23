@@ -48,6 +48,10 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   uint32_t AllocateSurfaceClientId() override;
+  void AddDisplayCompositorObserver(
+      cc::DisplayCompositorConnectionObserver* observer) override {}
+  void RemoveDisplayCompositorObserver(
+      cc::DisplayCompositorConnectionObserver* observer) override {}
   std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;

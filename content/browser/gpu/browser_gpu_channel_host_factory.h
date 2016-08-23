@@ -15,15 +15,16 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "cc/host/display_compositor_connection.h"
 #include "cc/host/display_compositor_host.h"
 #include "cc/ipc/compositor.mojom.h"
+#include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/message_filter.h"
 
 namespace cc {
-class DisplayCompositorHostProxy;
 class LayerTreeSettings;
 struct ServiceConnection;
 }
@@ -32,7 +33,8 @@ namespace content {
 class BrowserGpuMemoryBufferManager;
 
 class CONTENT_EXPORT BrowserGpuChannelHostFactory
-    : public gpu::GpuChannelHostFactory {
+    : public gpu::GpuChannelHostFactory,
+      public cc::DisplayCompositorConnectionObserver {
  public:
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
@@ -61,6 +63,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings);
 
+  void AddDisplayCompositorObserver(
+      cc::DisplayCompositorConnectionObserver* observer);
+  void RemoveDisplayCompositorObserver(
+      cc::DisplayCompositorConnectionObserver* observer);
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
   void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
@@ -77,6 +83,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
 
   BrowserGpuChannelHostFactory();
   ~BrowserGpuChannelHostFactory() override;
+
+  // cc::DisplayCompositorConnectionObserver implementation.
+  void OnSurfaceCreated(const gfx::Size& frame_size,
+                        const cc::SurfaceId& surface_id) override;
 
   void ConnectToDisplayCompositorHostIfNecessary();
   void GpuChannelEstablished();
@@ -95,7 +105,8 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
 
-  scoped_refptr<cc::DisplayCompositorConnectionFactory>
+  int32_t next_sink_id_ = 1;
+  scoped_refptr<DisplayCompositorConnectionFactoryImpl>
       display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;
   cc::mojom::DisplayCompositorHostPrivatePtr display_compositor_host_private_;

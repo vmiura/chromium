@@ -44,16 +44,16 @@ void DisplayCompositor::UnregisterClientHierarchy(uint32_t parent_client_id,
 
 void DisplayCompositor::CreateContentFrameSink(
     uint32_t client_id,
+    int32_t sink_id,
     const gpu::SurfaceHandle& handle,
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   LayerTreeSettings layer_tree_settings(settings.get());
   new ContentFrameSink(
-      handle, std::move(content_frame_sink),
+      client_id, sink_id, handle, std::move(content_frame_sink),
       std::move(content_frame_sink_client), layer_tree_settings,
-      next_service_id_++, factory_->shared_bitmap_manager(),
-      factory_->gpu_memory_buffer_manager(),
+      factory_->shared_bitmap_manager(), factory_->gpu_memory_buffer_manager(),
       // This image factory is going to the wrong thread, but the
       // ServiceContextProvider will only use it on the main thread
       // thanks to our custom InProcessCommandBuffer::Service.

@@ -93,6 +93,7 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       compositor_lock_(NULL),
       layer_animator_collection_(this),
       weak_ptr_factory_(this) {
+  context_factory_->AddDisplayCompositorObserver(this);
   // TODO(hackathon): We don't use a SurfaceManager in the browser.
   // if (context_factory->GetSurfaceManager()) {
   //  context_factory->GetSurfaceManager()->RegisterSurfaceClientId(
@@ -225,6 +226,7 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
 Compositor::~Compositor() {
   TRACE_EVENT0("shutdown", "Compositor::destructor");
 
+  context_factory_->RemoveDisplayCompositorObserver(this);
   CancelCompositorLock();
   DCHECK(!compositor_lock_);
 
@@ -551,6 +553,15 @@ void Compositor::DidAbortSwapBuffers() {
   FOR_EACH_OBSERVER(CompositorObserver,
                     observer_list_,
                     OnCompositingAborted(this));
+}
+
+void Compositor::OnSurfaceCreated(const gfx::Size& frame_size,
+                                  const cc::SurfaceId& surface_id) {
+  if ((surface_id.client_id() != 0))
+    return;
+  fprintf(stderr, ">>>%s frame_size(%d, %d) surface_id: %s ",
+          __PRETTY_FUNCTION__, frame_size.width(), frame_size.height(),
+          surface_id.ToString().c_str());
 }
 
 void Compositor::SetOutputIsSecure(bool output_is_secure) {

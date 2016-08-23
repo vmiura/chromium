@@ -44,7 +44,7 @@ void UIResourceRequest::WriteMojom(
   mojom->uid = id_;
   switch (type_) {
     case UIResourceRequestType::UI_RESOURCE_CREATE:
-      mojom->type = cc::mojom::UIResourceRequestType::CREATE;
+      mojom->type = cc::mojom::UIResourceRequestType::CREATE_REQUEST;
       break;
     case UIResourceRequestType::UI_RESOURCE_DELETE:
       mojom->type = cc::mojom::UIResourceRequestType::DELETE;

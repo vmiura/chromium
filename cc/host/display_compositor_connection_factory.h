@@ -14,7 +14,7 @@ class DisplayCompositorConnection;
 class DisplayCompositorConnectionFactory
     : public base::RefCountedThreadSafe<DisplayCompositorConnectionFactory> {
  public:
-  // Perhaps this should be a const ref instead to be idempotent.
+  // Perhaps this should be a const ref instead?
   virtual DisplayCompositorConnection* GetDisplayCompositorConnection() = 0;
 
  protected:

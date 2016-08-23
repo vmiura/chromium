@@ -59,7 +59,7 @@ void DelegatingOutputSurface::SwapBuffers(CompositorFrame frame) {
     committed_surface_id_ = SurfaceId();
   }
 
-  LOG(ERROR) << "Swapping SurfaceId " << swapped_surface_id_.ToString();
+  // LOG(ERROR) << "Swapping SurfaceId " << swapped_surface_id_.ToString();
   if (display_) {
     display_->SetSurfaceId(swapped_surface_id_,
                            frame.metadata.device_scale_factor);

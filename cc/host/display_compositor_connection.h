@@ -10,6 +10,13 @@
 
 namespace cc {
 
+class DisplayCompositorConnectionObserver {
+ public:
+  virtual ~DisplayCompositorConnectionObserver() {}
+  virtual void OnSurfaceCreated(const gfx::Size& frame_size,
+                                const cc::SurfaceId& surface_id) {}
+};
+
 // This class encapsulates a single two way connection to the display
 // compositor. There is a DisplayCompositorHost object for each
 // display compositor host <=> client connection.  However, all
@@ -23,6 +30,9 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
 
   ~DisplayCompositorConnection() override;
 
+  void AddObserver(DisplayCompositorConnectionObserver* observer);
+  void RemoveObserver(DisplayCompositorConnectionObserver* observer);
+
   void AddRefOnSurfaceId(const SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
   void RegisterClientHierarchy(uint32_t parent_client_id,
@@ -31,6 +41,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
                                  uint32_t child_client_id);
   void CreateContentFrameSink(
       uint32_t client_id,
+      int32_t sink_id,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
@@ -41,6 +52,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
                         const cc::SurfaceId& surface_id) override;
 
  private:
+  base::ObserverList<DisplayCompositorConnectionObserver> observers_;
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorConnection);

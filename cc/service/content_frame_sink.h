@@ -38,11 +38,12 @@ class UIResourceRequest;
 
 class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
  public:
-  ContentFrameSink(const gpu::SurfaceHandle& handle,
+  ContentFrameSink(uint32_t client_id,
+                   int32_t sink_id,
+                   const gpu::SurfaceHandle& handle,
                    cc::mojom::ContentFrameSinkRequest request,
                    cc::mojom::ContentFrameSinkClientPtr client,
                    const cc::LayerTreeSettings& settings,
-                   int id,
                    SharedBitmapManager* shared_bitmap_manager,
                    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
                    gpu::ImageFactory* image_factory,
