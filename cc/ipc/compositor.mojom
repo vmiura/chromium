@@ -75,9 +75,6 @@ interface DisplayCompositorHostPrivate {
 
 // A ContentFrameSink corresponds to a LTH=>LTHI interface.
 interface ContentFrameSink {
-  // TODO(fsamuel): These seem like things that only the display compositor host
-  // should be allowed to do. These should probably not live here.
-  SatisfySequence(SurfaceSequence sequence);
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);
   SetVisible(bool visible);

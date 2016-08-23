@@ -355,12 +355,6 @@ DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
-void ContentFrameSink::SatisfySequence(const SurfaceSequence& sequence) {
-  std::vector<uint32_t> sequences;
-  sequences.push_back(sequence.sequence);
-  surface_manager_->DidSatisfySequences(sequence.client_id, &sequences);
-}
-
 void ContentFrameSink::SetNeedsBeginMainFrame() {
   TRACE_EVENT0("cc", "ContentFrameSink::SetNeedsBeginFrame");
   client_->SetNeedsCommitOnImplThread();
