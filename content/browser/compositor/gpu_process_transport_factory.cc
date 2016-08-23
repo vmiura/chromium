@@ -661,6 +661,20 @@ void GpuProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
 #endif
 }
 
+void GpuProcessTransportFactory::RegisterSurfaceClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  BrowserGpuChannelHostFactory::instance()->RegisterSurfaceClientHierarchy(
+      parent_client_id, child_client_id);
+}
+
+void GpuProcessTransportFactory::UnregisterSurfaceClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  BrowserGpuChannelHostFactory::instance()->UnregisterSurfaceClientHierarchy(
+      parent_client_id, child_client_id);
+}
+
 bool GpuProcessTransportFactory::DoesCreateTestContexts() { return false; }
 
 uint32_t GpuProcessTransportFactory::GetImageTextureTarget(

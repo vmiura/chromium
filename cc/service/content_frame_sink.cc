@@ -355,18 +355,6 @@ DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
-void ContentFrameSink::RegisterChild(uint32_t client_id) {
-  fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
-  surface_manager_->RegisterSurfaceNamespaceHierarchy(
-      surface_id_allocator_.client_id(), client_id);
-}
-
-void ContentFrameSink::UnregisterChild(uint32_t client_id) {
-  fprintf(stderr, ">>>%s client_id: %d\n", __PRETTY_FUNCTION__, client_id);
-  surface_manager_->UnregisterSurfaceNamespaceHierarchy(
-      surface_id_allocator_.client_id(), client_id);
-}
-
 void ContentFrameSink::SatisfySequence(const SurfaceSequence& sequence) {
   std::vector<uint32_t> sequences;
   sequences.push_back(sequence.sequence);

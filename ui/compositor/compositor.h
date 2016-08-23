@@ -113,6 +113,14 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Destroys per-compositor data.
   virtual void RemoveCompositor(Compositor* compositor) = 0;
 
+  // Register a surface client hierarchy.
+  virtual void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
+                                              uint32_t child_client_id) = 0;
+
+  // Unregister a surface client hierarchy.
+  virtual void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
+                                                uint32_t child_client_id) = 0;
+
   // When true, the factory uses test contexts that do not do real GL
   // operations.
   virtual bool DoesCreateTestContexts() = 0;
@@ -355,6 +363,7 @@ class COMPOSITOR_EXPORT Compositor
   void DidCommitAndDrawFrame() override;
   void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override {}
+  void DidSetSurfaceClientId(uint32_t client_id) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidPostSwapBuffers() override;
@@ -387,6 +396,8 @@ class COMPOSITOR_EXPORT Compositor
   void CancelCompositorLock();
 
   gfx::Size size_;
+
+  uint32_t surface_client_id_ = 0;
 
   ui::ContextFactory* context_factory_;
 

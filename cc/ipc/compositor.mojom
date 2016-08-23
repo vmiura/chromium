@@ -32,6 +32,10 @@ interface DisplayCompositor {
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
+  RegisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+
+  UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+
   CreateContentFrameSink(uint32 client_id,
                          gpu.mojom.SurfaceHandle widget,
                          cc.mojom.LayerTreeSettings settings,
@@ -58,6 +62,10 @@ interface DisplayCompositorHostPrivate {
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
+  RegisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+
+  UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+
   CreateContentFrameSinkWithHandle(
       gpu.mojom.SurfaceHandle widget,
       cc.mojom.LayerTreeSettings settings,
@@ -69,8 +77,6 @@ interface DisplayCompositorHostPrivate {
 interface ContentFrameSink {
   // TODO(fsamuel): These seem like things that only the display compositor host
   // should be allowed to do. These should probably not live here.
-  RegisterChild(uint32 client_id);
-  UnregisterChild(uint32 client_id);
   SatisfySequence(SurfaceSequence sequence);
   SetNeedsBeginMainFrame();
   SetNeedsRedraw(gfx.mojom.Rect damage_rect);

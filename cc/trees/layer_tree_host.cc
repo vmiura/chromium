@@ -1348,14 +1348,6 @@ void LayerTreeHost::DidGetNewSurface(SurfaceId surface_id) {
   client_->DidGetNewSurface(surface_id);
 }
 
-void LayerTreeHost::RegisterChildCompositor(uint32_t client_id) {
-  proxy_->RegisterChildCompositor(client_id);
-}
-
-void LayerTreeHost::UnregisterChildCompositor(uint32_t client_id) {
-  proxy_->UnregisterChildCompositor(client_id);
-}
-
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {
   return SurfaceSequence(surface_client_id_, next_surface_sequence_++);
 }

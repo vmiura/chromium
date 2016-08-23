@@ -260,7 +260,8 @@ Compositor::~Compositor() {
 }
 
 void Compositor::AddSurfaceClient(uint32_t client_id) {
-  host_->RegisterChildCompositor(client_id);
+  context_factory_->RegisterSurfaceClientHierarchy(surface_client_id_,
+                                                   client_id);
 #if 0
   // We don't give the client a parent until the ui::Compositor has an
   // OutputSurface.
@@ -275,7 +276,8 @@ void Compositor::AddSurfaceClient(uint32_t client_id) {
 }
 
 void Compositor::RemoveSurfaceClient(uint32_t client_id) {
-  host_->UnregisterChildCompositor(client_id);
+  context_factory_->UnregisterSurfaceClientHierarchy(surface_client_id_,
+                                                     client_id);
 #if 0
   auto it = surface_clients_.find(client_id);
   DCHECK(it != surface_clients_.end());
@@ -532,6 +534,11 @@ void Compositor::DidCommitAndDrawFrame() {
 void Compositor::DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) {
   FOR_EACH_OBSERVER(CompositorObserver, observer_list_,
                     OnCompositingEnded(this));
+}
+
+void Compositor::DidSetSurfaceClientId(uint32_t client_id) {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+  surface_client_id_ = client_id;
 }
 
 void Compositor::DidPostSwapBuffers() {

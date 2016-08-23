@@ -30,6 +30,18 @@ void DisplayCompositor::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
   surface_manager_.MoveTempRefToRefOnSurfaceId(id);
 }
 
+void DisplayCompositor::RegisterClientHierarchy(uint32_t parent_client_id,
+                                                uint32_t child_client_id) {
+  surface_manager_.RegisterSurfaceNamespaceHierarchy(parent_client_id,
+                                                     child_client_id);
+}
+
+void DisplayCompositor::UnregisterClientHierarchy(uint32_t parent_client_id,
+                                                  uint32_t child_client_id) {
+  surface_manager_.UnregisterSurfaceNamespaceHierarchy(parent_client_id,
+                                                       child_client_id);
+}
+
 void DisplayCompositor::CreateContentFrameSink(
     uint32_t client_id,
     const gpu::SurfaceHandle& handle,

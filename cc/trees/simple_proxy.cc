@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyrigh2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,16 +82,6 @@ void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connec
     needs_set_visible_when_ready_ = false;
     SetVisible(needs_set_visible_value_when_ready_);
   }
-}
-
-void SimpleProxy::RegisterChildCompositor(uint32_t client_id) {
-  TRACE_EVENT0("cc", "SimpleProxy::RegisterChildCompositor");
-  compositor_->RegisterChild(client_id);
-}
-
-void SimpleProxy::UnregisterChildCompositor(uint32_t client_id) {
-  TRACE_EVENT0("cc", "SimpleProxy::UnregisterChildCompositor");
-  compositor_->UnregisterChild(client_id);
 }
 
 void SimpleProxy::FinishAllRendering() {

@@ -23,6 +23,20 @@ void DisplayCompositorConnection::MoveTempRefToRefOnSurfaceId(
   display_compositor_->MoveTempRefToRefOnSurfaceId(id);
 }
 
+void DisplayCompositorConnection::RegisterClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  display_compositor_->RegisterClientHierarchy(parent_client_id,
+                                               child_client_id);
+}
+
+void DisplayCompositorConnection::UnregisterClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  display_compositor_->UnregisterClientHierarchy(parent_client_id,
+                                                 child_client_id);
+}
+
 void DisplayCompositorConnection::CreateContentFrameSink(
     uint32_t client_id,
     const gpu::SurfaceHandle& handle,

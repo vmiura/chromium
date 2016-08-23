@@ -402,6 +402,24 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
     display_compositor_host_private_->MoveTempRefToRefOnSurfaceId(id);
 }
 
+void BrowserGpuChannelHostFactory::RegisterSurfaceClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  if (!display_compositor_host_private_)
+    return;
+  display_compositor_host_private_->RegisterClientHierarchy(parent_client_id,
+                                                            child_client_id);
+}
+
+void BrowserGpuChannelHostFactory::UnregisterSurfaceClientHierarchy(
+    uint32_t parent_client_id,
+    uint32_t child_client_id) {
+  if (!display_compositor_host_private_)
+    return;
+  display_compositor_host_private_->UnregisterClientHierarchy(parent_client_id,
+                                                              child_client_id);
+}
+
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
   if (display_compositor_host_)
     return;

@@ -365,8 +365,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetSurfaceClientId(uint32_t client_id);
   void DidGetNewSurface(SurfaceId surface_id);
-  void RegisterChildCompositor(uint32_t client_id);
-  void UnregisterChildCompositor(uint32_t client_id);
   SurfaceSequence CreateSurfaceSequence();
 
   PropertyTrees* property_trees() { return &property_trees_; }

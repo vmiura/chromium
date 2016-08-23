@@ -63,8 +63,6 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
   void ScheduledActionCommit();
 
   // cc::mojom::ContentFrameSink implementation.
-  void RegisterChild(uint32_t client_id) override;
-  void UnregisterChild(uint32_t client_id) override;
   void SatisfySequence(const SurfaceSequence& sequence) override;
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;

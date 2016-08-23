@@ -63,6 +63,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
 
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
+  void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
+                                      uint32_t child_client_id);
+  void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
+                                        uint32_t child_client_id);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();

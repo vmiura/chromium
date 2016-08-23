@@ -25,6 +25,10 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
 
   void AddRefOnSurfaceId(const SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
+  void RegisterClientHierarchy(uint32_t parent_client_id,
+                               uint32_t child_client_id);
+  void UnregisterClientHierarchy(uint32_t parent_client_id,
+                                 uint32_t child_client_id);
   void CreateContentFrameSink(
       uint32_t client_id,
       const gpu::SurfaceHandle& handle,
