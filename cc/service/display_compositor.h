@@ -30,8 +30,7 @@ class LayerTreeSettings;
 class DisplayCompositorFactory;
 class SharedBitmapManager;
 
-class DisplayCompositor : public mojom::SurfaceManager,
-                          public mojom::DisplayCompositor,
+class DisplayCompositor : public mojom::DisplayCompositor,
                           public SurfaceManager::Delegate {
  public:
   // TODO(fsamuel): Merge DisplayCompositorFactory and DisplayCompositor.
@@ -42,18 +41,14 @@ class DisplayCompositor : public mojom::SurfaceManager,
   ~DisplayCompositor() override;
 
   // mojom::DisplayCompositor implementation.
-  void RequestSurfaceManager(
-      mojom::SurfaceManagerRequest surface_manager) override;
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
   void CreateContentFrameSink(
       uint32_t client_id,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
-
-  // mojom::SurfaceManager implementation.
-  void AddRefOnSurfaceId(const SurfaceId& id) override;
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
 
   // SurfaceManager::Delegate implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
@@ -68,7 +63,6 @@ class DisplayCompositor : public mojom::SurfaceManager,
   SingleThreadTaskGraphRunner task_graph_runner_;
   cc::SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;
-  mojo::BindingSet<mojom::SurfaceManager> surface_manager_bindings_;
   mojo::Binding<mojom::DisplayCompositor> display_compositor_binding_;
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositor);
 };

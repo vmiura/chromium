@@ -28,7 +28,9 @@ interface DisplayCompositorClient {
 
 // Browser or Window Server ("display compositor host") to GPU
 interface DisplayCompositor {
-  RequestSurfaceManager(SurfaceManager& surface_manager);
+  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
+
+  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
   CreateContentFrameSink(uint32 client_id,
                          gpu.mojom.SurfaceHandle widget,
@@ -37,31 +39,30 @@ interface DisplayCompositor {
                          ContentFrameSinkClient content_frame_sink_client);
 };
 
-// Unprivileged DisplayCompositor API for clients implemented by the browser or
-// window server.
+// Unprivileged DisplayCompositor API for clients implemented by the browser (on
+// the IO thread) or window server.
 interface DisplayCompositorHost {
-  RequestSurfaceManager(SurfaceManager& surface_manager);
-
   CreateContentFrameSink(int32 routing_id,
                          cc.mojom.LayerTreeSettings settings,
                          ContentFrameSink& content_frame_sink,
                          ContentFrameSinkClient content_frame_sink_client);
 };
 
+// This is a privileged API is used by the browser ONLY to allow creating
+// onscreen ContentFrameSinks, and to add / convert refs on surface IDs. These
+// private APIs ought not be necessary for Chrome in Mus+Ash. In Mus+Ash, Chrome
+// delegates window creation to the Mus window server which has access to the
+// privileged display compositor API.
 interface DisplayCompositorHostPrivate {
+  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
+
+  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
+
   CreateContentFrameSinkWithHandle(
       gpu.mojom.SurfaceHandle widget,
       cc.mojom.LayerTreeSettings settings,
       ContentFrameSink & content_frame_sink,
       ContentFrameSinkClient content_frame_sink_client);
-};
-
-// Unprivileged SurfaceManager API
-// TODO(fsamuel): This is currently only used in BrowserGpuChannelHostFactory.
-// Consider if we can merge this into DisplayCompositor?
-interface SurfaceManager {
-  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
-  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 };
 
 // A ContentFrameSink corresponds to a LTH=>LTHI interface.

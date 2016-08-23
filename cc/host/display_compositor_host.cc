@@ -29,10 +29,14 @@ void DisplayCompositorHost::CreatePrivate(
 
 DisplayCompositorHost::~DisplayCompositorHost() = default;
 
-void DisplayCompositorHost::RequestSurfaceManager(
-    mojom::SurfaceManagerRequest surface_manager) {
+void DisplayCompositorHost::AddRefOnSurfaceId(const SurfaceId& id) {
   ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->RequestSurfaceManager(std::move(surface_manager));
+  display_compositor_->AddRefOnSurfaceId(id);
+}
+
+void DisplayCompositorHost::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  ConnectToDisplayCompositorIfNecessary();
+  display_compositor_->MoveTempRefToRefOnSurfaceId(id);
 }
 
 void DisplayCompositorHost::CreateContentFrameSink(

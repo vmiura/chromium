@@ -91,7 +91,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
 
-  cc::mojom::SurfaceManagerPtr surface_manager_;
   scoped_refptr<cc::DisplayCompositorConnectionFactory>
       display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;

@@ -33,15 +33,17 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   int32_t process_id() const { return process_id_; }
 
   // DisplayCompositorHost implementation.
-  void RequestSurfaceManager(
-      mojom::SurfaceManagerRequest surface_manager) override;
-
   void CreateContentFrameSink(
       int32_t routing_id,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
+  // DisplayCompositorHostPrivate implementation.
+  // TODO(fsamuel): Need to set manifest indicating that only the browser
+  // can access the private interface.
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
   void CreateContentFrameSinkWithHandle(
       const gpu::SurfaceHandle& surface_handle,
       mojom::LayerTreeSettingsPtr settings,

@@ -23,7 +23,8 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
 
   ~DisplayCompositorConnection() override;
 
-  void RequestSurfaceManager(mojom::SurfaceManagerRequest surface_manager);
+  void AddRefOnSurfaceId(const SurfaceId& id);
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
   void CreateContentFrameSink(
       uint32_t client_id,
       const gpu::SurfaceHandle& handle,

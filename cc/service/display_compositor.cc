@@ -22,9 +22,12 @@ DisplayCompositor::DisplayCompositor(DisplayCompositorFactory* factory,
 
 DisplayCompositor::~DisplayCompositor() = default;
 
-void DisplayCompositor::RequestSurfaceManager(
-    mojom::SurfaceManagerRequest compositor_channel) {
-  surface_manager_bindings_.AddBinding(this, std::move(compositor_channel));
+void DisplayCompositor::AddRefOnSurfaceId(const SurfaceId& id) {
+  surface_manager_.AddRefOnSurfaceId(id);
+}
+
+void DisplayCompositor::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
+  surface_manager_.MoveTempRefToRefOnSurfaceId(id);
 }
 
 void DisplayCompositor::CreateContentFrameSink(
@@ -43,14 +46,6 @@ void DisplayCompositor::CreateContentFrameSink(
       // ServiceContextProvider will only use it on the main thread
       // thanks to our custom InProcessCommandBuffer::Service.
       factory_->image_factory(), &surface_manager_, &task_graph_runner_);
-}
-
-void DisplayCompositor::AddRefOnSurfaceId(const SurfaceId& id) {
-  surface_manager_.AddRefOnSurfaceId(id);
-}
-
-void DisplayCompositor::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  surface_manager_.MoveTempRefToRefOnSurfaceId(id);
 }
 
 void DisplayCompositor::OnSurfaceCreated(const gfx::Size& size,

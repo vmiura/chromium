@@ -14,9 +14,13 @@ DisplayCompositorConnection::DisplayCompositorConnection(
 
 DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
-void DisplayCompositorConnection::RequestSurfaceManager(
-    mojom::SurfaceManagerRequest surface_manager) {
-  display_compositor_->RequestSurfaceManager(std::move(surface_manager));
+void DisplayCompositorConnection::AddRefOnSurfaceId(const SurfaceId& id) {
+  display_compositor_->AddRefOnSurfaceId(id);
+}
+
+void DisplayCompositorConnection::MoveTempRefToRefOnSurfaceId(
+    const SurfaceId& id) {
+  display_compositor_->MoveTempRefToRefOnSurfaceId(id);
 }
 
 void DisplayCompositorConnection::CreateContentFrameSink(
