@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_SERVICE_CONNECTION_H_
-#define CC_TREES_SERVICE_CONNECTION_H_
+#ifndef CC_CLIENT_CONTENT_FRAME_SINK_CONNECTION_H_
+#define CC_CLIENT_CONTENT_FRAME_SINK_CONNECTION_H_
 
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/base/bulk_buffer_queue.h"
@@ -11,12 +11,11 @@
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 
-
 namespace cc {
 
-struct CC_EXPORT ServiceConnection {
-  ServiceConnection();
-  ~ServiceConnection();
+struct ContentFrameSinkConnection {
+  ContentFrameSinkConnection();
+  ~ContentFrameSinkConnection();
 
   BulkBufferWriter::AllocatorCallback shm_allocator;
   mojo::InterfacePtr<cc::mojom::ContentFrameSink> content_frame_sink;
@@ -25,4 +24,4 @@ struct CC_EXPORT ServiceConnection {
 
 }  // namespace cc
 
-#endif  // CC_TREES_SERVICE_CONNECTION_H_
+#endif  // CC_CLIENT_CONTENT_FRAME_SINK_CONNECTION_H_

@@ -23,9 +23,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_synthetic_delay.h"
 #include "build/build_config.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/output/copy_output_request.h"
 #include "cc/output/output_surface.h"
-#include "cc/trees/service_connection.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "components/scheduler/renderer/render_widget_scheduling_state.h"
 #include "components/scheduler/renderer/renderer_scheduler.h"
@@ -728,12 +728,11 @@ RenderWidget::CreateExternalBeginFrameSource() {
   return compositor_deps_->CreateExternalBeginFrameSource(routing_id_);
 }
 
-std::unique_ptr<cc::ServiceConnection>
-RenderWidget::CreateServiceCompositorConnection(
+std::unique_ptr<cc::ContentFrameSinkConnection>
+RenderWidget::CreateContentFrameSinkConnection(
     const cc::LayerTreeSettings& settings) {
   RenderThreadImpl* render_thread = RenderThreadImpl::current();
-  return render_thread->CreateServiceCompositorConnection(routing_id_,
-                                                          settings);
+  return render_thread->CreateContentFrameSinkConnection(routing_id_, settings);
 }
 
 void RenderWidget::DidCommitAndDrawCompositorFrame() {

@@ -29,8 +29,8 @@ class CompositorProxy;
 class LayerTreeDebugState;
 class LayerTreeMutator;
 class OutputSurface;
+struct ContentFrameSinkConnection;
 struct RendererCapabilities;
-struct ServiceConnection;
 
 // Abstract interface responsible for proxying commands from the main-thread
 // side of the compositor over to the compositor implementation.
@@ -38,8 +38,8 @@ class CC_EXPORT Proxy {
  public:
   virtual ~Proxy() {}
 
-  virtual void InitializeCompositor(
-      std::unique_ptr<ServiceConnection> connection) = 0;
+  virtual void InitializeContentFrameSinkConnection(
+      std::unique_ptr<ContentFrameSinkConnection> connection) = 0;
 
   virtual void FinishAllRendering() = 0;
 

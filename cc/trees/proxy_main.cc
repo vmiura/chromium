@@ -256,8 +256,8 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->DidBeginMainFrame();
 }
 
-void ProxyMain::InitializeCompositor(
-    std::unique_ptr<ServiceConnection> connection) {}
+void ProxyMain::InitializeContentFrameSinkConnection(
+    std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void ProxyMain::FinishAllRendering() {
   DCHECK(IsMainThread());

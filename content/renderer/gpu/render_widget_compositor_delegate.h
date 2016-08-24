@@ -17,7 +17,7 @@ class LayerTreeSettings;
 class OutputSurface;
 class SurfaceId;
 class SwapPromise;
-struct ServiceConnection;
+struct ContentFrameSinkConnection;
 }
 
 namespace content {
@@ -47,8 +47,8 @@ class CONTENT_EXPORT RenderWidgetCompositorDelegate {
   CreateExternalBeginFrameSource() = 0;
 
   // Requests a new compositor service connection.
-  virtual std::unique_ptr<cc::ServiceConnection>
-  CreateServiceCompositorConnection(const cc::LayerTreeSettings& settings) = 0;
+  virtual std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(const cc::LayerTreeSettings& settings) = 0;
 
   // Notifies that the draw commands for a committed frame have been issued.
   virtual void DidCommitAndDrawCompositorFrame() = 0;

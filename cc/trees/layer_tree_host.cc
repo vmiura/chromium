@@ -32,6 +32,7 @@
 #include "cc/blimp/image_serialization_processor.h"
 #include "cc/blimp/picture_data.h"
 #include "cc/blimp/picture_data_conversions.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/debug/devtools_instrumentation.h"
 #include "cc/debug/frame_viewer_instrumentation.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
@@ -50,7 +51,6 @@
 #include "cc/proto/layer_tree_host.pb.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/scheduler/begin_frame_source.h"
-#include "cc/trees/service_connection.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
@@ -430,9 +430,9 @@ void LayerTreeHost::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
   released_surfaces_.push_back(surface_id);
 }
 
-void LayerTreeHost::InitializeServiceConnection(
-    std::unique_ptr<ServiceConnection> connection) {
-  proxy_->InitializeCompositor(std::move(connection));
+void LayerTreeHost::InitializeContentFrameSinkConnection(
+    std::unique_ptr<ContentFrameSinkConnection> connection) {
+  proxy_->InitializeContentFrameSinkConnection(std::move(connection));
 }
 
 void LayerTreeHost::BindImageDecodePtr(

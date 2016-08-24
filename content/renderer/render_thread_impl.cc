@@ -40,11 +40,11 @@
 #include "cc/base/switches.h"
 #include "cc/blink/web_external_bitmap_impl.h"
 #include "cc/blink/web_layer_impl.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/output/copy_output_request.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/vulkan_in_process_context_provider.h"
 #include "cc/raster/task_graph_runner.h"
-#include "cc/trees/service_connection.h"
 #include "cc/trees/layer_tree_host_common.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/memory_coordinator/child/child_memory_coordinator_impl.h"
@@ -1316,15 +1316,15 @@ void RenderThreadImpl::NotifyTimezoneChange() {
       base::Bind(&NotifyTimezoneChangeOnThisThread));
 }
 
-std::unique_ptr<cc::ServiceConnection>
-RenderThreadImpl::CreateServiceCompositorConnection(
+std::unique_ptr<cc::ContentFrameSinkConnection>
+RenderThreadImpl::CreateContentFrameSinkConnection(
     int32_t routing_id,
     const cc::LayerTreeSettings& settings) {
   fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
   if (!display_compositor_host_)
     GetRemoteInterfaces()->GetInterface(&display_compositor_host_);
   DCHECK(display_compositor_host_);
-  auto connection = base::MakeUnique<cc::ServiceConnection>();
+  auto connection = base::MakeUnique<cc::ContentFrameSinkConnection>();
   connection->shm_allocator = base::Bind(
       &RenderThreadImpl::AllocateSharedMemory, base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;

@@ -70,7 +70,8 @@ class GpuProcessTransportFactory
       cc::DisplayCompositorConnectionObserver* observer) override;
   void RemoveDisplayCompositorObserver(
       cc::DisplayCompositorConnectionObserver* observer) override;
-  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+  std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;
   void ResizeDisplay(ui::Compositor* compositor,

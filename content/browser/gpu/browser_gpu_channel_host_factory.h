@@ -26,7 +26,7 @@
 
 namespace cc {
 class LayerTreeSettings;
-struct ServiceConnection;
+struct ContentFrameSinkConnection;
 }
 
 namespace content {
@@ -59,9 +59,9 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   gpu::GpuChannelHost* GetGpuChannel();
   int GetGpuChannelId() { return gpu_client_id_; }
 
-  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      gfx::AcceleratedWidget widget,
-      const cc::LayerTreeSettings& settings);
+  std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(gfx::AcceleratedWidget widget,
+                                   const cc::LayerTreeSettings& settings);
 
   void AddDisplayCompositorObserver(
       cc::DisplayCompositorConnectionObserver* observer);

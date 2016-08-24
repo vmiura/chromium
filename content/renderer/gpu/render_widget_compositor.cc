@@ -26,6 +26,7 @@
 #include "cc/animation/layer_tree_mutator.h"
 #include "cc/base/switches.h"
 #include "cc/blink/web_layer_impl.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/debug/micro_benchmark.h"
 #include "cc/input/layer_selection_bound.h"
@@ -38,7 +39,6 @@
 #include "cc/proto/compositor_message.pb.h"
 #include "cc/resources/single_release_callback.h"
 #include "cc/scheduler/begin_frame_source.h"
-#include "cc/trees/service_connection.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/remote_proto_channel.h"
@@ -255,12 +255,12 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
   } else if (!threaded_) {
     // Single-threaded layout tests.
     layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
-    layer_tree_host_->InitializeServiceConnection(
-        delegate_->CreateServiceCompositorConnection(settings));
+    layer_tree_host_->InitializeContentFrameSinkConnection(
+        delegate_->CreateContentFrameSinkConnection(settings));
   } else {
     layer_tree_host_ = cc::LayerTreeHost::CreateMojo(&params);
-    layer_tree_host_->InitializeServiceConnection(
-        delegate_->CreateServiceCompositorConnection(settings));
+    layer_tree_host_->InitializeContentFrameSinkConnection(
+        delegate_->CreateContentFrameSinkConnection(settings));
   }
   DCHECK(layer_tree_host_);
 }

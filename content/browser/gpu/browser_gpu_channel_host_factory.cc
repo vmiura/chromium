@@ -16,10 +16,10 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/host/display_compositor_host.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "cc/trees/layer_tree_settings.h"
-#include "cc/trees/service_connection.h"
 #include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 #include "content/browser/gpu/browser_gpu_memory_buffer_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -366,8 +366,8 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
   return NULL;
 }
 
-std::unique_ptr<cc::ServiceConnection>
-BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
+std::unique_ptr<cc::ContentFrameSinkConnection>
+BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   // TODO(fsamuel): A surface_handle is not always a widget.
@@ -375,7 +375,7 @@ BrowserGpuChannelHostFactory::CreateServiceCompositorConnection(
   // by the DisplayCompositorHost.
   gpu::SurfaceHandle surface_handle = widget;
   ConnectToDisplayCompositorHostIfNecessary();
-  auto connection = base::MakeUnique<cc::ServiceConnection>();
+  auto connection = base::MakeUnique<cc::ContentFrameSinkConnection>();
   connection->shm_allocator =
       base::Bind(&BrowserGpuChannelHostFactory::AllocateSharedMemory,
                  base::Unretained(this));

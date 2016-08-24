@@ -36,8 +36,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   ~SingleThreadProxy() override;
 
   // Proxy implementation
-  void InitializeCompositor(
-      std::unique_ptr<ServiceConnection> connection) override;
+  void InitializeContentFrameSinkConnection(
+      std::unique_ptr<ContentFrameSinkConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

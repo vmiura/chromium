@@ -40,7 +40,8 @@ class CC_EXPORT SimpleProxy : public Proxy,
   ~SimpleProxy() override;
 
   // Proxy implementation.
-  void InitializeCompositor(std::unique_ptr<ServiceConnection> connection) override;
+  void InitializeContentFrameSinkConnection(
+      std::unique_ptr<ContentFrameSinkConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

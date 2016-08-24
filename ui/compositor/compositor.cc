@@ -22,13 +22,13 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/switches.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/input/input_handler.h"
 #include "cc/layers/layer.h"
 #include "cc/output/begin_frame_args.h"
 #include "cc/output/context_provider.h"
 #include "cc/output/latency_info_swap_promise.h"
 #include "cc/scheduler/begin_frame_source.h"
-#include "cc/trees/service_connection.h"
 #include "cc/surfaces/surface_id_allocator.h"
 #include "cc/surfaces/surface_manager.h"
 #include "cc/trees/layer_tree_host.h"
@@ -419,9 +419,9 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   DCHECK(!widget_valid_);
   widget_ = widget;
   widget_valid_ = true;
-  host_->InitializeServiceConnection(
-      context_factory_->CreateServiceCompositorConnection(widget,
-                                                          host_->settings()));
+  host_->InitializeContentFrameSinkConnection(
+      context_factory_->CreateContentFrameSinkConnection(widget,
+                                                         host_->settings()));
   if (output_surface_requested_)
     context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
 }

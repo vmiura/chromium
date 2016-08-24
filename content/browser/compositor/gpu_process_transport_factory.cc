@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/base/histograms.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/output/compositor_frame.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/texture_mailbox_deleter.h"
@@ -26,7 +27,6 @@
 #include "cc/raster/task_graph_runner.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/scheduler/delay_based_time_source.h"
-#include "cc/trees/service_connection.h"
 #include "cc/surfaces/display.h"
 #include "cc/surfaces/display_scheduler.h"
 #include "cc/surfaces/surface_display_output_surface.h"
@@ -716,12 +716,12 @@ void GpuProcessTransportFactory::RemoveDisplayCompositorObserver(
       observer);
 }
 
-std::unique_ptr<cc::ServiceConnection>
-GpuProcessTransportFactory::CreateServiceCompositorConnection(
+std::unique_ptr<cc::ContentFrameSinkConnection>
+GpuProcessTransportFactory::CreateContentFrameSinkConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   return BrowserGpuChannelHostFactory::instance()
-      ->CreateServiceCompositorConnection(widget, settings);
+      ->CreateContentFrameSinkConnection(widget, settings);
 }
 
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,

@@ -108,8 +108,8 @@ SingleThreadProxy::~SingleThreadProxy() {
   DCHECK(!layer_tree_host_impl_);
 }
 
-void SingleThreadProxy::InitializeCompositor(
-    std::unique_ptr<ServiceConnection> connection) {}
+void SingleThreadProxy::InitializeContentFrameSinkConnection(
+    std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void SingleThreadProxy::FinishAllRendering() {
   TRACE_EVENT0("cc", "SingleThreadProxy::FinishAllRendering");

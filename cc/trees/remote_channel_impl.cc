@@ -148,8 +148,8 @@ void RemoteChannelImpl::HandleProto(
   }
 }
 
-void RemoteChannelImpl::InitializeCompositor(
-    std::unique_ptr<ServiceConnection> connection) {}
+void RemoteChannelImpl::InitializeContentFrameSinkConnection(
+    std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void RemoteChannelImpl::FinishAllRendering() {
   NOTREACHED() << "Should not be called on the remote client LayerTreeHost";

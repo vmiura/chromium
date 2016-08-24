@@ -45,7 +45,7 @@ class LayerTreeDebugState;
 class LayerTreeHost;
 class LayerTreeSettings;
 class RendererSettings;
-struct ServiceConnection;
+struct ContentFrameSinkConnection;
 class SharedBitmapManager;
 class SurfaceIdAllocator;
 class SurfaceManager;
@@ -150,11 +150,11 @@ class COMPOSITOR_EXPORT ContextFactory {
 
   // Sets up a connection to the service compositor (synchronously, woops).
   // TODO(hackathon): Make this async by returning void and have it call back
-  // to a function on Compositor to set the ServiceConnection when we have it,
-  // similar to OutputSurface.
-  virtual std::unique_ptr<cc::ServiceConnection>
-  CreateServiceCompositorConnection(gfx::AcceleratedWidget widget,
-                                    const cc::LayerTreeSettings& settings) = 0;
+  // to a function on Compositor to set the ContentFrameSinkConnection when we
+  // have it, similar to OutputSurface.
+  virtual std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(gfx::AcceleratedWidget widget,
+                                   const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
   // virtual cc::SurfaceManager* GetSurfaceManager() = 0;

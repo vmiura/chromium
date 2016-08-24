@@ -5,9 +5,9 @@
 #include "ui/views/mus/surface_context_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/output/output_surface.h"
 #include "cc/resources/shared_bitmap_manager.h"
-#include "cc/trees/service_connection.h"
 #include "cc/surfaces/surface_id_allocator.h"
 #include "services/ui/public/cpp/window.h"
 #include "ui/compositor/reflector.h"
@@ -92,8 +92,8 @@ uint32_t SurfaceContextFactory::AllocateSurfaceClientId() {
   return next_surface_id_namespace_++;
 }
 
-std::unique_ptr<cc::ServiceConnection>
-SurfaceContextFactory::CreateServiceCompositorConnection(
+std::unique_ptr<cc::ContentFrameSinkConnection>
+SurfaceContextFactory::CreateContentFrameSinkConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   return nullptr;

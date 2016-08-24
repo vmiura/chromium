@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/service_connection.h"
+#include "cc/client/content_frame_sink_connection.h"
 
 namespace cc {
 
-ServiceConnection::ServiceConnection() = default;
-ServiceConnection::~ServiceConnection() = default;
+ContentFrameSinkConnection::ContentFrameSinkConnection() = default;
+ContentFrameSinkConnection::~ContentFrameSinkConnection() = default;
 
 }  // namespace cc

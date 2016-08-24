@@ -81,8 +81,8 @@ class CC_EXPORT ProxyMain : public Proxy {
   friend class ProxyMainForTest;
 
   // Proxy implementation.
-  void InitializeCompositor(
-      std::unique_ptr<ServiceConnection> connection) override;
+  void InitializeContentFrameSinkConnection(
+      std::unique_ptr<ContentFrameSinkConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
   bool CommitToActiveTree() const override;

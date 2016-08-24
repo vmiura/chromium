@@ -70,7 +70,7 @@ struct WebPoint;
 namespace cc {
 class OutputSurface;
 class SwapPromise;
-struct ServiceConnection;
+struct ContentFrameSinkConnection;
 }
 
 namespace gfx {
@@ -193,7 +193,8 @@ class CONTENT_EXPORT RenderWidget
       bool fallback) override;
   std::unique_ptr<cc::BeginFrameSource> CreateExternalBeginFrameSource()
       override;
-  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
+  std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(
       const cc::LayerTreeSettings& settings) override;
   void DidCommitAndDrawCompositorFrame() override;
   void DidCommitCompositorFrame() override;

@@ -566,8 +566,6 @@ component("cc") {
     "trees/scoped_abort_remaining_swap_promises.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
-    "trees/service_connection.cc",
-    "trees/service_connection.h",
     "trees/simple_proxy.cc",
     "trees/simple_proxy.h",
     "trees/single_thread_proxy.cc",
@@ -596,6 +594,7 @@ component("cc") {
   public_deps = [
     ":transport",
     "//cc/base",
+    "//cc/client", # TODO(fsamuel): This is icky.
     "//skia",
   ]
   deps = [

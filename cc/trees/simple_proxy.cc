@@ -11,12 +11,12 @@
 #include "base/trace_event/trace_event_argument.h"
 #include "base/trace_event/trace_event_synthetic_delay.h"
 #include "cc/animation/animation_events.h"
+#include "cc/client/content_frame_sink_connection.h"
 #include "cc/debug/benchmark_instrumentation.h"
 #include "cc/debug/devtools_instrumentation.h"
 #include "cc/ipc/content_frame.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/swap_promise.h"
-#include "cc/trees/service_connection.h"
 #include "cc/trees/blocking_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/remote_channel_main.h"
@@ -64,8 +64,9 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 }
 #endif
 
-void SimpleProxy::InitializeCompositor(std::unique_ptr<ServiceConnection> connection) {
-  TRACE_EVENT0("cc", "SimpleProxy::InitializeCompositor");
+void SimpleProxy::InitializeContentFrameSinkConnection(
+    std::unique_ptr<ContentFrameSinkConnection> connection) {
+  TRACE_EVENT0("cc", "SimpleProxy::InitializeContentFrameSinkConnection");
   bulk_buffer_writer_ = base::MakeUnique<BulkBufferWriter>(
       BulkBufferWriter::kDefaultBackingSize, connection->shm_allocator);
   compositor_ = std::move(connection->content_frame_sink);

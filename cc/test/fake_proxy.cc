@@ -5,7 +5,7 @@
 #include "cc/test/fake_proxy.h"
 
 #include "cc/animation/layer_tree_mutator.h"
-#include "cc/trees/service_connection.h"
+#include "cc/client/content_frame_sink_connection.h"
 
 namespace cc {
 

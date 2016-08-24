@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("base") {
-  visibility = [ "//cc", "//cc:transport" ]
+  visibility = [ "//cc", "//cc:transport", "//cc/client" ]
 
   sources = [
     "bulk_buffer_queue.h",

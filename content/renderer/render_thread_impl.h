@@ -67,6 +67,7 @@ class ContextProvider;
 class ImageSerializationProcessor;
 class OutputSurface;
 class TaskGraphRunner;
+struct ContentFrameSinkConnection;
 }
 
 namespace gpu {
@@ -173,9 +174,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // changed.
   static void NotifyTimezoneChange();
 
-  std::unique_ptr<cc::ServiceConnection> CreateServiceCompositorConnection(
-      int32_t routing_id,
-      const cc::LayerTreeSettings& settings);
+  std::unique_ptr<cc::ContentFrameSinkConnection>
+  CreateContentFrameSinkConnection(int32_t routing_id,
+                                   const cc::LayerTreeSettings& settings);
 
   // RenderThread implementation:
   bool Send(IPC::Message* msg) override;

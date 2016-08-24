@@ -144,8 +144,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
 
-  void InitializeServiceConnection(
-      std::unique_ptr<ServiceConnection> connection);
+  void InitializeContentFrameSinkConnection(
+      std::unique_ptr<ContentFrameSinkConnection> connection);
 
   void BindImageDecodePtr(mojom::ImageDecodeRequest decode_request);
 
