@@ -33,7 +33,7 @@ class CC_SERVICE_EXPORT DelegatingOutputSurface
   DelegatingOutputSurface(
       SurfaceManager* surface_manager,
       Display* display,
-      uint32_t surface_client_id,
+      const CompositorFrameSinkId& compositor_frame_sink_id,
       scoped_refptr<ContextProvider> context_provider,
       scoped_refptr<ContextProvider> worker_context_provider);
   ~DelegatingOutputSurface() override;
@@ -64,7 +64,7 @@ class CC_SERVICE_EXPORT DelegatingOutputSurface
 
   SurfaceManager* const surface_manager_;
   Display* const display_;
-  const uint32_t surface_client_id_;
+  const CompositorFrameSinkId compositor_frame_sink_id_;
   // TODO(hackathon): This could live on Service, would simplify things a bit.
   SurfaceFactory factory_;
   SurfaceId committed_surface_id_;

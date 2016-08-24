@@ -71,9 +71,10 @@ class CC_SURFACES_EXPORT Display : public DisplaySchedulerClient,
 
   ~Display() override;
 
-  void Initialize(DisplayClient* client,
-                  SurfaceManager* surface_manager,
-                  uint32_t compositor_surface_namespace);
+  void Initialize(
+      DisplayClient* client,
+      SurfaceManager* surface_manager,
+      const CompositorFrameSinkId& display_compositor_frame_sink_id);
 
   // device_scale_factor is used to communicate to the external window system
   // what scale this was rendered at.
@@ -135,7 +136,7 @@ class CC_SURFACES_EXPORT Display : public DisplaySchedulerClient,
 
   DisplayClient* client_;
   SurfaceManager* surface_manager_;
-  uint32_t compositor_surface_namespace_;
+  CompositorFrameSinkId display_compositor_frame_sink_id_;
   SurfaceId current_surface_id_;
   gfx::Size current_surface_size_;
   float device_scale_factor_ = 1.f;

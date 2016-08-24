@@ -511,7 +511,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Called when RenderWidget wants to start BeginFrame scheduling or stop.
   void OnSetNeedsBeginFrames(bool needs_begin_frames);
 
-  void OnSetSurfaceClientId(uint32_t client_id);
+  void OnSetCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
   void OnDidGetNewSurface(const gfx::Size& size,
                           const cc::SurfaceId& surface_id);
 

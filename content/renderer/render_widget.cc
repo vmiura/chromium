@@ -780,8 +780,10 @@ void RenderWidget::DidCompleteSwapBuffers() {
   need_update_rect_for_auto_resize_ = false;
 }
 
-void RenderWidget::DidSetSurfaceClientId(uint32_t client_id) {
-  Send(new ViewHostMsg_SetSurfaceClientId(routing_id_, client_id));
+void RenderWidget::DidSetCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  Send(new ViewHostMsg_SetCompositorFrameSinkId(routing_id_,
+                                                compositor_frame_sink_id));
 }
 
 void RenderWidget::DidGetNewSurface(const cc::SurfaceId& surface_id) {

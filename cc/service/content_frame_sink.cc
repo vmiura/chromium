@@ -215,10 +215,11 @@ ContentFrameSink::ContentFrameSink(
       content_frame_sink_client_(std::move(client)),
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
-  LOG(ERROR) << "Service compositor " << this << " is root " << root_compositor;
-  surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
+  LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor
+             << " client_id: " << surface_id_allocator_.client_id();
+  // surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   content_frame_sink_client_->OnCompositorCreated(
-      surface_id_allocator_.client_id());
+      surface_id_allocator_.compositor_frame_sink_id());
 }
 
 ContentFrameSink::~ContentFrameSink() {
@@ -230,8 +231,8 @@ ContentFrameSink::~ContentFrameSink() {
   output_surface_.reset();
 
   surface_manager_->RemoveRefOnSurfaceId(surface_id_);
-  surface_manager_->InvalidateSurfaceClientId(
-      surface_id_allocator_.client_id());
+  // surface_manager_->InvalidateSurfaceClientId(
+  //    surface_id_allocator_.client_id());
 }
 
 void ContentFrameSink::ReleaseSurfaces() {
@@ -294,8 +295,8 @@ void ContentFrameSink::CreateOutputSurface() {
   output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
       surface_manager_,
       display_.get(),  // Will be null for non-root compositors.
-      surface_id_allocator_.client_id(), std::move(compositor_context),
-      std::move(worker_context));
+      surface_id_allocator_.compositor_frame_sink_id(),
+      std::move(compositor_context), std::move(worker_context));
   host_impl_.InitializeRenderer(output_surface_.get());
 
   if (!surface_id_.is_null())

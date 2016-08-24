@@ -77,30 +77,13 @@ void SurfaceManager::DidSatisfySequences(uint32_t client_id,
   GarbageCollectSurfaces();
 }
 
-void SurfaceManager::RegisterSurfaceClientId(uint32_t client_id) {
-  bool inserted = valid_surface_client_ids_.insert(client_id).second;
-  DCHECK(inserted);
-}
-
-void SurfaceManager::InvalidateSurfaceClientId(uint32_t client_id) {
-  valid_surface_client_ids_.erase(client_id);
-  GarbageCollectSurfaces();
-}
-
 void SurfaceManager::GarbageCollectSurfaces() {
-  // Simple mark and sweep GC.
-  // TODO(jbauman): Reduce the amount of work when nothing needs to be
-  // destroyed.
   std::vector<SurfaceId> live_surfaces;
   std::set<SurfaceId> live_surfaces_set;
 
-  // GC roots are surfaces that have not been destroyed, or have not had all
-  // their destruction dependencies satisfied.
+  // GC roots are surfaces that have not been destroyed.
   for (auto& map_entry : surface_map_) {
-    map_entry.second->SatisfyDestructionDependencies(
-        &satisfied_sequences_, &valid_surface_client_ids_);
-    if (!map_entry.second->destroyed() ||
-        map_entry.second->GetDestructionDependencyCount()) {
+    if (!map_entry.second->destroyed()) {
       live_surfaces_set.insert(map_entry.first);
       live_surfaces.push_back(map_entry.first);
     }
@@ -111,11 +94,9 @@ void SurfaceManager::GarbageCollectSurfaces() {
   for (size_t i = 0; i < live_surfaces.size(); i++) {
     Surface* surf = surface_map_[live_surfaces[i]];
     DCHECK(surf);
-
     for (const SurfaceId& id : surf->referenced_surfaces()) {
       if (live_surfaces_set.count(id))
         continue;
-
       Surface* surf2 = GetSurfaceForId(id);
       if (surf2) {
         live_surfaces.push_back(id);
@@ -150,16 +131,15 @@ void SurfaceManager::GarbageCollectSurfaces() {
 }
 
 void SurfaceManager::RegisterSurfaceFactoryClient(
-    uint32_t client_id,
+    const CompositorFrameSinkId& compositor_frame_sink_id,
     SurfaceFactoryClient* client) {
   DCHECK(client);
-  DCHECK(!namespace_client_map_[client_id].client);
-  DCHECK_EQ(valid_surface_client_ids_.count(client_id), 1u);
+  DCHECK(!namespace_client_map_[compositor_frame_sink_id].client);
 
-  auto iter = namespace_client_map_.find(client_id);
+  auto iter = namespace_client_map_.find(compositor_frame_sink_id);
   if (iter == namespace_client_map_.end()) {
     auto insert_result = namespace_client_map_.insert(
-        std::make_pair(client_id, ClientSourceMapping()));
+        std::make_pair(compositor_frame_sink_id, ClientSourceMapping()));
     DCHECK(insert_result.second);
     iter = insert_result.first;
   }
@@ -170,11 +150,11 @@ void SurfaceManager::RegisterSurfaceFactoryClient(
     client->SetBeginFrameSource(iter->second.source);
 }
 
-void SurfaceManager::UnregisterSurfaceFactoryClient(uint32_t client_id) {
-  DCHECK_EQ(valid_surface_client_ids_.count(client_id), 1u);
-  DCHECK_EQ(namespace_client_map_.count(client_id), 1u);
+void SurfaceManager::UnregisterSurfaceFactoryClient(
+    const CompositorFrameSinkId& compositor_frame_sink_id) {
+  DCHECK_EQ(namespace_client_map_.count(compositor_frame_sink_id), 1u);
 
-  auto iter = namespace_client_map_.find(client_id);
+  auto iter = namespace_client_map_.find(compositor_frame_sink_id);
   if (iter->second.source)
     iter->second.client->SetBeginFrameSource(nullptr);
   iter->second.client = nullptr;
@@ -186,29 +166,29 @@ void SurfaceManager::UnregisterSurfaceFactoryClient(uint32_t client_id) {
     namespace_client_map_.erase(iter);
 }
 
-void SurfaceManager::RegisterBeginFrameSource(BeginFrameSource* source,
-                                              uint32_t client_id) {
+void SurfaceManager::RegisterBeginFrameSource(
+    BeginFrameSource* source,
+    const CompositorFrameSinkId& sink_id) {
   DCHECK(source);
   DCHECK_EQ(registered_sources_.count(source), 0u);
-  DCHECK_EQ(valid_surface_client_ids_.count(client_id), 1u);
 
-  registered_sources_[source] = client_id;
-  RecursivelyAttachBeginFrameSource(client_id, source);
+  registered_sources_[source] = sink_id;
+  RecursivelyAttachBeginFrameSource(sink_id, source);
 }
 
 void SurfaceManager::UnregisterBeginFrameSource(BeginFrameSource* source) {
   DCHECK(source);
   DCHECK_EQ(registered_sources_.count(source), 1u);
 
-  uint32_t client_id = registered_sources_[source];
+  CompositorFrameSinkId compositor_frame_sink_id = registered_sources_[source];
   registered_sources_.erase(source);
 
-  if (namespace_client_map_.count(client_id) == 0u)
+  if (namespace_client_map_.count(compositor_frame_sink_id) == 0u)
     return;
 
   // TODO(enne): these walks could be done in one step.
   // Remove this begin frame source from its subtree.
-  RecursivelyDetachBeginFrameSource(client_id, source);
+  RecursivelyDetachBeginFrameSource(compositor_frame_sink_id, source);
   // Then flush every remaining registered source to fix any sources that
   // became null because of the previous step but that have an alternative.
   for (auto source_iter : registered_sources_)
@@ -216,22 +196,24 @@ void SurfaceManager::UnregisterBeginFrameSource(BeginFrameSource* source) {
 }
 
 void SurfaceManager::RecursivelyAttachBeginFrameSource(
-    uint32_t client_id,
+    const CompositorFrameSinkId& compositor_frame_sink_id,
     BeginFrameSource* source) {
-  ClientSourceMapping& mapping = namespace_client_map_[client_id];
+  ClientSourceMapping& mapping =
+      namespace_client_map_[compositor_frame_sink_id];
   if (!mapping.source) {
     mapping.source = source;
     if (mapping.client)
       mapping.client->SetBeginFrameSource(source);
   }
-  for (size_t i = 0; i < mapping.children.size(); ++i)
-    RecursivelyAttachBeginFrameSource(mapping.children[i], source);
+  for (const CompositorFrameSinkId& child_compositor_frame_sink_id :
+       mapping.children)
+    RecursivelyAttachBeginFrameSource(child_compositor_frame_sink_id, source);
 }
 
 void SurfaceManager::RecursivelyDetachBeginFrameSource(
-    uint32_t client_id,
+    const CompositorFrameSinkId& compositor_frame_sink_id,
     BeginFrameSource* source) {
-  auto iter = namespace_client_map_.find(client_id);
+  auto iter = namespace_client_map_.find(compositor_frame_sink_id);
   if (iter == namespace_client_map_.end())
     return;
   if (iter->second.source == source) {
@@ -245,77 +227,68 @@ void SurfaceManager::RecursivelyDetachBeginFrameSource(
     return;
   }
 
-  std::vector<uint32_t>& children = iter->second.children;
-  for (size_t i = 0; i < children.size(); ++i) {
-    RecursivelyDetachBeginFrameSource(children[i], source);
+  for (const CompositorFrameSinkId& child_sink_id : iter->second.children) {
+    RecursivelyDetachBeginFrameSource(child_sink_id, source);
   }
 }
 
-bool SurfaceManager::ChildContains(uint32_t child_namespace,
-                                   uint32_t search_namespace) const {
-  auto iter = namespace_client_map_.find(child_namespace);
+bool SurfaceManager::ChildContains(
+    const CompositorFrameSinkId& child_compositor_frame_sink_id,
+    const CompositorFrameSinkId& search_compositor_frame_sink_id) const {
+  auto iter = namespace_client_map_.find(child_compositor_frame_sink_id);
   if (iter == namespace_client_map_.end())
     return false;
 
-  const std::vector<uint32_t>& children = iter->second.children;
-  for (size_t i = 0; i < children.size(); ++i) {
-    if (children[i] == search_namespace)
+  for (const CompositorFrameSinkId& child_sink_id : iter->second.children) {
+    if (child_sink_id == search_compositor_frame_sink_id)
       return true;
-    if (ChildContains(children[i], search_namespace))
+    if (ChildContains(child_sink_id, search_compositor_frame_sink_id))
       return true;
   }
   return false;
 }
 
 void SurfaceManager::RegisterSurfaceNamespaceHierarchy(
-    uint32_t parent_namespace,
-    uint32_t child_namespace) {
-  DCHECK_EQ(valid_surface_client_ids_.count(parent_namespace), 1u);
-  DCHECK_EQ(valid_surface_client_ids_.count(child_namespace), 1u);
-
+    const CompositorFrameSinkId& parent_compositor_frame_sink_id,
+    const CompositorFrameSinkId& child_compositor_frame_sink_id) {
   // If it's possible to reach the parent through the child's descendant chain,
   // then this will create an infinite loop.  Might as well just crash here.
-  CHECK(!ChildContains(child_namespace, parent_namespace));
+  CHECK(!ChildContains(child_compositor_frame_sink_id,
+                       parent_compositor_frame_sink_id));
 
-  std::vector<uint32_t>& children =
-      namespace_client_map_[parent_namespace].children;
-  for (size_t i = 0; i < children.size(); ++i)
-    DCHECK_NE(children[i], child_namespace);
-  children.push_back(child_namespace);
+  auto& children =
+      namespace_client_map_[parent_compositor_frame_sink_id].children;
+  DCHECK_EQ(0u, children.count(child_compositor_frame_sink_id));
+  children.insert(child_compositor_frame_sink_id);
 
   // If the parent has no source, then attaching it to this child will
   // not change any downstream sources.
   BeginFrameSource* parent_source =
-      namespace_client_map_[parent_namespace].source;
+      namespace_client_map_[parent_compositor_frame_sink_id].source;
   if (!parent_source)
     return;
 
   DCHECK_EQ(registered_sources_.count(parent_source), 1u);
-  RecursivelyAttachBeginFrameSource(child_namespace, parent_source);
+  RecursivelyAttachBeginFrameSource(child_compositor_frame_sink_id,
+                                    parent_source);
 }
 
 void SurfaceManager::UnregisterSurfaceNamespaceHierarchy(
-    uint32_t parent_namespace,
-    uint32_t child_namespace) {
+    const CompositorFrameSinkId& parent_compositor_frame_sink_id,
+    const CompositorFrameSinkId& child_compositor_frame_sink_id) {
   // Deliberately do not check validity of either parent or child namespace
   // here.  They were valid during the registration, so were valid at some
   // point in time.  This makes it possible to invalidate parent and child
   // namespaces independently of each other and not have an ordering dependency
   // of unregistering the hierarchy first before either of them.
-  DCHECK_EQ(namespace_client_map_.count(parent_namespace), 1u);
+  DCHECK_EQ(namespace_client_map_.count(parent_compositor_frame_sink_id), 1u);
 
-  auto iter = namespace_client_map_.find(parent_namespace);
+  auto iter = namespace_client_map_.find(parent_compositor_frame_sink_id);
 
-  std::vector<uint32_t>& children = iter->second.children;
-  bool found_child = false;
-  for (size_t i = 0; i < children.size(); ++i) {
-    if (children[i] == child_namespace) {
-      found_child = true;
-      children[i] = children.back();
-      children.resize(children.size() - 1);
-      break;
-    }
-  }
+  auto& children = iter->second.children;
+  auto it = children.find(child_compositor_frame_sink_id);
+  bool found_child = it != children.end();
+  children.erase(it);
   DCHECK(found_child);
 
   // The SurfaceFactoryClient and hierarchy can be registered/unregistered
@@ -333,7 +306,8 @@ void SurfaceManager::UnregisterSurfaceNamespaceHierarchy(
     return;
 
   // TODO(enne): these walks could be done in one step.
-  RecursivelyDetachBeginFrameSource(child_namespace, parent_source);
+  RecursivelyDetachBeginFrameSource(child_compositor_frame_sink_id,
+                                    parent_source);
   for (auto source_iter : registered_sources_)
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
 }

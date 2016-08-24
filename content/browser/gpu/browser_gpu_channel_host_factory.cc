@@ -420,8 +420,8 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
 }
 
 void BrowserGpuChannelHostFactory::RegisterSurfaceClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const cc::CompositorFrameSinkId& parent_client_id,
+    const cc::CompositorFrameSinkId& child_client_id) {
   if (!display_compositor_host_private_)
     return;
   display_compositor_host_private_->RegisterClientHierarchy(parent_client_id,
@@ -429,8 +429,8 @@ void BrowserGpuChannelHostFactory::RegisterSurfaceClientHierarchy(
 }
 
 void BrowserGpuChannelHostFactory::UnregisterSurfaceClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const cc::CompositorFrameSinkId& parent_client_id,
+    const cc::CompositorFrameSinkId& child_client_id) {
   if (!display_compositor_host_private_)
     return;
   display_compositor_host_private_->UnregisterClientHierarchy(parent_client_id,

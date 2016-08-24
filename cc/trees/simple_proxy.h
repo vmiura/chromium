@@ -74,9 +74,11 @@ class CC_EXPORT SimpleProxy : public Proxy,
               TaskRunnerProvider* task_runner_provider);
 
   // mojom::ContentFrameSinkClient implementation
-  void OnCompositorCreated(uint32_t client_id) override;
+  void OnCompositorCreated(
+      const CompositorFrameSinkId& compositor_frame_sink_id) override;
   void OnBackingsReturned(const std::vector<uint32_t>& backings) override;
-  void OnBeginMainFrame(uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) override;
+  void OnBeginMainFrame(uint32_t begin_frame_id,
+                        const BeginFrameArgs& begin_frame_args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;
   void OnDidCommitAndDrawFrame() override;
@@ -85,6 +87,8 @@ class CC_EXPORT SimpleProxy : public Proxy,
       const cc::RendererCapabilities& capabilities) override;
   void OnImageDecodeProxyCreated(
       mojom::ImageDecodeRequest decode_request) override;
+
+  void OnContentFrameSinkLost();
 
   bool IsMainThread() const;
 
@@ -121,8 +125,9 @@ class CC_EXPORT SimpleProxy : public Proxy,
 
  private:
   std::unique_ptr<BulkBufferWriter> bulk_buffer_writer_;
-  mojo::InterfacePtr<cc::mojom::ContentFrameSink> compositor_;
+  mojo::InterfacePtr<cc::mojom::ContentFrameSink> content_frame_sink_;
   mojo::Binding<cc::mojom::ContentFrameSinkClient> binding_;
+  base::WeakPtrFactory<SimpleProxy> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleProxy);
 };

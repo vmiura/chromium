@@ -85,7 +85,6 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->AddObserver(this);
 
-  surface_client_id_ = factory->GetContextFactory()->AllocateSurfaceClientId();
   // id_allocator_.reset(new cc::SurfaceIdAllocator(
   //    factory->GetContextFactory()->AllocateSurfaceClientId()));
   // factory->GetSurfaceManager()->RegisterSurfaceClientId(
@@ -225,13 +224,14 @@ void DelegatedFrameHost::EndFrameSubscription() {
 }
 
 uint32_t DelegatedFrameHost::GetSurfaceClientId() {
-  return surface_client_id_;
+  return compositor_frame_sink_id_.client_id;
 }
 
-void DelegatedFrameHost::SetSurfaceClientId(uint32_t client_id) {
-  surface_client_id_ = client_id;
+void DelegatedFrameHost::SetCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  compositor_frame_sink_id_ = compositor_frame_sink_id;
   if (compositor_)
-    compositor_->AddSurfaceClient(client_id);
+    compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
@@ -929,8 +929,8 @@ void DelegatedFrameHost::SetCompositor(ui::Compositor* compositor) {
   vsync_manager_->AddObserver(this);
 
   // TODO(hackathon)
-  if (!surface_id_.is_null())
-    compositor_->AddSurfaceClient(surface_client_id_);
+  if (!compositor_frame_sink_id_.is_null())
+    compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
 }
 
 void DelegatedFrameHost::ResetCompositor() {
@@ -947,8 +947,9 @@ void DelegatedFrameHost::ResetCompositor() {
     vsync_manager_ = NULL;
   }
 
-  if (!surface_id_.is_null())
-    compositor_->RemoveSurfaceClient(surface_id_.client_id());
+  if (!compositor_frame_sink_id_.is_null()) {
+    compositor_->RemoveChildCompositorFrameSinkId(compositor_frame_sink_id_);
+  }
   compositor_ = nullptr;
 }
 

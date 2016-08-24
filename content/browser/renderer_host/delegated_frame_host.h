@@ -158,7 +158,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   void EndFrameSubscription();
   bool HasFrameSubscriber() const { return !!frame_subscriber_; }
   uint32_t GetSurfaceClientId();
-  void SetSurfaceClientId(uint32_t client_id);
+  void SetCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
   // Returns a null SurfaceId if this DelegatedFrameHost has not yet created
   // a compositor Surface.
   cc::SurfaceId SurfaceIdAtPoint(cc::SurfaceHittestDelegate* delegate,
@@ -291,7 +292,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   SkColor background_color_;
 
   // State for rendering into a Surface.
-  uint32_t surface_client_id_ = 0;
+  cc::CompositorFrameSinkId compositor_frame_sink_id_;
+
   std::unique_ptr<cc::SurfaceFactory> surface_factory_;
   cc::SurfaceId surface_id_;
   gfx::Size current_surface_size_;

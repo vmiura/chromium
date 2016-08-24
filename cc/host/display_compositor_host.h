@@ -45,10 +45,12 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   // can access the private interface.
   void AddRefOnSurfaceId(const SurfaceId& id) override;
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
-  void RegisterClientHierarchy(uint32_t parent_client_id,
-                               uint32_t child_client_id) override;
-  void UnregisterClientHierarchy(uint32_t parent_client_id,
-                                 uint32_t child_client_id) override;
+  void RegisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
+  void UnregisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
   void CreateContentFrameSinkWithHandle(
       int32_t sink_id,
       const gpu::SurfaceHandle& surface_handle,

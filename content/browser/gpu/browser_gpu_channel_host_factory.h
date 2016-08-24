@@ -69,10 +69,12 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
       cc::DisplayCompositorConnectionObserver* observer);
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
-  void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                      uint32_t child_client_id);
-  void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                        uint32_t child_client_id);
+  void RegisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id);
+  void UnregisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();

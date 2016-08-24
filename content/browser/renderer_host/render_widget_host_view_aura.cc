@@ -476,10 +476,11 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(RenderWidgetHost* host,
 
   // Let the page-level input event router know about our surface ID
   // namespace for surface-based hit testing.
-  if (host_->delegate() && host_->delegate()->GetInputEventRouter()) {
-    host_->delegate()->GetInputEventRouter()->AddSurfaceClientIdOwner(
-        GetSurfaceClientId(), this);
-  }
+  // TODO(fsamuel): Surface hit testing is broken.
+  // if (host_->delegate() && host_->delegate()->GetInputEventRouter()) {
+  //  host_->delegate()->GetInputEventRouter()->AddSurfaceClientIdOwner(
+  //      GetSurfaceClientId(), this);
+  //}
 
   // We should start observing the TextInputManager for IME-related events as
   // well as monitoring its lifetime.
@@ -511,7 +512,8 @@ bool RenderWidgetHostViewAura::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostViewAura, message)
     IPC_MESSAGE_HANDLER(ViewHostMsg_SetNeedsBeginFrames,
                         OnSetNeedsBeginFrames)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_SetSurfaceClientId, OnSetSurfaceClientId)
+    IPC_MESSAGE_HANDLER(ViewHostMsg_SetCompositorFrameSinkId,
+                        OnSetCompositorFrameSinkId)
     IPC_MESSAGE_HANDLER(ViewHostMsg_DidGetNewSurface, OnDidGetNewSurface)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -753,8 +755,9 @@ void RenderWidgetHostViewAura::OnSetNeedsBeginFrames(bool needs_begin_frames) {
   }
 }
 
-void RenderWidgetHostViewAura::OnSetSurfaceClientId(uint32_t client_id) {
-  delegated_frame_host_->SetSurfaceClientId(client_id);
+void RenderWidgetHostViewAura::OnSetCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  delegated_frame_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 void RenderWidgetHostViewAura::OnDidGetNewSurface(

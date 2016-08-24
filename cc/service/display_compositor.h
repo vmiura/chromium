@@ -43,10 +43,12 @@ class DisplayCompositor : public mojom::DisplayCompositor,
   // mojom::DisplayCompositor implementation.
   void AddRefOnSurfaceId(const SurfaceId& id) override;
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
-  void RegisterClientHierarchy(uint32_t parent_client_id,
-                               uint32_t child_client_id) override;
-  void UnregisterClientHierarchy(uint32_t parent_client_id,
-                                 uint32_t child_client_id) override;
+  void RegisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
+  void UnregisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
   void CreateContentFrameSink(
       uint32_t client_id,
       int32_t sink_id,

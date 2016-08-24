@@ -13,8 +13,45 @@
 #include "base/format_macros.h"
 #include "base/hash.h"
 #include "base/strings/stringprintf.h"
+#include "cc/surfaces/surfaces_export.h"
 
 namespace cc {
+
+struct CompositorFrameSinkId {
+  CompositorFrameSinkId() : client_id(0), sink_id(0) {}
+
+  CompositorFrameSinkId(uint32_t client_id, uint32_t sink_id)
+      : client_id(client_id), sink_id(sink_id) {}
+
+  CompositorFrameSinkId(const CompositorFrameSinkId& other)
+      : client_id(other.client_id), sink_id(other.sink_id) {}
+
+  bool is_null() const { return client_id == 0 && sink_id == 0; }
+
+  bool operator==(const CompositorFrameSinkId& other) const {
+    return client_id == other.client_id && sink_id == other.sink_id;
+  }
+
+  bool operator!=(const CompositorFrameSinkId& other) const {
+    return !(*this == other);
+  }
+
+  bool operator<(const CompositorFrameSinkId& other) const {
+    return std::tie(client_id, sink_id) <
+           std::tie(other.client_id, other.sink_id);
+  }
+
+  size_t hash() const { return base::HashInts(client_id, sink_id); }
+
+  uint32_t client_id;
+  uint32_t sink_id;
+};
+
+struct CompositorFrameSinkIdHash {
+  size_t operator()(const CompositorFrameSinkId& key) const {
+    return key.hash();
+  }
+};
 
 class SurfaceId {
  public:

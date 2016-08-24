@@ -82,19 +82,7 @@ void Surface::QueueFrame(CompositorFrame frame, const DrawCallback& callback) {
     draw_callback_.Run();
   draw_callback_ = callback;
 
-  bool referenced_surfaces_changed =
-      (referenced_surfaces_ != new_referenced_surfaces);
   referenced_surfaces_ = new_referenced_surfaces;
-  std::vector<uint32_t> satisfies_sequences =
-      std::move(current_frame_.metadata.satisfies_sequences);
-
-  if (referenced_surfaces_changed || !satisfies_sequences.empty()) {
-    // Notify the manager that sequences were satisfied either if some new
-    // sequences were satisfied, or if the set of referenced surfaces changed
-    // to force a GC to happen.
-    factory_->manager()->DidSatisfySequences(surface_id_.client_id(),
-                                             &satisfies_sequences);
-  }
 }
 
 void Surface::RequestCopyOfOutput(
@@ -164,23 +152,6 @@ void Surface::RunDrawCallbacks() {
     draw_callback_ = DrawCallback();
     callback.Run();
   }
-}
-
-void Surface::AddDestructionDependency(SurfaceSequence sequence) {
-  destruction_dependencies_.push_back(sequence);
-}
-
-void Surface::SatisfyDestructionDependencies(
-    std::unordered_set<SurfaceSequence, SurfaceSequenceHash>* sequences,
-    std::unordered_set<uint32_t>* valid_client_ids) {
-  destruction_dependencies_.erase(
-      std::remove_if(destruction_dependencies_.begin(),
-                     destruction_dependencies_.end(),
-                     [sequences, valid_client_ids](SurfaceSequence seq) {
-                       return (!!sequences->erase(seq) ||
-                               !valid_client_ids->count(seq.client_id));
-                     }),
-      destruction_dependencies_.end());
 }
 
 void Surface::UnrefFrameResources(DelegatedFrameData* frame_data) {

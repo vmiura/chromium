@@ -40,6 +40,7 @@
 #include "cc/output/swap_promise.h"
 #include "cc/resources/resource_format.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/surfaces/surface_id.h"
 #include "cc/surfaces/surface_sequence.h"
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree.h"
@@ -363,7 +364,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   size_t num_queued_swap_promises() const { return swap_promise_list_.size(); }
 
-  void SetSurfaceClientId(uint32_t client_id);
+  void SetCompositorFrameSinkId(
+      const CompositorFrameSinkId& compositor_frame_sink_id);
   void DidGetNewSurface(SurfaceId surface_id);
   SurfaceSequence CreateSurfaceSequence();
 
@@ -624,7 +626,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   using ElementLayersMap = std::unordered_map<ElementId, Layer*, ElementIdHash>;
   ElementLayersMap element_layers_map_;
 
-  uint32_t surface_client_id_;
+  CompositorFrameSinkId compositor_frame_sink_id_;
   uint32_t next_surface_sequence_;
   uint32_t num_consecutive_frames_suitable_for_gpu_ = 0;
 

@@ -4,6 +4,11 @@
 
 module cc.mojom;
 
+struct CompositorFrameSinkId {
+  uint32 client_id;
+  uint32 sink_id; 
+};
+
 // A surface ID is composed of four parts: a client ID, a sink ID, a local ID, 
 // and a nonce. The local part and nonce are allocated by the client using any
 // scheme that avoids duplicates and makes IDs unguessable respectively.

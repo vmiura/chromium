@@ -22,7 +22,8 @@ class DisplayCompositorConnectionObserver {
 // display compositor host <=> client connection.  However, all
 // DisplayCompositorHost objects should share a single connection to the
 // display compositor.
-class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
+class DisplayCompositorConnection : public mojom::DisplayCompositor,
+                                    public mojom::DisplayCompositorClient {
  public:
   DisplayCompositorConnection(
       mojom::DisplayCompositorPtr display_compositor,
@@ -33,19 +34,21 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
   void AddObserver(DisplayCompositorConnectionObserver* observer);
   void RemoveObserver(DisplayCompositorConnectionObserver* observer);
 
-  void AddRefOnSurfaceId(const SurfaceId& id);
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
-  void RegisterClientHierarchy(uint32_t parent_client_id,
-                               uint32_t child_client_id);
-  void UnregisterClientHierarchy(uint32_t parent_client_id,
-                                 uint32_t child_client_id);
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
+  void RegisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
+  void UnregisterClientHierarchy(
+      const CompositorFrameSinkId& parent_client_id,
+      const CompositorFrameSinkId& child_client_id) override;
   void CreateContentFrameSink(
       uint32_t client_id,
       int32_t sink_id,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
-      mojom::ContentFrameSinkClientPtr content_frame_sink_client);
+      mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
   // cc::mojom::DisplayCompositorClient implementation:
   void OnSurfaceCreated(const gfx::Size& frame_size,

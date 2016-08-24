@@ -37,10 +37,12 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   scoped_refptr<cc::ContextProvider> SharedMainThreadContextProvider() override;
   void RemoveCompositor(ui::Compositor* compositor) override;
   // TODO(fsamuel): Make mus do the right thing.
-  void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                      uint32_t child_client_Id) override {}
-  void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                        uint32_t child_client_id) override {}
+  void RegisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_Id) override {}
+  void UnregisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id) override {}
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,
                                  gfx::BufferUsage usage) override;

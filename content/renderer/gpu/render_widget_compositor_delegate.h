@@ -17,6 +17,7 @@ class LayerTreeSettings;
 class OutputSurface;
 class SurfaceId;
 class SwapPromise;
+struct CompositorFrameSinkId;
 struct ContentFrameSinkConnection;
 }
 
@@ -64,7 +65,8 @@ class CONTENT_EXPORT RenderWidgetCompositorDelegate {
   virtual void DidCompleteSwapBuffers() = 0;
 
   // Notifies that the client has acquired an ID.
-  virtual void DidSetSurfaceClientId(uint32_t client) {}
+  virtual void DidSetCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id) {}
 
   virtual void DidGetNewSurface(const cc::SurfaceId& surface_id) {}
 

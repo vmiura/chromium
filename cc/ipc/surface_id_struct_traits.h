@@ -9,6 +9,22 @@
 
 namespace mojo {
 
+template <typename T>
+struct StructTraits<T, cc::CompositorFrameSinkId> {
+  static uint32_t client_id(const cc::CompositorFrameSinkId& id) {
+    return id.client_id;
+  }
+
+  static uint32_t sink_id(const cc::CompositorFrameSinkId& id) {
+    return id.sink_id;
+  }
+
+  static bool Read(typename T::DataView data, cc::CompositorFrameSinkId* out) {
+    *out = cc::CompositorFrameSinkId(data.client_id(), data.sink_id());
+    return true;
+  }
+};
+
 // This template is fully specialized as cc::mojom::SurfaceId and
 // as cc::mojom::blink::SurfaceId, in generated .mojom.h and .mojom-blink.h
 // respectively.

@@ -261,34 +261,16 @@ Compositor::~Compositor() {
   //}
 }
 
-void Compositor::AddSurfaceClient(uint32_t client_id) {
-  context_factory_->RegisterSurfaceClientHierarchy(surface_client_id_,
-                                                   client_id);
-#if 0
-  // We don't give the client a parent until the ui::Compositor has an
-  // OutputSurface.
-  uint32_t parent_client_id = 0;
-  if (host_->has_output_surface()) {
-    parent_client_id = surface_id_allocator_->client_id();
-    context_factory_->GetSurfaceManager()->RegisterSurfaceNamespaceHierarchy(
-        parent_client_id, client_id);
-  }
-  surface_clients_[client_id] = parent_client_id;
-#endif
+void Compositor::AddChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  context_factory_->RegisterSurfaceClientHierarchy(
+      compositor_frame_sink_id_, child_compositor_frame_sink_id);
 }
 
-void Compositor::RemoveSurfaceClient(uint32_t client_id) {
-  context_factory_->UnregisterSurfaceClientHierarchy(surface_client_id_,
-                                                     client_id);
-#if 0
-  auto it = surface_clients_.find(client_id);
-  DCHECK(it != surface_clients_.end());
-  if (host_->has_output_surface()) {
-    context_factory_->GetSurfaceManager()->UnregisterSurfaceNamespaceHierarchy(
-        it->second, client_id);
-  }
-  surface_clients_.erase(it);
-#endif
+void Compositor::RemoveChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  context_factory_->UnregisterSurfaceClientHierarchy(
+      compositor_frame_sink_id_, child_compositor_frame_sink_id);
 }
 
 void Compositor::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
@@ -538,9 +520,10 @@ void Compositor::DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) {
                     OnCompositingEnded(this));
 }
 
-void Compositor::DidSetSurfaceClientId(uint32_t client_id) {
+void Compositor::DidSetCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-  surface_client_id_ = client_id;
+  compositor_frame_sink_id_ = compositor_frame_sink_id;
 }
 
 void Compositor::DidPostSwapBuffers() {

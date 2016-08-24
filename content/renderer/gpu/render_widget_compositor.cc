@@ -1103,8 +1103,9 @@ void RenderWidgetCompositor::DidCompletePageScaleAnimation() {
   delegate_->DidCompletePageScaleAnimation();
 }
 
-void RenderWidgetCompositor::DidSetSurfaceClientId(uint32_t client_id) {
-  delegate_->DidSetSurfaceClientId(client_id);
+void RenderWidgetCompositor::DidSetCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  delegate_->DidSetCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 void RenderWidgetCompositor::DidGetNewSurface(const cc::SurfaceId& surface_id) {

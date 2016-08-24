@@ -23,13 +23,16 @@ class CC_SURFACES_EXPORT SurfaceIdAllocator {
 
   SurfaceId GenerateId();
 
-  uint32_t client_id() const { return client_id_; }
+  uint32_t client_id() const { return compositor_frame_sink_id_.client_id; }
 
-  uint32_t sink_id() const { return sink_id_; }
+  uint32_t sink_id() const { return compositor_frame_sink_id_.sink_id; }
+
+  const CompositorFrameSinkId& compositor_frame_sink_id() const {
+    return compositor_frame_sink_id_;
+  }
 
  private:
-  const uint32_t client_id_;
-  const uint32_t sink_id_;
+  CompositorFrameSinkId compositor_frame_sink_id_;
   uint32_t next_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceIdAllocator);

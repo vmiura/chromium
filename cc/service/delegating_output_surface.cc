@@ -16,7 +16,7 @@ namespace cc {
 DelegatingOutputSurface::DelegatingOutputSurface(
     SurfaceManager* surface_manager,
     Display* display,
-    uint32_t surface_client_id,
+    const CompositorFrameSinkId& compositor_frame_sink_id,
     scoped_refptr<ContextProvider> context_provider,
     scoped_refptr<ContextProvider> worker_context_provider)
     : OutputSurface(std::move(context_provider),
@@ -24,7 +24,7 @@ DelegatingOutputSurface::DelegatingOutputSurface(
                     nullptr),
       surface_manager_(surface_manager),
       display_(display),
-      surface_client_id_(surface_client_id),
+      compositor_frame_sink_id_(compositor_frame_sink_id),
       factory_(surface_manager, this) {
   DCHECK(thread_checker_.CalledOnValidThread());
   capabilities_.delegated_rendering = true;
@@ -82,13 +82,13 @@ bool DelegatingOutputSurface::BindToClient(OutputSurfaceClient* client) {
   // TODO(enne): this has to be after the bind, as it could cause a
   // SetBeginFrameSource which assumes a client_.  Probably need to
   // make SurfaceDisplayOutputSurface do this too.
-  surface_manager_->RegisterSurfaceFactoryClient(
-      surface_client_id_, this);
+  surface_manager_->RegisterSurfaceFactoryClient(compositor_frame_sink_id_,
+                                                 this);
 
   // Avoid initializing GL context here, as this should be sharing the
   // Display's context.
   if (display_)
-    display_->Initialize(this, surface_manager_, surface_client_id_);
+    display_->Initialize(this, surface_manager_, compositor_frame_sink_id_);
   return true;
 }
 
@@ -106,8 +106,7 @@ void DelegatingOutputSurface::DetachFromClient() {
     factory_.Destroy(swapped_surface_id_);
   // Unregister the SurfaceFactoryClient here instead of the dtor so that only
   // one client is alive for this namespace at any given time.
-  surface_manager_->UnregisterSurfaceFactoryClient(
-      surface_client_id_);
+  surface_manager_->UnregisterSurfaceFactoryClient(compositor_frame_sink_id_);
 
   OutputSurface::DetachFromClient();
 }

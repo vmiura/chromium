@@ -30,9 +30,9 @@ DisplayCompositor::DisplayCompositor(
       surfaces_state_(surfaces_state),
       factory_(surfaces_state->manager(), this),
       allocator_(surfaces_state->next_client_id(), 0 /* sink_id */) {
-  surfaces_state_->manager()->RegisterSurfaceClientId(allocator_.client_id());
+  // surfaces_state_->manager()->RegisterSurfaceClientId(allocator_.client_id());
   surfaces_state_->manager()->RegisterSurfaceFactoryClient(
-      allocator_.client_id(), this);
+      allocator_.compositor_frame_sink_id(), this);
 
   scoped_refptr<SurfacesContextProvider> surfaces_context_provider(
       new SurfacesContextProvider(widget));
@@ -71,13 +71,13 @@ DisplayCompositor::DisplayCompositor(
       std::move(display_output_surface), std::move(scheduler),
       base::MakeUnique<cc::TextureMailboxDeleter>(task_runner_.get())));
   display_->Initialize(this, surfaces_state_->manager(),
-                       allocator_.client_id());
+                       allocator_.compositor_frame_sink_id());
 }
 
 DisplayCompositor::~DisplayCompositor() {
   surfaces_state_->manager()->UnregisterSurfaceFactoryClient(
-      allocator_.client_id());
-  surfaces_state_->manager()->InvalidateSurfaceClientId(allocator_.client_id());
+      allocator_.compositor_frame_sink_id());
+  // surfaces_state_->manager()->InvalidateSurfaceClientId(allocator_.client_id());
 }
 
 void DisplayCompositor::SubmitCompositorFrame(

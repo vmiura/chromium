@@ -44,7 +44,8 @@ SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
       started_(false),
       defer_commits_(false),
       begin_frame_requested_(false),
-      binding_(this) {
+      binding_(this),
+      weak_factory_(this) {
   TRACE_EVENT0("cc", "SimpleProxy::SimpleProxy");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
@@ -69,7 +70,9 @@ void SimpleProxy::InitializeContentFrameSinkConnection(
   TRACE_EVENT0("cc", "SimpleProxy::InitializeContentFrameSinkConnection");
   bulk_buffer_writer_ = base::MakeUnique<BulkBufferWriter>(
       BulkBufferWriter::kDefaultBackingSize, connection->shm_allocator);
-  compositor_ = std::move(connection->content_frame_sink);
+  content_frame_sink_ = std::move(connection->content_frame_sink);
+  content_frame_sink_.set_connection_error_handler(base::Bind(
+      &SimpleProxy::OnContentFrameSinkLost, weak_factory_.GetWeakPtr()));
   binding_.Bind(std::move(connection->client_request));
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
@@ -106,13 +109,13 @@ void SimpleProxy::SetOutputSurface(OutputSurface* output_surface) {
 
 void SimpleProxy::SetVisible(bool visible) {
   TRACE_EVENT1("cc", "SimpleProxy::SetVisible", "visible", visible);
-  if (!compositor_) {
+  if (!content_frame_sink_) {
     needs_set_visible_when_ready_ = true;
     needs_set_visible_value_when_ready_ = visible;
     return;
   }
   MaybeTrimBulkBufferWriter();
-  compositor_->SetVisible(visible);
+  content_frame_sink_->SetVisible(visible);
 }
 
 const RendererCapabilities& SimpleProxy::GetRendererCapabilities() const {
@@ -141,12 +144,12 @@ void SimpleProxy::SetNeedsCommit() {
 void SimpleProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsRedraw");
   DCHECK(IsMainThread());
-  if (!compositor_) {
+  if (!content_frame_sink_) {
     needs_redraw_when_ready_ = true;
     needs_redraw_rect_when_ready_ = damage_rect;
     return;
   }
-  compositor_->SetNeedsRedraw(damage_rect);
+  content_frame_sink_->SetNeedsRedraw(damage_rect);
 }
 
 void SimpleProxy::SetNextCommitWaitsForActivation() {
@@ -205,9 +208,9 @@ void SimpleProxy::Stop() {
   DCHECK(IsMainThread());
   DCHECK(started_);
 
-  if (compositor_) {
+  if (content_frame_sink_) {
     mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-    compositor_->Destroy();
+    content_frame_sink_->Destroy();
   }
 
   layer_tree_host_ = nullptr;
@@ -247,7 +250,7 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 void SimpleProxy::SetNeedsBeginFrame() {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
   DCHECK(IsMainThread());
-  if (!compositor_) {
+  if (!content_frame_sink_) {
     needs_begin_frame_when_ready_ = true;
     return;
   }
@@ -257,16 +260,17 @@ void SimpleProxy::SetNeedsBeginFrame() {
   if (begin_frame_requested_)
     return;
   begin_frame_requested_ = true;
-  compositor_->SetNeedsBeginMainFrame();
+  content_frame_sink_->SetNeedsBeginMainFrame();
 }
 
 bool SimpleProxy::IsMainThread() const {
   return task_runner_provider_->IsMainThread();
 }
 
-void SimpleProxy::OnCompositorCreated(uint32_t client_id) {
+void SimpleProxy::OnCompositorCreated(
+    const CompositorFrameSinkId& compositor_frame_sink_id) {
   TRACE_EVENT0("cc", "SimpleProxy::OnCompositorCreated");
-  layer_tree_host_->SetSurfaceClientId(client_id);
+  layer_tree_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 void SimpleProxy::OnBackingsReturned(const std::vector<uint32_t>& backings) {
@@ -288,8 +292,9 @@ void SimpleProxy::OnBeginMainFrame(
   if (defer_commits_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
-    compositor_->BeginMainFrameAborted(
-        CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT /* TODO(hackathon): Add the time. */);
+    content_frame_sink_->BeginMainFrameAborted(
+        CommitEarlyOutReason::
+            ABORTED_DEFERRED_COMMIT /* TODO(hackathon): Add the time. */);
     return;
   }
 
@@ -300,8 +305,9 @@ void SimpleProxy::OnBeginMainFrame(
 
   if (!layer_tree_host_->visible()) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
-    compositor_->BeginMainFrameAborted(
-        CommitEarlyOutReason::ABORTED_NOT_VISIBLE /* TODO(hackathon): Add the time. */);
+    content_frame_sink_->BeginMainFrameAborted(
+        CommitEarlyOutReason::
+            ABORTED_NOT_VISIBLE /* TODO(hackathon): Add the time. */);
     return;
   }
 
@@ -348,8 +354,9 @@ void SimpleProxy::OnBeginMainFrame(
     layer_tree_host_->CommitComplete();
     layer_tree_host_->DidBeginMainFrame();
     layer_tree_host_->BreakSwapPromises(SwapPromise::COMMIT_NO_UPDATE);
-    compositor_->BeginMainFrameAborted(
-        CommitEarlyOutReason::FINISHED_NO_UPDATES /* TODO(hackathon): Add the time. */);
+    content_frame_sink_->BeginMainFrameAborted(
+        CommitEarlyOutReason::
+            FINISHED_NO_UPDATES /* TODO(hackathon): Add the time. */);
     return;
   }
 
@@ -404,16 +411,16 @@ void SimpleProxy::OnBeginMainFrame(
       last_committed_device_scale_factor_ = frame->device_scale_factor;
       last_committed_device_viewport_size_ = frame->device_viewport_size;
       if (!need_sync) {
-        compositor_->PrepareCommit(hold_commit_for_activation,
-                                   std::move(frame));
+        content_frame_sink_->PrepareCommit(hold_commit_for_activation,
+                                           std::move(frame));
       } else {
         SurfaceId new_surface_id;
-        compositor_->PrepareCommitSync(hold_commit_for_activation,
-                                       std::move(frame), &new_surface_id);
+        content_frame_sink_->PrepareCommitSync(
+            hold_commit_for_activation, std::move(frame), &new_surface_id);
         layer_tree_host_->DidGetNewSurface(new_surface_id);
       }
       if (hold_commit_for_activation)
-        compositor_->WaitForActivation();
+        content_frame_sink_->WaitForActivation();
     }
   }
 
@@ -452,11 +459,15 @@ void SimpleProxy::OnImageDecodeProxyCreated(
   layer_tree_host_->BindImageDecodePtr(std::move(decode_request));
 }
 
+void SimpleProxy::OnContentFrameSinkLost() {
+  LOG(ERROR) << "SimpleProxy::OnContentFrameSinkLost";
+}
+
 void SimpleProxy::MaybeTrimBulkBufferWriter() {
   if (layer_tree_host_->visible())
     return;
-  DCHECK(compositor_);
-  compositor_->DeleteBackings(bulk_buffer_writer_->Trim());
+  DCHECK(content_frame_sink_);
+  content_frame_sink_->DeleteBackings(bulk_buffer_writer_->Trim());
 }
 
 }  // namespace cc

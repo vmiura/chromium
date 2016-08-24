@@ -32,9 +32,11 @@ interface DisplayCompositor {
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
-  RegisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+  RegisterClientHierarchy(CompositorFrameSinkId parent_client_id,
+                          CompositorFrameSinkId child_client_id);
 
-  UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+  UnregisterClientHierarchy(CompositorFrameSinkId parent_client_id,
+                            CompositorFrameSinkId child_client_id);
 
   // A ContentFrameSink (and, similarly, this would apply for
   // CompositorFrameSink) is uniquely identified by two 32-bit quantities:
@@ -74,9 +76,11 @@ interface DisplayCompositorHostPrivate {
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
-  RegisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+  RegisterClientHierarchy(CompositorFrameSinkId parent_client_id,
+                          CompositorFrameSinkId child_client_id);
 
-  UnregisterClientHierarchy(uint32 parent_client_id, uint32 child_client_id);
+  UnregisterClientHierarchy(CompositorFrameSinkId parent_client_id,
+                            CompositorFrameSinkId child_client_id);
 
   CreateContentFrameSinkWithHandle(
       int32 sink_id,
@@ -102,7 +106,7 @@ interface ContentFrameSink {
 
 // A ContentFrameSinkClient corresponds to a LTHI=>LTH interface.
 interface ContentFrameSinkClient {
-  OnCompositorCreated(uint32 client_id);
+  OnCompositorCreated(CompositorFrameSinkId compositor_frame_sink_id);
   OnBackingsReturned(array<uint32> backings);
   OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
   OnBeginMainFrameNotExpectedSoon();

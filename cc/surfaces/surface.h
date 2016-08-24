@@ -75,19 +75,6 @@ class CC_SURFACES_EXPORT Surface {
 
   base::WeakPtr<SurfaceFactory> factory() { return factory_; }
 
-  // Add a SurfaceSequence that must be satisfied before the Surface is
-  // destroyed.
-  void AddDestructionDependency(SurfaceSequence sequence);
-
-  // Satisfy all destruction dependencies that are contained in sequences, and
-  // remove them from sequences.
-  void SatisfyDestructionDependencies(
-      std::unordered_set<SurfaceSequence, SurfaceSequenceHash>* sequences,
-      std::unordered_set<uint32_t>* valid_id_namespaces);
-  size_t GetDestructionDependencyCount() const {
-    return destruction_dependencies_.size();
-  }
-
   const std::vector<SurfaceId>& referenced_surfaces() const {
     return referenced_surfaces_;
   }
@@ -109,7 +96,6 @@ class CC_SURFACES_EXPORT Surface {
   ContentFrame current_content_frame_;
   int frame_index_;
   bool destroyed_;
-  std::vector<SurfaceSequence> destruction_dependencies_;
 
   // This surface may have multiple BeginFrameSources if it is
   // on multiple Displays.

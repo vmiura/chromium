@@ -266,7 +266,6 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
       gpu_memory_buffer_manager_(params->gpu_memory_buffer_manager),
       task_graph_runner_(params->task_graph_runner),
       image_serialization_processor_(params->image_serialization_processor),
-      surface_client_id_(0u),
       next_surface_sequence_(1u),
       layer_tree_(std::move(params->animation_host)) {
   DCHECK(task_graph_runner_);
@@ -1339,9 +1338,10 @@ void LayerTreeHost::OnCommitForSwapPromises() {
     swap_promise->OnCommit();
 }
 
-void LayerTreeHost::SetSurfaceClientId(uint32_t client_id) {
-  surface_client_id_ = client_id;
-  client_->DidSetSurfaceClientId(client_id);
+void LayerTreeHost::SetCompositorFrameSinkId(
+    const CompositorFrameSinkId& compositor_frame_sink_id) {
+  compositor_frame_sink_id_ = compositor_frame_sink_id;
+  client_->DidSetCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 void LayerTreeHost::DidGetNewSurface(SurfaceId surface_id) {
@@ -1349,7 +1349,9 @@ void LayerTreeHost::DidGetNewSurface(SurfaceId surface_id) {
 }
 
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {
-  return SurfaceSequence(surface_client_id_, next_surface_sequence_++);
+  // TODO(fsamuel): This is a hack! Let's kill SurfaceSequence.
+  return SurfaceSequence(compositor_frame_sink_id_.client_id,
+                         next_surface_sequence_++);
 }
 
 void LayerTreeHost::SetLayerTreeMutator(
@@ -1617,7 +1619,7 @@ void LayerTreeHost::ToProtobufForCommit(
 
   property_trees_.ToProtobuf(proto->mutable_property_trees());
 
-  proto->set_surface_client_id(surface_client_id_);
+  // proto->set_surface_client_id(surface_client_id_);
   proto->set_next_surface_sequence(next_surface_sequence_);
 
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
@@ -1716,7 +1718,7 @@ void LayerTreeHost::FromProtobufForCommit(const proto::LayerTreeHost& proto) {
     layer->set_property_tree_sequence_number(seq_num);
   });
 
-  surface_client_id_ = proto.surface_client_id();
+  // surface_client_id_ = proto.surface_client_id();
   next_surface_sequence_ = proto.next_surface_sequence();
 }
 

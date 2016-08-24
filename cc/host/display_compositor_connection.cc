@@ -34,15 +34,15 @@ void DisplayCompositorConnection::MoveTempRefToRefOnSurfaceId(
 }
 
 void DisplayCompositorConnection::RegisterClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const CompositorFrameSinkId& parent_client_id,
+    const CompositorFrameSinkId& child_client_id) {
   display_compositor_->RegisterClientHierarchy(parent_client_id,
                                                child_client_id);
 }
 
 void DisplayCompositorConnection::UnregisterClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const CompositorFrameSinkId& parent_client_id,
+    const CompositorFrameSinkId& child_client_id) {
   display_compositor_->UnregisterClientHierarchy(parent_client_id,
                                                  child_client_id);
 }

@@ -115,12 +115,14 @@ class COMPOSITOR_EXPORT ContextFactory {
   virtual void RemoveCompositor(Compositor* compositor) = 0;
 
   // Register a surface client hierarchy.
-  virtual void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                              uint32_t child_client_id) = 0;
+  virtual void RegisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id) = 0;
 
   // Unregister a surface client hierarchy.
-  virtual void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                                uint32_t child_client_id) = 0;
+  virtual void UnregisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id) = 0;
 
   // When true, the factory uses test contexts that do not do real GL
   // operations.
@@ -224,8 +226,10 @@ class COMPOSITOR_EXPORT Compositor
 
   ui::ContextFactory* context_factory() { return context_factory_; }
 
-  void AddSurfaceClient(uint32_t client_id);
-  void RemoveSurfaceClient(uint32_t client_id);
+  void AddChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
+  void RemoveChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
   const std::unordered_map<uint32_t, uint32_t>& SurfaceClientsForTesting() {
     return surface_clients_;
   }
@@ -371,7 +375,8 @@ class COMPOSITOR_EXPORT Compositor
   void DidCommitAndDrawFrame() override;
   void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override {}
-  void DidSetSurfaceClientId(uint32_t client_id) override;
+  void DidSetCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidPostSwapBuffers() override;
@@ -409,7 +414,7 @@ class COMPOSITOR_EXPORT Compositor
 
   gfx::Size size_;
 
-  uint32_t surface_client_id_ = 0;
+  cc::CompositorFrameSinkId compositor_frame_sink_id_;
 
   ui::ContextFactory* context_factory_;
 

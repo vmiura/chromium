@@ -200,7 +200,8 @@ class CONTENT_EXPORT RenderWidget
   void DidCommitCompositorFrame() override;
   void DidCompletePageScaleAnimation() override;
   void DidCompleteSwapBuffers() override;
-  void DidSetSurfaceClientId(uint32_t client_id) override;
+  void DidSetCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
   void DidGetNewSurface(const cc::SurfaceId& surface_id) override;
   void ForwardCompositorProto(const std::vector<uint8_t>& proto) override;
   bool IsClosing() const override;

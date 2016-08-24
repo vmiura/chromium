@@ -11,14 +11,15 @@
 namespace cc {
 
 SurfaceIdAllocator::SurfaceIdAllocator(uint32_t client_id, uint32_t sink_id)
-    : client_id_(client_id), sink_id_(sink_id), next_id_(1u) {}
+    : compositor_frame_sink_id_(client_id, sink_id), next_id_(1u) {}
 
 SurfaceIdAllocator::~SurfaceIdAllocator() {
 }
 
 SurfaceId SurfaceIdAllocator::GenerateId() {
   uint64_t nonce = base::RandUint64();
-  SurfaceId id(client_id_, sink_id_, next_id_, nonce);
+  SurfaceId id(compositor_frame_sink_id_.client_id,
+               compositor_frame_sink_id_.sink_id, next_id_, nonce);
   next_id_++;
   return id;
 }

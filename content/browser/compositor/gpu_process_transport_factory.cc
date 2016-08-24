@@ -662,15 +662,15 @@ void GpuProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
 }
 
 void GpuProcessTransportFactory::RegisterSurfaceClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const cc::CompositorFrameSinkId& parent_client_id,
+    const cc::CompositorFrameSinkId& child_client_id) {
   BrowserGpuChannelHostFactory::instance()->RegisterSurfaceClientHierarchy(
       parent_client_id, child_client_id);
 }
 
 void GpuProcessTransportFactory::UnregisterSurfaceClientHierarchy(
-    uint32_t parent_client_id,
-    uint32_t child_client_id) {
+    const cc::CompositorFrameSinkId& parent_client_id,
+    const cc::CompositorFrameSinkId& child_client_id) {
   BrowserGpuChannelHostFactory::instance()->UnregisterSurfaceClientHierarchy(
       parent_client_id, child_client_id);
 }

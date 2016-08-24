@@ -54,10 +54,12 @@ class GpuProcessTransportFactory
                                                  ui::Layer* target) override;
   void RemoveReflector(ui::Reflector* reflector) override;
   void RemoveCompositor(ui::Compositor* compositor) override;
-  void RegisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                      uint32_t child_client_id) override;
-  void UnregisterSurfaceClientHierarchy(uint32_t parent_client_id,
-                                        uint32_t child_client_id) override;
+  void RegisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id) override;
+  void UnregisterSurfaceClientHierarchy(
+      const cc::CompositorFrameSinkId& parent_client_id,
+      const cc::CompositorFrameSinkId& child_client_id) override;
   scoped_refptr<cc::ContextProvider> SharedMainThreadContextProvider() override;
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,

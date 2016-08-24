@@ -70,22 +70,23 @@ Display::~Display() {
   }
 }
 
-void Display::Initialize(DisplayClient* client,
-                         SurfaceManager* surface_manager,
-                         uint32_t compositor_surface_namespace) {
+void Display::Initialize(
+    DisplayClient* client,
+    SurfaceManager* surface_manager,
+    const CompositorFrameSinkId& display_compositor_frame_sink_id) {
   DCHECK(client);
   DCHECK(surface_manager);
   client_ = client;
   surface_manager_ = surface_manager;
-  compositor_surface_namespace_ = compositor_surface_namespace;
+  display_compositor_frame_sink_id_ = display_compositor_frame_sink_id;
 
   surface_manager_->AddObserver(this);
 
   // This must be done in Initialize() so that the caller can delay this until
   // they are ready to receive a BeginFrameSource.
   if (begin_frame_source_) {
-    surface_manager_->RegisterBeginFrameSource(begin_frame_source_.get(),
-                                               compositor_surface_namespace_);
+    surface_manager_->RegisterBeginFrameSource(
+        begin_frame_source_.get(), display_compositor_frame_sink_id);
   }
 
   bool ok = output_surface_->BindToClient(this);
@@ -95,7 +96,7 @@ void Display::Initialize(DisplayClient* client,
 }
 
 void Display::SetSurfaceId(const SurfaceId& id, float device_scale_factor) {
-  DCHECK_EQ(id.client_id(), compositor_surface_namespace_);
+  // DCHECK_EQ(id.client_id(), display_compositor_frame_sink_);
   if (current_surface_id_ == id && device_scale_factor_ == device_scale_factor)
     return;
 
