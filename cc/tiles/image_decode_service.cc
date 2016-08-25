@@ -109,6 +109,8 @@ void ImageDecodeService::Bind(mojom::ImageDecodeRequest request) {
 
 void ImageDecodeService::DoBindOnServiceThread() {
   base::ThreadRestrictions::SetIOAllowed(true);
+  if (image_decode_binding_.is_bound())
+    image_decode_binding_.Close();
   image_decode_binding_.Bind(std::move(image_decode_request_));
 }
 

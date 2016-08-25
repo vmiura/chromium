@@ -43,6 +43,7 @@ class DisplayCompositorConnectionFactoryImpl
   ~DisplayCompositorConnectionFactoryImpl() override;
 
   // DisplayCompositorConnectionObserver implementation:
+  void OnConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

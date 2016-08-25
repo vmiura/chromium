@@ -17,6 +17,7 @@ class Vector2dF;
 namespace cc {
 class ContextProvider;
 class InputHandlerClient;
+class LayerTreeSettings;
 class OutputSurface;
 class SurfaceId;
 struct BeginFrameArgs;
@@ -52,6 +53,7 @@ class LayerTreeHostClient {
   // DidFailToInitializeOutputSurface or DidInitializeOutputSurface being
   // called.
   virtual void RequestNewOutputSurface() = 0;
+  virtual void RequestNewContentFrameSinkConnection() {}
   virtual void DidInitializeOutputSurface() = 0;
   virtual void DidFailToInitializeOutputSurface() = 0;
   virtual void WillCommit() = 0;

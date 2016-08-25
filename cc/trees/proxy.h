@@ -38,7 +38,7 @@ class CC_EXPORT Proxy {
  public:
   virtual ~Proxy() {}
 
-  virtual void InitializeContentFrameSinkConnection(
+  virtual void SetContentFrameSinkConnection(
       std::unique_ptr<ContentFrameSinkConnection> connection) = 0;
 
   virtual void FinishAllRendering() = 0;

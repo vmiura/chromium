@@ -220,6 +220,8 @@ ContentFrameSink::ContentFrameSink(
   // surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   content_frame_sink_client_->OnCompositorCreated(
       surface_id_allocator_.compositor_frame_sink_id());
+  content_frame_sink_client_.set_connection_error_handler(
+      base::Bind([]() { LOG(ERROR) << "ContentFrameSink Lost Connection"; }));
 }
 
 ContentFrameSink::~ContentFrameSink() {
@@ -231,8 +233,6 @@ ContentFrameSink::~ContentFrameSink() {
   output_surface_.reset();
 
   surface_manager_->RemoveRefOnSurfaceId(surface_id_);
-  // surface_manager_->InvalidateSurfaceClientId(
-  //    surface_id_allocator_.client_id());
 }
 
 void ContentFrameSink::ReleaseSurfaces() {
@@ -811,6 +811,7 @@ void ContentFrameSink::FinishCommit() {
       ProxyImageGenerator::ScopedBindFactory scoped_bind(
           host_impl_.image_decode_proxy());
       LayerImpl* layer = sync_tree->LayerById(layer_properties->layer_id);
+      DCHECK(layer);
       layer->ReadPropertiesMojom(context, layer_properties.get());
     }
 

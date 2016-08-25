@@ -255,12 +255,8 @@ void RenderWidgetCompositor::Initialize(float device_scale_factor) {
   } else if (!threaded_) {
     // Single-threaded layout tests.
     layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(this, &params);
-    layer_tree_host_->InitializeContentFrameSinkConnection(
-        delegate_->CreateContentFrameSinkConnection(settings));
   } else {
     layer_tree_host_ = cc::LayerTreeHost::CreateMojo(&params);
-    layer_tree_host_->InitializeContentFrameSinkConnection(
-        delegate_->CreateContentFrameSinkConnection(settings));
   }
   DCHECK(layer_tree_host_);
 }
@@ -1039,6 +1035,12 @@ void RenderWidgetCompositor::ApplyViewportDeltas(
   delegate_->ApplyViewportDeltas(inner_delta, outer_delta,
                                  elastic_overscroll_delta, page_scale,
                                  top_controls_delta);
+}
+
+void RenderWidgetCompositor::RequestNewContentFrameSinkConnection() {
+  layer_tree_host_->SetContentFrameSinkConnection(
+      delegate_->CreateContentFrameSinkConnection(
+          layer_tree_host_->settings()));
 }
 
 void RenderWidgetCompositor::RequestNewOutputSurface() {

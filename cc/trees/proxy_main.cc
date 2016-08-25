@@ -256,7 +256,7 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->DidBeginMainFrame();
 }
 
-void ProxyMain::InitializeContentFrameSinkConnection(
+void ProxyMain::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void ProxyMain::FinishAllRendering() {

@@ -40,7 +40,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
   ~SimpleProxy() override;
 
   // Proxy implementation.
-  void InitializeContentFrameSinkConnection(
+  void SetContentFrameSinkConnection(
       std::unique_ptr<ContentFrameSinkConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;
@@ -89,6 +89,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
       mojom::ImageDecodeRequest decode_request) override;
 
   void OnContentFrameSinkLost();
+  void RequestNewContentFrameSinkConnection();
 
   bool IsMainThread() const;
 
@@ -113,10 +114,12 @@ class CC_EXPORT SimpleProxy : public Proxy,
   // stopped using Proxy::Stop().
   bool started_;
 
+  bool flush_cache_ = true;
   bool defer_commits_;
   bool begin_frame_requested_;
   bool needs_update_layers_ = false;
   bool needs_commit_ = false;
+  bool content_frame_sink_requested_ = false;
 
   gfx::Size last_committed_device_viewport_size_;
   float last_committed_device_scale_factor_ = 0.f;
@@ -126,7 +129,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
  private:
   std::unique_ptr<BulkBufferWriter> bulk_buffer_writer_;
   mojo::InterfacePtr<cc::mojom::ContentFrameSink> content_frame_sink_;
-  mojo::Binding<cc::mojom::ContentFrameSinkClient> binding_;
+  std::unique_ptr<mojo::Binding<cc::mojom::ContentFrameSinkClient>> binding_;
   base::WeakPtrFactory<SimpleProxy> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleProxy);

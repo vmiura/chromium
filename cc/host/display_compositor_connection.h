@@ -15,6 +15,7 @@ class DisplayCompositorConnectionObserver {
   virtual ~DisplayCompositorConnectionObserver() {}
   virtual void OnSurfaceCreated(const gfx::Size& frame_size,
                                 const cc::SurfaceId& surface_id) {}
+  virtual void OnConnectionLost() {}
 };
 
 // This class encapsulates a single two way connection to the display
@@ -50,6 +51,8 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
       mojom::ContentFrameSinkRequest content_frame_sink,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
+  void OnConnectionLost();
+
   // cc::mojom::DisplayCompositorClient implementation:
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
@@ -58,6 +61,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
   base::ObserverList<DisplayCompositorConnectionObserver> observers_;
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
+  base::WeakPtrFactory<DisplayCompositorConnection> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorConnection);
 };
 

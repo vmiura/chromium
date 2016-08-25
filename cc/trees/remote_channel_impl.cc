@@ -148,7 +148,7 @@ void RemoteChannelImpl::HandleProto(
   }
 }
 
-void RemoteChannelImpl::InitializeContentFrameSinkConnection(
+void RemoteChannelImpl::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void RemoteChannelImpl::FinishAllRendering() {

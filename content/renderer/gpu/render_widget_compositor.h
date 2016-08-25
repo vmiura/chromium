@@ -174,6 +174,7 @@ class CONTENT_EXPORT RenderWidgetCompositor
                            float page_scale,
                            float top_controls_delta) override;
   void RequestNewOutputSurface() override;
+  void RequestNewContentFrameSinkConnection() override;
   void DidInitializeOutputSurface() override;
   void DidFailToInitializeOutputSurface() override;
   void WillCommit() override;

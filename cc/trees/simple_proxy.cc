@@ -44,7 +44,6 @@ SimpleProxy::SimpleProxy(LayerTreeHost* layer_tree_host,
       started_(false),
       defer_commits_(false),
       begin_frame_requested_(false),
-      binding_(this),
       weak_factory_(this) {
   TRACE_EVENT0("cc", "SimpleProxy::SimpleProxy");
   DCHECK(task_runner_provider_);
@@ -65,15 +64,19 @@ void SimpleProxy::SetAnimationEvents(std::unique_ptr<AnimationEvents> events) {
 }
 #endif
 
-void SimpleProxy::InitializeContentFrameSinkConnection(
+void SimpleProxy::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   TRACE_EVENT0("cc", "SimpleProxy::InitializeContentFrameSinkConnection");
   bulk_buffer_writer_ = base::MakeUnique<BulkBufferWriter>(
       BulkBufferWriter::kDefaultBackingSize, connection->shm_allocator);
   content_frame_sink_ = std::move(connection->content_frame_sink);
   content_frame_sink_.set_connection_error_handler(base::Bind(
       &SimpleProxy::OnContentFrameSinkLost, weak_factory_.GetWeakPtr()));
-  binding_.Bind(std::move(connection->client_request));
+  binding_.reset(new mojo::Binding<cc::mojom::ContentFrameSinkClient>(
+      this, std::move(connection->client_request)));
+  content_frame_sink_requested_ = false;
+  layer_tree_host_->SetNeedsFullTreeSync();
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
     SetNeedsBeginFrame();
@@ -109,9 +112,10 @@ void SimpleProxy::SetOutputSurface(OutputSurface* output_surface) {
 
 void SimpleProxy::SetVisible(bool visible) {
   TRACE_EVENT1("cc", "SimpleProxy::SetVisible", "visible", visible);
-  if (!content_frame_sink_) {
+  if (!binding_) {
     needs_set_visible_when_ready_ = true;
     needs_set_visible_value_when_ready_ = visible;
+    RequestNewContentFrameSinkConnection();
     return;
   }
   MaybeTrimBulkBufferWriter();
@@ -144,9 +148,10 @@ void SimpleProxy::SetNeedsCommit() {
 void SimpleProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsRedraw");
   DCHECK(IsMainThread());
-  if (!content_frame_sink_) {
+  if (!binding_) {
     needs_redraw_when_ready_ = true;
     needs_redraw_rect_when_ready_ = damage_rect;
+    RequestNewContentFrameSinkConnection();
     return;
   }
   content_frame_sink_->SetNeedsRedraw(damage_rect);
@@ -250,8 +255,9 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 void SimpleProxy::SetNeedsBeginFrame() {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
   DCHECK(IsMainThread());
-  if (!content_frame_sink_) {
+  if (!binding_) {
     needs_begin_frame_when_ready_ = true;
+    RequestNewContentFrameSinkConnection();
     return;
   }
 
@@ -269,6 +275,7 @@ bool SimpleProxy::IsMainThread() const {
 
 void SimpleProxy::OnCompositorCreated(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
+  fprintf(stderr, ">>>OnCompositorCreated\n");
   TRACE_EVENT0("cc", "SimpleProxy::OnCompositorCreated");
   layer_tree_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
 }
@@ -379,8 +386,9 @@ void SimpleProxy::OnBeginMainFrame(
     commit_waits_for_activation_ = false;
 
     mojom::ContentFramePtr frame = mojom::ContentFrame::New();
-    ContentFrameBuilderContext context = {frame.get(),
-                                          bulk_buffer_writer_.get()};
+    ContentFrameBuilderContext context = {
+        frame.get(), bulk_buffer_writer_.get(), flush_cache_};
+    flush_cache_ = false;
     layer_tree_host_->GetContentFrame(context);
     {
       TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame serialize BulkBuffer handles");
@@ -461,9 +469,26 @@ void SimpleProxy::OnImageDecodeProxyCreated(
 
 void SimpleProxy::OnContentFrameSinkLost() {
   LOG(ERROR) << "SimpleProxy::OnContentFrameSinkLost";
+  content_frame_sink_.reset();
+  binding_.reset();
+  begin_frame_requested_ = false;
+  content_frame_sink_requested_ = false;
+  last_committed_device_scale_factor_ = 0.f;
+  last_committed_device_viewport_size_ = gfx::Size();
+  flush_cache_ = true;
+  RequestNewContentFrameSinkConnection();
+}
+
+void SimpleProxy::RequestNewContentFrameSinkConnection() {
+  if (content_frame_sink_requested_)
+    return;
+  content_frame_sink_requested_ = true;
+  layer_tree_host_->RequestNewContentFrameSinkConnection();
 }
 
 void SimpleProxy::MaybeTrimBulkBufferWriter() {
+  if (!binding_)
+    RequestNewContentFrameSinkConnection();
   if (layer_tree_host_->visible())
     return;
   DCHECK(content_frame_sink_);

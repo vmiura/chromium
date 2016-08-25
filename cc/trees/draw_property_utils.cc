@@ -654,6 +654,8 @@ void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
 void UpdateRenderSurfaceForLayer(EffectTree* effect_tree,
                                  bool non_root_surfaces_enabled,
                                  LayerImpl* layer) {
+  DCHECK(effect_tree);
+  DCHECK(layer);
   if (!non_root_surfaces_enabled) {
     layer->SetHasRenderSurface(IsRootLayer(layer));
     return;

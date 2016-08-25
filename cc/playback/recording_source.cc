@@ -330,6 +330,8 @@ void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
       {
         TRACE_EVENT0("cc", "RecordingSource::WriteMojom serialization");
         PictureIdCache new_picture_id_cache;
+        if (context.flush_cache)
+          picture_id_cache_.clear();
         display_list_->SerializeToStream(&stream, &picture_id_cache_,
                                          &new_picture_id_cache);
         picture_id_cache_ = std::move(new_picture_id_cache);

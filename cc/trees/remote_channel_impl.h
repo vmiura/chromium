@@ -131,7 +131,7 @@ class CC_EXPORT RemoteChannelImpl : public ChannelImpl,
       std::unique_ptr<proto::CompositorMessage> proto) override;
 
   // Proxy implementation
-  void InitializeContentFrameSinkConnection(
+  void SetContentFrameSinkConnection(
       std::unique_ptr<ContentFrameSinkConnection> connection) override;
   void FinishAllRendering() override;
   bool IsStarted() const override;

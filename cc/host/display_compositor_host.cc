@@ -95,8 +95,10 @@ DisplayCompositorHost::DisplayCompositorHost(
       private_binding_(this, std::move(private_request)) {}
 
 void DisplayCompositorHost::ConnectToDisplayCompositorIfNecessary() {
-  if (!display_compositor_)
-    display_compositor_ = connection_factory_->GetDisplayCompositorConnection();
+  // TODO(fsamuel): This seems a bit silly to cache the display compositor here.
+  // It should be the responsibility of the DisplayCompositorConnectionFactory
+  // to cache the display compositor.
+  display_compositor_ = connection_factory_->GetDisplayCompositorConnection();
 }
 
 }  // namespace cc

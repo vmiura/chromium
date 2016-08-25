@@ -401,9 +401,12 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   DCHECK(!widget_valid_);
   widget_ = widget;
   widget_valid_ = true;
-  host_->InitializeContentFrameSinkConnection(
-      context_factory_->CreateContentFrameSinkConnection(widget,
-                                                         host_->settings()));
+  if (content_frame_sink_connection_requested_) {
+    content_frame_sink_connection_requested_ = false;
+    host_->SetContentFrameSinkConnection(
+        context_factory_->CreateContentFrameSinkConnection(widget,
+                                                           host_->settings()));
+  }
   if (output_surface_requested_)
     context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
 }
@@ -483,6 +486,18 @@ void Compositor::UpdateLayerTreeHost() {
   if (!root_layer())
     return;
   SendDamagedRectsRecursive(root_layer());
+}
+
+void Compositor::RequestNewContentFrameSinkConnection() {
+  content_frame_sink_connection_requested_ = true;
+  fprintf(stderr, ">>>%s widget_valid: %d widget: %lu\n", __PRETTY_FUNCTION__,
+          widget_valid_, widget_);
+  if (widget_valid_) {
+    content_frame_sink_connection_requested_ = false;
+    host_->SetContentFrameSinkConnection(
+        context_factory_->CreateContentFrameSinkConnection(widget_,
+                                                           host_->settings()));
+  }
 }
 
 void Compositor::RequestNewOutputSurface() {

@@ -108,7 +108,7 @@ SingleThreadProxy::~SingleThreadProxy() {
   DCHECK(!layer_tree_host_impl_);
 }
 
-void SingleThreadProxy::InitializeContentFrameSinkConnection(
+void SingleThreadProxy::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {}
 
 void SingleThreadProxy::FinishAllRendering() {

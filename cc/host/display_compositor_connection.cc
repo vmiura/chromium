@@ -10,7 +10,12 @@ DisplayCompositorConnection::DisplayCompositorConnection(
     mojom::DisplayCompositorPtr display_compositor,
     mojom::DisplayCompositorClientRequest display_compositor_client)
     : display_compositor_(std::move(display_compositor)),
-      client_binding_(this, std::move(display_compositor_client)) {}
+      client_binding_(this, std::move(display_compositor_client)),
+      weak_factory_(this) {
+  display_compositor_.set_connection_error_handler(
+      base::Bind(&DisplayCompositorConnection::OnConnectionLost,
+                 weak_factory_.GetWeakPtr()));
+}
 
 DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 
@@ -57,6 +62,13 @@ void DisplayCompositorConnection::CreateContentFrameSink(
   display_compositor_->CreateContentFrameSink(
       client_id, sink_id, handle, std::move(settings),
       std::move(content_frame_sink), std::move(content_frame_sink_client));
+}
+
+void DisplayCompositorConnection::OnConnectionLost() {
+  // TODO(fsamuel): Adding an observer list here and in ConnectionFactory is
+  // probably overkill. This should be cleaned up.
+  FOR_EACH_OBSERVER(DisplayCompositorConnectionObserver, observers_,
+                    OnConnectionLost());
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(

@@ -16,6 +16,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/stack_trace.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -429,9 +430,9 @@ void LayerTreeHost::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
   released_surfaces_.push_back(surface_id);
 }
 
-void LayerTreeHost::InitializeContentFrameSinkConnection(
+void LayerTreeHost::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {
-  proxy_->InitializeContentFrameSinkConnection(std::move(connection));
+  proxy_->SetContentFrameSinkConnection(std::move(connection));
 }
 
 void LayerTreeHost::BindImageDecodePtr(
@@ -659,6 +660,10 @@ std::unique_ptr<OutputSurface> LayerTreeHost::ReleaseOutputSurface() {
 
 void LayerTreeHost::RequestNewOutputSurface() {
   client_->RequestNewOutputSurface();
+}
+
+void LayerTreeHost::RequestNewContentFrameSinkConnection() {
+  client_->RequestNewContentFrameSinkConnection();
 }
 
 void LayerTreeHost::DidInitializeOutputSurface() {

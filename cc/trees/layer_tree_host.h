@@ -94,6 +94,7 @@ class LayerTreeHost;
 struct ContentFrameBuilderContext {
   mojom::ContentFrame* frame;
   BulkBufferWriter* bulk_buffer_writer;
+  bool flush_cache;
 };
 
 class CC_EXPORT LayerTreeHost : public MutatorHostClient {
@@ -145,7 +146,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
 
-  void InitializeContentFrameSinkConnection(
+  void SetContentFrameSinkConnection(
       std::unique_ptr<ContentFrameSinkConnection> connection);
 
   void BindImageDecodePtr(mojom::ImageDecodeRequest decode_request);
@@ -174,6 +175,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void DidCompleteSwapBuffers(const SurfaceId& surface_id) {
     client_->DidCompleteSwapBuffers(surface_id);
   }
+  void RequestNewContentFrameSinkConnection();
   bool UpdateLayers();
 
   LayerListIterator<Layer> begin() const;

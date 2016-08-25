@@ -34,6 +34,7 @@ DisplayCompositorConnectionFactoryImpl::GetDisplayCompositorConnection() {
   GpuProcessHost* host =
       GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
                           CAUSE_FOR_GPU_LAUNCH_BROWSER_STARTUP);
+  DCHECK(host);
 
   // Request a DisplayCompositorConnectionFactoryImpl interface from the GPU
   // process.
@@ -65,6 +66,10 @@ DisplayCompositorConnectionFactoryImpl::
     ~DisplayCompositorConnectionFactoryImpl() {
   if (display_compositor_)
     display_compositor_->RemoveObserver(this);
+}
+
+void DisplayCompositorConnectionFactoryImpl::OnConnectionLost() {
+  display_compositor_.reset();
 }
 
 void DisplayCompositorConnectionFactoryImpl::OnSurfaceCreated(

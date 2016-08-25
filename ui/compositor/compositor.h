@@ -367,6 +367,7 @@ class COMPOSITOR_EXPORT Compositor
                            const gfx::Vector2dF& elastic_overscroll_delta,
                            float page_scale,
                            float top_controls_delta) override {}
+  void RequestNewContentFrameSinkConnection() override;
   void RequestNewOutputSurface() override;
   void DidInitializeOutputSurface() override;
   void DidFailToInitializeOutputSurface() override;
@@ -428,6 +429,7 @@ class COMPOSITOR_EXPORT Compositor
   std::unordered_map<uint32_t, uint32_t> surface_clients_;
   bool widget_valid_;
   bool output_surface_requested_;
+  bool content_frame_sink_connection_requested_ = false;
   std::unique_ptr<cc::SurfaceIdAllocator> surface_id_allocator_;
   scoped_refptr<cc::Layer> root_web_layer_;
   std::unique_ptr<cc::LayerTreeHost> host_;

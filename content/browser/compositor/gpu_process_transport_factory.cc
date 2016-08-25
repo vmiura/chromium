@@ -720,6 +720,7 @@ std::unique_ptr<cc::ContentFrameSinkConnection>
 GpuProcessTransportFactory::CreateContentFrameSinkConnection(
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
+  fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
   return BrowserGpuChannelHostFactory::instance()
       ->CreateContentFrameSinkConnection(widget, settings);
 }
