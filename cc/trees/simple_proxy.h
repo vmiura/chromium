@@ -119,6 +119,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
   bool begin_frame_requested_;
   bool needs_update_layers_ = false;
   bool needs_commit_ = false;
+  bool needs_reboot_ = false;
   bool content_frame_sink_requested_ = false;
 
   gfx::Size last_committed_device_viewport_size_;

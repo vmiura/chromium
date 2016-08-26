@@ -81,11 +81,8 @@ void SimpleProxy::SetContentFrameSinkConnection(
   last_committed_device_scale_factor_ = 0.f;
   last_committed_device_viewport_size_ = gfx::Size();
   content_frame_sink_requested_ = false;
-  // SetNeedsUpdateLayers();
-  // SetNeedsCommit();
-  // SetNextCommitWaitsForActivation();
   begin_frame_requested_ = false;
-  if (needs_begin_frame_when_ready_) {
+  if (needs_reboot_ || needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
     SetNeedsBeginFrame();
   }
@@ -94,6 +91,7 @@ void SimpleProxy::SetContentFrameSinkConnection(
     SetNeedsRedraw(needs_redraw_rect_when_ready_);
   }
   SetVisible(last_visible_state_);
+  needs_reboot_ = false;
 }
 
 void SimpleProxy::FinishAllRendering() {
@@ -475,6 +473,7 @@ void SimpleProxy::OnImageDecodeProxyCreated(
 
 void SimpleProxy::OnContentFrameSinkLost() {
   LOG(ERROR) << "SimpleProxy::OnContentFrameSinkLost";
+  needs_reboot_ = true;
   content_frame_sink_.reset();
   binding_.reset();
   RequestNewContentFrameSinkConnection();
