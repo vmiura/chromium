@@ -84,12 +84,14 @@ void DrawingDisplayItem::Serialize(SkWStream* stream) const {
   picture_->serialize(stream, &serializer);
 }
 
-void DrawingDisplayItem::Deserialize(SkStream* stream,
-                                         DisplayItemList* list,
-                                         const gfx::Rect& visual_rect) {
+void DrawingDisplayItem::Deserialize(uint32_t picture_id,
+                                     SkStream* stream,
+                                     DisplayItemList* list,
+                                     const gfx::Rect& visual_rect) {
   DCHECK(stream);
   DCHECK(list);
   sk_sp<SkPicture> picture = SkPicture::MakeFromStream(stream);
+  DCHECK(picture) << picture_id;
   list->CreateAndAppendItem<DrawingDisplayItem>(visual_rect, std::move(picture));
 }
 

@@ -43,7 +43,10 @@ class CC_EXPORT DrawingDisplayItem : public DisplayItem {
   int ApproximateOpCount() const;
 
   void Serialize(SkWStream* stream) const override;
-  static void Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect);
+  static void Deserialize(uint32_t picture_id,
+                          SkStream* stream,
+                          DisplayItemList* list,
+                          const gfx::Rect& visual_rect);
 
   void CloneTo(DrawingDisplayItem* item) const;
 

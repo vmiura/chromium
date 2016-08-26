@@ -126,7 +126,7 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
           sk_sp<const SkPicture> picture;
           it = old_picture_cache->find(picture_id);
           if (it == old_picture_cache->end()) {
-            DrawingDisplayItem::Deserialize(stream, display_item_list.get(), visual_rect);
+            DrawingDisplayItem::Deserialize(picture_id, stream, display_item_list.get(), visual_rect);
             picture = display_item_list->inputs_.items.last().GetPicture();
           } else {
             picture = std::move(it->second);

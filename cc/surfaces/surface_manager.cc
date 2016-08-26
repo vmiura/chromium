@@ -361,7 +361,16 @@ void SurfaceManager::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
 
 void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   if (id.is_null()) return;
-  auto& refs = surface_refs_[id];
+  auto it = surface_refs_.find(id);
+  // DCHECK(it != surface_refs_.end());
+  // TODO(fsamuel): We may try to reap surfaces from an old instance of the
+  // display compositor. This is OK but icky. Because SurfaceIds have a nonce,
+  // it is highly unlikely for a surface ID in the old display compositor to
+  // match a surface ID generated for the new display compositor for now (since
+  // the display compositor is generating the surface ID).
+  if (it == surface_refs_.end())
+    return;
+  auto& refs = it->second;
   DCHECK_GT(refs.refs, 0);
   refs.refs--;
   // If this SurfaceId has no refs then we can garbage collect it.

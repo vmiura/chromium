@@ -317,6 +317,10 @@ void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
                                  mojom::PictureLayerState* mojom) {
   TRACE_EVENT1("cc", "RecordingSource::WriteMojom", "opcount",
                display_list_ ? display_list_->ApproximateOpCount() : 0);
+  if (context.flush_cache) {
+    picture_id_cache_.clear();
+    last_send_display_list_id_ = 0;
+  }
   mojom->recorded_viewport = recorded_viewport_;
   mojom->size = size_;
   mojom->requires_clear = requires_clear_;
@@ -330,8 +334,6 @@ void RecordingSource::WriteMojom(const ContentFrameBuilderContext& context,
       {
         TRACE_EVENT0("cc", "RecordingSource::WriteMojom serialization");
         PictureIdCache new_picture_id_cache;
-        if (context.flush_cache)
-          picture_id_cache_.clear();
         display_list_->SerializeToStream(&stream, &picture_id_cache_,
                                          &new_picture_id_cache);
         picture_id_cache_ = std::move(new_picture_id_cache);

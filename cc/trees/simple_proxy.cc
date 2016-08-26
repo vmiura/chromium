@@ -1,4 +1,4 @@
-// Copyrigh2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,15 +68,23 @@ void SimpleProxy::SetContentFrameSinkConnection(
     std::unique_ptr<ContentFrameSinkConnection> connection) {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   TRACE_EVENT0("cc", "SimpleProxy::InitializeContentFrameSinkConnection");
+  flush_cache_ = true;
   bulk_buffer_writer_ = base::MakeUnique<BulkBufferWriter>(
       BulkBufferWriter::kDefaultBackingSize, connection->shm_allocator);
   content_frame_sink_ = std::move(connection->content_frame_sink);
-  content_frame_sink_.set_connection_error_handler(base::Bind(
-      &SimpleProxy::OnContentFrameSinkLost, weak_factory_.GetWeakPtr()));
   binding_.reset(new mojo::Binding<cc::mojom::ContentFrameSinkClient>(
       this, std::move(connection->client_request)));
-  content_frame_sink_requested_ = false;
+  content_frame_sink_.set_connection_error_handler(base::Bind(
+      &SimpleProxy::OnContentFrameSinkLost, weak_factory_.GetWeakPtr()));
   layer_tree_host_->SetNeedsFullTreeSync();
+  layer_tree_host_->ClearSurfaceIdsToRelease();
+  last_committed_device_scale_factor_ = 0.f;
+  last_committed_device_viewport_size_ = gfx::Size();
+  content_frame_sink_requested_ = false;
+  // SetNeedsUpdateLayers();
+  // SetNeedsCommit();
+  // SetNextCommitWaitsForActivation();
+  begin_frame_requested_ = false;
   if (needs_begin_frame_when_ready_) {
     needs_begin_frame_when_ready_ = false;
     SetNeedsBeginFrame();
@@ -85,10 +93,7 @@ void SimpleProxy::SetContentFrameSinkConnection(
     needs_redraw_when_ready_ = false;
     SetNeedsRedraw(needs_redraw_rect_when_ready_);
   }
-  if (needs_set_visible_when_ready_) {
-    needs_set_visible_when_ready_ = false;
-    SetVisible(needs_set_visible_value_when_ready_);
-  }
+  SetVisible(last_visible_state_);
 }
 
 void SimpleProxy::FinishAllRendering() {
@@ -111,10 +116,11 @@ void SimpleProxy::SetOutputSurface(OutputSurface* output_surface) {
 }
 
 void SimpleProxy::SetVisible(bool visible) {
+  last_visible_state_ = visible;
+  if (visible != last_visible_state_)
+    flush_cache_ = true;
   TRACE_EVENT1("cc", "SimpleProxy::SetVisible", "visible", visible);
   if (!binding_) {
-    needs_set_visible_when_ready_ = true;
-    needs_set_visible_value_when_ready_ = visible;
     RequestNewContentFrameSinkConnection();
     return;
   }
@@ -255,6 +261,7 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 void SimpleProxy::SetNeedsBeginFrame() {
   TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
   DCHECK(IsMainThread());
+
   if (!binding_) {
     needs_begin_frame_when_ready_ = true;
     RequestNewContentFrameSinkConnection();
@@ -275,7 +282,6 @@ bool SimpleProxy::IsMainThread() const {
 
 void SimpleProxy::OnCompositorCreated(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
-  fprintf(stderr, ">>>OnCompositorCreated\n");
   TRACE_EVENT0("cc", "SimpleProxy::OnCompositorCreated");
   layer_tree_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
 }
@@ -471,11 +477,6 @@ void SimpleProxy::OnContentFrameSinkLost() {
   LOG(ERROR) << "SimpleProxy::OnContentFrameSinkLost";
   content_frame_sink_.reset();
   binding_.reset();
-  begin_frame_requested_ = false;
-  content_frame_sink_requested_ = false;
-  last_committed_device_scale_factor_ = 0.f;
-  last_committed_device_viewport_size_ = gfx::Size();
-  flush_cache_ = true;
   RequestNewContentFrameSinkConnection();
 }
 
@@ -487,12 +488,12 @@ void SimpleProxy::RequestNewContentFrameSinkConnection() {
 }
 
 void SimpleProxy::MaybeTrimBulkBufferWriter() {
-  if (!binding_)
-    RequestNewContentFrameSinkConnection();
   if (layer_tree_host_->visible())
     return;
   DCHECK(content_frame_sink_);
-  content_frame_sink_->DeleteBackings(bulk_buffer_writer_->Trim());
+  std::vector<uint32_t> free_backings = bulk_buffer_writer_->Trim();
+  if (binding_)
+    content_frame_sink_->DeleteBackings(std::move(free_backings));
 }
 
 }  // namespace cc

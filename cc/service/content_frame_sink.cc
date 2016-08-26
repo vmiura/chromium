@@ -216,7 +216,8 @@ ContentFrameSink::ContentFrameSink(
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor
-             << " client_id: " << surface_id_allocator_.client_id();
+             << " client_id: " << surface_id_allocator_.client_id()
+             << " sink_id: " << surface_id_allocator_.sink_id();
   // surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   content_frame_sink_client_->OnCompositorCreated(
       surface_id_allocator_.compositor_frame_sink_id());

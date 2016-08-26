@@ -144,6 +144,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   virtual ~LayerTreeHost();
 
+  void ClearSurfaceIdsToRelease();
   void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
 
   void SetContentFrameSinkConnection(

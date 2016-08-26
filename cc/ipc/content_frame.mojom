@@ -128,6 +128,15 @@ struct ContentFrame {
   // This exists iff needs_full_tree_sync is true.
   LayerTree? layer_tree;
   array<cc.mojom.LayerProperties> layer_properties;
+
+  // TODO(fsamuel): If surface Ids can be allocated in the client (to support
+  // offscreen canvas) and CompositorFrameSinkIds persist across display
+  // compositor restarts, then it's possible for us to receive surface IDs here
+  // incorrectly. The security model for returning surfaces is also problematic
+  // because a client shouldn't be allowed to release arbitrary surfaces. This
+  // particular problem is mitigated by unguessable surface IDs. It can further
+  // be mitigated by verifying that the surface ID of each surface in this
+  // array belongs to this client or a child of this client.
   array<cc.mojom.SurfaceId> released_surfaces;
 
   UIResourceRequestQueue? ui_resource_request_queue;

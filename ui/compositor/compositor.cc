@@ -263,6 +263,11 @@ Compositor::~Compositor() {
 
 void Compositor::AddChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  fprintf(
+      stderr, ">>>AddChildCompositorFrameSink(parent[%d, %d], child[%d, %d])\n",
+      compositor_frame_sink_id_.client_id, compositor_frame_sink_id_.sink_id,
+      child_compositor_frame_sink_id.client_id,
+      child_compositor_frame_sink_id.sink_id);
   context_factory_->RegisterSurfaceClientHierarchy(
       compositor_frame_sink_id_, child_compositor_frame_sink_id);
 }

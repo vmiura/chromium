@@ -426,6 +426,10 @@ LayerTreeHost::~LayerTreeHost() {
   }
 }
 
+void LayerTreeHost::ClearSurfaceIdsToRelease() {
+  released_surfaces_.clear();
+}
+
 void LayerTreeHost::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
   released_surfaces_.push_back(surface_id);
 }
@@ -1746,16 +1750,24 @@ void LayerTreeHost::GetContentFrame(const ContentFrameBuilderContext& context) {
   frame->next_commit_forces_redraw = next_commit_forces_redraw_;
   next_commit_forces_redraw_ = false;
   frame->source_frame = source_frame_number_;
+  if (context.flush_cache)
+    released_surfaces_.clear();
   frame->released_surfaces.swap(released_surfaces_);
 
   if (needs_full_tree_sync_ && root_layer()) {
     TRACE_EVENT0("cc", "LayerTreeHost::GetContentFrame full sync layer walk");
     auto tree = cc::mojom::LayerTree::New();
 
-    auto write_layer = [&context, &tree](Layer* layer) {
+    bool flush_cache = context.flush_cache;
+    auto write_layer = [&context, &tree, &flush_cache, &frame](Layer* layer) {
       auto mojom = cc::mojom::LayerStructure::New();
       layer->WriteStructureMojom(context, mojom.get());
       tree->layers.push_back(std::move(mojom));
+      if (flush_cache) {
+        auto mojom = cc::mojom::LayerProperties::New();
+        layer->WritePropertiesMojom(context, mojom.get());
+        frame->layer_properties.push_back(std::move(mojom));
+      }
     };
 
     LayerTreeHostCommon::CallFunctionForEveryLayer(this, write_layer);
@@ -1976,11 +1988,13 @@ void LayerTreeHost::GetContentFrame(const ContentFrameBuilderContext& context) {
   {
     TRACE_EVENT0("cc", "LayerTreeHost::PushProperties");
 
-    auto layers = layer_tree_.LayersThatShouldPushProperties();
-    for (auto* layer : layers) {
-      auto mojom = cc::mojom::LayerProperties::New();
-      layer->WritePropertiesMojom(context, mojom.get());
-      frame->layer_properties.push_back(std::move(mojom));
+    if (!context.flush_cache) {
+      auto layers = layer_tree_.LayersThatShouldPushProperties();
+      for (auto* layer : layers) {
+        auto mojom = cc::mojom::LayerProperties::New();
+        layer->WritePropertiesMojom(context, mojom.get());
+        frame->layer_properties.push_back(std::move(mojom));
+      }
     }
 
     TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");

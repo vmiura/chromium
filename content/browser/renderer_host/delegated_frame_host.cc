@@ -230,6 +230,8 @@ uint32_t DelegatedFrameHost::GetSurfaceClientId() {
 void DelegatedFrameHost::SetCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
   compositor_frame_sink_id_ = compositor_frame_sink_id;
+  fprintf(stderr, ">>%s id(%d, %d)\n", __PRETTY_FUNCTION__,
+          compositor_frame_sink_id.client_id, compositor_frame_sink_id.sink_id);
   if (compositor_)
     compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id);
 }

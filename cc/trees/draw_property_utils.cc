@@ -662,6 +662,7 @@ void UpdateRenderSurfaceForLayer(EffectTree* effect_tree,
   }
 
   EffectNode* node = effect_tree->Node(layer->effect_tree_index());
+  DCHECK(node);
 
   if (node->owner_id == layer->id() && node->has_render_surface)
     layer->SetHasRenderSurface(true);
@@ -1581,6 +1582,7 @@ static void UpdateElasticOverscrollInternal(
     PropertyTrees* property_trees,
     const LayerType* overscroll_elasticity_layer,
     const gfx::Vector2dF& elastic_overscroll) {
+  DCHECK(property_trees);
   if (!overscroll_elasticity_layer) {
     DCHECK(elastic_overscroll.IsZero());
     return;
@@ -1588,6 +1590,7 @@ static void UpdateElasticOverscrollInternal(
 
   TransformNode* node = property_trees->transform_tree.Node(
       overscroll_elasticity_layer->transform_tree_index());
+  DCHECK(node);
   if (node->scroll_offset == gfx::ScrollOffset(elastic_overscroll))
     return;
 
