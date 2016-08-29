@@ -383,7 +383,8 @@ BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
   connection->client_request = mojo::GetProxy(&client);
   display_compositor_host_private_->CreateContentFrameSinkWithHandle(
       next_sink_id_++, surface_handle, settings.ToMojom(),
-      mojo::GetProxy(&connection->content_frame_sink), std::move(client));
+      mojo::GetProxy(&connection->content_frame_sink), nullptr,
+      std::move(client));
   return connection;
 }
 

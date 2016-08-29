@@ -171,6 +171,7 @@ ContentFrameSink::ContentFrameSink(
     int32_t sink_id,
     const gpu::SurfaceHandle& handle,
     cc::mojom::ContentFrameSinkRequest request,
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
     cc::mojom::ContentFrameSinkClientPtr client,
     const cc::LayerTreeSettings& settings,
     SharedBitmapManager* shared_bitmap_manager,
@@ -212,6 +213,7 @@ ContentFrameSink::ContentFrameSink(
                      new ImageDecodeProxy(client.get()))),
       bulk_buffer_reader_(BulkBufferWriter::kDefaultBackingSize),
       content_frame_sink_client_(std::move(client)),
+      private_binding_(this, std::move(private_request)),
       binding_(this, std::move(request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor

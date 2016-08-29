@@ -62,7 +62,8 @@ void DisplayCompositorHost::CreateContentFrameSink(
   // a DelegatedFrameHost. We can map compositor_id => DelegatedFrameHost.
   CreateContentFrameSinkWithHandle(
       sink_id, gpu::kNullSurfaceHandle, std::move(settings),
-      std::move(content_frame_sink), std::move(content_frame_sink_client));
+      std::move(content_frame_sink), nullptr,
+      std::move(content_frame_sink_client));
 }
 
 void DisplayCompositorHost::CreateContentFrameSinkWithHandle(
@@ -70,13 +71,15 @@ void DisplayCompositorHost::CreateContentFrameSinkWithHandle(
     const gpu::SurfaceHandle& surface_handle,
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
+    mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   // TODO(fsamuel): (client_id, routing_id) uniquely identifies a
   // RenderWidgetHost and thus a RenderWidgetHostView and thus
   // a DelegatedFrameHost. We can map compositor_id => DelegatedFrameHost.
   GetDisplayCompositorConnection()->CreateContentFrameSink(
       client_id_, sink_id, surface_handle, std::move(settings),
-      std::move(content_frame_sink), std::move(content_frame_sink_client));
+      std::move(content_frame_sink), std::move(content_frame_sink_private),
+      std::move(content_frame_sink_client));
 }
 
 DisplayCompositorHost::DisplayCompositorHost(

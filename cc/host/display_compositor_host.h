@@ -56,6 +56,7 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
       const gpu::SurfaceHandle& surface_handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
+      mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
  private:

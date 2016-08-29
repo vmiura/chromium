@@ -52,10 +52,12 @@ void DisplayCompositorConnection::CreateContentFrameSink(
     const gpu::SurfaceHandle& handle,
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
+    mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   display_compositor_->CreateContentFrameSink(
       client_id, sink_id, handle, std::move(settings),
-      std::move(content_frame_sink), std::move(content_frame_sink_client));
+      std::move(content_frame_sink), std::move(content_frame_sink_private),
+      std::move(content_frame_sink_client));
 }
 
 void DisplayCompositorConnection::OnConnectionLost() {

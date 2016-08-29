@@ -19,6 +19,7 @@
 #include "cc/surfaces/surface_id_allocator.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/task_runner_provider.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -36,12 +37,15 @@ class SurfaceManager;
 class TaskGraphRunner;
 class UIResourceRequest;
 
-class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
+class CC_SERVICE_EXPORT ContentFrameSink :
+  public cc::mojom::ContentFrameSink,
+  public cc::mojom::ContentFrameSinkPrivate {
  public:
   ContentFrameSink(uint32_t client_id,
                    int32_t sink_id,
                    const gpu::SurfaceHandle& handle,
                    cc::mojom::ContentFrameSinkRequest request,
+                   cc::mojom::ContentFrameSinkPrivateRequest private_request,
                    cc::mojom::ContentFrameSinkClientPtr client,
                    const cc::LayerTreeSettings& settings,
                    SharedBitmapManager* shared_bitmap_manager,
@@ -64,8 +68,10 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
   void ScheduledActionCommit();
 
   // cc::mojom::ContentFrameSinkPrivate implementation.
-  void RegisterChildSink(const CompositorFrameSinkId& child_client_id);
-  void UnregisterChildSink(const CompositorFrameSinkId& child_client_id);
+  void RegisterChildSink(
+      const CompositorFrameSinkId& child_client_id) override;
+  void UnregisterChildSink(
+      const CompositorFrameSinkId& child_client_id) override;
 
   // cc::mojom::ContentFrameSink implementation.
   void SetNeedsBeginMainFrame() override;
@@ -132,6 +138,7 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
   LayerTreeHostImpl host_impl_;
   BulkBufferReader bulk_buffer_reader_;
   cc::mojom::ContentFrameSinkClientPtr content_frame_sink_client_;
+  mojo::Binding<cc::mojom::ContentFrameSinkPrivate> private_binding_;
   mojo::StrongBinding<cc::mojom::ContentFrameSink> binding_;
   mojom::ContentFramePtr frame_for_commit_;
   WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;

@@ -55,6 +55,7 @@ class DisplayCompositor : public mojom::DisplayCompositor,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
+      mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
       mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
 
   // SurfaceManager::Delegate implementation.

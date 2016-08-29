@@ -60,6 +60,7 @@ interface DisplayCompositor {
                          gpu.mojom.SurfaceHandle widget,
                          cc.mojom.LayerTreeSettings settings,
                          ContentFrameSink& content_frame_sink,
+                         ContentFrameSinkPrivate& content_frame_sink_private,
                          ContentFrameSinkClient content_frame_sink_client);
 };
 
@@ -95,6 +96,7 @@ interface DisplayCompositorHostPrivate {
       gpu.mojom.SurfaceHandle widget,
       cc.mojom.LayerTreeSettings settings,
       ContentFrameSink& content_frame_sink,
+      ContentFrameSinkPrivate& content_frame_sink_private,
       ContentFrameSinkClient content_frame_sink_client);
 };
 
@@ -102,7 +104,7 @@ interface DisplayCompositorHostPrivate {
 // BeginFrameSource hierarchies. This API lives in SurfaceManager but is called
 // from here in order to ensure that hierarchy registration does not race with
 // ContentFrameSink creation.
-interface ContentSinkSinkPrivate {
+interface ContentFrameSinkPrivate {
   RegisterChildSink(CompositorFrameSinkId child_client_id);
 
   UnregisterChildSink(CompositorFrameSinkId child_client_id);

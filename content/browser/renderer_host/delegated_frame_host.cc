@@ -949,9 +949,8 @@ void DelegatedFrameHost::ResetCompositor() {
     vsync_manager_ = NULL;
   }
 
-  if (!compositor_frame_sink_id_.is_null()) {
+  if (!compositor_frame_sink_id_.is_null())
     compositor_->RemoveChildCompositorFrameSinkId(compositor_frame_sink_id_);
-  }
   compositor_ = nullptr;
 }
 
