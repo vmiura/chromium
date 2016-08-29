@@ -65,11 +65,10 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
       mojom::DisplayCompositorHostRequest request,
       mojom::DisplayCompositorHostPrivateRequest private_request);
 
-  void ConnectToDisplayCompositorIfNecessary();
+  DisplayCompositorConnection* GetDisplayCompositorConnection();
 
   const int32_t client_id_;
   scoped_refptr<DisplayCompositorConnectionFactory> connection_factory_;
-  DisplayCompositorConnection* display_compositor_ = nullptr;
   mojo::StrongBinding<mojom::DisplayCompositorHost> binding_;
   mojo::Binding<mojom::DisplayCompositorHostPrivate> private_binding_;
 

@@ -30,29 +30,25 @@ void DisplayCompositorHost::CreatePrivate(
 DisplayCompositorHost::~DisplayCompositorHost() = default;
 
 void DisplayCompositorHost::AddRefOnSurfaceId(const SurfaceId& id) {
-  ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->AddRefOnSurfaceId(id);
+  GetDisplayCompositorConnection()->AddRefOnSurfaceId(id);
 }
 
 void DisplayCompositorHost::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->MoveTempRefToRefOnSurfaceId(id);
+  GetDisplayCompositorConnection()->MoveTempRefToRefOnSurfaceId(id);
 }
 
 void DisplayCompositorHost::RegisterClientHierarchy(
     const CompositorFrameSinkId& parent_client_id,
     const CompositorFrameSinkId& child_client_id) {
-  ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->RegisterClientHierarchy(parent_client_id,
-                                               child_client_id);
+  GetDisplayCompositorConnection()->RegisterClientHierarchy(parent_client_id,
+                                                            child_client_id);
 }
 
 void DisplayCompositorHost::UnregisterClientHierarchy(
     const CompositorFrameSinkId& parent_client_id,
     const CompositorFrameSinkId& child_client_id) {
-  ConnectToDisplayCompositorIfNecessary();
-  display_compositor_->UnregisterClientHierarchy(parent_client_id,
-                                                 child_client_id);
+  GetDisplayCompositorConnection()->UnregisterClientHierarchy(parent_client_id,
+                                                              child_client_id);
 }
 
 void DisplayCompositorHost::CreateContentFrameSink(
@@ -75,11 +71,10 @@ void DisplayCompositorHost::CreateContentFrameSinkWithHandle(
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
-  ConnectToDisplayCompositorIfNecessary();
   // TODO(fsamuel): (client_id, routing_id) uniquely identifies a
   // RenderWidgetHost and thus a RenderWidgetHostView and thus
   // a DelegatedFrameHost. We can map compositor_id => DelegatedFrameHost.
-  display_compositor_->CreateContentFrameSink(
+  GetDisplayCompositorConnection()->CreateContentFrameSink(
       client_id_, sink_id, surface_handle, std::move(settings),
       std::move(content_frame_sink), std::move(content_frame_sink_client));
 }
@@ -94,11 +89,9 @@ DisplayCompositorHost::DisplayCompositorHost(
       binding_(this, std::move(request)),
       private_binding_(this, std::move(private_request)) {}
 
-void DisplayCompositorHost::ConnectToDisplayCompositorIfNecessary() {
-  // TODO(fsamuel): This seems a bit silly to cache the display compositor here.
-  // It should be the responsibility of the DisplayCompositorConnectionFactory
-  // to cache the display compositor.
-  display_compositor_ = connection_factory_->GetDisplayCompositorConnection();
+DisplayCompositorConnection*
+DisplayCompositorHost::GetDisplayCompositorConnection() {
+  return connection_factory_->GetDisplayCompositorConnection();
 }
 
 }  // namespace cc
