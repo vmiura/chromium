@@ -34,7 +34,7 @@ class BrowserGpuMemoryBufferManager;
 
 class CONTENT_EXPORT BrowserGpuChannelHostFactory
     : public gpu::GpuChannelHostFactory,
-      public cc::DisplayCompositorConnectionObserver {
+      public cc::DisplayCompositorConnectionClient {
  public:
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
@@ -64,9 +64,9 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
                                    const cc::LayerTreeSettings& settings);
 
   void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer);
+      cc::DisplayCompositorConnectionClient* observer);
   void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer);
+      cc::DisplayCompositorConnectionClient* observer);
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
   void RegisterSurfaceClientHierarchy(
@@ -85,10 +85,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
 
   BrowserGpuChannelHostFactory();
   ~BrowserGpuChannelHostFactory() override;
-
-  // cc::DisplayCompositorConnectionObserver implementation.
-  void OnSurfaceCreated(const gfx::Size& frame_size,
-                        const cc::SurfaceId& surface_id) override;
 
   void ConnectToDisplayCompositorHostIfNecessary();
   void GpuChannelEstablished();

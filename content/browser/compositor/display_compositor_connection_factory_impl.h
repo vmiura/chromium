@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_COMPOSITOR_DISPLAY_COMPOSITOR_CONNECTION_FACTORY_IMPL_H_
 
 #include "cc/host/display_compositor_connection.h"
+#include "cc/host/display_compositor_connection_client.h"
 #include "cc/host/display_compositor_host.h"
 #include "cc/ipc/compositor.mojom.h"
 
@@ -20,21 +21,21 @@ namespace content {
 // This particular implementation is created on the browser process' UI thread,
 // but accessed on the browser process' IO thread.
 // DisplayCompositorConnectionFactoryImpl is a
-// DisplayCompositorConnectionObserver but also takes in a
-// DisplayCompositorConnectionObserver. The difference being calls to its
+// DisplayCompositorConnectionClient but also takes in a
+// DisplayCompositorConnectionClient. The difference being calls to its
 // internal methods happen on the IO thread but are relayed to the UI thread to
 // the external observer. It is assumed that the external observer outlives this
 // object.
 class DisplayCompositorConnectionFactoryImpl
     : public cc::DisplayCompositorConnectionFactory,
-      public cc::DisplayCompositorConnectionObserver {
+      public cc::DisplayCompositorConnectionClient {
  public:
   DisplayCompositorConnectionFactoryImpl();
 
   // These are main (UI) thread observers that observe updates coming
   // from the DisplayCompositorConnection's thread (typically IO thread).
-  void AddObserver(DisplayCompositorConnectionObserver* observer);
-  void RemoveObserver(DisplayCompositorConnectionObserver* observer);
+  void AddObserver(DisplayCompositorConnectionClient* observer);
+  void RemoveObserver(DisplayCompositorConnectionClient* observer);
 
   // DisplayCompositorConnectionFactory implementation:
   cc::DisplayCompositorConnection* GetDisplayCompositorConnection() override;
@@ -42,7 +43,7 @@ class DisplayCompositorConnectionFactoryImpl
  private:
   ~DisplayCompositorConnectionFactoryImpl() override;
 
-  // DisplayCompositorConnectionObserver implementation:
+  // DisplayCompositorConnectionClient implementation:
   void OnConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
@@ -50,7 +51,7 @@ class DisplayCompositorConnectionFactoryImpl
   friend class base::RefCountedThreadSafe<
       DisplayCompositorConnectionFactoryImpl>;
 
-  base::ObserverList<DisplayCompositorConnectionObserver> observers_;
+  base::ObserverList<DisplayCompositorConnectionClient> observers_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   std::unique_ptr<cc::DisplayCompositorConnection> display_compositor_;
 

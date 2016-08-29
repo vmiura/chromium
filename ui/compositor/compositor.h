@@ -17,6 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/host/display_compositor_connection.h"
+#include "cc/host/display_compositor_connection_client.h"
 #include "cc/output/begin_frame_args.h"
 #include "cc/surfaces/surface_sequence.h"
 #include "cc/trees/layer_tree_host_client.h"
@@ -145,10 +146,10 @@ class COMPOSITOR_EXPORT ContextFactory {
   virtual uint32_t AllocateSurfaceClientId() = 0;
 
   virtual void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer) = 0;
+      cc::DisplayCompositorConnectionClient* observer) = 0;
 
   virtual void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer) = 0;
+      cc::DisplayCompositorConnectionClient* observer) = 0;
 
   // Sets up a connection to the service compositor (synchronously, woops).
   // TODO(hackathon): Make this async by returning void and have it call back
@@ -218,7 +219,7 @@ class COMPOSITOR_EXPORT CompositorLock
 class COMPOSITOR_EXPORT Compositor
     : NON_EXPORTED_BASE(public cc::LayerTreeHostClient),
       NON_EXPORTED_BASE(public cc::LayerTreeHostSingleThreadClient),
-      NON_EXPORTED_BASE(public cc::DisplayCompositorConnectionObserver) {
+      NON_EXPORTED_BASE(public cc::DisplayCompositorConnectionClient) {
  public:
   Compositor(ui::ContextFactory* context_factory,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -383,7 +384,7 @@ class COMPOSITOR_EXPORT Compositor
   void DidPostSwapBuffers() override;
   void DidAbortSwapBuffers() override;
 
-  // cc::DisplayCompositorConnectionObserver implementation.
+  // cc::DisplayCompositorConnectionClient implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

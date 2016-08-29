@@ -14,13 +14,13 @@ DisplayCompositorConnectionFactoryImpl::DisplayCompositorConnectionFactoryImpl()
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 void DisplayCompositorConnectionFactoryImpl::AddObserver(
-    DisplayCompositorConnectionObserver* observer) {
+    DisplayCompositorConnectionClient* observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observers_.AddObserver(observer);
 }
 
 void DisplayCompositorConnectionFactoryImpl::RemoveObserver(
-    DisplayCompositorConnectionObserver* observer) {
+    DisplayCompositorConnectionClient* observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observers_.RemoveObserver(observer);
 }
@@ -54,18 +54,14 @@ DisplayCompositorConnectionFactoryImpl::GetDisplayCompositorConnection() {
       std::move(display_compositor_client));
 
   display_compositor_ = base::MakeUnique<cc::DisplayCompositorConnection>(
-      std::move(display_compositor),
+      this, std::move(display_compositor),
       std::move(display_compositor_client_request));
-
-  display_compositor_->AddObserver(this);
 
   return display_compositor_.get();
 }
 
 DisplayCompositorConnectionFactoryImpl::
     ~DisplayCompositorConnectionFactoryImpl() {
-  if (display_compositor_)
-    display_compositor_->RemoveObserver(this);
 }
 
 void DisplayCompositorConnectionFactoryImpl::OnConnectionLost() {
@@ -82,7 +78,7 @@ void DisplayCompositorConnectionFactoryImpl::OnSurfaceCreated(
                    this, frame_size, surface_id));
     return;
   }
-  FOR_EACH_OBSERVER(DisplayCompositorConnectionObserver, observers_,
+  FOR_EACH_OBSERVER(DisplayCompositorConnectionClient, observers_,
                     OnSurfaceCreated(frame_size, surface_id));
 }
 

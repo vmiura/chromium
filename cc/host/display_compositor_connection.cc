@@ -4,12 +4,16 @@
 
 #include "cc/host/display_compositor_connection.h"
 
+#include "cc/host/display_compositor_connection_client.h"
+
 namespace cc {
 
 DisplayCompositorConnection::DisplayCompositorConnection(
+    DisplayCompositorConnectionClient* connection_client,
     mojom::DisplayCompositorPtr display_compositor,
     mojom::DisplayCompositorClientRequest display_compositor_client)
-    : display_compositor_(std::move(display_compositor)),
+    : connection_client_(connection_client),
+      display_compositor_(std::move(display_compositor)),
       client_binding_(this, std::move(display_compositor_client)),
       weak_factory_(this) {
   display_compositor_.set_connection_error_handler(
@@ -18,16 +22,6 @@ DisplayCompositorConnection::DisplayCompositorConnection(
 }
 
 DisplayCompositorConnection::~DisplayCompositorConnection() = default;
-
-void DisplayCompositorConnection::AddObserver(
-    DisplayCompositorConnectionObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DisplayCompositorConnection::RemoveObserver(
-    DisplayCompositorConnectionObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
 
 void DisplayCompositorConnection::AddRefOnSurfaceId(const SurfaceId& id) {
   display_compositor_->AddRefOnSurfaceId(id);
@@ -65,19 +59,13 @@ void DisplayCompositorConnection::CreateContentFrameSink(
 }
 
 void DisplayCompositorConnection::OnConnectionLost() {
-  // TODO(fsamuel): Adding an observer list here and in ConnectionFactory is
-  // probably overkill. This should be cleaned up.
-  FOR_EACH_OBSERVER(DisplayCompositorConnectionObserver, observers_,
-                    OnConnectionLost());
+  connection_client_->OnConnectionLost();
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(
     const gfx::Size& frame_size,
     const cc::SurfaceId& surface_id) {
-  // TODO(fsamuel): Adding an observer list here and in ConnectionFactory is
-  // probably overkill. This should be cleaned up.
-  FOR_EACH_OBSERVER(DisplayCompositorConnectionObserver, observers_,
-                    OnSurfaceCreated(frame_size, surface_id));
+  connection_client_->OnSurfaceCreated(frame_size, surface_id);
 }
 
 }  // namespace cc

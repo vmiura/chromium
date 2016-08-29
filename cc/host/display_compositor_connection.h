@@ -10,13 +10,7 @@
 
 namespace cc {
 
-class DisplayCompositorConnectionObserver {
- public:
-  virtual ~DisplayCompositorConnectionObserver() {}
-  virtual void OnSurfaceCreated(const gfx::Size& frame_size,
-                                const cc::SurfaceId& surface_id) {}
-  virtual void OnConnectionLost() {}
-};
+class DisplayCompositorConnectionClient;
 
 // This class encapsulates a single two way connection to the display
 // compositor. There is a DisplayCompositorHost object for each
@@ -27,13 +21,11 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
                                     public mojom::DisplayCompositorClient {
  public:
   DisplayCompositorConnection(
+      DisplayCompositorConnectionClient* connection_client,
       mojom::DisplayCompositorPtr display_compositor,
       mojom::DisplayCompositorClientRequest display_compositor_client);
 
   ~DisplayCompositorConnection() override;
-
-  void AddObserver(DisplayCompositorConnectionObserver* observer);
-  void RemoveObserver(DisplayCompositorConnectionObserver* observer);
 
   void AddRefOnSurfaceId(const SurfaceId& id) override;
   void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
@@ -58,7 +50,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
                         const cc::SurfaceId& surface_id) override;
 
  private:
-  base::ObserverList<DisplayCompositorConnectionObserver> observers_;
+  DisplayCompositorConnectionClient* const connection_client_;
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
   base::WeakPtrFactory<DisplayCompositorConnection> weak_factory_;

@@ -63,6 +63,10 @@ class CC_SERVICE_EXPORT ContentFrameSink : public cc::mojom::ContentFrameSink {
   void DidActivateSyncTree();
   void ScheduledActionCommit();
 
+  // cc::mojom::ContentFrameSinkPrivate implementation.
+  void RegisterChildSink(const CompositorFrameSinkId& child_client_id);
+  void UnregisterChildSink(const CompositorFrameSinkId& child_client_id);
+
   // cc::mojom::ContentFrameSink implementation.
   void SetNeedsBeginMainFrame() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;

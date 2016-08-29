@@ -106,7 +106,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver,
       public cc::BeginFrameObserver,
-      public cc::DisplayCompositorConnectionObserver {
+      public cc::DisplayCompositorConnectionClient {
  public:
   // When |is_guest_view_hack| is true, this view isn't really the view for
   // the |widget|, a RenderWidgetHostViewGuest is.
@@ -483,7 +483,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   const cc::BeginFrameArgs& LastUsedBeginFrameArgs() const override;
   void OnBeginFrameSourcePausedChanged(bool paused) override;
 
-  // cc::DisplayCompositorConnectionObserver implementation.
+  // cc::DisplayCompositorConnectionClient implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

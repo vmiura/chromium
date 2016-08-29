@@ -705,13 +705,13 @@ uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
 }
 
 void GpuProcessTransportFactory::AddDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionObserver* observer) {
+    cc::DisplayCompositorConnectionClient* observer) {
   BrowserGpuChannelHostFactory::instance()->AddDisplayCompositorObserver(
       observer);
 }
 
 void GpuProcessTransportFactory::RemoveDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionObserver* observer) {
+    cc::DisplayCompositorConnectionClient* observer) {
   BrowserGpuChannelHostFactory::instance()->RemoveDisplayCompositorObserver(
       observer);
 }

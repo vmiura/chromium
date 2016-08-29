@@ -388,14 +388,14 @@ BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
 }
 
 void BrowserGpuChannelHostFactory::AddDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionObserver* observer) {
+    cc::DisplayCompositorConnectionClient* observer) {
   static_cast<DisplayCompositorConnectionFactoryImpl*>(
       GetDisplayCompositorConnectionFactory().get())
       ->AddObserver(observer);
 }
 
 void BrowserGpuChannelHostFactory::RemoveDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionObserver* observer) {
+    cc::DisplayCompositorConnectionClient* observer) {
   static_cast<DisplayCompositorConnectionFactoryImpl*>(
       GetDisplayCompositorConnectionFactory().get())
       ->RemoveObserver(observer);
@@ -436,10 +436,6 @@ void BrowserGpuChannelHostFactory::UnregisterSurfaceClientHierarchy(
   display_compositor_host_private_->UnregisterClientHierarchy(parent_client_id,
                                                               child_client_id);
 }
-
-void BrowserGpuChannelHostFactory::OnSurfaceCreated(
-    const gfx::Size& frame_size,
-    const cc::SurfaceId& surface_id) {}
 
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
   if (display_compositor_host_)

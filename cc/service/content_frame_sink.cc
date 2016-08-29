@@ -185,7 +185,6 @@ ContentFrameSink::ContentFrameSink(
       image_factory_(image_factory),
       surface_manager_(surface_manager),
       widget_(handle),
-      // TODO(fsamuel): This is wrong. Client ID + Sink ID
       surface_id_allocator_(client_id, sink_id),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
@@ -356,6 +355,18 @@ DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
 
   DCHECK_NE(INVALID_RESULT, result);
   return result;
+}
+
+void ContentFrameSink::RegisterChildSink(
+    const CompositorFrameSinkId& child_client_id) {
+  surface_manager_->RegisterSurfaceNamespaceHierarchy(
+      surface_id_allocator_.compositor_frame_sink_id(), child_client_id);
+}
+
+void ContentFrameSink::UnregisterChildSink(
+    const CompositorFrameSinkId& child_client_id) {
+  surface_manager_->UnregisterSurfaceNamespaceHierarchy(
+      surface_id_allocator_.compositor_frame_sink_id(), child_client_id);
 }
 
 void ContentFrameSink::SetNeedsBeginMainFrame() {

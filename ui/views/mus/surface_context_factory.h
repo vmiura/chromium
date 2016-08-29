@@ -51,9 +51,9 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   uint32_t AllocateSurfaceClientId() override;
   void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer) override {}
+      cc::DisplayCompositorConnectionClient* observer) override {}
   void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionObserver* observer) override {}
+      cc::DisplayCompositorConnectionClient* observer) override {}
   std::unique_ptr<cc::ContentFrameSinkConnection>
   CreateContentFrameSinkConnection(
       gfx::AcceleratedWidget widget,
