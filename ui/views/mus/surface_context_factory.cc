@@ -88,12 +88,14 @@ cc::TaskGraphRunner* SurfaceContextFactory::GetTaskGraphRunner() {
   return raster_thread_helper_.task_graph_runner();
 }
 
-uint32_t SurfaceContextFactory::AllocateSurfaceClientId() {
-  return next_surface_id_namespace_++;
+cc::CompositorFrameSinkId
+SurfaceContextFactory::AllocateCompositorFrameSinkId() {
+  return cc::CompositorFrameSinkId(0, next_surface_id_namespace_++);
 }
 
 std::unique_ptr<cc::ContentFrameSinkConnection>
 SurfaceContextFactory::CreateContentFrameSinkConnection(
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   return nullptr;

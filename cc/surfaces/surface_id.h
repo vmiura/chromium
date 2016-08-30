@@ -41,6 +41,10 @@ struct CompositorFrameSinkId {
            std::tie(other.client_id, other.sink_id);
   }
 
+  std::string ToString() const {
+    return base::StringPrintf("%d:%d", client_id, sink_id);
+  }
+
   size_t hash() const { return base::HashInts(client_id, sink_id); }
 
   uint32_t client_id;

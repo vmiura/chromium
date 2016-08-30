@@ -36,26 +36,28 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   void RemoveReflector(ui::Reflector* reflector) override;
   scoped_refptr<cc::ContextProvider> SharedMainThreadContextProvider() override;
   void RemoveCompositor(ui::Compositor* compositor) override;
+
   // TODO(fsamuel): Make mus do the right thing.
-  void RegisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_Id) override {}
-  void UnregisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id) override {}
+  void RegisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id,
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      cc::DisplayCompositorConnectionClient* connection_client) override {}
+  void UnregisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id) override {}
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,
                                  gfx::BufferUsage usage) override;
   cc::SharedBitmapManager* GetSharedBitmapManager() override;
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  uint32_t AllocateSurfaceClientId() override;
+  cc::CompositorFrameSinkId AllocateCompositorFrameSinkId() override;
   void AddDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer) override {}
   void RemoveDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer) override {}
   std::unique_ptr<cc::ContentFrameSinkConnection>
   CreateContentFrameSinkConnection(
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;
   // HACKATHON: No SurfaceManager in the browser.

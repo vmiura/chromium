@@ -115,15 +115,15 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Destroys per-compositor data.
   virtual void RemoveCompositor(Compositor* compositor) = 0;
 
-  // Register a surface client hierarchy.
-  virtual void RegisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id) = 0;
+  // Registers a DisplayCompositorConnectionClient.
+  virtual void RegisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id,
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      cc::DisplayCompositorConnectionClient* connection_client) = 0;
 
-  // Unregister a surface client hierarchy.
-  virtual void UnregisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id) = 0;
+  // Unregisters a DisplayCompositorConnectionClient.
+  virtual void UnregisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id) = 0;
 
   // When true, the factory uses test contexts that do not do real GL
   // operations.
@@ -143,7 +143,7 @@ class COMPOSITOR_EXPORT ContextFactory {
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
 
   // Allocate a new client ID for the display compositor.
-  virtual uint32_t AllocateSurfaceClientId() = 0;
+  virtual cc::CompositorFrameSinkId AllocateCompositorFrameSinkId() = 0;
 
   virtual void AddDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer) = 0;
@@ -156,8 +156,10 @@ class COMPOSITOR_EXPORT ContextFactory {
   // to a function on Compositor to set the ContentFrameSinkConnection when we
   // have it, similar to OutputSurface.
   virtual std::unique_ptr<cc::ContentFrameSinkConnection>
-  CreateContentFrameSinkConnection(gfx::AcceleratedWidget widget,
-                                   const cc::LayerTreeSettings& settings) = 0;
+  CreateContentFrameSinkConnection(
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      gfx::AcceleratedWidget widget,
+      const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
   // virtual cc::SurfaceManager* GetSurfaceManager() = 0;
@@ -400,10 +402,6 @@ class COMPOSITOR_EXPORT Compositor
     return &layer_animator_collection_;
   }
 
-  cc::SurfaceIdAllocator* surface_id_allocator() {
-    return surface_id_allocator_.get();
-  }
-
  private:
   friend class base::RefCounted<Compositor>;
   friend class CompositorLock;
@@ -430,8 +428,9 @@ class COMPOSITOR_EXPORT Compositor
   std::unordered_map<uint32_t, uint32_t> surface_clients_;
   bool widget_valid_;
   bool output_surface_requested_;
+  cc::mojom::ContentFrameSinkPrivateRequest pending_private_request_;
   bool content_frame_sink_connection_requested_ = false;
-  std::unique_ptr<cc::SurfaceIdAllocator> surface_id_allocator_;
+  cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_ = nullptr;
   scoped_refptr<cc::Layer> root_web_layer_;
   std::unique_ptr<cc::LayerTreeHost> host_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

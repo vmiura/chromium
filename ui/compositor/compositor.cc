@@ -83,9 +83,6 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       widget_(gfx::kNullAcceleratedWidget),
       widget_valid_(false),
       output_surface_requested_(false),
-      surface_id_allocator_(
-          new cc::SurfaceIdAllocator(context_factory->AllocateSurfaceClientId(),
-                                     0 /* sink_id */)),
       task_runner_(task_runner),
       vsync_manager_(new CompositorVSyncManager()),
       device_scale_factor_(0.0f),
@@ -94,11 +91,6 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       layer_animator_collection_(this),
       weak_ptr_factory_(this) {
   context_factory_->AddDisplayCompositorObserver(this);
-  // TODO(hackathon): We don't use a SurfaceManager in the browser.
-  // if (context_factory->GetSurfaceManager()) {
-  //  context_factory->GetSurfaceManager()->RegisterSurfaceClientId(
-  //      surface_id_allocator_->client_id());
-  //}
   root_web_layer_ = cc::Layer::Create();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -247,35 +239,24 @@ Compositor::~Compositor() {
   host_.reset();
 
   context_factory_->RemoveCompositor(this);
-  // HACKATHON: We do not need SurfaceManager in the browser.
-  // if (context_factory_->GetSurfaceManager()) {
-  //  for (auto& client : surface_clients_) {
-  //    if (client.second) {
-  //      context_factory_->GetSurfaceManager()
-  //          ->UnregisterSurfaceNamespaceHierarchy(client.second,
-  //          client.first);
-  //    }
-  //  }
-  //  context_factory_->GetSurfaceManager()->InvalidateSurfaceClientId(
-  //      surface_id_allocator_->client_id());
-  //}
 }
 
 void Compositor::AddChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
-  fprintf(
-      stderr, ">>>AddChildCompositorFrameSink(parent[%d, %d], child[%d, %d])\n",
-      compositor_frame_sink_id_.client_id, compositor_frame_sink_id_.sink_id,
-      child_compositor_frame_sink_id.client_id,
-      child_compositor_frame_sink_id.sink_id);
-  context_factory_->RegisterSurfaceClientHierarchy(
-      compositor_frame_sink_id_, child_compositor_frame_sink_id);
+  if (!content_frame_sink_private_)
+    pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
+
+  content_frame_sink_private_->RegisterChildSink(
+      child_compositor_frame_sink_id);
 }
 
 void Compositor::RemoveChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
-  context_factory_->UnregisterSurfaceClientHierarchy(
-      compositor_frame_sink_id_, child_compositor_frame_sink_id);
+  if (!content_frame_sink_private_)
+    pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
+
+  content_frame_sink_private_->UnregisterChildSink(
+      child_compositor_frame_sink_id);
 }
 
 void Compositor::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
@@ -284,25 +265,7 @@ void Compositor::ReleaseSurfaceId(const cc::SurfaceId& surface_id) {
 
 void Compositor::SetOutputSurface(
     std::unique_ptr<cc::OutputSurface> output_surface) {
-#if 0
-  output_surface_requested_ = false;
-  host_->SetOutputSurface(std::move(output_surface));
-  // ui::Compositor uses a SingleThreadProxy and so BindToClient will be called
-  // above and SurfaceManager will be made aware of the OutputSurface's client
-  // ID.
-  for (auto& client : surface_clients_) {
-    if (client.second == surface_id_allocator_->client_id())
-      continue;
-    // If a client already has a parent, then we unregister the existing parent.
-    if (client.second) {
-      context_factory_->GetSurfaceManager()
-          ->UnregisterSurfaceNamespaceHierarchy(client.second, client.first);
-    }
-    context_factory_->GetSurfaceManager()->RegisterSurfaceNamespaceHierarchy(
-        surface_id_allocator_->client_id(), client.first);
-    client.second = surface_id_allocator_->client_id();
-  }
-#endif
+  NOTREACHED();
 }
 
 void Compositor::ScheduleDraw() {
@@ -408,24 +371,16 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   widget_valid_ = true;
   if (content_frame_sink_connection_requested_) {
     content_frame_sink_connection_requested_ = false;
+    if (!pending_private_request_.is_pending())
+      pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
     host_->SetContentFrameSinkConnection(
-        context_factory_->CreateContentFrameSinkConnection(widget,
-                                                           host_->settings()));
+        context_factory_->CreateContentFrameSinkConnection(
+            std::move(pending_private_request_), widget, host_->settings()));
   }
-  if (output_surface_requested_)
-    context_factory_->CreateOutputSurface(weak_ptr_factory_.GetWeakPtr());
 }
 
 gfx::AcceleratedWidget Compositor::ReleaseAcceleratedWidget() {
   DCHECK(!IsVisible());
-  if (!host_->output_surface_lost()) {
-    host_->ReleaseOutputSurface();
-    // for (auto& client : surface_clients_) {
-    //  context_factory_->GetSurfaceManager()
-    //      ->UnregisterSurfaceNamespaceHierarchy(client.second, client.first);
-    //  client.second = 0;
-    //}
-  }
   context_factory_->RemoveCompositor(this);
   // TODO(hackathon): Synchronously destroy the service compositor.
   widget_valid_ = false;
@@ -495,13 +450,14 @@ void Compositor::UpdateLayerTreeHost() {
 
 void Compositor::RequestNewContentFrameSinkConnection() {
   content_frame_sink_connection_requested_ = true;
-  fprintf(stderr, ">>>%s widget_valid: %d widget: %lu\n", __PRETTY_FUNCTION__,
-          widget_valid_, widget_);
   if (widget_valid_) {
     content_frame_sink_connection_requested_ = false;
+    if (!pending_private_request_.is_pending())
+      pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
+
     host_->SetContentFrameSinkConnection(
-        context_factory_->CreateContentFrameSinkConnection(widget_,
-                                                           host_->settings()));
+        context_factory_->CreateContentFrameSinkConnection(
+            std::move(pending_private_request_), widget_, host_->settings()));
   }
 }
 
@@ -542,7 +498,6 @@ void Compositor::DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) {
 
 void Compositor::DidSetCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   compositor_frame_sink_id_ = compositor_frame_sink_id;
 }
 

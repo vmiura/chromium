@@ -588,12 +588,12 @@ void GpuProcessTransportFactory::EstablishedGpuChannel(
   std::unique_ptr<cc::SurfaceDisplayOutputSurface> delegated_output_surface(
       vulkan_context_provider
           ? new cc::SurfaceDisplayOutputSurface(
-                nullptr, compositor->surface_id_allocator(),
+                nullptr, /*compositor->surface_id_allocator()*/ nullptr,
                 data->display.get(),
                 static_cast<scoped_refptr<cc::VulkanContextProvider>>(
                     vulkan_context_provider))
           : new cc::SurfaceDisplayOutputSurface(
-                nullptr, compositor->surface_id_allocator(),
+                nullptr, /* compositor->surface_id_allocator() */ nullptr,
                 data->display.get(), context_provider,
                 shared_worker_context_provider_));
   data->display->Resize(compositor->size());
@@ -661,18 +661,19 @@ void GpuProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
 #endif
 }
 
-void GpuProcessTransportFactory::RegisterSurfaceClientHierarchy(
-    const cc::CompositorFrameSinkId& parent_client_id,
-    const cc::CompositorFrameSinkId& child_client_id) {
-  BrowserGpuChannelHostFactory::instance()->RegisterSurfaceClientHierarchy(
-      parent_client_id, child_client_id);
+void GpuProcessTransportFactory::RegisterDisplayCompositorConnectionClient(
+    const cc::CompositorFrameSinkId& frame_sink_id,
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
+    cc::DisplayCompositorConnectionClient* connection_client) {
+  BrowserGpuChannelHostFactory::instance()
+      ->RegisterDisplayCompositorConnectionClient(
+          frame_sink_id, std::move(private_request), connection_client);
 }
 
-void GpuProcessTransportFactory::UnregisterSurfaceClientHierarchy(
-    const cc::CompositorFrameSinkId& parent_client_id,
-    const cc::CompositorFrameSinkId& child_client_id) {
-  BrowserGpuChannelHostFactory::instance()->UnregisterSurfaceClientHierarchy(
-      parent_client_id, child_client_id);
+void GpuProcessTransportFactory::UnregisterDisplayCompositorConnectionClient(
+    const cc::CompositorFrameSinkId& frame_sink_id) {
+  BrowserGpuChannelHostFactory::instance()
+      ->UnregisterDisplayCompositorConnectionClient(frame_sink_id);
 }
 
 bool GpuProcessTransportFactory::DoesCreateTestContexts() { return false; }
@@ -700,8 +701,9 @@ ui::ContextFactory* GpuProcessTransportFactory::GetContextFactory() {
   return this;
 }
 
-uint32_t GpuProcessTransportFactory::AllocateSurfaceClientId() {
-  return next_surface_client_id_++;
+cc::CompositorFrameSinkId
+GpuProcessTransportFactory::AllocateCompositorFrameSinkId() {
+  return cc::CompositorFrameSinkId(0, next_surface_client_id_++);
 }
 
 void GpuProcessTransportFactory::AddDisplayCompositorObserver(
@@ -718,11 +720,13 @@ void GpuProcessTransportFactory::RemoveDisplayCompositorObserver(
 
 std::unique_ptr<cc::ContentFrameSinkConnection>
 GpuProcessTransportFactory::CreateContentFrameSinkConnection(
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
   return BrowserGpuChannelHostFactory::instance()
-      ->CreateContentFrameSinkConnection(widget, settings);
+      ->CreateContentFrameSinkConnection(std::move(private_request), widget,
+                                         settings);
 }
 
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,

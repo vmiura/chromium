@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright e014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,12 +54,12 @@ class GpuProcessTransportFactory
                                                  ui::Layer* target) override;
   void RemoveReflector(ui::Reflector* reflector) override;
   void RemoveCompositor(ui::Compositor* compositor) override;
-  void RegisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id) override;
-  void UnregisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id) override;
+  void RegisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id,
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      cc::DisplayCompositorConnectionClient* connection_client) override;
+  void UnregisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id) override;
   scoped_refptr<cc::ContextProvider> SharedMainThreadContextProvider() override;
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,
@@ -67,13 +67,14 @@ class GpuProcessTransportFactory
   cc::SharedBitmapManager* GetSharedBitmapManager() override;
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  uint32_t AllocateSurfaceClientId() override;
+  cc::CompositorFrameSinkId AllocateCompositorFrameSinkId() override;
   void AddDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer) override;
   void RemoveDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer) override;
   std::unique_ptr<cc::ContentFrameSinkConnection>
   CreateContentFrameSinkConnection(
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;
   void ResizeDisplay(ui::Compositor* compositor,

@@ -3,6 +3,7 @@
 #include <stack>
 
 #include "base/auto_reset.h"
+#include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
@@ -213,13 +214,12 @@ ContentFrameSink::ContentFrameSink(
                      new ImageDecodeProxy(client.get()))),
       bulk_buffer_reader_(BulkBufferWriter::kDefaultBackingSize),
       content_frame_sink_client_(std::move(client)),
-      private_binding_(this, std::move(private_request)),
-      binding_(this, std::move(request)) {
+      binding_(this, std::move(request)),
+      private_binding_(this, std::move(private_request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor
              << " client_id: " << surface_id_allocator_.client_id()
              << " sink_id: " << surface_id_allocator_.sink_id();
-  // surface_manager_->RegisterSurfaceClientId(surface_id_allocator_.client_id());
   content_frame_sink_client_->OnCompositorCreated(
       surface_id_allocator_.compositor_frame_sink_id());
   content_frame_sink_client_.set_connection_error_handler(
@@ -361,6 +361,8 @@ DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
 
 void ContentFrameSink::RegisterChildSink(
     const CompositorFrameSinkId& child_client_id) {
+  fprintf(stderr, ">>>%s child_client_id: %s\n", __PRETTY_FUNCTION__,
+          child_client_id.ToString().c_str());
   surface_manager_->RegisterSurfaceNamespaceHierarchy(
       surface_id_allocator_.compositor_frame_sink_id(), child_client_id);
 }

@@ -51,7 +51,7 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
       observing_begin_frame_source_(false),
       parent_surface_client_id_(0),
       weak_factory_(this) {
-  surface_client_id_ = AllocateSurfaceClientId();
+  surface_client_id_ = AllocateCompositorFrameSinkId().client_id;
   // id_allocator_.reset(new cc::SurfaceIdAllocator(AllocateSurfaceClientId()));
   // GetSurfaceManager()->RegisterSurfaceClientId(id_allocator_->client_id());
   RegisterSurfaceNamespaceId();

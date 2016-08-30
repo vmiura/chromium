@@ -27,7 +27,9 @@ void DisplayCompositorHost::CreatePrivate(
                             std::move(private_request));
 }
 
-DisplayCompositorHost::~DisplayCompositorHost() = default;
+DisplayCompositorHost::~DisplayCompositorHost() {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+}
 
 void DisplayCompositorHost::AddRefOnSurfaceId(const SurfaceId& id) {
   GetDisplayCompositorConnection()->AddRefOnSurfaceId(id);
@@ -35,20 +37,6 @@ void DisplayCompositorHost::AddRefOnSurfaceId(const SurfaceId& id) {
 
 void DisplayCompositorHost::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
   GetDisplayCompositorConnection()->MoveTempRefToRefOnSurfaceId(id);
-}
-
-void DisplayCompositorHost::RegisterClientHierarchy(
-    const CompositorFrameSinkId& parent_client_id,
-    const CompositorFrameSinkId& child_client_id) {
-  GetDisplayCompositorConnection()->RegisterClientHierarchy(parent_client_id,
-                                                            child_client_id);
-}
-
-void DisplayCompositorHost::UnregisterClientHierarchy(
-    const CompositorFrameSinkId& parent_client_id,
-    const CompositorFrameSinkId& child_client_id) {
-  GetDisplayCompositorConnection()->UnregisterClientHierarchy(parent_client_id,
-                                                              child_client_id);
 }
 
 void DisplayCompositorHost::CreateContentFrameSink(
@@ -60,9 +48,12 @@ void DisplayCompositorHost::CreateContentFrameSink(
   // TODO(fsamuel): (client_id = process_id, sink_id = routing_id)  uniquely
   // identifies a RenderWidgetHost and thus a RenderWidgetHostView and thus
   // a DelegatedFrameHost. We can map compositor_id => DelegatedFrameHost.
+  // TODO(fsamuel): Do something useful with this InterfacePtr.
+  cc::mojom::ContentFrameSinkPrivatePtr* content_frame_sink_private(
+      new cc::mojom::ContentFrameSinkPrivatePtr());
   CreateContentFrameSinkWithHandle(
       sink_id, gpu::kNullSurfaceHandle, std::move(settings),
-      std::move(content_frame_sink), nullptr,
+      std::move(content_frame_sink), mojo::GetProxy(content_frame_sink_private),
       std::move(content_frame_sink_client));
 }
 

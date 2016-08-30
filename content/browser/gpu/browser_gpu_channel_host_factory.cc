@@ -368,6 +368,7 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
 
 std::unique_ptr<cc::ContentFrameSinkConnection>
 BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   // TODO(fsamuel): A surface_handle is not always a widget.
@@ -381,11 +382,27 @@ BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
                  base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
+  uint32_t sink_id = next_sink_id_++;
   display_compositor_host_private_->CreateContentFrameSinkWithHandle(
-      next_sink_id_++, surface_handle, settings.ToMojom(),
-      mojo::GetProxy(&connection->content_frame_sink), nullptr,
-      std::move(client));
+      sink_id, surface_handle, settings.ToMojom(),
+      mojo::GetProxy(&connection->content_frame_sink),
+      std::move(private_request), std::move(client));
   return connection;
+}
+
+void BrowserGpuChannelHostFactory::RegisterDisplayCompositorConnectionClient(
+    const cc::CompositorFrameSinkId& frame_sink_id,
+    cc::mojom::ContentFrameSinkPrivateRequest private_request,
+    cc::DisplayCompositorConnectionClient* connection_client) {
+  CompositorFrameSinkData data;
+  data.private_request = std::move(private_request);
+  data.connection_client = connection_client;
+  compositor_frame_sink_private_interfaces_[frame_sink_id] = std::move(data);
+}
+
+void BrowserGpuChannelHostFactory::UnregisterDisplayCompositorConnectionClient(
+    const cc::CompositorFrameSinkId& frame_sink_id) {
+  compositor_frame_sink_private_interfaces_.erase(frame_sink_id);
 }
 
 void BrowserGpuChannelHostFactory::AddDisplayCompositorObserver(
@@ -418,24 +435,6 @@ void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
   // browser should not need to manage this explicitly.
   if (display_compositor_host_private_ && !id.is_null())
     display_compositor_host_private_->MoveTempRefToRefOnSurfaceId(id);
-}
-
-void BrowserGpuChannelHostFactory::RegisterSurfaceClientHierarchy(
-    const cc::CompositorFrameSinkId& parent_client_id,
-    const cc::CompositorFrameSinkId& child_client_id) {
-  if (!display_compositor_host_private_)
-    return;
-  display_compositor_host_private_->RegisterClientHierarchy(parent_client_id,
-                                                            child_client_id);
-}
-
-void BrowserGpuChannelHostFactory::UnregisterSurfaceClientHierarchy(
-    const cc::CompositorFrameSinkId& parent_client_id,
-    const cc::CompositorFrameSinkId& child_client_id) {
-  if (!display_compositor_host_private_)
-    return;
-  display_compositor_host_private_->UnregisterClientHierarchy(parent_client_id,
-                                                              child_client_id);
 }
 
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
@@ -503,6 +502,25 @@ void BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO(
     int gpu_client_id,
     const base::FilePath& cache_dir) {
   ShaderCacheFactory::GetInstance()->SetCacheInfo(gpu_client_id, cache_dir);
+}
+
+BrowserGpuChannelHostFactory::CompositorFrameSinkData::
+    CompositorFrameSinkData() = default;
+
+BrowserGpuChannelHostFactory::CompositorFrameSinkData::CompositorFrameSinkData(
+    BrowserGpuChannelHostFactory::CompositorFrameSinkData&& other)
+    : private_request(std::move(other.private_request)),
+      connection_client(other.connection_client) {}
+
+BrowserGpuChannelHostFactory::CompositorFrameSinkData::
+    ~CompositorFrameSinkData() = default;
+
+BrowserGpuChannelHostFactory::CompositorFrameSinkData&
+BrowserGpuChannelHostFactory::CompositorFrameSinkData::operator=(
+    BrowserGpuChannelHostFactory::CompositorFrameSinkData&& other) {
+  private_request = std::move(other.private_request);
+  connection_client = other.connection_client;
+  return *this;
 }
 
 }  // namespace content

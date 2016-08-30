@@ -32,20 +32,6 @@ interface DisplayCompositor {
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
 
-  // TODO(fsamuel): the thing I don't like about this API is it's not tied to an
-  // existing FrameSink, and so it's inherently racy. If we try to create a
-  // hierarchy before the sinks are ready then we may fail. If instead this is
-  // tied to the FrameSink connection, then we cannot race by definition because
-  // parent already has a Content/CompositorFrameSink.
-  // However, if we put this API on Content/CompositorFrameSink, then we expose
-  // a detail that arguably clients shouldn't manage. Perhaps we can instead
-  // give the display compositor host a private interface.
-  RegisterClientHierarchy(CompositorFrameSinkId parent_client_id,
-                          CompositorFrameSinkId child_client_id);
-
-  UnregisterClientHierarchy(CompositorFrameSinkId parent_client_id,
-                            CompositorFrameSinkId child_client_id);
-
   // A ContentFrameSink (and, similarly, this would apply for
   // CompositorFrameSink) is uniquely identified by two 32-bit quantities:
   // |client_id| and |sink_id|. |client_id| is a display compositor host
@@ -84,12 +70,6 @@ interface DisplayCompositorHostPrivate {
   AddRefOnSurfaceId(cc.mojom.SurfaceId id);
 
   MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
-
-  RegisterClientHierarchy(CompositorFrameSinkId parent_client_id,
-                          CompositorFrameSinkId child_client_id);
-
-  UnregisterClientHierarchy(CompositorFrameSinkId parent_client_id,
-                            CompositorFrameSinkId child_client_id);
 
   CreateContentFrameSinkWithHandle(
       int32 sink_id,

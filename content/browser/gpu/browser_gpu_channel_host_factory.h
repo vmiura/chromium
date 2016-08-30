@@ -18,6 +18,7 @@
 #include "cc/host/display_compositor_connection.h"
 #include "cc/host/display_compositor_host.h"
 #include "cc/ipc/compositor.mojom.h"
+#include "cc/surfaces/surface_id.h"
 #include "content/browser/compositor/display_compositor_connection_factory_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/gpu_process_launch_causes.h"
@@ -60,8 +61,17 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   int GetGpuChannelId() { return gpu_client_id_; }
 
   std::unique_ptr<cc::ContentFrameSinkConnection>
-  CreateContentFrameSinkConnection(gfx::AcceleratedWidget widget,
-                                   const cc::LayerTreeSettings& settings);
+  CreateContentFrameSinkConnection(
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      gfx::AcceleratedWidget widget,
+      const cc::LayerTreeSettings& settings);
+
+  void RegisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id,
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      cc::DisplayCompositorConnectionClient* connection_client);
+  void UnregisterDisplayCompositorConnectionClient(
+      const cc::CompositorFrameSinkId& frame_sink_id);
 
   void AddDisplayCompositorObserver(
       cc::DisplayCompositorConnectionClient* observer);
@@ -69,12 +79,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
       cc::DisplayCompositorConnectionClient* observer);
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
-  void RegisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id);
-  void UnregisterSurfaceClientHierarchy(
-      const cc::CompositorFrameSinkId& parent_client_id,
-      const cc::CompositorFrameSinkId& child_client_id);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();
@@ -104,6 +108,21 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   std::vector<base::Closure> established_callbacks_;
 
   int32_t next_sink_id_ = 1;
+
+  struct CompositorFrameSinkData {
+    CompositorFrameSinkData();
+    CompositorFrameSinkData(CompositorFrameSinkData&& other);
+    ~CompositorFrameSinkData();
+    CompositorFrameSinkData& operator=(CompositorFrameSinkData&& other);
+
+    cc::mojom::ContentFrameSinkPrivateRequest private_request;
+    cc::DisplayCompositorConnectionClient* connection_client;
+  };
+
+  std::unordered_map<cc::CompositorFrameSinkId,
+                     CompositorFrameSinkData,
+                     cc::CompositorFrameSinkIdHash>
+      compositor_frame_sink_private_interfaces_;
   scoped_refptr<DisplayCompositorConnectionFactoryImpl>
       display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;
