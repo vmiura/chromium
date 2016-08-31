@@ -32,11 +32,6 @@ class DisplayCompositorConnectionFactoryImpl
  public:
   DisplayCompositorConnectionFactoryImpl();
 
-  // These are main (UI) thread observers that observe updates coming
-  // from the DisplayCompositorConnection's thread (typically IO thread).
-  void AddObserver(DisplayCompositorConnectionClient* observer);
-  void RemoveObserver(DisplayCompositorConnectionClient* observer);
-
   // DisplayCompositorConnectionFactory implementation:
   cc::DisplayCompositorConnection* GetDisplayCompositorConnection() override;
 
@@ -45,14 +40,10 @@ class DisplayCompositorConnectionFactoryImpl
 
   // DisplayCompositorConnectionClient implementation:
   void OnConnectionLost() override;
-  void OnSurfaceCreated(const gfx::Size& frame_size,
-                        const cc::SurfaceId& surface_id) override;
 
   friend class base::RefCountedThreadSafe<
       DisplayCompositorConnectionFactoryImpl>;
 
-  base::ObserverList<DisplayCompositorConnectionClient> observers_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   std::unique_ptr<cc::DisplayCompositorConnection> display_compositor_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCompositorConnectionFactoryImpl);

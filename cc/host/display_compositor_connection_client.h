@@ -10,8 +10,6 @@ namespace cc {
 class DisplayCompositorConnectionClient {
  public:
   virtual ~DisplayCompositorConnectionClient() {}
-  virtual void OnSurfaceCreated(const gfx::Size& frame_size,
-                                const cc::SurfaceId& surface_id) {}
   virtual void OnConnectionLost() {}
 };
 

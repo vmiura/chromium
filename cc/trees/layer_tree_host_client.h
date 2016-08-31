@@ -61,9 +61,6 @@ class LayerTreeHostClient {
   virtual void DidCommitAndDrawFrame() = 0;
   virtual void DidCompleteSwapBuffers(const SurfaceId& surface_id) = 0;
   virtual void DidCompletePageScaleAnimation() = 0;
-  virtual void DidSetCompositorFrameSinkId(
-      const CompositorFrameSinkId& client_id) {}
-  virtual void DidGetNewSurface(const cc::SurfaceId& new_surface) {}
 
  protected:
   virtual ~LayerTreeHostClient() {}

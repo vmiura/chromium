@@ -1350,11 +1350,6 @@ void LayerTreeHost::OnCommitForSwapPromises() {
 void LayerTreeHost::SetCompositorFrameSinkId(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
   compositor_frame_sink_id_ = compositor_frame_sink_id;
-  client_->DidSetCompositorFrameSinkId(compositor_frame_sink_id);
-}
-
-void LayerTreeHost::DidGetNewSurface(SurfaceId surface_id) {
-  client_->DidGetNewSurface(surface_id);
 }
 
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {

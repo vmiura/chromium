@@ -92,9 +92,12 @@ class CONTENT_EXPORT DelegatedFrameHost
       public ui::ContextFactoryObserver,
       public DelegatedFrameEvictorClient,
       public cc::SurfaceFactoryClient,
+      public cc::DisplayCompositorConnectionClient,
+      public cc::mojom::DisplayCompositorClient,
       public base::SupportsWeakPtr<DelegatedFrameHost> {
  public:
-  explicit DelegatedFrameHost(DelegatedFrameHostClient* client);
+  DelegatedFrameHost(const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+                     DelegatedFrameHostClient* client);
   ~DelegatedFrameHost() override;
 
   // ui::CompositorObserver implementation.
@@ -127,11 +130,15 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   bool CanCopyToBitmap() const;
 
+  // cc::DisplayCompositorConnectionClient implementation.
+  void OnSurfaceCreated(const gfx::Size& frame_size,
+                        const cc::SurfaceId& surface_id) override;
+  void OnConnectionLost() override;
+
   // Public interface exposed to RenderWidgetHostView.
 
   void SwapDelegatedFrame(uint32_t output_surface_id,
                           cc::CompositorFrame frame);
-  void DidGetNewSurface(const gfx::Size& size, const cc::SurfaceId& surface_id);
   void ClearDelegatedFrame();
   void WasHidden();
   void WasShown(const ui::LatencyInfo& latency_info);
@@ -158,8 +165,6 @@ class CONTENT_EXPORT DelegatedFrameHost
   void EndFrameSubscription();
   bool HasFrameSubscriber() const { return !!frame_subscriber_; }
   uint32_t GetSurfaceClientId();
-  void SetCompositorFrameSinkId(
-      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
   // Returns a null SurfaceId if this DelegatedFrameHost has not yet created
   // a compositor Surface.
   cc::SurfaceId SurfaceIdAtPoint(cc::SurfaceHittestDelegate* delegate,
@@ -257,6 +262,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   // initiate a copy-into-video-frame request.
   void AttemptFrameSubscriberCapture(const gfx::Rect& damage_rect);
 
+  void RegisterContentFrameSinkObserver();
+
   DelegatedFrameHostClient* const client_;
   ui::Compositor* compositor_;
 
@@ -341,6 +348,9 @@ class CONTENT_EXPORT DelegatedFrameHost
       yuv_readback_pipeline_;
 
   std::unique_ptr<DelegatedFrameEvictor> delegated_frame_evictor_;
+
+  cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_;
+  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
 };
 
 }  // namespace content

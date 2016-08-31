@@ -780,16 +780,6 @@ void RenderWidget::DidCompleteSwapBuffers() {
   need_update_rect_for_auto_resize_ = false;
 }
 
-void RenderWidget::DidSetCompositorFrameSinkId(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  Send(new ViewHostMsg_SetCompositorFrameSinkId(routing_id_,
-                                                compositor_frame_sink_id));
-}
-
-void RenderWidget::DidGetNewSurface(const cc::SurfaceId& surface_id) {
-  Send(new ViewHostMsg_DidGetNewSurface(routing_id_, size_, surface_id));
-}
-
 void RenderWidget::ForwardCompositorProto(const std::vector<uint8_t>& proto) {
   Send(new ViewHostMsg_ForwardCompositorProto(routing_id_, proto));
 }

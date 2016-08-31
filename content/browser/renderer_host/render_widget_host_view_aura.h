@@ -105,8 +105,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public aura::client::ActivationDelegate,
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver,
-      public cc::BeginFrameObserver,
-      public cc::DisplayCompositorConnectionClient {
+      public cc::BeginFrameObserver {
  public:
   // When |is_guest_view_hack| is true, this view isn't really the view for
   // the |widget|, a RenderWidgetHostViewGuest is.
@@ -483,10 +482,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   const cc::BeginFrameArgs& LastUsedBeginFrameArgs() const override;
   void OnBeginFrameSourcePausedChanged(bool paused) override;
 
-  // cc::DisplayCompositorConnectionClient implementation.
-  void OnSurfaceCreated(const gfx::Size& frame_size,
-                        const cc::SurfaceId& surface_id) override;
-
   // Detaches |this| from the input method object.
   void DetachFromInputMethod();
 
@@ -510,11 +505,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Called when RenderWidget wants to start BeginFrame scheduling or stop.
   void OnSetNeedsBeginFrames(bool needs_begin_frames);
-
-  void OnSetCompositorFrameSinkId(
-      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
-  void OnDidGetNewSurface(const gfx::Size& size,
-                          const cc::SurfaceId& surface_id);
 
   RenderFrameHostImpl* GetFocusedFrame();
 

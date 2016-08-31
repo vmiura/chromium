@@ -34,8 +34,7 @@ namespace content {
 class BrowserGpuMemoryBufferManager;
 
 class CONTENT_EXPORT BrowserGpuChannelHostFactory
-    : public gpu::GpuChannelHostFactory,
-      public cc::DisplayCompositorConnectionClient {
+    : public gpu::GpuChannelHostFactory {
  public:
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
@@ -61,22 +60,17 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   int GetGpuChannelId() { return gpu_client_id_; }
 
   std::unique_ptr<cc::ContentFrameSinkConnection>
-  CreateContentFrameSinkConnection(
-      cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      gfx::AcceleratedWidget widget,
-      const cc::LayerTreeSettings& settings);
+  CreateContentFrameSinkConnection(uint32_t sink_id,
+                                   gfx::AcceleratedWidget widget,
+                                   const cc::LayerTreeSettings& settings);
 
-  void RegisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id,
+  void RegisterContentFrameSinkObserver(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::DisplayCompositorConnectionClient* connection_client);
-  void UnregisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id);
+      cc::mojom::DisplayCompositorClientPtr display_compositor_client);
+  using ContentFrameSinkPrivateRequestGenerator =
+      base::Callback<cc::mojom::ContentFrameSinkPrivateRequest()>;
 
-  void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer);
-  void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer);
   void AddRefOnSurfaceId(const cc::SurfaceId& id);
   void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
 
@@ -107,22 +101,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   scoped_refptr<EstablishRequest> pending_request_;
   std::vector<base::Closure> established_callbacks_;
 
-  int32_t next_sink_id_ = 1;
-
-  struct CompositorFrameSinkData {
-    CompositorFrameSinkData();
-    CompositorFrameSinkData(CompositorFrameSinkData&& other);
-    ~CompositorFrameSinkData();
-    CompositorFrameSinkData& operator=(CompositorFrameSinkData&& other);
-
-    cc::mojom::ContentFrameSinkPrivateRequest private_request;
-    cc::DisplayCompositorConnectionClient* connection_client;
-  };
-
-  std::unordered_map<cc::CompositorFrameSinkId,
-                     CompositorFrameSinkData,
-                     cc::CompositorFrameSinkIdHash>
-      compositor_frame_sink_private_interfaces_;
   scoped_refptr<DisplayCompositorConnectionFactoryImpl>
       display_compositor_connection_factory_;
   cc::mojom::DisplayCompositorHostPtr display_compositor_host_;

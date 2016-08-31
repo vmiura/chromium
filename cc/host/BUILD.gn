@@ -4,6 +4,8 @@
 
 source_set("host") {
   sources = [
+    "content_frame_sink_private.cc",
+    "content_frame_sink_private.h",
     "display_compositor_connection.cc",
     "display_compositor_connection.h",
     "display_compositor_connection_client.h",

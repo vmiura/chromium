@@ -446,7 +446,11 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(RenderWidgetHost* host,
                                                    bool is_guest_view_hack)
     : host_(RenderWidgetHostImpl::From(host)),
       window_(nullptr),
-      delegated_frame_host_(new DelegatedFrameHost(this)),
+      delegated_frame_host_(new DelegatedFrameHost(
+          cc::CompositorFrameSinkId(
+              static_cast<uint32_t>(host->GetProcess()->GetID()),
+              static_cast<uint32_t>(host->GetRoutingID())),
+          this)),
       in_shutdown_(false),
       in_bounds_changed_(false),
       is_fullscreen_(false),
@@ -470,7 +474,6 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(RenderWidgetHost* host,
       device_scale_factor_(0.0f),
       disable_input_event_router_for_testing_(false),
       weak_ptr_factory_(this) {
-  BrowserGpuChannelHostFactory::instance()->AddDisplayCompositorObserver(this);
   if (!is_guest_view_hack_)
     host_->SetView(this);
 
@@ -512,9 +515,6 @@ bool RenderWidgetHostViewAura::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostViewAura, message)
     IPC_MESSAGE_HANDLER(ViewHostMsg_SetNeedsBeginFrames,
                         OnSetNeedsBeginFrames)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_SetCompositorFrameSinkId,
-                        OnSetCompositorFrameSinkId)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_DidGetNewSurface, OnDidGetNewSurface)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -755,17 +755,6 @@ void RenderWidgetHostViewAura::OnSetNeedsBeginFrames(bool needs_begin_frames) {
   }
 }
 
-void RenderWidgetHostViewAura::OnSetCompositorFrameSinkId(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  delegated_frame_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
-}
-
-void RenderWidgetHostViewAura::OnDidGetNewSurface(
-    const gfx::Size& size,
-    const cc::SurfaceId& surface_id) {
-  delegated_frame_host_->DidGetNewSurface(size, surface_id);
-}
-
 void RenderWidgetHostViewAura::OnBeginFrame(
     const cc::BeginFrameArgs& args) {
   delegated_frame_host_->SetVSyncParameters(args.frame_time, args.interval);
@@ -780,25 +769,6 @@ const cc::BeginFrameArgs& RenderWidgetHostViewAura::LastUsedBeginFrameArgs()
 
 void RenderWidgetHostViewAura::OnBeginFrameSourcePausedChanged(bool paused) {
   // Only used on Android WebView.
-}
-
-void RenderWidgetHostViewAura::OnSurfaceCreated(
-    const gfx::Size& frame_size,
-    const cc::SurfaceId& surface_id) {
-  // TODO(fsamuel): Deal with these potentially unsafe casts.
-  if ((surface_id.client_id() !=
-       static_cast<uint32_t>(host_->GetProcess()->GetID())) ||
-      (surface_id.sink_id() != static_cast<uint32_t>(host_->GetRoutingID()))) {
-    return;
-  }
-  // This is coming from the gpu process, flowing through the IO thread
-  // and passed on to the UI thread.
-  fprintf(stderr,
-          ">>>%s frame_size(%d, %d) surface_id: %s "
-          "process_id: %d routing_id: %d\n",
-          __PRETTY_FUNCTION__, frame_size.width(), frame_size.height(),
-          surface_id.ToString().c_str(), host_->GetProcess()->GetID(),
-          host_->GetRoutingID());
 }
 
 void RenderWidgetHostViewAura::SetKeyboardFocus() {
@@ -2388,9 +2358,6 @@ void RenderWidgetHostViewAura::OnHostMoved(const aura::WindowTreeHost* host,
 // RenderWidgetHostViewAura, private:
 
 RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
-  BrowserGpuChannelHostFactory::instance()->RemoveDisplayCompositorObserver(
-      this);
-
   // Ask the RWH to drop reference to us.
   if (!is_guest_view_hack_)
     host_->ViewDestroyed();

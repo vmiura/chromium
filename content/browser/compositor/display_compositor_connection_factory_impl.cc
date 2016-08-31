@@ -10,20 +10,8 @@
 
 namespace content {
 
-DisplayCompositorConnectionFactoryImpl::DisplayCompositorConnectionFactoryImpl()
-    : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
-
-void DisplayCompositorConnectionFactoryImpl::AddObserver(
-    DisplayCompositorConnectionClient* observer) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  observers_.AddObserver(observer);
-}
-
-void DisplayCompositorConnectionFactoryImpl::RemoveObserver(
-    DisplayCompositorConnectionClient* observer) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  observers_.RemoveObserver(observer);
-}
+DisplayCompositorConnectionFactoryImpl::
+    DisplayCompositorConnectionFactoryImpl() {}
 
 cc::DisplayCompositorConnection*
 DisplayCompositorConnectionFactoryImpl::GetDisplayCompositorConnection() {
@@ -66,20 +54,6 @@ DisplayCompositorConnectionFactoryImpl::
 
 void DisplayCompositorConnectionFactoryImpl::OnConnectionLost() {
   display_compositor_.reset();
-}
-
-void DisplayCompositorConnectionFactoryImpl::OnSurfaceCreated(
-    const gfx::Size& frame_size,
-    const cc::SurfaceId& surface_id) {
-  if (!main_task_runner_->BelongsToCurrentThread()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::Bind(&DisplayCompositorConnectionFactoryImpl::OnSurfaceCreated,
-                   this, frame_size, surface_id));
-    return;
-  }
-  FOR_EACH_OBSERVER(DisplayCompositorConnectionClient, observers_,
-                    OnSurfaceCreated(frame_size, surface_id));
 }
 
 }  // namespace content

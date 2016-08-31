@@ -429,7 +429,6 @@ void SimpleProxy::OnBeginMainFrame(
         SurfaceId new_surface_id;
         content_frame_sink_->PrepareCommitSync(
             hold_commit_for_activation, std::move(frame), &new_surface_id);
-        layer_tree_host_->DidGetNewSurface(new_surface_id);
       }
       if (hold_commit_for_activation)
         content_frame_sink_->WaitForActivation();

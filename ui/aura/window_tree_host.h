@@ -231,6 +231,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // the end of the dtor).
   Window* window_;  // Owning.
 
+  uint32_t sink_id_ = 1u;
+
   base::ObserverList<WindowTreeHostObserver> observers_;
 
   std::unique_ptr<WindowEventDispatcher> dispatcher_;

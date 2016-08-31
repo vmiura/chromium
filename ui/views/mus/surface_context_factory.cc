@@ -95,7 +95,7 @@ SurfaceContextFactory::AllocateCompositorFrameSinkId() {
 
 std::unique_ptr<cc::ContentFrameSinkConnection>
 SurfaceContextFactory::CreateContentFrameSinkConnection(
-    cc::mojom::ContentFrameSinkPrivateRequest private_request,
+    uint32_t sink_id,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   return nullptr;

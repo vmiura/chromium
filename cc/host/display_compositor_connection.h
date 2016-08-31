@@ -5,6 +5,7 @@
 #ifndef CC_HOST_DISPLAY_COMPOSITOR_CONNECTION_H_
 #define CC_HOST_DISPLAY_COMPOSITOR_CONNECTION_H_
 
+#include "cc/host/content_frame_sink_private.h"
 #include "cc/ipc/compositor.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
@@ -17,8 +18,7 @@ class DisplayCompositorConnectionClient;
 // display compositor host <=> client connection.  However, all
 // DisplayCompositorHost objects should share a single connection to the
 // display compositor.
-class DisplayCompositorConnection : public mojom::DisplayCompositor,
-                                    public mojom::DisplayCompositorClient {
+class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
  public:
   DisplayCompositorConnection(
       DisplayCompositorConnectionClient* connection_client,
@@ -27,18 +27,26 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
 
   ~DisplayCompositorConnection() override;
 
-  void AddRefOnSurfaceId(const SurfaceId& id) override;
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
+  void RegisterContentFrameSinkObserver(
+      const CompositorFrameSinkId& compositor_frame_sink_id,
+      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      cc::mojom::DisplayCompositorClientPtr display_compositor_client);
+
+  // cc::mojom::DisplayCompositor implementation:
+  void AddRefOnSurfaceId(const SurfaceId& id);
+  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
   void CreateContentFrameSink(
       uint32_t client_id,
       int32_t sink_id,
       const gpu::SurfaceHandle& handle,
       mojom::LayerTreeSettingsPtr settings,
       mojom::ContentFrameSinkRequest content_frame_sink,
-      mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
-      mojom::ContentFrameSinkClientPtr content_frame_sink_client) override;
+      mojom::ContentFrameSinkClientPtr content_frame_sink_client);
 
   void OnConnectionLost();
+
+  void OnPrivateConnectionLost(
+      const CompositorFrameSinkId& compositor_frame_sink_id);
 
   // cc::mojom::DisplayCompositorClient implementation:
   void OnSurfaceCreated(const gfx::Size& frame_size,
@@ -46,6 +54,12 @@ class DisplayCompositorConnection : public mojom::DisplayCompositor,
 
  private:
   DisplayCompositorConnectionClient* const connection_client_;
+
+  std::unordered_map<CompositorFrameSinkId,
+                     std::unique_ptr<ContentFrameSinkPrivate>,
+                     CompositorFrameSinkIdHash>
+      private_interfaces_;
+
   mojom::DisplayCompositorPtr display_compositor_;
   mojo::Binding<mojom::DisplayCompositorClient> client_binding_;
   base::WeakPtrFactory<DisplayCompositorConnection> weak_factory_;

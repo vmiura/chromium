@@ -71,7 +71,9 @@ void AddRefSurfaceId(const cc::SurfaceId& id) {
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost
 
-DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
+DelegatedFrameHost::DelegatedFrameHost(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+    DelegatedFrameHostClient* client)
     : client_(client),
       compositor_(nullptr),
       tick_clock_(new base::DefaultTickClock()),
@@ -79,18 +81,14 @@ DelegatedFrameHost::DelegatedFrameHost(DelegatedFrameHostClient* client)
       pending_delegated_ack_count_(0),
       skipped_frames_(false),
       background_color_(SK_ColorRED),
+      compositor_frame_sink_id_(compositor_frame_sink_id),
       current_scale_factor_(1.f),
       can_lock_compositor_(YES_CAN_LOCK),
-      delegated_frame_evictor_(new DelegatedFrameEvictor(this)) {
+      delegated_frame_evictor_(new DelegatedFrameEvictor(this)),
+      binding_(this) {
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->AddObserver(this);
-
-  // id_allocator_.reset(new cc::SurfaceIdAllocator(
-  //    factory->GetContextFactory()->AllocateSurfaceClientId()));
-  // factory->GetSurfaceManager()->RegisterSurfaceClientId(
-  //    id_allocator_->client_id());
-  // factory->GetSurfaceManager()->RegisterSurfaceFactoryClient(
-  //    id_allocator_->client_id(), this);
+  RegisterContentFrameSinkObserver();
 }
 
 void DelegatedFrameHost::WasShown(const ui::LatencyInfo& latency_info) {
@@ -208,6 +206,52 @@ bool DelegatedFrameHost::CanCopyToBitmap() const {
          client_->DelegatedFrameHostGetLayer()->has_external_content();
 }
 
+void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
+                                          const cc::SurfaceId& surface_id) {
+  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
+      surface_id);
+
+  if (ShouldSkipFrame(frame_size)) {
+    // TODO(fsamuel): Could we end up in cases where compositor_ is nullptr?
+    if (compositor_)
+      compositor_->ReleaseSurfaceId(surface_id);
+    skipped_frames_ = true;
+    return;
+  }
+
+  // TODO(hackathon): latency info things.
+  // TODO(hackathon): background_color_
+  // background_color_ = frame.metadata.root_background_color;
+
+  if (frame_size.IsEmpty()) {
+    EvictDelegatedFrame();
+  } else {
+    // TODO(hackathon): DSF!!
+    client_->DelegatedFrameHostGetLayer()->SetShowSurface(
+        surface_id, base::Bind(&SatisfyCallback, nullptr),
+        base::Bind(&RequireCallback, nullptr),
+        base::Bind(&AddRefSurfaceId, surface_id),
+        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
+                   surface_id),
+        frame_size, 1.f, frame_size);
+    surface_id_ = surface_id;
+    current_surface_size_ = frame_size;
+    current_scale_factor_ = 1.f;
+  }
+  released_front_lock_ = NULL;
+  current_frame_size_in_dip_ = frame_size;
+  CheckResizeLock();
+
+  UpdateGutters();
+
+  if (!surface_id.is_null()) {
+    delegated_frame_evictor_->SwappedFrame(
+        client_->DelegatedFrameHostIsVisible());
+  }
+}
+
+void DelegatedFrameHost::OnConnectionLost() {}
+
 bool DelegatedFrameHost::CanCopyToVideoFrame() const {
   return compositor_ &&
          client_->DelegatedFrameHostGetLayer()->has_external_content();
@@ -225,15 +269,6 @@ void DelegatedFrameHost::EndFrameSubscription() {
 
 uint32_t DelegatedFrameHost::GetSurfaceClientId() {
   return compositor_frame_sink_id_.client_id;
-}
-
-void DelegatedFrameHost::SetCompositorFrameSinkId(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  compositor_frame_sink_id_ = compositor_frame_sink_id;
-  fprintf(stderr, ">>%s id(%d, %d)\n", __PRETTY_FUNCTION__,
-          compositor_frame_sink_id.client_id, compositor_frame_sink_id.sink_id);
-  if (compositor_)
-    compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id);
 }
 
 cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
@@ -428,6 +463,19 @@ void DelegatedFrameHost::AttemptFrameSubscriberCapture(
   }
 }
 
+void DelegatedFrameHost::RegisterContentFrameSinkObserver() {
+  binding_.Close();
+  ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
+  factory->GetContextFactory()->RegisterContentFrameSinkObserver(
+      compositor_frame_sink_id_, mojo::GetProxy(&content_frame_sink_private_),
+      binding_.CreateInterfacePtrAndBind());
+  content_frame_sink_private_.set_connection_error_handler(
+      base::Bind(&DelegatedFrameHost::RegisterContentFrameSinkObserver,
+                 base::Unretained(this)));
+  if (compositor_)
+    compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
+}
+
 void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
                                             cc::CompositorFrame frame) {
 #if 0
@@ -565,50 +613,6 @@ void DelegatedFrameHost::SwapDelegatedFrame(uint32_t output_surface_id,
   }
   // Note: the frame may have been evicted immediately.
 #endif
-}
-
-void DelegatedFrameHost::DidGetNewSurface(const gfx::Size& size,
-                                          const cc::SurfaceId& surface_id) {
-  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
-      surface_id);
-
-  if (ShouldSkipFrame(size)) {
-    // TODO(fsamuel): Could we end up in cases where compositor_ is nullptr?
-    if (compositor_)
-      compositor_->ReleaseSurfaceId(surface_id);
-    skipped_frames_ = true;
-    return;
-  }
-
-  // TODO(hackathon): latency info things.
-  // TODO(hackathon): background_color_
-  // background_color_ = frame.metadata.root_background_color;
-
-  if (size.IsEmpty()) {
-    EvictDelegatedFrame();
-  } else {
-    // TODO(hackathon): DSF!!
-    client_->DelegatedFrameHostGetLayer()->SetShowSurface(
-        surface_id, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr),
-        base::Bind(&AddRefSurfaceId, surface_id),
-        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
-                   surface_id),
-        size, 1.f, size);
-    surface_id_ = surface_id;
-    current_surface_size_ = size;
-    current_scale_factor_ = 1.f;
-  }
-  released_front_lock_ = NULL;
-  current_frame_size_in_dip_ = size;
-  CheckResizeLock();
-
-  UpdateGutters();
-
-  if (!surface_id.is_null()) {
-    delegated_frame_evictor_->SwappedFrame(
-        client_->DelegatedFrameHostIsVisible());
-  }
 }
 
 void DelegatedFrameHost::ClearDelegatedFrame() {

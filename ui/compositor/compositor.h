@@ -115,15 +115,10 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Destroys per-compositor data.
   virtual void RemoveCompositor(Compositor* compositor) = 0;
 
-  // Registers a DisplayCompositorConnectionClient.
-  virtual void RegisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id,
+  virtual void RegisterContentFrameSinkObserver(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::DisplayCompositorConnectionClient* connection_client) = 0;
-
-  // Unregisters a DisplayCompositorConnectionClient.
-  virtual void UnregisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id) = 0;
+      cc::mojom::DisplayCompositorClientPtr display_compositor_client) = 0;
 
   // When true, the factory uses test contexts that do not do real GL
   // operations.
@@ -145,21 +140,11 @@ class COMPOSITOR_EXPORT ContextFactory {
   // Allocate a new client ID for the display compositor.
   virtual cc::CompositorFrameSinkId AllocateCompositorFrameSinkId() = 0;
 
-  virtual void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer) = 0;
-
-  virtual void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer) = 0;
-
-  // Sets up a connection to the service compositor (synchronously, woops).
-  // TODO(hackathon): Make this async by returning void and have it call back
-  // to a function on Compositor to set the ContentFrameSinkConnection when we
-  // have it, similar to OutputSurface.
+  // Sets up a ContentFrameSinkConnection.
   virtual std::unique_ptr<cc::ContentFrameSinkConnection>
-  CreateContentFrameSinkConnection(
-      cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      gfx::AcceleratedWidget widget,
-      const cc::LayerTreeSettings& settings) = 0;
+  CreateContentFrameSinkConnection(uint32_t sink_id,
+                                   gfx::AcceleratedWidget widget,
+                                   const cc::LayerTreeSettings& settings) = 0;
 
   // Gets the surface manager.
   // virtual cc::SurfaceManager* GetSurfaceManager() = 0;
@@ -221,6 +206,7 @@ class COMPOSITOR_EXPORT CompositorLock
 class COMPOSITOR_EXPORT Compositor
     : NON_EXPORTED_BASE(public cc::LayerTreeHostClient),
       NON_EXPORTED_BASE(public cc::LayerTreeHostSingleThreadClient),
+      NON_EXPORTED_BASE(public cc::mojom::DisplayCompositorClient),
       NON_EXPORTED_BASE(public cc::DisplayCompositorConnectionClient) {
  public:
   Compositor(ui::ContextFactory* context_factory,
@@ -379,13 +365,12 @@ class COMPOSITOR_EXPORT Compositor
   void DidCommitAndDrawFrame() override;
   void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override {}
-  void DidSetCompositorFrameSinkId(
-      const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidPostSwapBuffers() override;
   void DidAbortSwapBuffers() override;
 
+  // cc::mojom::DisplayCompositorClient implementation:
   // cc::DisplayCompositorConnectionClient implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
@@ -401,6 +386,8 @@ class COMPOSITOR_EXPORT Compositor
   LayerAnimatorCollection* layer_animator_collection() {
     return &layer_animator_collection_;
   }
+
+  void RegisterContentFrameSinkObserver();
 
  private:
   friend class base::RefCounted<Compositor>;
@@ -428,9 +415,8 @@ class COMPOSITOR_EXPORT Compositor
   std::unordered_map<uint32_t, uint32_t> surface_clients_;
   bool widget_valid_;
   bool output_surface_requested_;
-  cc::mojom::ContentFrameSinkPrivateRequest pending_private_request_;
   bool content_frame_sink_connection_requested_ = false;
-  cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_ = nullptr;
+  cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_;
   scoped_refptr<cc::Layer> root_web_layer_;
   std::unique_ptr<cc::LayerTreeHost> host_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -447,6 +433,7 @@ class COMPOSITOR_EXPORT Compositor
 
   LayerAnimatorCollection layer_animator_collection_;
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
+  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
 
   base::WeakPtrFactory<Compositor> weak_ptr_factory_;
 

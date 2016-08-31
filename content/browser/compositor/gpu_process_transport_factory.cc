@@ -661,19 +661,13 @@ void GpuProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
 #endif
 }
 
-void GpuProcessTransportFactory::RegisterDisplayCompositorConnectionClient(
-    const cc::CompositorFrameSinkId& frame_sink_id,
+void GpuProcessTransportFactory::RegisterContentFrameSinkObserver(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
     cc::mojom::ContentFrameSinkPrivateRequest private_request,
-    cc::DisplayCompositorConnectionClient* connection_client) {
-  BrowserGpuChannelHostFactory::instance()
-      ->RegisterDisplayCompositorConnectionClient(
-          frame_sink_id, std::move(private_request), connection_client);
-}
-
-void GpuProcessTransportFactory::UnregisterDisplayCompositorConnectionClient(
-    const cc::CompositorFrameSinkId& frame_sink_id) {
-  BrowserGpuChannelHostFactory::instance()
-      ->UnregisterDisplayCompositorConnectionClient(frame_sink_id);
+    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+  BrowserGpuChannelHostFactory::instance()->RegisterContentFrameSinkObserver(
+      compositor_frame_sink_id, std::move(private_request),
+      std::move(display_compositor_client));
 }
 
 bool GpuProcessTransportFactory::DoesCreateTestContexts() { return false; }
@@ -706,27 +700,14 @@ GpuProcessTransportFactory::AllocateCompositorFrameSinkId() {
   return cc::CompositorFrameSinkId(0, next_surface_client_id_++);
 }
 
-void GpuProcessTransportFactory::AddDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionClient* observer) {
-  BrowserGpuChannelHostFactory::instance()->AddDisplayCompositorObserver(
-      observer);
-}
-
-void GpuProcessTransportFactory::RemoveDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionClient* observer) {
-  BrowserGpuChannelHostFactory::instance()->RemoveDisplayCompositorObserver(
-      observer);
-}
-
 std::unique_ptr<cc::ContentFrameSinkConnection>
 GpuProcessTransportFactory::CreateContentFrameSinkConnection(
-    cc::mojom::ContentFrameSinkPrivateRequest private_request,
+    uint32_t sink_id,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   fprintf(stderr, ">>%s\n", __PRETTY_FUNCTION__);
   return BrowserGpuChannelHostFactory::instance()
-      ->CreateContentFrameSinkConnection(std::move(private_request), widget,
-                                         settings);
+      ->CreateContentFrameSinkConnection(sink_id, widget, settings);
 }
 
 void GpuProcessTransportFactory::ResizeDisplay(ui::Compositor* compositor,

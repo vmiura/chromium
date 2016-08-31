@@ -76,8 +76,12 @@ interface DisplayCompositorHostPrivate {
       gpu.mojom.SurfaceHandle widget,
       cc.mojom.LayerTreeSettings settings,
       ContentFrameSink& content_frame_sink,
-      ContentFrameSinkPrivate& content_frame_sink_private,
       ContentFrameSinkClient content_frame_sink_client);
+
+  RegisterContentFrameSinkObserver(
+    CompositorFrameSinkId compositor_frame_sink_id,
+    ContentFrameSinkPrivate& content_frame_sink_private,
+    DisplayCompositorClient display_compositor_client);
 };
 
 // ContentFrameSinkPrivate is used by the display compositor host to set up

@@ -292,7 +292,6 @@ BrowserGpuChannelHostFactory::GetDisplayCompositorConnectionFactory() {
   if (!display_compositor_connection_factory_) {
     display_compositor_connection_factory_ =
         new DisplayCompositorConnectionFactoryImpl;
-    display_compositor_connection_factory_->AddObserver(this);
   }
   return display_compositor_connection_factory_;
 }
@@ -368,7 +367,7 @@ gpu::GpuChannelHost* BrowserGpuChannelHostFactory::GetGpuChannel() {
 
 std::unique_ptr<cc::ContentFrameSinkConnection>
 BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
-    cc::mojom::ContentFrameSinkPrivateRequest private_request,
+    uint32_t sink_id,
     gfx::AcceleratedWidget widget,
     const cc::LayerTreeSettings& settings) {
   // TODO(fsamuel): A surface_handle is not always a widget.
@@ -382,41 +381,20 @@ BrowserGpuChannelHostFactory::CreateContentFrameSinkConnection(
                  base::Unretained(this));
   cc::mojom::ContentFrameSinkClientPtr client;
   connection->client_request = mojo::GetProxy(&client);
-  uint32_t sink_id = next_sink_id_++;
   display_compositor_host_private_->CreateContentFrameSinkWithHandle(
       sink_id, surface_handle, settings.ToMojom(),
-      mojo::GetProxy(&connection->content_frame_sink),
-      std::move(private_request), std::move(client));
+      mojo::GetProxy(&connection->content_frame_sink), std::move(client));
   return connection;
 }
 
-void BrowserGpuChannelHostFactory::RegisterDisplayCompositorConnectionClient(
-    const cc::CompositorFrameSinkId& frame_sink_id,
+void BrowserGpuChannelHostFactory::RegisterContentFrameSinkObserver(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
     cc::mojom::ContentFrameSinkPrivateRequest private_request,
-    cc::DisplayCompositorConnectionClient* connection_client) {
-  CompositorFrameSinkData data;
-  data.private_request = std::move(private_request);
-  data.connection_client = connection_client;
-  compositor_frame_sink_private_interfaces_[frame_sink_id] = std::move(data);
-}
-
-void BrowserGpuChannelHostFactory::UnregisterDisplayCompositorConnectionClient(
-    const cc::CompositorFrameSinkId& frame_sink_id) {
-  compositor_frame_sink_private_interfaces_.erase(frame_sink_id);
-}
-
-void BrowserGpuChannelHostFactory::AddDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionClient* observer) {
-  static_cast<DisplayCompositorConnectionFactoryImpl*>(
-      GetDisplayCompositorConnectionFactory().get())
-      ->AddObserver(observer);
-}
-
-void BrowserGpuChannelHostFactory::RemoveDisplayCompositorObserver(
-    cc::DisplayCompositorConnectionClient* observer) {
-  static_cast<DisplayCompositorConnectionFactoryImpl*>(
-      GetDisplayCompositorConnectionFactory().get())
-      ->RemoveObserver(observer);
+    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+  ConnectToDisplayCompositorHostIfNecessary();
+  display_compositor_host_private_->RegisterContentFrameSinkObserver(
+      compositor_frame_sink_id, std::move(private_request),
+      std::move(display_compositor_client));
 }
 
 void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
@@ -502,25 +480,6 @@ void BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO(
     int gpu_client_id,
     const base::FilePath& cache_dir) {
   ShaderCacheFactory::GetInstance()->SetCacheInfo(gpu_client_id, cache_dir);
-}
-
-BrowserGpuChannelHostFactory::CompositorFrameSinkData::
-    CompositorFrameSinkData() = default;
-
-BrowserGpuChannelHostFactory::CompositorFrameSinkData::CompositorFrameSinkData(
-    BrowserGpuChannelHostFactory::CompositorFrameSinkData&& other)
-    : private_request(std::move(other.private_request)),
-      connection_client(other.connection_client) {}
-
-BrowserGpuChannelHostFactory::CompositorFrameSinkData::
-    ~CompositorFrameSinkData() = default;
-
-BrowserGpuChannelHostFactory::CompositorFrameSinkData&
-BrowserGpuChannelHostFactory::CompositorFrameSinkData::operator=(
-    BrowserGpuChannelHostFactory::CompositorFrameSinkData&& other) {
-  private_request = std::move(other.private_request);
-  connection_client = other.connection_client;
-  return *this;
 }
 
 }  // namespace content

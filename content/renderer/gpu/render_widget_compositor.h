@@ -182,9 +182,6 @@ class CONTENT_EXPORT RenderWidgetCompositor
   void DidCommitAndDrawFrame() override;
   void DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) override;
   void DidCompletePageScaleAnimation() override;
-  void DidSetCompositorFrameSinkId(
-      const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
-  void DidGetNewSurface(const cc::SurfaceId& new_surface) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void RequestScheduleAnimation() override;

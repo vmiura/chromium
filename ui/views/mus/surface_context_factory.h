@@ -38,12 +38,11 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   void RemoveCompositor(ui::Compositor* compositor) override;
 
   // TODO(fsamuel): Make mus do the right thing.
-  void RegisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id,
+  void RegisterContentFrameSinkObserver(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::DisplayCompositorConnectionClient* connection_client) override {}
-  void UnregisterDisplayCompositorConnectionClient(
-      const cc::CompositorFrameSinkId& frame_sink_id) override {}
+      cc::mojom::DisplayCompositorClientPtr display_compositor_client)
+      override {}
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,
                                  gfx::BufferUsage usage) override;
@@ -51,13 +50,9 @@ class VIEWS_MUS_EXPORT SurfaceContextFactory : public ui::ContextFactory {
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   cc::CompositorFrameSinkId AllocateCompositorFrameSinkId() override;
-  void AddDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer) override {}
-  void RemoveDisplayCompositorObserver(
-      cc::DisplayCompositorConnectionClient* observer) override {}
   std::unique_ptr<cc::ContentFrameSinkConnection>
   CreateContentFrameSinkConnection(
-      cc::mojom::ContentFrameSinkPrivateRequest private_request,
+      uint32_t sink_id,
       gfx::AcceleratedWidget widget,
       const cc::LayerTreeSettings& settings) override;
   // HACKATHON: No SurfaceManager in the browser.

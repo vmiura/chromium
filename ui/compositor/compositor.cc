@@ -78,7 +78,9 @@ void CompositorLock::CancelLock() {
 
 Compositor::Compositor(ui::ContextFactory* context_factory,
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : context_factory_(context_factory),
+    : compositor_frame_sink_id_(
+          context_factory->AllocateCompositorFrameSinkId()),
+      context_factory_(context_factory),
       root_layer_(NULL),
       widget_(gfx::kNullAcceleratedWidget),
       widget_valid_(false),
@@ -89,8 +91,10 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
       locks_will_time_out_(true),
       compositor_lock_(NULL),
       layer_animator_collection_(this),
+      binding_(this),
       weak_ptr_factory_(this) {
-  context_factory_->AddDisplayCompositorObserver(this);
+  RegisterContentFrameSinkObserver();
+
   root_web_layer_ = cc::Layer::Create();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -218,7 +222,6 @@ Compositor::Compositor(ui::ContextFactory* context_factory,
 Compositor::~Compositor() {
   TRACE_EVENT0("shutdown", "Compositor::destructor");
 
-  context_factory_->RemoveDisplayCompositorObserver(this);
   CancelCompositorLock();
   DCHECK(!compositor_lock_);
 
@@ -243,18 +246,12 @@ Compositor::~Compositor() {
 
 void Compositor::AddChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
-  if (!content_frame_sink_private_)
-    pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
-
   content_frame_sink_private_->RegisterChildSink(
       child_compositor_frame_sink_id);
 }
 
 void Compositor::RemoveChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
-  if (!content_frame_sink_private_)
-    pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
-
   content_frame_sink_private_->UnregisterChildSink(
       child_compositor_frame_sink_id);
 }
@@ -371,11 +368,9 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
   widget_valid_ = true;
   if (content_frame_sink_connection_requested_) {
     content_frame_sink_connection_requested_ = false;
-    if (!pending_private_request_.is_pending())
-      pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
     host_->SetContentFrameSinkConnection(
         context_factory_->CreateContentFrameSinkConnection(
-            std::move(pending_private_request_), widget, host_->settings()));
+            compositor_frame_sink_id_.sink_id, widget, host_->settings()));
   }
 }
 
@@ -452,12 +447,9 @@ void Compositor::RequestNewContentFrameSinkConnection() {
   content_frame_sink_connection_requested_ = true;
   if (widget_valid_) {
     content_frame_sink_connection_requested_ = false;
-    if (!pending_private_request_.is_pending())
-      pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
-
     host_->SetContentFrameSinkConnection(
         context_factory_->CreateContentFrameSinkConnection(
-            std::move(pending_private_request_), widget_, host_->settings()));
+            compositor_frame_sink_id_.sink_id, widget_, host_->settings()));
   }
 }
 
@@ -496,11 +488,6 @@ void Compositor::DidCompleteSwapBuffers(const cc::SurfaceId& surface_id) {
                     OnCompositingEnded(this));
 }
 
-void Compositor::DidSetCompositorFrameSinkId(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  compositor_frame_sink_id_ = compositor_frame_sink_id;
-}
-
 void Compositor::DidPostSwapBuffers() {
   base::TimeTicks start_time = base::TimeTicks::Now();
   FOR_EACH_OBSERVER(CompositorObserver, observer_list_,
@@ -515,8 +502,6 @@ void Compositor::DidAbortSwapBuffers() {
 
 void Compositor::OnSurfaceCreated(const gfx::Size& frame_size,
                                   const cc::SurfaceId& surface_id) {
-  if ((surface_id.client_id() != 0))
-    return;
   fprintf(stderr, ">>>%s frame_size(%d, %d) surface_id: %s ",
           __PRETTY_FUNCTION__, frame_size.width(), frame_size.height(),
           surface_id.ToString().c_str());
@@ -537,6 +522,15 @@ void Compositor::SetLayerTreeDebugState(
 
 const cc::RendererSettings& Compositor::GetRendererSettings() const {
   return host_->settings().renderer_settings;
+}
+
+void Compositor::RegisterContentFrameSinkObserver() {
+  binding_.Close();
+  context_factory_->RegisterContentFrameSinkObserver(
+      compositor_frame_sink_id_, mojo::GetProxy(&content_frame_sink_private_),
+      binding_.CreateInterfacePtrAndBind());
+  content_frame_sink_private_.set_connection_error_handler(base::Bind(
+      &Compositor::RegisterContentFrameSinkObserver, base::Unretained(this)));
 }
 
 scoped_refptr<CompositorLock> Compositor::GetCompositorLock() {

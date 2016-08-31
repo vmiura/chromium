@@ -1105,16 +1105,6 @@ void RenderWidgetCompositor::DidCompletePageScaleAnimation() {
   delegate_->DidCompletePageScaleAnimation();
 }
 
-void RenderWidgetCompositor::DidSetCompositorFrameSinkId(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  delegate_->DidSetCompositorFrameSinkId(compositor_frame_sink_id);
-}
-
-void RenderWidgetCompositor::DidGetNewSurface(const cc::SurfaceId& surface_id) {
-  delegate_->DidGetNewSurface(surface_id);
-}
-
-
 void RenderWidgetCompositor::RequestScheduleAnimation() {
   delegate_->RequestScheduleAnimation();
 }
