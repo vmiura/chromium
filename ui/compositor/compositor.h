@@ -215,6 +215,8 @@ class COMPOSITOR_EXPORT Compositor
 
   ui::ContextFactory* context_factory() { return context_factory_; }
 
+  void AddRefOnSurfaceId(const cc::SurfaceId& id);
+  void TransferRef(const cc::SurfaceId& id);
   void AddChildCompositorFrameSinkId(
       const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
   void RemoveChildCompositorFrameSinkId(

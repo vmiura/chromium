@@ -68,6 +68,8 @@ class CC_SERVICE_EXPORT ContentFrameSink
   void ScheduledActionCommit();
 
   // cc::mojom::ContentFrameSinkPrivate implementation.
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void TransferRef(const SurfaceId& id) override;
   void RegisterChildSink(const CompositorFrameSinkId& child_client_id) override;
   void UnregisterChildSink(
       const CompositorFrameSinkId& child_client_id) override;
@@ -86,6 +88,8 @@ class CC_SERVICE_EXPORT ContentFrameSink
   void DeleteBackings(const std::vector<uint32_t>& backings) override;
   void Destroy(const DestroyCallback& callback) override;
 
+  void ValidateAndRecordReleasedSurfaces(
+      const std::vector<SurfaceId>& released_surfaces);
   void PrepareCommitInternal(bool will_wait_for_activation,
                              mojom::ContentFramePtr frame);
 
@@ -129,6 +133,7 @@ class CC_SERVICE_EXPORT ContentFrameSink
   SurfaceIdAllocator surface_id_allocator_;
   SurfaceId surface_id_;
 
+  std::unordered_map<SurfaceId, uint32_t, SurfaceIdHash> surface_refs_;
   RenderingStatsInstrumentation rendering_stats_;
   Scheduler scheduler_;
   TaskRunnerProvider task_runner_provider_;

@@ -43,8 +43,6 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   // DisplayCompositorHostPrivate implementation.
   // TODO(fsamuel): Need to set manifest indicating that only the browser
   // can access the private interface.
-  void AddRefOnSurfaceId(const SurfaceId& id) override;
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
   void CreateContentFrameSinkWithHandle(
       int32_t sink_id,
       const gpu::SurfaceHandle& surface_handle,

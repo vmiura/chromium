@@ -22,14 +22,6 @@ DisplayCompositor::DisplayCompositor(DisplayCompositorFactory* factory,
 
 DisplayCompositor::~DisplayCompositor() = default;
 
-void DisplayCompositor::AddRefOnSurfaceId(const SurfaceId& id) {
-  surface_manager_.AddRefOnSurfaceId(id);
-}
-
-void DisplayCompositor::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  surface_manager_.MoveTempRefToRefOnSurfaceId(id);
-}
-
 void DisplayCompositor::CreateContentFrameSink(
     uint32_t client_id,
     int32_t sink_id,

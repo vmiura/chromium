@@ -397,24 +397,6 @@ void BrowserGpuChannelHostFactory::RegisterContentFrameSinkObserver(
       std::move(display_compositor_client));
 }
 
-void BrowserGpuChannelHostFactory::AddRefOnSurfaceId(
-    const cc::SurfaceId& id) {
-  // The browser is allowed to update refs on surface IDs through a
-  // private API. In Mus+Ash, once we have a window server, the
-  // browser should not need to manage this explicitly.
-  if (display_compositor_host_private_ && !id.is_null())
-    display_compositor_host_private_->AddRefOnSurfaceId(id);
-}
-
-void BrowserGpuChannelHostFactory::MoveTempRefToRefOnSurfaceId(
-    const cc::SurfaceId& id) {
-  // The browser is allowed to update refs on surface IDs through a
-  // private API. In Mus+Ash, once we have a window server, the
-  // browser should not need to manage this explicitly.
-  if (display_compositor_host_private_ && !id.is_null())
-    display_compositor_host_private_->MoveTempRefToRefOnSurfaceId(id);
-}
-
 void BrowserGpuChannelHostFactory::ConnectToDisplayCompositorHostIfNecessary() {
   if (display_compositor_host_)
     return;

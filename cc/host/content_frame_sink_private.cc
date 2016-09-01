@@ -53,6 +53,14 @@ ContentFrameSinkPrivate::GetContentFrameSinkPrivateRequest() {
   return std::move(pending_private_request_);
 }
 
+void ContentFrameSinkPrivate::AddRefOnSurfaceId(const SurfaceId& id) {
+  content_frame_sink_private_->AddRefOnSurfaceId(id);
+}
+
+void ContentFrameSinkPrivate::TransferRef(const SurfaceId& id) {
+  content_frame_sink_private_->TransferRef(id);
+}
+
 void ContentFrameSinkPrivate::RegisterChildSink(
     const CompositorFrameSinkId& child_client_id) {
   content_frame_sink_private_->RegisterChildSink(child_client_id);

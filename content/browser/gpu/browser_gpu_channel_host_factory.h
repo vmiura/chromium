@@ -68,11 +68,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
       const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
       cc::mojom::DisplayCompositorClientPtr display_compositor_client);
-  using ContentFrameSinkPrivateRequestGenerator =
-      base::Callback<cc::mojom::ContentFrameSinkPrivateRequest()>;
-
-  void AddRefOnSurfaceId(const cc::SurfaceId& id);
-  void MoveTempRefToRefOnSurfaceId(const cc::SurfaceId& id);
 
   // Used to skip GpuChannelHost tests when there can be no GPU process.
   static bool CanUseForTesting();

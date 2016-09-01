@@ -27,17 +27,7 @@ void DisplayCompositorHost::CreatePrivate(
                             std::move(private_request));
 }
 
-DisplayCompositorHost::~DisplayCompositorHost() {
-  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
-}
-
-void DisplayCompositorHost::AddRefOnSurfaceId(const SurfaceId& id) {
-  GetDisplayCompositorConnection()->AddRefOnSurfaceId(id);
-}
-
-void DisplayCompositorHost::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  GetDisplayCompositorConnection()->MoveTempRefToRefOnSurfaceId(id);
-}
+DisplayCompositorHost::~DisplayCompositorHost() = default;
 
 void DisplayCompositorHost::CreateContentFrameSink(
     int32_t sink_id,

@@ -40,6 +40,8 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
   cc::mojom::ContentFrameSinkPrivateRequest GetContentFrameSinkPrivateRequest();
 
   // cc::mojom::ContentFrameSinkPrivate implementation.
+  void AddRefOnSurfaceId(const SurfaceId& id) override;
+  void TransferRef(const SurfaceId& id) override;
   void RegisterChildSink(const CompositorFrameSinkId& child_client_id) override;
   void UnregisterChildSink(
       const CompositorFrameSinkId& child_client_id) override;

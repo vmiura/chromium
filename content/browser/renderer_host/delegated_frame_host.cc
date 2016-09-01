@@ -61,11 +61,10 @@ void RequireCallback(cc::SurfaceManager* manager,
   //surface->AddDestructionDependency(sequence);
 }
 
-void AddRefSurfaceId(const cc::SurfaceId& id) {
-  BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
-      id);
-}
-
+// void AddRefSurfaceId(ui::Compositor* compositor, const cc::SurfaceId& id) {
+//  compositor->AddRefOnSurfaceId(id);
+//}
+//
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -208,8 +207,10 @@ bool DelegatedFrameHost::CanCopyToBitmap() const {
 
 void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
                                           const cc::SurfaceId& surface_id) {
-  BrowserGpuChannelHostFactory::instance()->MoveTempRefToRefOnSurfaceId(
-      surface_id);
+  // If we have a surface then presumably we should have a parent? Right now the
+  // only parent is the compositor?
+  if (compositor_)
+    compositor_->TransferRef(surface_id);
 
   if (ShouldSkipFrame(frame_size)) {
     // TODO(fsamuel): Could we end up in cases where compositor_ is nullptr?
@@ -230,7 +231,9 @@ void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         surface_id, base::Bind(&SatisfyCallback, nullptr),
         base::Bind(&RequireCallback, nullptr),
-        base::Bind(&AddRefSurfaceId, surface_id),
+        // base::Bind(&AddRefSurfaceId, compositor_, surface_id),
+        // Nothing to do here because the ref is owned by the ui::Compositor.
+        base::Bind(&base::DoNothing),
         base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
                    surface_id),
         frame_size, 1.f, frame_size);
@@ -995,16 +998,19 @@ void DelegatedFrameHost::OnLayerRecreated(ui::Layer* old_layer,
   if (!surface_id_.is_null()) {
     // ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
     // cc::SurfaceManager* manager = factory->GetSurfaceManager();
-    BrowserGpuChannelHostFactory::instance()->AddRefOnSurfaceId(
-        surface_id_);
-    new_layer->SetShowSurface(surface_id_,
-                              base::Bind(&SatisfyCallback, nullptr),
-                              base::Bind(&RequireCallback, nullptr),
-                              base::Bind(&AddRefSurfaceId, surface_id_),
-                              base::Bind(&DelegatedFrameHost::ReleaseSurfaceId,
-                                         AsWeakPtr(), surface_id_),
-                              current_surface_size_, current_scale_factor_,
-                              current_frame_size_in_dip_);
+    DCHECK(compositor_);
+    compositor_->AddRefOnSurfaceId(surface_id_);
+    new_layer->SetShowSurface(
+        surface_id_, base::Bind(&SatisfyCallback, nullptr),
+        base::Bind(&RequireCallback, nullptr),
+        // I believe there's nothing to do here because we
+        // added a ref above.
+        base::Bind(&base::DoNothing),
+        // base::Bind(&AddRefSurfaceId, compositor_, surface_id_),
+        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
+                   surface_id_),
+        current_surface_size_, current_scale_factor_,
+        current_frame_size_in_dip_);
   }
 }
 

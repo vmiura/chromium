@@ -28,10 +28,6 @@ interface DisplayCompositorClient {
 
 // Browser or Window Server ("display compositor host") to GPU
 interface DisplayCompositor {
-  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
-
-  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
-
   // A ContentFrameSink (and, similarly, this would apply for
   // CompositorFrameSink) is uniquely identified by two 32-bit quantities:
   // |client_id| and |sink_id|. |client_id| is a display compositor host
@@ -67,10 +63,6 @@ interface DisplayCompositorHost {
 // delegates window creation to the Mus window server which has access to the
 // privileged display compositor API.
 interface DisplayCompositorHostPrivate {
-  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
-
-  MoveTempRefToRefOnSurfaceId(cc.mojom.SurfaceId id);
-
   CreateContentFrameSinkWithHandle(
       int32 sink_id,
       gpu.mojom.SurfaceHandle widget,
@@ -89,6 +81,14 @@ interface DisplayCompositorHostPrivate {
 // from here in order to ensure that hierarchy registration does not race with
 // ContentFrameSink creation.
 interface ContentFrameSinkPrivate {
+  // Adds a ref to this surface ID scoped by the lifetime of this
+  // ContentFrameSink. That is, if the ContentFrameSink associated with this
+  // interface goes away then so does the reference.
+  AddRefOnSurfaceId(cc.mojom.SurfaceId id);
+
+  // Transfers ownership of display compositor host's ref on to this client.
+  TransferRef(cc.mojom.SurfaceId id);
+
   RegisterChildSink(CompositorFrameSinkId child_client_id);
 
   UnregisterChildSink(CompositorFrameSinkId child_client_id);

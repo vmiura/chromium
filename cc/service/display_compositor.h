@@ -41,8 +41,6 @@ class DisplayCompositor : public mojom::DisplayCompositor,
   ~DisplayCompositor() override;
 
   // mojom::DisplayCompositor implementation.
-  void AddRefOnSurfaceId(const SurfaceId& id) override;
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id) override;
   void CreateContentFrameSink(
       uint32_t client_id,
       int32_t sink_id,

@@ -111,7 +111,7 @@ void SurfaceManager::GarbageCollectSurfaces() {
   for (SurfaceDestroyList::iterator dest_it = surfaces_to_destroy_.begin();
        dest_it != surfaces_to_destroy_.end();) {
     auto& refs = surface_refs_[(*dest_it)->surface_id()];
-    if (refs.refs || refs.temp_refs) {
+    if (refs.refs) {
       ++dest_it;
       continue;
     }
@@ -341,24 +341,6 @@ void SurfaceManager::AddRefOnSurfaceId(const SurfaceId& id) {
   LOG(ERROR) << "Add ref on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 
-void SurfaceManager::AddTempRefOnSurfaceId(const SurfaceId& id) {
-  if (id.is_null()) return;
-  auto& refs = surface_refs_[id];
-  // TODO(hackathon): Record which renderer made the temp ref, and reap them
-  // after a timeout if the renderer dies.
-  refs.temp_refs++;
-  LOG(ERROR) << "Add temp ref on SurfaceId " << id.ToString() << " " << refs.temp_refs;;
-}
-
-void SurfaceManager::MoveTempRefToRefOnSurfaceId(const SurfaceId& id) {
-  if (id.is_null()) return;
-  auto& refs = surface_refs_[id];
-  DCHECK_GT(refs.temp_refs, 0);
-  refs.temp_refs--;
-  refs.refs++;
-  LOG(ERROR) << "Make temp ref real on SurfaceId " << id.ToString() << " " << refs.refs;
-}
-
 void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   if (id.is_null()) return;
   auto it = surface_refs_.find(id);
@@ -374,10 +356,9 @@ void SurfaceManager::RemoveRefOnSurfaceId(const SurfaceId& id) {
   DCHECK_GT(refs.refs, 0);
   refs.refs--;
   // If this SurfaceId has no refs then we can garbage collect it.
-  if (!refs.refs && !refs.temp_refs)
+  if (!refs.refs)
     GarbageCollectSurfaces();
-  LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs
-             << " " << refs.temp_refs;
+  LOG(ERROR) << "Remove ref on SurfaceId " << id.ToString() << " " << refs.refs;
 }
 
 }  // namespace cc

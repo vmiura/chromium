@@ -244,6 +244,14 @@ Compositor::~Compositor() {
   context_factory_->RemoveCompositor(this);
 }
 
+void Compositor::AddRefOnSurfaceId(const cc::SurfaceId& id) {
+  content_frame_sink_private_->AddRefOnSurfaceId(id);
+}
+
+void Compositor::TransferRef(const cc::SurfaceId& id) {
+  content_frame_sink_private_->TransferRef(id);
+}
+
 void Compositor::AddChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
   content_frame_sink_private_->RegisterChildSink(

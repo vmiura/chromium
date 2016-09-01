@@ -111,8 +111,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
       const CompositorFrameSinkId& child_compositor_frame_sink_id);
 
   void AddRefOnSurfaceId(const SurfaceId& id);
-  void AddTempRefOnSurfaceId(const SurfaceId& id);
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
   void RemoveRefOnSurfaceId(const SurfaceId& id);
 
  private:

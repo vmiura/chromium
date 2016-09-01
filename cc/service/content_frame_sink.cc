@@ -227,19 +227,27 @@ ContentFrameSink::ContentFrameSink(
 }
 
 ContentFrameSink::~ContentFrameSink() {
-  LOG(ERROR) << "~Service compositor " << this;
+  LOG(ERROR) << "~ContentFrameSink" << this;
 
+  ReleaseSurfaces();
   scheduler_.SetVisible(false);
   scheduler_.DidLoseOutputSurface();
   host_impl_.ReleaseOutputSurface();
   output_surface_.reset();
 
   surface_manager_->RemoveRefOnSurfaceId(surface_id_);
+  // If this is a top level ContentFrameSink then we also take the ownership of
+  // the surface from the display compositor host.
+  if (widget_ != gfx::kNullAcceleratedWidget)
+    surface_manager_->RemoveRefOnSurfaceId(surface_id_);
 }
 
 void ContentFrameSink::ReleaseSurfaces() {
   for (const SurfaceId& surface_id : released_surfaces_) {
     surface_manager_->RemoveRefOnSurfaceId(surface_id);
+    auto it = surface_refs_.find(surface_id);
+    CHECK((it != surface_refs_.end()) && (it->second > 0));
+    it->second--;
     fprintf(stderr, ">>>%s surface_id: %s\n", __PRETTY_FUNCTION__,
             surface_id.ToString().c_str());
   }
@@ -359,6 +367,19 @@ DrawResult ContentFrameSink::DrawAndSwap(bool forced_draw) {
   return result;
 }
 
+void ContentFrameSink::AddRefOnSurfaceId(const SurfaceId& id) {
+  surface_refs_[id]++;
+  surface_manager_->AddRefOnSurfaceId(id);
+}
+
+void ContentFrameSink::TransferRef(const SurfaceId& id) {
+  // SurfaceManager doesn't know about scoping of refs.
+  // This is purely a book keeping operation. We trust that
+  // the display compositor host is doing the right thing in
+  // this case.
+  surface_refs_[id]++;
+}
+
 void ContentFrameSink::RegisterChildSink(
     const CompositorFrameSinkId& child_client_id) {
   fprintf(stderr, ">>>%s child_client_id: %s\n", __PRETTY_FUNCTION__,
@@ -424,13 +445,18 @@ void ContentFrameSink::PrepareCommitSync(
   DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
   cc::SurfaceId new_surface_id = surface_id_allocator_.GenerateId();
+  // This ref belongs to the ContentFrameSink until it receives a new surface
+  // ID.
+  surface_manager_->AddRefOnSurfaceId(new_surface_id);
+  // This ref belongs to the display compositor host.
   surface_manager_->AddRefOnSurfaceId(new_surface_id);
   if (!surface_id_.is_null())
     surface_manager_->RemoveRefOnSurfaceId(surface_id_);
+  // If this is a top level ContentFrameSink then we also take the ownership of
+  // the surface from the display compositor host.
+  if (widget_ != gfx::kNullAcceleratedWidget)
+    surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   surface_id_ = new_surface_id;
-  // TODO(fsamuel): This temp ref ought to be tied to the lifetime of the
-  // connection. If a connection goes away, then so should the temp ref.
-  surface_manager_->AddTempRefOnSurfaceId(surface_id_);
   if (output_surface_)
     output_surface_->SetDelegatedSurfaceId(surface_id_);
   callback.Run(surface_id_);
@@ -439,13 +465,22 @@ void ContentFrameSink::PrepareCommitSync(
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }
 
+void ContentFrameSink::ValidateAndRecordReleasedSurfaces(
+    const std::vector<SurfaceId>& released_surfaces) {
+  if (released_surfaces.empty())
+    return;
+  for (const SurfaceId& surface_id : released_surfaces) {
+    auto it = surface_refs_.find(surface_id);
+    CHECK((it != surface_refs_.end()) && (it->second > 0))
+        << "Trying to release a surface that the client doesn't own a "
+           "reference to.";
+    released_surfaces_.push_back(surface_id);
+  }
+}
+
 void ContentFrameSink::PrepareCommitInternal(bool will_wait_for_activation,
                                              mojom::ContentFramePtr frame) {
-  if (frame->released_surfaces.size() > 0) {
-    released_surfaces_.insert(released_surfaces_.end(),
-                              frame->released_surfaces.begin(),
-                              frame->released_surfaces.end());
-  }
+  ValidateAndRecordReleasedSurfaces(frame->released_surfaces);
 
   {
     TRACE_EVENT1("cc", "BulkBufferBackingHandle import", "count",

@@ -41,15 +41,6 @@ void DisplayCompositorConnection::RegisterContentFrameSinkObserver(
       std::move(content_frame_sink_private);
 }
 
-void DisplayCompositorConnection::AddRefOnSurfaceId(const SurfaceId& id) {
-  display_compositor_->AddRefOnSurfaceId(id);
-}
-
-void DisplayCompositorConnection::MoveTempRefToRefOnSurfaceId(
-    const SurfaceId& id) {
-  display_compositor_->MoveTempRefToRefOnSurfaceId(id);
-}
-
 void DisplayCompositorConnection::CreateContentFrameSink(
     uint32_t client_id,
     int32_t sink_id,
