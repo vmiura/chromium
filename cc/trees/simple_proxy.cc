@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_argument.h"
 #include "base/trace_event/trace_event_synthetic_delay.h"
@@ -281,7 +282,8 @@ bool SimpleProxy::IsMainThread() const {
 void SimpleProxy::OnCompositorCreated(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
   TRACE_EVENT0("cc", "SimpleProxy::OnCompositorCreated");
-  layer_tree_host_->SetCompositorFrameSinkId(compositor_frame_sink_id);
+  allocator_ = base::MakeUnique<SurfaceIdAllocator>(
+      compositor_frame_sink_id.client_id, compositor_frame_sink_id.sink_id);
 }
 
 void SimpleProxy::OnBackingsReturned(const std::vector<uint32_t>& backings) {
@@ -416,20 +418,14 @@ void SimpleProxy::OnBeginMainFrame(
 
     {
       TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame compositor->Commit");
-      mojo::SyncCallRestrictions::ScopedAllowSyncCall sync_call;
-      bool need_sync =
-          frame->device_scale_factor != last_committed_device_scale_factor_ ||
-          frame->device_viewport_size != last_committed_device_viewport_size_;
-      last_committed_device_scale_factor_ = frame->device_scale_factor;
-      last_committed_device_viewport_size_ = frame->device_viewport_size;
-      if (!need_sync) {
-        content_frame_sink_->PrepareCommit(hold_commit_for_activation,
-                                           std::move(frame));
-      } else {
-        SurfaceId new_surface_id;
-        content_frame_sink_->PrepareCommitSync(
-            hold_commit_for_activation, std::move(frame), &new_surface_id);
+      if (frame->device_scale_factor != last_committed_device_scale_factor_ ||
+          frame->device_viewport_size != last_committed_device_viewport_size_) {
+        last_committed_device_scale_factor_ = frame->device_scale_factor;
+        last_committed_device_viewport_size_ = frame->device_viewport_size;
+        surface_id_ = allocator_->GenerateId();
       }
+      content_frame_sink_->PrepareCommit(
+          surface_id_, hold_commit_for_activation, std::move(frame));
       if (hold_commit_for_activation)
         content_frame_sink_->WaitForActivation();
     }

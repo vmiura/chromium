@@ -467,6 +467,8 @@ void DelegatedFrameHost::AttemptFrameSubscriberCapture(
 }
 
 void DelegatedFrameHost::RegisterContentFrameSinkObserver() {
+  fprintf(stderr, ">>>%s compositor_frame_sink_id: %s\n", __PRETTY_FUNCTION__,
+          compositor_frame_sink_id_.ToString().c_str());
   binding_.Close();
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RegisterContentFrameSinkObserver(

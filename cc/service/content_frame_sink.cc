@@ -187,7 +187,7 @@ ContentFrameSink::ContentFrameSink(
       image_factory_(image_factory),
       surface_manager_(surface_manager),
       widget_(handle),
-      surface_id_allocator_(client_id, sink_id),
+      compositor_frame_sink_id_(client_id, sink_id),
       scheduler_(client_.get(),
                  settings.ToSchedulerSettings(),
                  client_id,
@@ -218,10 +218,9 @@ ContentFrameSink::ContentFrameSink(
       private_binding_(this, std::move(private_request)) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor
-             << " client_id: " << surface_id_allocator_.client_id()
-             << " sink_id: " << surface_id_allocator_.sink_id();
-  content_frame_sink_client_->OnCompositorCreated(
-      surface_id_allocator_.compositor_frame_sink_id());
+             << " client_id: " << compositor_frame_sink_id_.client_id
+             << " sink_id: " << compositor_frame_sink_id_.sink_id;
+  content_frame_sink_client_->OnCompositorCreated(compositor_frame_sink_id_);
   content_frame_sink_client_.set_connection_error_handler(
       base::Bind([]() { LOG(ERROR) << "ContentFrameSink Lost Connection"; }));
 }
@@ -305,8 +304,8 @@ void ContentFrameSink::CreateOutputSurface() {
   output_surface_ = base::MakeUnique<DelegatingOutputSurface>(
       surface_manager_,
       display_.get(),  // Will be null for non-root compositors.
-      surface_id_allocator_.compositor_frame_sink_id(),
-      std::move(compositor_context), std::move(worker_context));
+      compositor_frame_sink_id_, std::move(compositor_context),
+      std::move(worker_context));
   host_impl_.InitializeRenderer(output_surface_.get());
 
   if (!surface_id_.is_null())
@@ -384,14 +383,14 @@ void ContentFrameSink::RegisterChildSink(
     const CompositorFrameSinkId& child_client_id) {
   fprintf(stderr, ">>>%s child_client_id: %s\n", __PRETTY_FUNCTION__,
           child_client_id.ToString().c_str());
-  surface_manager_->RegisterSurfaceNamespaceHierarchy(
-      surface_id_allocator_.compositor_frame_sink_id(), child_client_id);
+  surface_manager_->RegisterSurfaceNamespaceHierarchy(compositor_frame_sink_id_,
+                                                      child_client_id);
 }
 
 void ContentFrameSink::UnregisterChildSink(
     const CompositorFrameSinkId& child_client_id) {
   surface_manager_->UnregisterSurfaceNamespaceHierarchy(
-      surface_id_allocator_.compositor_frame_sink_id(), child_client_id);
+      compositor_frame_sink_id_, child_client_id);
 }
 
 void ContentFrameSink::SetNeedsBeginMainFrame() {
@@ -411,56 +410,48 @@ void ContentFrameSink::SetVisible(bool visible) {
   scheduler_.SetVisible(visible);
 }
 
-void ContentFrameSink::PrepareCommit(bool will_wait_for_activation,
+void ContentFrameSink::PrepareCommit(const SurfaceId& surface_id,
+                                     bool will_wait_for_activation,
                                      mojom::ContentFramePtr frame) {
   TRACE_EVENT1("cc", "ContentFrameSink::PrepareCommit", "wait_for_activation",
                will_wait_for_activation);
-  DCHECK_EQ(wait_for_activation_state_, kWaitForActivationNone);
-  DCHECK(!frame_for_commit_);
-  DCHECK(scheduler_.CommitPending());
+  if (surface_id_ == surface_id) {
+    DCHECK_EQ(wait_for_activation_state_, kWaitForActivationNone);
+    DCHECK(!frame_for_commit_);
+    DCHECK(scheduler_.CommitPending());
 
-  bool viewport_changed_size =
-      frame->device_viewport_size != host_impl_.device_viewport_size();
-  // TODO(hackathon): AND !device scale factor changed.
-  DCHECK(!viewport_changed_size);
-  // First commit should always be PrepareCommitSync.
-  DCHECK(!surface_id_.is_null());
+    bool viewport_changed_size =
+        frame->device_viewport_size != host_impl_.device_viewport_size();
+    // TODO(hackathon): AND !device scale factor changed.
+    DCHECK(!viewport_changed_size);
+    // First commit should always include a new surface ID.
+    DCHECK(!surface_id_.is_null());
+  } else {
+    bool viewport_changed_size =
+        frame->device_viewport_size != host_impl_.device_viewport_size();
+    LayerTreeImpl* last_commit_tree = host_impl_.pending_tree();
+    if (!last_commit_tree)
+      last_commit_tree = host_impl_.active_tree();
+    bool dsf_changed =
+        frame->device_scale_factor != last_commit_tree->device_scale_factor();
+    DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
 
-  PrepareCommitInternal(will_wait_for_activation, std::move(frame));
-}
-
-void ContentFrameSink::PrepareCommitSync(
-    bool will_wait_for_activation,
-    mojom::ContentFramePtr frame,
-    const PrepareCommitSyncCallback& callback) {
-  TRACE_EVENT1("cc", "ContentFrameSink::PrepareCommitSync",
-               "wait_for_activation", will_wait_for_activation);
-  bool viewport_changed_size =
-      frame->device_viewport_size != host_impl_.device_viewport_size();
-  LayerTreeImpl* last_commit_tree = host_impl_.pending_tree();
-  if (!last_commit_tree)
-    last_commit_tree = host_impl_.active_tree();
-  bool dsf_changed =
-      frame->device_scale_factor != last_commit_tree->device_scale_factor();
-  DCHECK(surface_id_.is_null() || viewport_changed_size || dsf_changed);
-
-  cc::SurfaceId new_surface_id = surface_id_allocator_.GenerateId();
-  // This ref belongs to the ContentFrameSink until it receives a new surface
-  // ID.
-  surface_manager_->AddRefOnSurfaceId(new_surface_id);
-  // This ref belongs to the display compositor host.
-  surface_manager_->AddRefOnSurfaceId(new_surface_id);
-  if (!surface_id_.is_null())
-    surface_manager_->RemoveRefOnSurfaceId(surface_id_);
-  // If this is a top level ContentFrameSink then we also take the ownership of
-  // the surface from the display compositor host.
-  if (widget_ != gfx::kNullAcceleratedWidget)
-    surface_manager_->RemoveRefOnSurfaceId(surface_id_);
-  surface_id_ = new_surface_id;
-  if (output_surface_)
-    output_surface_->SetDelegatedSurfaceId(surface_id_);
-  callback.Run(surface_id_);
-  LOG(ERROR) << "New SurfaceID " << surface_id_.ToString();
+    // This ref belongs to the ContentFrameSink until it receives a new surface
+    // ID.
+    surface_manager_->AddRefOnSurfaceId(surface_id);
+    // This ref belongs to the display compositor host.
+    surface_manager_->AddRefOnSurfaceId(surface_id);
+    if (!surface_id_.is_null())
+      surface_manager_->RemoveRefOnSurfaceId(surface_id_);
+    // If this is a top level ContentFrameSink then we also take the ownership
+    // of the surface from the display compositor host.
+    if (widget_ != gfx::kNullAcceleratedWidget)
+      surface_manager_->RemoveRefOnSurfaceId(surface_id_);
+    surface_id_ = surface_id;
+    if (output_surface_)
+      output_surface_->SetDelegatedSurfaceId(surface_id_);
+    LOG(ERROR) << "New SurfaceID " << surface_id_.ToString();
+  }
 
   PrepareCommitInternal(will_wait_for_activation, std::move(frame));
 }

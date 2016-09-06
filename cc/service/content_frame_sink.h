@@ -16,7 +16,6 @@
 #include "cc/ipc/content_frame.mojom.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/service/service_export.h"
-#include "cc/surfaces/surface_id_allocator.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/task_runner_provider.h"
 #include "mojo/public/cpp/bindings/binding.h"
@@ -79,11 +78,9 @@ class CC_SERVICE_EXPORT ContentFrameSink
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
   void SetVisible(bool visible) override;
   void BeginMainFrameAborted(CommitEarlyOutReason reason) override;
-  void PrepareCommit(bool will_wait_for_activation,
+  void PrepareCommit(const SurfaceId& surface_id,
+                     bool will_wait_for_activation,
                      mojom::ContentFramePtr frame) override;
-  void PrepareCommitSync(bool will_wait_for_activation,
-                         mojom::ContentFramePtr frame,
-                         const PrepareCommitSyncCallback& callback) override;
   void WaitForActivation(const WaitForActivationCallback& callback) override;
   void DeleteBackings(const std::vector<uint32_t>& backings) override;
   void Destroy(const DestroyCallback& callback) override;
@@ -130,7 +127,7 @@ class CC_SERVICE_EXPORT ContentFrameSink
   SurfaceManager* const surface_manager_;
 
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  SurfaceIdAllocator surface_id_allocator_;
+  CompositorFrameSinkId compositor_frame_sink_id_;
   SurfaceId surface_id_;
 
   std::unordered_map<SurfaceId, uint32_t, SurfaceIdHash> surface_refs_;

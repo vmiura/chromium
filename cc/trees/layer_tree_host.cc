@@ -1347,15 +1347,8 @@ void LayerTreeHost::OnCommitForSwapPromises() {
     swap_promise->OnCommit();
 }
 
-void LayerTreeHost::SetCompositorFrameSinkId(
-    const CompositorFrameSinkId& compositor_frame_sink_id) {
-  compositor_frame_sink_id_ = compositor_frame_sink_id;
-}
-
 SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {
-  // TODO(fsamuel): This is a hack! Let's kill SurfaceSequence.
-  return SurfaceSequence(compositor_frame_sink_id_.client_id,
-                         next_surface_sequence_++);
+  return SurfaceSequence(0 /* client_id */, next_surface_sequence_++);
 }
 
 void LayerTreeHost::SetLayerTreeMutator(

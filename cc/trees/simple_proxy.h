@@ -13,6 +13,7 @@
 #include "cc/ipc/image_decode.mojom.h"
 #include "cc/output/output_surface.h"
 #include "cc/output/renderer_capabilities.h"
+#include "cc/surfaces/surface_id_allocator.h"
 #include "cc/trees/channel_main.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/proxy_common.h"
@@ -124,6 +125,8 @@ class CC_EXPORT SimpleProxy : public Proxy,
 
   gfx::Size last_committed_device_viewport_size_;
   float last_committed_device_scale_factor_ = 0.f;
+
+  std::unique_ptr<SurfaceIdAllocator> allocator_;
 
   RendererCapabilities renderer_capabilities_;
 

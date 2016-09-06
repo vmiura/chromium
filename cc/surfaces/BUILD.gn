@@ -5,6 +5,8 @@
 source_set("surface_id") {
   sources = [
     "surface_id.h",
+    "surface_id_allocator.cc",
+    "surface_id_allocator.h",
     "surface_sequence.h",
   ]
 
@@ -35,8 +37,6 @@ component("surfaces") {
     "surface_hittest.cc",
     "surface_hittest.h",
     "surface_hittest_delegate.h",
-    "surface_id_allocator.cc",
-    "surface_id_allocator.h",
     "surface_id_ref.h",
     "surface_manager.cc",
     "surface_manager.h",
