@@ -471,7 +471,13 @@ void ContentFrameSink::ValidateAndRecordReleasedSurfaces(
     return;
   for (const SurfaceId& surface_id : released_surfaces) {
     auto it = surface_refs_.find(surface_id);
-    CHECK((it != surface_refs_.end()) && (it->second > 0))
+    if (it == surface_refs_.end()) {
+      // This can happen if the display compositor service has restarted and
+      // these are IDs that were generated in the previous version of the
+      // display compositor.
+      continue;
+    }
+    CHECK(it->second > 0)
         << "Trying to release a surface that the client doesn't own a "
            "reference to.";
     released_surfaces_.push_back(surface_id);

@@ -32,9 +32,9 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
       cc::mojom::DisplayCompositorClientPtr display_compositor_client);
 
+  bool HasEncounteredError() const;
+
   // cc::mojom::DisplayCompositor implementation:
-  void AddRefOnSurfaceId(const SurfaceId& id);
-  void MoveTempRefToRefOnSurfaceId(const SurfaceId& id);
   void CreateContentFrameSink(
       uint32_t client_id,
       int32_t sink_id,

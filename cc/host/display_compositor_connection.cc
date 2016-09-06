@@ -41,6 +41,10 @@ void DisplayCompositorConnection::RegisterContentFrameSinkObserver(
       std::move(content_frame_sink_private);
 }
 
+bool DisplayCompositorConnection::HasEncounteredError() const {
+  return display_compositor_.encountered_error();
+}
+
 void DisplayCompositorConnection::CreateContentFrameSink(
     uint32_t client_id,
     int32_t sink_id,

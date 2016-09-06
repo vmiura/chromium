@@ -15,7 +15,7 @@ DisplayCompositorConnectionFactoryImpl::
 
 cc::DisplayCompositorConnection*
 DisplayCompositorConnectionFactoryImpl::GetDisplayCompositorConnection() {
-  if (display_compositor_)
+  if (display_compositor_ && !display_compositor_->HasEncounteredError())
     return display_compositor_.get();
 
   cc::mojom::DisplayCompositorFactoryPtr display_compositor_factory;
