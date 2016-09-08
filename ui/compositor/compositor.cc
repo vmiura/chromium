@@ -245,15 +245,18 @@ Compositor::~Compositor() {
 }
 
 void Compositor::AddRefOnSurfaceId(const cc::SurfaceId& id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
   content_frame_sink_private_->AddRefOnSurfaceId(id);
 }
 
 void Compositor::TransferRef(const cc::SurfaceId& id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
   content_frame_sink_private_->TransferRef(id);
 }
 
 void Compositor::AddChildCompositorFrameSinkId(
     const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
   content_frame_sink_private_->RegisterChildSink(
       child_compositor_frame_sink_id);
 }

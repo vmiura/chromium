@@ -74,6 +74,9 @@ void ContentFrameSinkPrivate::UnregisterChildSink(
 void ContentFrameSinkPrivate::OnSurfaceCreated(
     const gfx::Size& frame_size,
     const cc::SurfaceId& surface_id) {
+  // TODO(fsamuel): We should probably return the last_surface_id back to the
+  // gpu immediately if we don't have a display_compositor_client_ or else we
+  // will leak refs (because we only keep track of the last surface ID).
   last_frame_size_ = frame_size;
   last_surface_id_ = surface_id;
   if (display_compositor_client_)

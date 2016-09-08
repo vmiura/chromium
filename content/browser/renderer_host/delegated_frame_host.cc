@@ -253,8 +253,6 @@ void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
   }
 }
 
-void DelegatedFrameHost::OnConnectionLost() {}
-
 bool DelegatedFrameHost::CanCopyToVideoFrame() const {
   return compositor_ &&
          client_->DelegatedFrameHostGetLayer()->has_external_content();
@@ -270,8 +268,32 @@ void DelegatedFrameHost::EndFrameSubscription() {
   frame_subscriber_.reset();
 }
 
-uint32_t DelegatedFrameHost::GetSurfaceClientId() {
-  return compositor_frame_sink_id_.client_id;
+const cc::CompositorFrameSinkId&
+DelegatedFrameHost::GetCompositorFrameSinkId() {
+  return compositor_frame_sink_id_;
+}
+
+void DelegatedFrameHost::AddRefOnSurfaceId(const cc::SurfaceId& id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
+  content_frame_sink_private_->AddRefOnSurfaceId(id);
+}
+
+void DelegatedFrameHost::TransferRef(const cc::SurfaceId& id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
+  content_frame_sink_private_->TransferRef(id);
+}
+
+void DelegatedFrameHost::AddChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  DCHECK(!content_frame_sink_private_.encountered_error());
+  content_frame_sink_private_->RegisterChildSink(
+      child_compositor_frame_sink_id);
+}
+
+void DelegatedFrameHost::RemoveChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  content_frame_sink_private_->UnregisterChildSink(
+      child_compositor_frame_sink_id);
 }
 
 cc::SurfaceId DelegatedFrameHost::SurfaceIdAtPoint(
@@ -467,8 +489,6 @@ void DelegatedFrameHost::AttemptFrameSubscriberCapture(
 }
 
 void DelegatedFrameHost::RegisterContentFrameSinkObserver() {
-  fprintf(stderr, ">>>%s compositor_frame_sink_id: %s\n", __PRETTY_FUNCTION__,
-          compositor_frame_sink_id_.ToString().c_str());
   binding_.Close();
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RegisterContentFrameSinkObserver(
@@ -923,7 +943,7 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   }
   factory->GetSurfaceManager()->UnregisterSurfaceFactoryClient(
       id_allocator_->client_id());
-  factory->GetSurfaceManager()->InvalidateSurfaceClientId(
+  factory->GetSurfaceManager()->InvalidateCompositorFrameSinkId(
       id_allocator_->client_id());
 #endif
   DCHECK(!vsync_manager_.get());

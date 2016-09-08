@@ -774,10 +774,10 @@ void BrowserPluginGuest::OnWillAttachComplete(
   SendQueuedMessages();
 
   delegate_->DidAttach(GetGuestProxyRoutingID());
-  RenderWidgetHostViewGuest* rwhv = static_cast<RenderWidgetHostViewGuest*>(
-      web_contents()->GetRenderWidgetHostView());
-  if (rwhv)
-    rwhv->RegisterSurfaceNamespaceId();
+  // RenderWidgetHostViewGuest* rwhv = static_cast<RenderWidgetHostViewGuest*>(
+  //    web_contents()->GetRenderWidgetHostView());
+  // if (rwhv)
+  //  rwhv->RegisterSurfaceNamespaceId();
   has_render_view_ = true;
 
   RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Attached"));
@@ -791,12 +791,12 @@ void BrowserPluginGuest::OnDetach(int browser_plugin_instance_id) {
   // it's attached again.
   attached_ = false;
 
-  RenderWidgetHostViewChildFrame* rwhv =
-      static_cast<RenderWidgetHostViewChildFrame*>(
-          web_contents()->GetRenderWidgetHostView());
+  // RenderWidgetHostViewChildFrame* rwhv =
+  //    static_cast<RenderWidgetHostViewChildFrame*>(
+  //        web_contents()->GetRenderWidgetHostView());
   // If the guest is terminated, our host may already be gone.
-  if (rwhv)
-    rwhv->UnregisterSurfaceNamespaceId();
+  // if (rwhv)
+  //  rwhv->UnregisterSurfaceNamespaceId();
 
   delegate_->DidDetach();
 }

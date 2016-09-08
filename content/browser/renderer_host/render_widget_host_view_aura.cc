@@ -482,7 +482,7 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(RenderWidgetHost* host,
   // TODO(fsamuel): Surface hit testing is broken.
   // if (host_->delegate() && host_->delegate()->GetInputEventRouter()) {
   //  host_->delegate()->GetInputEventRouter()->AddSurfaceClientIdOwner(
-  //      GetSurfaceClientId(), this);
+  //      GetCompositorFrameSinkId(), this);
   //}
 
   // We should start observing the TextInputManager for IME-related events as
@@ -2015,22 +2015,26 @@ uint32_t RenderWidgetHostViewAura::SurfaceClientIdAtPoint(
     cc::SurfaceHittestDelegate* delegate,
     const gfx::Point& point,
     gfx::Point* transformed_point) {
-  DCHECK(device_scale_factor_ != 0.0f);
+  // TODO(fsamuel): Implement this.
+  // We need to ask the display compositor to return a point. This should
+  // ideally be async.
+  return 0u;
+  // DCHECK(device_scale_factor_ != 0.0f);
 
-  // The surface hittest happens in device pixels, so we need to convert the
-  // |point| from DIPs to pixels before hittesting.
-  gfx::Point point_in_pixels =
-      gfx::ConvertPointToPixel(device_scale_factor_, point);
-  cc::SurfaceId id = delegated_frame_host_->SurfaceIdAtPoint(
-      delegate, point_in_pixels, transformed_point);
-  *transformed_point =
-      gfx::ConvertPointToDIP(device_scale_factor_, *transformed_point);
+  //// The surface hittest happens in device pixels, so we need to convert the
+  //// |point| from DIPs to pixels before hittesting.
+  // gfx::Point point_in_pixels =
+  //    gfx::ConvertPointToPixel(device_scale_factor_, point);
+  // cc::SurfaceId id = delegated_frame_host_->SurfaceIdAtPoint(
+  //    delegate, point_in_pixels, transformed_point);
+  //*transformed_point =
+  //    gfx::ConvertPointToDIP(device_scale_factor_, *transformed_point);
 
-  // It is possible that the renderer has not yet produced a surface, in which
-  // case we return our current namespace.
-  if (id.is_null())
-    return GetSurfaceClientId();
-  return id.client_id();
+  //// It is possible that the renderer has not yet produced a surface, in which
+  //// case we return our current namespace.
+  // if (id.is_null())
+  //  return GetCompositorFrameSinkId();
+  // return id.client_id();
 }
 
 void RenderWidgetHostViewAura::ProcessMouseEvent(
@@ -2979,8 +2983,29 @@ void RenderWidgetHostViewAura::UnlockCompositingSurface() {
   NOTIMPLEMENTED();
 }
 
-uint32_t RenderWidgetHostViewAura::GetSurfaceClientId() {
-  return delegated_frame_host_->GetSurfaceClientId();
+const cc::CompositorFrameSinkId&
+RenderWidgetHostViewAura::GetCompositorFrameSinkId() {
+  return delegated_frame_host_->GetCompositorFrameSinkId();
+}
+
+void RenderWidgetHostViewAura::AddRefOnSurfaceId(const cc::SurfaceId& id) {
+  delegated_frame_host_->AddRefOnSurfaceId(id);
+}
+
+void RenderWidgetHostViewAura::TransferRef(const cc::SurfaceId& id) {
+  delegated_frame_host_->TransferRef(id);
+}
+
+void RenderWidgetHostViewAura::AddChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  delegated_frame_host_->AddChildCompositorFrameSinkId(
+      child_compositor_frame_sink_id);
+}
+
+void RenderWidgetHostViewAura::RemoveChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {
+  delegated_frame_host_->RemoveChildCompositorFrameSinkId(
+      child_compositor_frame_sink_id);
 }
 
 cc::SurfaceId RenderWidgetHostViewAura::SurfaceIdForTesting() const {

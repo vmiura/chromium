@@ -858,8 +858,10 @@ bool RenderFrameHostImpl::CreateRenderFrame(int proxy_routing_id,
   // RenderWidgetHostViewAura for the main frame once RenderViewHostImpl has-a
   // RenderWidgetHostImpl. https://crbug.com/545684
   if (parent_routing_id != MSG_ROUTING_NONE && render_widget_host_) {
-    RenderWidgetHostView* rwhv =
-        new RenderWidgetHostViewChildFrame(render_widget_host_);
+    RenderWidgetHostView* rwhv = new RenderWidgetHostViewChildFrame(
+        cc::CompositorFrameSinkId(GetProcess()->GetID(),
+                                  render_widget_host_->GetRoutingID()),
+        render_widget_host_);
     rwhv->Hide();
   }
 

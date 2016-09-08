@@ -398,9 +398,21 @@ RenderWidgetHostViewBase::GetOrientationTypeForDesktop(
 void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
 }
 
-uint32_t RenderWidgetHostViewBase::GetSurfaceClientId() {
-  return 0;
+const cc::CompositorFrameSinkId&
+RenderWidgetHostViewBase::GetCompositorFrameSinkId() {
+  static cc::CompositorFrameSinkId invalid;
+  return invalid;
 }
+
+void RenderWidgetHostViewBase::AddRefOnSurfaceId(const cc::SurfaceId& id) {}
+
+void RenderWidgetHostViewBase::TransferRef(const cc::SurfaceId& id) {}
+
+void RenderWidgetHostViewBase::AddChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {}
+
+void RenderWidgetHostViewBase::RemoveChildCompositorFrameSinkId(
+    const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) {}
 
 uint32_t RenderWidgetHostViewBase::SurfaceClientIdAtPoint(
     cc::SurfaceHittestDelegate* delegate,

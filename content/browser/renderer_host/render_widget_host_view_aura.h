@@ -187,7 +187,14 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnDidNavigateMainFrameToNewPage() override;
   void LockCompositingSurface() override;
   void UnlockCompositingSurface() override;
-  uint32_t GetSurfaceClientId() override;
+  const cc::CompositorFrameSinkId& GetCompositorFrameSinkId() override;
+  void AddRefOnSurfaceId(const cc::SurfaceId& id) override;
+  void TransferRef(const cc::SurfaceId& id) override;
+  void AddChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) override;
+  void RemoveChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) override;
+
   uint32_t SurfaceClientIdAtPoint(cc::SurfaceHittestDelegate* delegate,
                                   const gfx::Point& point,
                                   gfx::Point* transformed_point) override;

@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "cc/ipc/compositor.mojom.h"
 #include "cc/resources/returned_resource.h"
 #include "cc/scheduler/begin_frame_source.h"
 #include "cc/surfaces/surface_factory_client.h"
@@ -25,6 +26,8 @@
 #include "content/common/content_export.h"
 #include "content/common/input/input_event_ack_state.h"
 #include "content/public/browser/readback_types.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -51,9 +54,13 @@ class RenderWidgetHostViewGuestSurfaceTest;
 class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     : public RenderWidgetHostViewBase,
       public cc::SurfaceFactoryClient,
+      public cc::mojom::DisplayCompositorClient,
       public cc::BeginFrameObserver {
  public:
-  explicit RenderWidgetHostViewChildFrame(RenderWidgetHost* widget);
+  RenderWidgetHostViewChildFrame(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+      RenderWidgetHost* widget);
+
   ~RenderWidgetHostViewChildFrame() override;
 
   void SetCrossProcessFrameConnector(
@@ -123,7 +130,13 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                               InputEventAckState ack_result) override;
   bool LockMouse() override;
   void UnlockMouse() override;
-  uint32_t GetSurfaceClientId() override;
+  const cc::CompositorFrameSinkId& GetCompositorFrameSinkId() override;
+  void AddRefOnSurfaceId(const cc::SurfaceId& id) override;
+  void TransferRef(const cc::SurfaceId& id) override;
+  void AddChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) override;
+  void RemoveChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id) override;
   void ProcessKeyboardEvent(const NativeWebKeyboardEvent& event) override;
   void ProcessMouseEvent(const blink::WebMouseEvent& event,
                          const ui::LatencyInfo& latency) override;
@@ -188,18 +201,18 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // to the frame tree.
   RenderWidgetHostViewBase* GetParentView();
 
-  void RegisterSurfaceNamespaceId();
-  void UnregisterSurfaceNamespaceId();
+  // void RegisterSurfaceNamespaceId();
+  // void UnregisterSurfaceNamespaceId();
 
  protected:
   friend class RenderWidgetHostView;
   friend class RenderWidgetHostViewChildFrameTest;
   friend class RenderWidgetHostViewGuestSurfaceTest;
 
-  // Clears current compositor surface, if one is in use.
-  void ClearCompositorSurfaceIfNecessary();
-
   void ProcessFrameSwappedCallbacks();
+
+  const cc::CompositorFrameSinkId compositor_frame_sink_id_;
+  cc::CompositorFrameSinkId parent_compositor_frame_sink_id_;
 
   // The last scroll offset of the view.
   gfx::Vector2dF last_scroll_offset_;
@@ -209,11 +222,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   RenderWidgetHostImpl* host_;
 
   // Surface-related state.
-  // std::unique_ptr<cc::SurfaceIdAllocator> id_allocator_;
-  uint32_t surface_client_id_ = 0;
-  std::unique_ptr<cc::SurfaceFactory> surface_factory_;
   cc::SurfaceId surface_id_;
-  uint32_t next_surface_sequence_;
   uint32_t last_output_surface_id_;
   gfx::Size current_surface_size_;
   float current_surface_scale_factor_;
@@ -235,6 +244,12 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                                 const ReadbackRequestCallback& callback,
                                 const SkColorType preferred_color_type);
 
+  void RegisterContentFrameSinkObserver();
+
+  // cc::DisplayCompositorClient implementation.
+  void OnSurfaceCreated(const gfx::Size& frame_size,
+                        const cc::SurfaceId& surface_id) override;
+
   using FrameSwappedCallbackList = std::deque<std::unique_ptr<base::Closure>>;
   // Since frame-drawn callbacks are "fire once", we use std::deque to make
   // it convenient to swap() when processing the list.
@@ -244,8 +259,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   cc::BeginFrameSource* begin_frame_source_;
   cc::BeginFrameArgs last_begin_frame_args_;
   bool observing_begin_frame_source_;
-  // The surface client ID of the parent RenderWidgetHostView.  0 if none.
-  uint32_t parent_surface_client_id_;
+
+  cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_;
+  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);

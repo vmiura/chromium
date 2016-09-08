@@ -46,6 +46,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
       public ui::GestureConsumer {
  public:
   RenderWidgetHostViewGuest(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       RenderWidgetHost* widget,
       BrowserPluginGuest* guest,
       base::WeakPtr<RenderWidgetHostViewBase> platform_view);

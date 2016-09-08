@@ -67,10 +67,11 @@ class ScopedInputScaleDisabler {
 }  // namespace
 
 RenderWidgetHostViewGuest::RenderWidgetHostViewGuest(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
     RenderWidgetHost* widget_host,
     BrowserPluginGuest* guest,
     base::WeakPtr<RenderWidgetHostViewBase> platform_view)
-    : RenderWidgetHostViewChildFrame(widget_host),
+    : RenderWidgetHostViewChildFrame(compositor_frame_sink_id, widget_host),
       // |guest| is NULL during test.
       guest_(guest ? guest->AsWeakPtr() : base::WeakPtr<BrowserPluginGuest>()),
       platform_view_(platform_view) {

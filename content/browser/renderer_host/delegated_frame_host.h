@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/compositor_vsync_manager.h"
@@ -92,7 +93,6 @@ class CONTENT_EXPORT DelegatedFrameHost
       public ui::ContextFactoryObserver,
       public DelegatedFrameEvictorClient,
       public cc::SurfaceFactoryClient,
-      public cc::DisplayCompositorConnectionClient,
       public cc::mojom::DisplayCompositorClient,
       public base::SupportsWeakPtr<DelegatedFrameHost> {
  public:
@@ -130,10 +130,9 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   bool CanCopyToBitmap() const;
 
-  // cc::DisplayCompositorConnectionClient implementation.
+  // cc::DisplayCompositorClient implementation.
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
-  void OnConnectionLost() override;
 
   // Public interface exposed to RenderWidgetHostView.
 
@@ -164,7 +163,15 @@ class CONTENT_EXPORT DelegatedFrameHost
       std::unique_ptr<RenderWidgetHostViewFrameSubscriber> subscriber);
   void EndFrameSubscription();
   bool HasFrameSubscriber() const { return !!frame_subscriber_; }
-  uint32_t GetSurfaceClientId();
+
+  const cc::CompositorFrameSinkId& GetCompositorFrameSinkId();
+  void AddRefOnSurfaceId(const cc::SurfaceId& id);
+  void TransferRef(const cc::SurfaceId& id);
+  void AddChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
+  void RemoveChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
+
   // Returns a null SurfaceId if this DelegatedFrameHost has not yet created
   // a compositor Surface.
   cc::SurfaceId SurfaceIdAtPoint(cc::SurfaceHittestDelegate* delegate,

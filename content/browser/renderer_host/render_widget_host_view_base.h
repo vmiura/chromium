@@ -219,7 +219,13 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
 
   // Returns the compositing surface ID namespace, or 0 if Surfaces are not
   // enabled.
-  virtual uint32_t GetSurfaceClientId();
+  virtual const cc::CompositorFrameSinkId& GetCompositorFrameSinkId();
+  virtual void AddRefOnSurfaceId(const cc::SurfaceId& id);
+  virtual void TransferRef(const cc::SurfaceId& id);
+  virtual void AddChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
+  virtual void RemoveChildCompositorFrameSinkId(
+      const cc::CompositorFrameSinkId& child_compositor_frame_sink_id);
 
   // When there are multiple RenderWidgetHostViews for a single page, input
   // events need to be targeted to the correct one for handling. The following
