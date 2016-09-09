@@ -220,7 +220,9 @@ class CONTENT_EXPORT DelegatedFrameHost
     return frame_subscriber_.get();
   }
 
-  void ReleaseSurfaceId(const cc::SurfaceId& surface_id);
+  void AddRefOnSurfaceIdForParent(const cc::SurfaceId& surface_id);
+  void ReleaseRefOnSurfaceIdForParent(const cc::SurfaceId& surface_id);
+
   bool ShouldCreateResizeLock();
   void LockResources();
   void UnlockResources();

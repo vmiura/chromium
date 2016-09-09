@@ -113,24 +113,16 @@ bool BrowserPlugin::OnMessageReceived(const IPC::Message& message) {
   return handled;
 }
 
-void BrowserPlugin::OnSetChildFrameSurface(
-    int browser_plugin_instance_id,
-    const cc::SurfaceId& surface_id,
-    const gfx::Size& frame_size,
-    float scale_factor,
-    const cc::SurfaceSequence& sequence) {
+void BrowserPlugin::OnSetChildFrameSurface(int browser_plugin_instance_id,
+                                           const cc::SurfaceId& surface_id,
+                                           const gfx::Size& frame_size,
+                                           float scale_factor) {
   if (!attached())
     return;
 
   EnableCompositing(true);
   DCHECK(compositing_helper_.get());
-  compositing_helper_->OnSetSurface(surface_id, frame_size, scale_factor,
-                                    sequence);
-}
-
-void BrowserPlugin::SendSatisfySequence(const cc::SurfaceSequence& sequence) {
-  BrowserPluginManager::Get()->Send(new BrowserPluginHostMsg_SatisfySequence(
-      render_frame_routing_id_, browser_plugin_instance_id_, sequence));
+  compositing_helper_->OnSetSurface(surface_id, frame_size, scale_factor);
 }
 
 void BrowserPlugin::UpdateDOMAttribute(const std::string& attribute_name,

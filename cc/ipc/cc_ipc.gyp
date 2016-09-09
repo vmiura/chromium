@@ -45,11 +45,9 @@
       'variables': {
         'mojom_files': [
           'surface_id.mojom',
-          'surface_sequence.mojom',
         ],
         'mojom_typemaps': [
           'surface_id.typemap',
-          'surface_sequence.typemap',
         ],
         'use_new_wrapper_types': 'false',
       },
@@ -64,11 +62,9 @@
         'for_blink': 'true',
         'mojom_files': [
           'surface_id.mojom',
-          'surface_sequence.mojom',
         ],
         'mojom_typemaps': [
           'surface_id.typemap',
-          'surface_sequence.typemap',
         ],
         'use_new_wrapper_types': 'false',
       },

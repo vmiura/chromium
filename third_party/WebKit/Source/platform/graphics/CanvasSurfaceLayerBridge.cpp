@@ -6,7 +6,6 @@
 
 #include "cc/layers/surface_layer.h"
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "platform/graphics/GraphicsLayer.h"
 #include "platform/mojo/MojoHelper.h"
 #include "public/platform/Platform.h"
@@ -33,24 +32,12 @@ bool CanvasSurfaceLayerBridge::createSurfaceLayer(int canvasWidth, int canvasHei
         return false;
 
     m_client->asyncRequestSurfaceCreation(m_surfaceId);
-    cc::SurfaceLayer::SatisfyCallback satisfyCallback = convertToBaseCallback(WTF::bind(&CanvasSurfaceLayerBridge::satisfyCallback, WTF::unretained(this)));
-    cc::SurfaceLayer::RequireCallback requireCallback = convertToBaseCallback(WTF::bind(&CanvasSurfaceLayerBridge::requireCallback, WTF::unretained(this)));
-    m_surfaceLayer = cc::SurfaceLayer::Create(std::move(satisfyCallback), std::move(requireCallback));
-    m_surfaceLayer->SetSurfaceId(m_surfaceId, 1.f, gfx::Size(canvasWidth, canvasHeight));
+    //m_surfaceLayer = cc::SurfaceLayer::Create(std::move(satisfyCallback), std::move(requireCallback));
+    //m_surfaceLayer->SetSurfaceId(m_surfaceId, 1.f, gfx::Size(canvasWidth, canvasHeight));
 
-    m_webLayer = wrapUnique(Platform::current()->compositorSupport()->createLayerFromCCLayer(m_surfaceLayer.get()));
-    GraphicsLayer::registerContentsLayer(m_webLayer.get());
+    //m_webLayer = wrapUnique(Platform::current()->compositorSupport()->createLayerFromCCLayer(m_surfaceLayer.get()));
+    //GraphicsLayer::registerContentsLayer(m_webLayer.get());
     return true;
-}
-
-void CanvasSurfaceLayerBridge::satisfyCallback(const cc::SurfaceSequence& sequence)
-{
-    m_client->asyncSatisfy(sequence);
-}
-
-void CanvasSurfaceLayerBridge::requireCallback(const cc::SurfaceId& surfaceId, const cc::SurfaceSequence& sequence)
-{
-    m_client->asyncRequire(surfaceId, sequence);
 }
 
 } // namespace blink

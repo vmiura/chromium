@@ -15,7 +15,6 @@
 
 #include "build/build_config.h"
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
 #include "content/common/content_security_policy_header.h"
@@ -624,11 +623,10 @@ IPC_STRUCT_TRAITS_END()
 // -----------------------------------------------------------------------------
 // Messages sent from the browser to the renderer.
 
-IPC_MESSAGE_ROUTED4(FrameMsg_SetChildFrameSurface,
+IPC_MESSAGE_ROUTED3(FrameMsg_SetChildFrameSurface,
                     cc::SurfaceId /* surface_id */,
                     gfx::Size /* frame_size */,
-                    float /* scale_factor */,
-                    cc::SurfaceSequence /* sequence */)
+                    float /* scale_factor */)
 
 // Notifies the embedding frame that the process rendering the child frame's
 // contents has terminated.
@@ -1319,16 +1317,6 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_PluginInstanceThrottleStateChange,
                      int32_t /* pp_instance */,
                      bool /* is_throttled */)
 #endif  // defined(ENABLE_PLUGINS)
-
-// Satisfies a Surface destruction dependency associated with |sequence|.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_SatisfySequence,
-                    cc::SurfaceSequence /* sequence */)
-
-// Creates a destruction dependency for the Surface specified by the given
-// |surface_id|.
-IPC_MESSAGE_ROUTED2(FrameHostMsg_RequireSequence,
-                    cc::SurfaceId /* surface_id */,
-                    cc::SurfaceSequence /* sequence */)
 
 // Provides the result from handling BeforeUnload.  |proceed| matches the return
 // value of the frame's beforeunload handler: true if the user decided to

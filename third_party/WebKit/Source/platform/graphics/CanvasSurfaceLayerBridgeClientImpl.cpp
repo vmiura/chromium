@@ -29,14 +29,4 @@ void CanvasSurfaceLayerBridgeClientImpl::asyncRequestSurfaceCreation(const cc::S
     m_service->RequestSurfaceCreation(surfaceId);
 }
 
-void CanvasSurfaceLayerBridgeClientImpl::asyncRequire(const cc::SurfaceId& surfaceId, const cc::SurfaceSequence& sequence)
-{
-    m_service->Require(surfaceId, sequence);
-}
-
-void CanvasSurfaceLayerBridgeClientImpl::asyncSatisfy(const cc::SurfaceSequence& sequence)
-{
-    m_service->Satisfy(sequence);
-}
-
 } // namespace blink;

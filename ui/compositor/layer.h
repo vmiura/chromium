@@ -297,24 +297,13 @@ class COMPOSITOR_EXPORT Layer
   void SetTextureScale(float x_scale, float y_scale);
 
   // Begins showing content from a surface with a particular id.
-  void SetShowSurface(const cc::SurfaceId& surface_id,
-                      const cc::SurfaceLayer::SatisfyCallback& satisfy_callback,
-                      const cc::SurfaceLayer::RequireCallback& require_callback,
-                      const base::Closure& add_ref_callback,
-                      const base::Closure& release_callback,
-                      gfx::Size surface_size,
-                      float scale,
-                      gfx::Size frame_size_in_dip);
-
-  void AddSurfaceRefs() {
-    // TODO(hackathon): We need to keep a reference for surface ids we sent to
-    // the GPU process in any commit, and then drop them at the right time
-    // there.
-    //if (surface_layer_)
-    //  add_ref_surface_id_callback_.Run();
-    //for (auto* child : children_)
-    //  child->AddSurfaceRefs();
-  }
+  void SetShowSurface(
+      const cc::SurfaceId& surface_id,
+      const base::Callback<void(const cc::SurfaceId&)>& addref_callback,
+      const base::Callback<void(const cc::SurfaceId&)>& release_callback,
+      gfx::Size surface_size,
+      float scale,
+      gfx::Size frame_size_in_dip);
 
   bool has_external_content() {
     return texture_layer_.get() || surface_layer_.get();
@@ -541,9 +530,6 @@ class COMPOSITOR_EXPORT Layer
 
   // The texture crop rectangle.
   gfx::RectF texture_crop_;
-
-  base::Closure add_ref_surface_id_callback_;
-  base::Closure release_surface_id_callback_;
 
   // The texture scale.
   float texture_x_scale_;

@@ -243,12 +243,12 @@ ContentFrameSink::~ContentFrameSink() {
 
 void ContentFrameSink::ReleaseSurfaces() {
   for (const SurfaceId& surface_id : released_surfaces_) {
-    surface_manager_->RemoveRefOnSurfaceId(surface_id);
     auto it = surface_refs_.find(surface_id);
     CHECK((it != surface_refs_.end()) && (it->second > 0));
     it->second--;
     fprintf(stderr, ">>>%s surface_id: %s\n", __PRETTY_FUNCTION__,
             surface_id.ToString().c_str());
+    surface_manager_->RemoveRefOnSurfaceId(surface_id);
   }
   released_surfaces_.clear();
 }

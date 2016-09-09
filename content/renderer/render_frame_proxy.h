@@ -26,7 +26,6 @@ struct WebRect;
 
 namespace cc {
 class SurfaceId;
-struct SurfaceSequence;
 }
 
 namespace content {
@@ -161,8 +160,7 @@ class CONTENT_EXPORT RenderFrameProxy
   void OnCompositorFrameSwapped(const IPC::Message& message);
   void OnSetChildFrameSurface(const cc::SurfaceId& surface_id,
                               const gfx::Size& frame_size,
-                              float scale_factor,
-                              const cc::SurfaceSequence& sequence);
+                              float scale_factor);
   void OnUpdateOpener(int opener_routing_id);
   void OnDidStopLoading();
   void OnDidUpdateSandboxFlags(blink::WebSandboxFlags flags);

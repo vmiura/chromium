@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright e014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ class SharedMemory;
 }
 
 namespace cc {
-struct SurfaceSequence;
 
 class CompositorFrame;
 class Layer;
@@ -64,8 +63,7 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
   void OnContainerDestroy();
   void OnSetSurface(const cc::SurfaceId& surface_id,
                     const gfx::Size& frame_size,
-                    float scale_factor,
-                    const cc::SurfaceSequence& sequence);
+                    float scale_factor);
   void UpdateVisibility(bool);
   void ChildFrameGone();
 
@@ -89,24 +87,22 @@ class CONTENT_EXPORT ChildFrameCompositingHelper
   void CheckSizeAndAdjustLayerProperties(const gfx::Size& new_size,
                                          float device_scale_factor,
                                          cc::Layer* layer);
-  static void SatisfyCallback(scoped_refptr<ThreadSafeSender> sender,
-                              int host_routing_id,
-                              const cc::SurfaceSequence& sequence);
-  static void SatisfyCallbackBrowserPlugin(
+  static void AddRefCallback(scoped_refptr<ThreadSafeSender> sender,
+                             int host_routing_id,
+                             const cc::SurfaceId& surface_id);
+  static void AddRefCallbackBrowserPlugin(
       scoped_refptr<ThreadSafeSender> sender,
       int host_routing_id,
       int browser_plugin_instance_id,
-      const cc::SurfaceSequence& sequence);
-  static void RequireCallback(scoped_refptr<ThreadSafeSender> sender,
-                              int host_routing_id,
-                              const cc::SurfaceId& id,
-                              const cc::SurfaceSequence& sequence);
-  static void RequireCallbackBrowserPlugin(
+      const cc::SurfaceId& surface_id);
+  static void ReleaseRefCallback(scoped_refptr<ThreadSafeSender> sender,
+                                 int host_routing_id,
+                                 const cc::SurfaceId& surface_id);
+  static void ReleaseRefCallbackBrowserPlugin(
       scoped_refptr<ThreadSafeSender> sender,
       int host_routing_id,
       int browser_plugin_instance_id,
-      const cc::SurfaceId& id,
-      const cc::SurfaceSequence& sequence);
+      const cc::SurfaceId& surface_id);
   void UpdateWebLayer(blink::WebLayer* layer);
 
   int host_routing_id_;

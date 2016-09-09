@@ -24,7 +24,6 @@ struct FrameMsg_BuffersSwapped_Params;
 
 namespace cc {
 class SurfaceId;
-struct SurfaceSequence;
 }
 
 namespace content {
@@ -61,9 +60,6 @@ class CONTENT_EXPORT BrowserPlugin :
 
   // A request to enable hardware compositing.
   void EnableCompositing(bool enable);
-
-  // Called by CompositingHelper to send current SurfaceSequence to browser.
-  void SendSatisfySequence(const cc::SurfaceSequence& sequence);
 
   // Provided that a guest instance ID has been allocated, this method attaches
   // this BrowserPlugin instance to that guest.
@@ -155,8 +151,7 @@ class CONTENT_EXPORT BrowserPlugin :
   void OnSetChildFrameSurface(int instance_id,
                               const cc::SurfaceId& surface_id,
                               const gfx::Size& frame_size,
-                              float scale_factor,
-                              const cc::SurfaceSequence& sequence);
+                              float scale_factor);
   void OnSetContentsOpaque(int instance_id, bool opaque);
   void OnSetCursor(int instance_id, const WebCursor& cursor);
   void OnSetMouseLock(int instance_id, bool enable);

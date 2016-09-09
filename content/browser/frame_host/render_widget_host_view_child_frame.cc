@@ -18,7 +18,6 @@
 #include "cc/surfaces/surface.h"
 #include "cc/surfaces/surface_factory.h"
 #include "cc/surfaces/surface_manager.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -653,13 +652,11 @@ void RenderWidgetHostViewChildFrame::OnSurfaceCreated(
           frame_connector_->GetParentRenderWidgetHostView());
   parent_view->TransferRef(surface_id);
 
-  // TODO(fsamuel): Get rid of SurfaceSequences. They are dead code.
   // TODO(fsamuel): Plumb scale factor here.
   // TODO(fsamuel): Implement returning surface refs. We will leak on OOPIF
   // resize.
-  cc::SurfaceSequence sequence;
-  frame_connector_->SetChildFrameSurface(
-      surface_id, frame_size, 1.f /* device_scale_factor */, sequence);
+  frame_connector_->SetChildFrameSurface(surface_id, frame_size,
+                                         1.f /* device_scale_factor */);
 }
 
 void RenderWidgetHostViewChildFrame::CopyFromCompositingSurfaceToVideoFrame(

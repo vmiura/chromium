@@ -25,9 +25,6 @@ class OffscreenCanvasSurfaceImpl : public blink::mojom::OffscreenCanvasSurface,
   // blink::mojom::OffscreenCanvasSurface implementation.
   void GetSurfaceId(const GetSurfaceIdCallback& callback) override;
   void RequestSurfaceCreation(const cc::SurfaceId& surface_id) override;
-  void Require(const cc::SurfaceId& surface_id,
-               const cc::SurfaceSequence& sequence) override;
-  void Satisfy(const cc::SurfaceSequence& sequence) override;
 
   // cc::SurfaceFactoryClient implementation.
   void ReturnResources(const cc::ReturnedResourceArray& resources) override;

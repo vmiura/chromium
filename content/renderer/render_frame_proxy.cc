@@ -297,11 +297,9 @@ void RenderFrameProxy::OnChildFrameProcessGone() {
     compositing_helper_->ChildFrameGone();
 }
 
-void RenderFrameProxy::OnSetChildFrameSurface(
-    const cc::SurfaceId& surface_id,
-    const gfx::Size& frame_size,
-    float scale_factor,
-    const cc::SurfaceSequence& sequence) {
+void RenderFrameProxy::OnSetChildFrameSurface(const cc::SurfaceId& surface_id,
+                                              const gfx::Size& frame_size,
+                                              float scale_factor) {
   // If this WebFrame has already been detached, its parent will be null. This
   // can happen when swapping a WebRemoteFrame with a WebLocalFrame, where this
   // message may arrive after the frame was removed from the frame tree, but
@@ -313,8 +311,7 @@ void RenderFrameProxy::OnSetChildFrameSurface(
     compositing_helper_ =
         ChildFrameCompositingHelper::CreateForRenderFrameProxy(this);
   }
-  compositing_helper_->OnSetSurface(surface_id, frame_size, scale_factor,
-                                    sequence);
+  compositing_helper_->OnSetSurface(surface_id, frame_size, scale_factor);
 }
 
 void RenderFrameProxy::OnUpdateOpener(int opener_routing_id) {

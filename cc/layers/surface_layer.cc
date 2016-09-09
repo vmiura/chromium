@@ -15,47 +15,21 @@
 
 namespace cc {
 
-class SatisfySwapPromise : public SwapPromise {
- public:
-  SatisfySwapPromise(SurfaceSequence sequence,
-                     const SurfaceLayer::SatisfyCallback& satisfy_callback)
-      : sequence_(sequence), satisfy_callback_(satisfy_callback) {}
-
-  ~SatisfySwapPromise() override {}
-
- private:
-  void DidActivate() override {}
-  void DidSwap(CompositorFrameMetadata* metadata) override {
-    metadata->satisfies_sequences.push_back(sequence_.sequence);
-  }
-
-  void DidNotSwap(DidNotSwapReason reason) override {
-    satisfy_callback_.Run(sequence_);
-  }
-  int64_t TraceId() const override { return 0; }
-
-  SurfaceSequence sequence_;
-  SurfaceLayer::SatisfyCallback satisfy_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SatisfySwapPromise);
-};
-
 scoped_refptr<SurfaceLayer> SurfaceLayer::Create(
-    const SatisfyCallback& satisfy_callback,
-    const RequireCallback& require_callback) {
+    const AddRefCallback& addref_callback,
+    const ReleaseRefCallback& release_callback) {
   return make_scoped_refptr(
-      new SurfaceLayer(satisfy_callback, require_callback));
+      new SurfaceLayer(addref_callback, release_callback));
 }
 
-SurfaceLayer::SurfaceLayer(const SatisfyCallback& satisfy_callback,
-                           const RequireCallback& require_callback)
+SurfaceLayer::SurfaceLayer(const AddRefCallback& addref_callback,
+                           const ReleaseRefCallback& release_callback)
     : surface_scale_(1.f),
-      satisfy_callback_(satisfy_callback),
-      require_callback_(require_callback) {}
+      addref_callback_(addref_callback),
+      release_callback_(release_callback) {}
 
 SurfaceLayer::~SurfaceLayer() {
   DCHECK(!layer_tree_host());
-  DCHECK(destroy_sequence_.is_null());
 }
 
 void SurfaceLayer::WriteStructureMojom(
@@ -79,11 +53,17 @@ void SurfaceLayer::WritePropertiesMojom(
 void SurfaceLayer::SetSurfaceId(const SurfaceId& surface_id,
                                 float scale,
                                 const gfx::Size& size) {
-  SatisfyDestroySequence();
+  if (layer_tree_host()) {
+    // Add a ref for the new surface ID.
+    addref_callback_.Run(surface_id);
+
+    // Remove the ref for the old surface ID.
+    release_callback_.Run(surface_id_);
+  }
+
   surface_id_ = surface_id;
   surface_size_ = size;
   surface_scale_ = scale;
-  CreateNewDestroySequence();
 
   UpdateDrawsContent(HasDrawableContent());
   SetNeedsPushProperties();
@@ -104,9 +84,15 @@ void SurfaceLayer::SetLayerTreeHost(LayerTreeHost* host) {
     return;
   }
 
-  SatisfyDestroySequence();
+  if (!surface_id_.is_null()) {
+    if (host)
+      addref_callback_.Run(surface_id_);
+
+    if (layer_tree_host())
+      release_callback_.Run(surface_id_);
+  }
+
   Layer::SetLayerTreeHost(host);
-  CreateNewDestroySequence();
 }
 
 void SurfaceLayer::PushPropertiesTo(LayerImpl* layer) {
@@ -117,24 +103,6 @@ void SurfaceLayer::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceId(surface_id_);
   layer_impl->SetSurfaceSize(surface_size_);
   layer_impl->SetSurfaceScale(surface_scale_);
-}
-
-void SurfaceLayer::CreateNewDestroySequence() {
-  DCHECK(destroy_sequence_.is_null());
-  if (layer_tree_host()) {
-    destroy_sequence_ = layer_tree_host()->CreateSurfaceSequence();
-    require_callback_.Run(surface_id_, destroy_sequence_);
-  }
-}
-
-void SurfaceLayer::SatisfyDestroySequence() {
-  if (!layer_tree_host())
-    return;
-  DCHECK(!destroy_sequence_.is_null());
-  std::unique_ptr<SatisfySwapPromise> satisfy(
-      new SatisfySwapPromise(destroy_sequence_, satisfy_callback_));
-  layer_tree_host()->QueueSwapPromise(std::move(satisfy));
-  destroy_sequence_ = SurfaceSequence();
 }
 
 }  // namespace cc

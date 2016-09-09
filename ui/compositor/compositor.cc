@@ -483,9 +483,6 @@ void Compositor::DidFailToInitializeOutputSurface() {
 void Compositor::DidCommit() {
   DCHECK(!IsLocked());
 
-  if (root_layer_)
-    root_layer_->AddSurfaceRefs();
-
   FOR_EACH_OBSERVER(CompositorObserver,
                     observer_list_,
                     OnCompositingDidCommit(this));

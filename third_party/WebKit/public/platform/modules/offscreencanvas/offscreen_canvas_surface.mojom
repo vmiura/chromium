@@ -5,7 +5,6 @@
 module blink.mojom;
 
 import "cc/ipc/surface_id.mojom";
-import "cc/ipc/surface_sequence.mojom";
 
 interface OffscreenCanvasSurface {
   // TODO(619138): Make creation of surface id Async after implementation
@@ -15,8 +14,6 @@ interface OffscreenCanvasSurface {
   GetSurfaceId() => (cc.mojom.SurfaceId surface_id);
   RequestSurfaceCreation(cc.mojom.SurfaceId surface_id);
 
-  Require(cc.mojom.SurfaceId surface_id, cc.mojom.SurfaceSequence sequence);
-  Satisfy(cc.mojom.SurfaceSequence sequence);
 };
 
 

@@ -9,7 +9,6 @@
 #include "cc/base/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -18,19 +17,12 @@ namespace cc {
 // instance or client.
 class CC_EXPORT SurfaceLayer : public Layer {
  public:
-  // This callback is run when a SurfaceSequence needs to be satisfied, but
-  // the parent compositor is unable to. It can be called on either the main
-  // or impl threads.
-  using SatisfyCallback = base::Callback<void(const SurfaceSequence&)>;
-
-  // This callback is run to require that a specific SurfaceSequence is
-  // received before a SurfaceId is destroyed.
-  using RequireCallback =
-      base::Callback<void(const SurfaceId&, const SurfaceSequence&)>;
+  using AddRefCallback = base::Callback<void(const SurfaceId&)>;
+  using ReleaseRefCallback = base::Callback<void(const SurfaceId&)>;
 
   static scoped_refptr<SurfaceLayer> Create(
-      const SatisfyCallback& satisfy_callback,
-      const RequireCallback& require_callback);
+      const AddRefCallback& addref_callback,
+      const ReleaseRefCallback& release_callback);
 
   void WriteStructureMojom(const ContentFrameBuilderContext& context,
                            cc::mojom::LayerStructure* mojom) override;
@@ -47,21 +39,18 @@ class CC_EXPORT SurfaceLayer : public Layer {
   void PushPropertiesTo(LayerImpl* layer) override;
 
  protected:
-  SurfaceLayer(const SatisfyCallback& satisfy_callback,
-               const RequireCallback& require_callback);
+  SurfaceLayer(const AddRefCallback& addref_callback,
+               const ReleaseRefCallback& release_callback);
   bool HasDrawableContent() const override;
 
  private:
   ~SurfaceLayer() override;
-  void CreateNewDestroySequence();
-  void SatisfyDestroySequence();
 
   SurfaceId surface_id_;
   gfx::Size surface_size_;
   float surface_scale_;
-  SurfaceSequence destroy_sequence_;
-  SatisfyCallback satisfy_callback_;
-  RequireCallback require_callback_;
+  AddRefCallback addref_callback_;
+  ReleaseRefCallback release_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceLayer);
 };

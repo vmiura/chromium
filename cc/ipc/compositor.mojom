@@ -9,7 +9,6 @@ import "cc/ipc/content_frame.mojom";
 import "cc/ipc/layer_tree_settings.mojom";
 import "cc/ipc/renderer_capabilities.mojom";
 import "cc/ipc/surface_id.mojom";
-import "cc/ipc/surface_sequence.mojom";
 import "cc/ipc/image_decode.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";

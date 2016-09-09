@@ -241,8 +241,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   // The next function is virtual for test purposes.
   virtual void SetChildFrameSurface(const cc::SurfaceId& surface_id,
                                     const gfx::Size& frame_size,
-                                    float scale_factor,
-                                    const cc::SurfaceSequence& sequence);
+                                    float scale_factor);
 
   // Find the given |search_text| in the page. Returns true if the find request
   // is handled by this browser plugin guest.
@@ -277,10 +276,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   void InitInternal(const BrowserPluginHostMsg_Attach_Params& params,
                     WebContentsImpl* owner_web_contents);
 
-  void OnSatisfySequence(int instance_id, const cc::SurfaceSequence& sequence);
-  void OnRequireSequence(int instance_id,
-                         const cc::SurfaceId& id,
-                         const cc::SurfaceSequence& sequence);
   // Message handlers for messages from embedder.
   void OnDetach(int instance_id);
   // Handles drag events from the embedder.

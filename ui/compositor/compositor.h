@@ -19,7 +19,6 @@
 #include "cc/host/display_compositor_connection.h"
 #include "cc/host/display_compositor_connection_client.h"
 #include "cc/output/begin_frame_args.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "third_party/skia/include/core/SkColor.h"

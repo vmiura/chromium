@@ -59,7 +59,6 @@
         ],
         'blink_typemap_sources': [
             '<(DEPTH)/cc/ipc/surface_id.typemap',
-            '<(DEPTH)/cc/ipc/surface_sequence.typemap',
         ],
     },
     'targets': [

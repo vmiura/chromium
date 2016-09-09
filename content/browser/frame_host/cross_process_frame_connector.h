@@ -21,7 +21,6 @@ struct WebScreenInfo;
 
 namespace cc {
 class SurfaceId;
-struct SurfaceSequence;
 }
 
 namespace IPC {
@@ -89,8 +88,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   virtual void SetChildFrameSurface(const cc::SurfaceId& surface_id,
                                     const gfx::Size& frame_size,
-                                    float scale_factor,
-                                    const cc::SurfaceSequence& sequence);
+                                    float scale_factor);
 
   gfx::Rect ChildFrameRect();
   float device_scale_factor() const { return device_scale_factor_; }
@@ -147,9 +145,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   void OnFrameRectChanged(const gfx::Rect& frame_rect);
   void OnVisibilityChanged(bool visible);
   void OnInitializeChildFrame(float scale_factor);
-  void OnSatisfySequence(const cc::SurfaceSequence& sequence);
-  void OnRequireSequence(const cc::SurfaceId& id,
-                         const cc::SurfaceSequence& sequence);
 
   void SetDeviceScaleFactor(float scale_factor);
   void SetRect(const gfx::Rect& frame_rect);

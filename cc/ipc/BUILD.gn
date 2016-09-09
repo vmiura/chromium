@@ -97,7 +97,6 @@ mojom("interfaces") {
 mojom("interfaces_surfaceid_only") {
   sources = [
     "surface_id.mojom",
-    "surface_sequence.mojom",
   ]
 }
 

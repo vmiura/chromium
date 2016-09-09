@@ -65,18 +65,6 @@ void SurfaceManager::Destroy(std::unique_ptr<Surface> surface) {
   GarbageCollectSurfaces();
 }
 
-void SurfaceManager::DidSatisfySequences(uint32_t client_id,
-                                         std::vector<uint32_t>* sequence) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  for (std::vector<uint32_t>::iterator it = sequence->begin();
-       it != sequence->end();
-       ++it) {
-    satisfied_sequences_.insert(SurfaceSequence(client_id, *it));
-  }
-  sequence->clear();
-  GarbageCollectSurfaces();
-}
-
 void SurfaceManager::GarbageCollectSurfaces() {
   std::vector<SurfaceId> live_surfaces;
   std::set<SurfaceId> live_surfaces_set;

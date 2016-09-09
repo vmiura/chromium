@@ -267,8 +267,6 @@ bool BrowserPluginGuest::OnMessageReceivedFromEmbedder(
     IPC_MESSAGE_HANDLER(BrowserPluginHostMsg_SetVisibility, OnSetVisibility)
     IPC_MESSAGE_HANDLER(BrowserPluginHostMsg_UnlockMouse_ACK, OnUnlockMouseAck)
     IPC_MESSAGE_HANDLER(BrowserPluginHostMsg_UpdateGeometry, OnUpdateGeometry)
-    IPC_MESSAGE_HANDLER(BrowserPluginHostMsg_SatisfySequence, OnSatisfySequence)
-    IPC_MESSAGE_HANDLER(BrowserPluginHostMsg_RequireSequence, OnRequireSequence)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -392,41 +390,12 @@ void BrowserPluginGuest::PointerLockPermissionResponse(bool allow) {
       new BrowserPluginMsg_SetMouseLock(browser_plugin_instance_id(), allow));
 }
 
-void BrowserPluginGuest::SetChildFrameSurface(
-    const cc::SurfaceId& surface_id,
-    const gfx::Size& frame_size,
-    float scale_factor,
-    const cc::SurfaceSequence& sequence) {
+void BrowserPluginGuest::SetChildFrameSurface(const cc::SurfaceId& surface_id,
+                                              const gfx::Size& frame_size,
+                                              float scale_factor) {
   has_attached_since_surface_set_ = false;
   SendMessageToEmbedder(new BrowserPluginMsg_SetChildFrameSurface(
-      browser_plugin_instance_id(), surface_id, frame_size, scale_factor,
-      sequence));
-}
-
-void BrowserPluginGuest::OnSatisfySequence(
-    int instance_id,
-    const cc::SurfaceSequence& sequence) {
-#if 0
-  std::vector<uint32_t> sequences;
-  sequences.push_back(sequence.sequence);
-  cc::SurfaceManager* manager = GetSurfaceManager();
-  manager->DidSatisfySequences(sequence.client_id, &sequences);
-#endif
-}
-
-void BrowserPluginGuest::OnRequireSequence(
-    int instance_id,
-    const cc::SurfaceId& id,
-    const cc::SurfaceSequence& sequence) {
-#if 0
-  cc::SurfaceManager* manager = GetSurfaceManager();
-  cc::Surface* surface = manager->GetSurfaceForId(id);
-  if (!surface) {
-    LOG(ERROR) << "Attempting to require callback on nonexistent surface";
-    return;
-  }
-  surface->AddDestructionDependency(sequence);
-#endif
+      browser_plugin_instance_id(), surface_id, frame_size, scale_factor));
 }
 
 bool BrowserPluginGuest::HandleFindForEmbedder(

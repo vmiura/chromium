@@ -132,71 +132,55 @@ void ChildFrameCompositingHelper::ChildFrameGone() {
 }
 
 // static
-void ChildFrameCompositingHelper::SatisfyCallback(
+void ChildFrameCompositingHelper::AddRefCallback(
     scoped_refptr<ThreadSafeSender> sender,
     int host_routing_id,
-    const cc::SurfaceSequence& sequence) {
-  // This may be called on either the main or impl thread.
-  sender->Send(new FrameHostMsg_SatisfySequence(host_routing_id, sequence));
-}
+    const cc::SurfaceId& id) {}
 
 // static
-void ChildFrameCompositingHelper::SatisfyCallbackBrowserPlugin(
+void ChildFrameCompositingHelper::AddRefCallbackBrowserPlugin(
     scoped_refptr<ThreadSafeSender> sender,
     int host_routing_id,
     int browser_plugin_instance_id,
-    const cc::SurfaceSequence& sequence) {
-  sender->Send(new BrowserPluginHostMsg_SatisfySequence(
-      host_routing_id, browser_plugin_instance_id, sequence));
-}
+    const cc::SurfaceId& id) {}
 
 // static
-void ChildFrameCompositingHelper::RequireCallback(
+void ChildFrameCompositingHelper::ReleaseRefCallback(
     scoped_refptr<ThreadSafeSender> sender,
     int host_routing_id,
-    const cc::SurfaceId& id,
-    const cc::SurfaceSequence& sequence) {
-  // This may be called on either the main or impl thread.
-  sender->Send(new FrameHostMsg_RequireSequence(host_routing_id, id, sequence));
-}
+    const cc::SurfaceId& id) {}
 
-void ChildFrameCompositingHelper::RequireCallbackBrowserPlugin(
+// static
+void ChildFrameCompositingHelper::ReleaseRefCallbackBrowserPlugin(
     scoped_refptr<ThreadSafeSender> sender,
     int host_routing_id,
     int browser_plugin_instance_id,
-    const cc::SurfaceId& id,
-    const cc::SurfaceSequence& sequence) {
-  // This may be called on either the main or impl thread.
-  sender->Send(new BrowserPluginHostMsg_RequireSequence(
-      host_routing_id, browser_plugin_instance_id, id, sequence));
-}
+    const cc::SurfaceId& surface_id) {}
 
-void ChildFrameCompositingHelper::OnSetSurface(
-    const cc::SurfaceId& surface_id,
-    const gfx::Size& frame_size,
-    float scale_factor,
-    const cc::SurfaceSequence& sequence) {
+void ChildFrameCompositingHelper::OnSetSurface(const cc::SurfaceId& surface_id,
+                                               const gfx::Size& frame_size,
+                                               float scale_factor) {
   surface_id_ = surface_id;
   scoped_refptr<ThreadSafeSender> sender(
       RenderThreadImpl::current()->thread_safe_sender());
-  cc::SurfaceLayer::SatisfyCallback satisfy_callback =
+  cc::SurfaceLayer::ReleaseRefCallback addref_callback =
       render_frame_proxy_
-          ? base::Bind(&ChildFrameCompositingHelper::SatisfyCallback, sender,
+          ? base::Bind(&ChildFrameCompositingHelper::AddRefCallback, sender,
                        host_routing_id_)
           : base::Bind(
-                &ChildFrameCompositingHelper::SatisfyCallbackBrowserPlugin,
+                &ChildFrameCompositingHelper::AddRefCallbackBrowserPlugin,
                 sender, host_routing_id_,
                 browser_plugin_->browser_plugin_instance_id());
-  cc::SurfaceLayer::RequireCallback require_callback =
+  cc::SurfaceLayer::ReleaseRefCallback release_callback =
       render_frame_proxy_
-          ? base::Bind(&ChildFrameCompositingHelper::RequireCallback, sender,
+          ? base::Bind(&ChildFrameCompositingHelper::ReleaseRefCallback, sender,
                        host_routing_id_)
           : base::Bind(
-                &ChildFrameCompositingHelper::RequireCallbackBrowserPlugin,
+                &ChildFrameCompositingHelper::ReleaseRefCallbackBrowserPlugin,
                 sender, host_routing_id_,
                 browser_plugin_->browser_plugin_instance_id());
   scoped_refptr<cc::SurfaceLayer> surface_layer =
-      cc::SurfaceLayer::Create(satisfy_callback, require_callback);
+      cc::SurfaceLayer::Create(addref_callback, release_callback);
   // TODO(oshima): This is a stopgap fix so that the compositor does not
   // scaledown the content when 2x frame data is added to 1x parent frame data.
   // Fix this in cc/.
@@ -213,17 +197,6 @@ void ChildFrameCompositingHelper::OnSetSurface(
   UpdateWebLayer(layer);
 
   UpdateVisibility(true);
-
-  // The RWHV creates a destruction dependency on the surface that needs to be
-  // satisfied. Note: render_frame_proxy_ is null in the case our client is a
-  // BrowserPlugin; in this case the BrowserPlugin sends its own SatisfySequence
-  // message.
-  if (render_frame_proxy_) {
-    render_frame_proxy_->Send(
-        new FrameHostMsg_SatisfySequence(host_routing_id_, sequence));
-  } else if (browser_plugin_.get()) {
-    browser_plugin_->SendSatisfySequence(sequence);
-  }
 
   CheckSizeAndAdjustLayerProperties(
       frame_size, scale_factor,

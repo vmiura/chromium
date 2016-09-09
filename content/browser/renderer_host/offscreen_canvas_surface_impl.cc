@@ -62,28 +62,6 @@ void OffscreenCanvasSurfaceImpl::RequestSurfaceCreation(
 #endif
 }
 
-void OffscreenCanvasSurfaceImpl::Require(const cc::SurfaceId& surface_id,
-                                         const cc::SurfaceSequence& sequence) {
-#if 0
-  cc::SurfaceManager* manager = GetSurfaceManager();
-  cc::Surface* surface = manager->GetSurfaceForId(surface_id);
-  if (!surface) {
-    DLOG(ERROR) << "Attempting to require callback on nonexistent surface";
-    return;
-  }
-  surface->AddDestructionDependency(sequence);
-#endif
-}
-
-void OffscreenCanvasSurfaceImpl::Satisfy(const cc::SurfaceSequence& sequence) {
-#if 0
-  std::vector<uint32_t> sequences;
-  sequences.push_back(sequence.sequence);
-  cc::SurfaceManager* manager = GetSurfaceManager();
-  manager->DidSatisfySequences(sequence.client_id, &sequences);
-#endif
-}
-
 // TODO(619136): Implement cc::SurfaceFactoryClient functions for resources
 // return.
 void OffscreenCanvasSurfaceImpl::ReturnResources(

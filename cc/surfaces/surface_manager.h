@@ -18,7 +18,6 @@
 #include "base/threading/thread_checker.h"
 #include "cc/surfaces/surface_damage_observer.h"
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "cc/surfaces/surfaces_export.h"
 
 namespace gfx {
@@ -61,16 +60,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
   bool SurfaceModified(const SurfaceId& surface_id);
 
   void DidCreateNewSurface(const gfx::Size& size, const SurfaceId& surface_id);
-
-  // A frame for a surface satisfies a set of sequence numbers in a particular
-  // id namespace.
-  void DidSatisfySequences(uint32_t client_id, std::vector<uint32_t>* sequence);
-
-  // void RegisterSurfaceClientId(uint32_t client_id);
-
-  //// Invalidate a namespace that might still have associated sequences,
-  //// possibly because a renderer process has crashed.
-  // void InvalidateSurfaceClientId(uint32_t client_id);
 
   // SurfaceFactoryClient, hierarchy, and BeginFrameSource can be registered
   // and unregistered in any order with respect to each other.
@@ -138,10 +127,6 @@ class CC_SURFACES_EXPORT SurfaceManager {
   // waiting on.
   using SurfaceDestroyList = std::list<std::unique_ptr<Surface>>;
   SurfaceDestroyList surfaces_to_destroy_;
-
-  // Set of SurfaceSequences that have been satisfied by a frame but not yet
-  // waited on.
-  std::unordered_set<SurfaceSequence, SurfaceSequenceHash> satisfied_sequences_;
 
   // Begin frame source routing. Both BeginFrameSource and SurfaceFactoryClient
   // pointers guaranteed alive by callers until unregistered.

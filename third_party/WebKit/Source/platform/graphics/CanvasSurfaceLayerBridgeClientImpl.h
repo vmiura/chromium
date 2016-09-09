@@ -18,8 +18,6 @@ public:
 
     bool syncGetSurfaceId(cc::SurfaceId*) override;
     void asyncRequestSurfaceCreation(const cc::SurfaceId&) override;
-    void asyncRequire(const cc::SurfaceId&, const cc::SurfaceSequence&) override;
-    void asyncSatisfy(const cc::SurfaceSequence&) override;
 
 private:
     mojom::blink::OffscreenCanvasSurfacePtr m_service;

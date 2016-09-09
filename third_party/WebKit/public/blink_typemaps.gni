@@ -4,5 +4,4 @@
 
 typemaps = [
   "//cc/ipc/surface_id.typemap",
-  "//cc/ipc/surface_sequence.typemap",
 ]

@@ -6,7 +6,6 @@
 #define CanvasSurfaceLayerBridgeClient_h
 
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "platform/PlatformExport.h"
 
 namespace blink {
@@ -20,10 +19,6 @@ public:
     // Calls that help initial creation of SurfaceLayer.
     virtual bool syncGetSurfaceId(cc::SurfaceId*) = 0;
     virtual void asyncRequestSurfaceCreation(const cc::SurfaceId&) = 0;
-
-    // Calls that ensure correct destruction order of surface.
-    virtual void asyncRequire(const cc::SurfaceId&, const cc::SurfaceSequence&) = 0;
-    virtual void asyncSatisfy(const cc::SurfaceSequence&) = 0;
 };
 
 } // namespace blink

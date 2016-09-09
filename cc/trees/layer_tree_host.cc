@@ -267,7 +267,6 @@ LayerTreeHost::LayerTreeHost(InitParams* params, CompositorMode mode)
       gpu_memory_buffer_manager_(params->gpu_memory_buffer_manager),
       task_graph_runner_(params->task_graph_runner),
       image_serialization_processor_(params->image_serialization_processor),
-      next_surface_sequence_(1u),
       layer_tree_(std::move(params->animation_host)) {
   DCHECK(task_graph_runner_);
 
@@ -1347,10 +1346,6 @@ void LayerTreeHost::OnCommitForSwapPromises() {
     swap_promise->OnCommit();
 }
 
-SurfaceSequence LayerTreeHost::CreateSurfaceSequence() {
-  return SurfaceSequence(0 /* client_id */, next_surface_sequence_++);
-}
-
 void LayerTreeHost::SetLayerTreeMutator(
     std::unique_ptr<LayerTreeMutator> mutator) {
   proxy_->SetMutator(std::move(mutator));
@@ -1616,9 +1611,6 @@ void LayerTreeHost::ToProtobufForCommit(
 
   property_trees_.ToProtobuf(proto->mutable_property_trees());
 
-  // proto->set_surface_client_id(surface_client_id_);
-  proto->set_next_surface_sequence(next_surface_sequence_);
-
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       "cc.remote", "LayerTreeHostProto", source_frame_number_,
       ComputeLayerTreeHostProtoSizeSplitAsValue(proto));
@@ -1715,8 +1707,6 @@ void LayerTreeHost::FromProtobufForCommit(const proto::LayerTreeHost& proto) {
     layer->set_property_tree_sequence_number(seq_num);
   });
 
-  // surface_client_id_ = proto.surface_client_id();
-  next_surface_sequence_ = proto.next_surface_sequence();
 }
 
 AnimationHost* LayerTreeHost::animation_host() const {

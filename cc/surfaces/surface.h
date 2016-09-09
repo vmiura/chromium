@@ -22,7 +22,6 @@
 #include "cc/quads/render_pass_id.h"
 #include "cc/surfaces/surface_factory.h"
 #include "cc/surfaces/surface_id.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "cc/surfaces/surfaces_export.h"
 #include "ui/gfx/geometry/size.h"
 

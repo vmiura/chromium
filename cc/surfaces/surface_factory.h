@@ -16,7 +16,6 @@
 #include "cc/output/compositor_frame.h"
 #include "cc/surfaces/surface_id.h"
 #include "cc/surfaces/surface_resource_holder.h"
-#include "cc/surfaces/surface_sequence.h"
 #include "cc/surfaces/surfaces_export.h"
 
 namespace gfx {

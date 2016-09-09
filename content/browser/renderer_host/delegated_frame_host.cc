@@ -38,35 +38,6 @@
 
 namespace content {
 
-namespace {
-
-void SatisfyCallback(cc::SurfaceManager* manager,
-                     const cc::SurfaceSequence& sequence) {
-#if 0
-  std::vector<uint32_t> sequences;
-  sequences.push_back(sequence.sequence);
-  manager->DidSatisfySequences(sequence.client_id, &sequences);
-#endif
-}
-
-void RequireCallback(cc::SurfaceManager* manager,
-                     const cc::SurfaceId& id,
-                     const cc::SurfaceSequence& sequence) {
-  // TODO(hackathon): The SurfaceManager in the browser doesn't do anything.
-  //cc::Surface* surface = manager->GetSurfaceForId(id);
-  //if (!surface) {
-  //  //LOG(ERROR) << "Attempting to require callback on nonexistent surface";
-  //  return;
-  //}
-  //surface->AddDestructionDependency(sequence);
-}
-
-// void AddRefSurfaceId(ui::Compositor* compositor, const cc::SurfaceId& id) {
-//  compositor->AddRefOnSurfaceId(id);
-//}
-//
-}  // namespace
-
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost
 
@@ -129,7 +100,14 @@ void DelegatedFrameHost::MaybeCreateResizeLock() {
       client_->DelegatedFrameHostCreateResizeLock(defer_compositor_lock);
 }
 
-void DelegatedFrameHost::ReleaseSurfaceId(const cc::SurfaceId& id) {
+void DelegatedFrameHost::AddRefOnSurfaceIdForParent(const cc::SurfaceId& id) {
+  if (!compositor_)
+    return;
+  compositor_->AddRefOnSurfaceId(id);
+}
+
+void DelegatedFrameHost::ReleaseRefOnSurfaceIdForParent(
+    const cc::SurfaceId& id) {
   if (!compositor_)
     return;
   compositor_->ReleaseSurfaceId(id);
@@ -209,6 +187,10 @@ void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
                                           const cc::SurfaceId& surface_id) {
   // If we have a surface then presumably we should have a parent? Right now the
   // only parent is the compositor?
+  fprintf(stderr, ">>>DelegatedFrameHost::OnSurfaceCreated %s compositor: %p\n",
+          surface_id.ToString().c_str(), compositor_);
+
+  // TODO(fsamuel): This is a bit of a hack because we always call AddRef now.
   if (compositor_)
     compositor_->TransferRef(surface_id);
 
@@ -229,13 +211,10 @@ void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
   } else {
     // TODO(hackathon): DSF!!
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
-        surface_id, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr),
-        // base::Bind(&AddRefSurfaceId, compositor_, surface_id),
-        // Nothing to do here because the ref is owned by the ui::Compositor.
-        base::Bind(&base::DoNothing),
-        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
-                   surface_id),
+        surface_id, base::Bind(&DelegatedFrameHost::AddRefOnSurfaceIdForParent,
+                               AsWeakPtr()),
+        base::Bind(&DelegatedFrameHost::ReleaseRefOnSurfaceIdForParent,
+                   AsWeakPtr()),
         frame_size, 1.f, frame_size);
     surface_id_ = surface_id;
     current_surface_size_ = frame_size;
@@ -251,6 +230,8 @@ void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
     delegated_frame_evictor_->SwappedFrame(
         client_->DelegatedFrameHostIsVisible());
   }
+  if (compositor_)
+    compositor_->ReleaseSurfaceId(surface_id);
 }
 
 bool DelegatedFrameHost::CanCopyToVideoFrame() const {
@@ -1021,16 +1002,11 @@ void DelegatedFrameHost::OnLayerRecreated(ui::Layer* old_layer,
     // ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
     // cc::SurfaceManager* manager = factory->GetSurfaceManager();
     DCHECK(compositor_);
-    compositor_->AddRefOnSurfaceId(surface_id_);
     new_layer->SetShowSurface(
-        surface_id_, base::Bind(&SatisfyCallback, nullptr),
-        base::Bind(&RequireCallback, nullptr),
-        // I believe there's nothing to do here because we
-        // added a ref above.
-        base::Bind(&base::DoNothing),
-        // base::Bind(&AddRefSurfaceId, compositor_, surface_id_),
-        base::Bind(&DelegatedFrameHost::ReleaseSurfaceId, AsWeakPtr(),
-                   surface_id_),
+        surface_id_, base::Bind(&DelegatedFrameHost::AddRefOnSurfaceIdForParent,
+                                AsWeakPtr()),
+        base::Bind(&DelegatedFrameHost::ReleaseRefOnSurfaceIdForParent,
+                   AsWeakPtr()),
         current_surface_size_, current_scale_factor_,
         current_frame_size_in_dip_);
   }
