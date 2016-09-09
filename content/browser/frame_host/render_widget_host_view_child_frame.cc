@@ -68,7 +68,8 @@ void RenderWidgetHostViewChildFrame::SetCrossProcessFrameConnector(
     RenderWidgetHostViewBase* parent_view =
         static_cast<RenderWidgetHostViewBase*>(
             frame_connector_->GetParentRenderWidgetHostView());
-    parent_view->RemoveChildCompositorFrameSinkId(compositor_frame_sink_id_);
+    if (parent_view)
+      parent_view->RemoveChildCompositorFrameSinkId(compositor_frame_sink_id_);
 
     // After the RenderWidgetHostViewChildFrame loses the frame_connector, it
     // won't be able to walk up the frame tree anymore. Clean up anything that
@@ -82,7 +83,8 @@ void RenderWidgetHostViewChildFrame::SetCrossProcessFrameConnector(
     RenderWidgetHostViewBase* parent_view =
         static_cast<RenderWidgetHostViewBase*>(
             frame_connector_->GetParentRenderWidgetHostView());
-    parent_view->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
+    if (parent_view)
+      parent_view->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
   }
 }
 
