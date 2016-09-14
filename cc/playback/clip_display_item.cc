@@ -64,7 +64,7 @@ void ClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   details->set_antialias(antialias_);
 }
 
-void ClipDisplayItem::Serialize(SkWStream* stream) const {
+void ClipDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(Clip);
   int x = clip_rect_.x();
   int y = clip_rect_.y();
@@ -149,7 +149,7 @@ void EndClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndClip);
 }
 
-void EndClipDisplayItem::Serialize(SkWStream* stream) const {
+void EndClipDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndClip);
 }
 

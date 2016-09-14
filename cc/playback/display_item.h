@@ -48,7 +48,7 @@ class CC_EXPORT DisplayItem {
                       SkPicture::AbortCallback* callback) const = 0;
   virtual void AsValueInto(const gfx::Rect& visual_rect,
                            base::trace_event::TracedValue* array) const = 0;
-  virtual void Serialize(SkWStream* stream) const = 0;
+  virtual void Serialize(SkWStream* stream, bool flush_cache = false) const = 0;
   // For tracing.
   virtual size_t ExternalMemoryUsage() const = 0;
 

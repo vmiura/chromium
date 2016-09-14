@@ -76,12 +76,13 @@ void DrawingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
       picture_->uniqueID());
 }
 
-void DrawingDisplayItem::Serialize(SkWStream* stream) const {
+void DrawingDisplayItem::Serialize(SkWStream* stream,
+                                   bool flush_cache) const {
   stream->write32(Drawing);
   stream->write32(picture_->uniqueID());
   DCHECK(picture_); // If this doesn't hold, don't serialize the type either.
   ProxyPixelSerializer serializer;
-  picture_->serialize(stream, &serializer);
+  picture_->serialize(stream, &serializer, flush_cache);
 }
 
 void DrawingDisplayItem::Deserialize(uint32_t picture_id,

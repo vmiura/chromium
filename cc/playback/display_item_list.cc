@@ -432,7 +432,8 @@ void DisplayItemList::GetDiscardableImagesInRect(
 
 void DisplayItemList::SerializeToStream(SkWStream* stream,
     PictureIdCache* old_picture_cache,
-    PictureIdCache* new_picture_cache) const {
+    PictureIdCache* new_picture_cache,
+    bool flush_cache) const {
   stream->write32(id_);
   stream->write32(inputs_.items.size());
   DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
@@ -448,7 +449,8 @@ void DisplayItemList::SerializeToStream(SkWStream* stream,
       if (it == new_picture_cache->end()) {
         it = old_picture_cache->find(picture_id);
         if (it == old_picture_cache->end()) {
-          inputs_.items[i].Serialize(stream);
+          inputs_.items[i].Serialize(stream, flush_cache);
+          flush_cache = false;
         } else {
           stream->write32(DisplayItem::Drawing);
           stream->write32(picture_id);

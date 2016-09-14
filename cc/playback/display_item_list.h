@@ -129,7 +129,8 @@ class CC_EXPORT DisplayItemList
   sk_sp<SkData> Serialize() const;
   void SerializeToStream(SkWStream* stream,
       PictureIdCache* old_picture_cache,
-      PictureIdCache* new_picture_cache) const;
+      PictureIdCache* new_picture_cache,
+      bool flush_cache = false) const;
 
   static scoped_refptr<DisplayItemList> CreateFromStream(SkStream*,
       PictureCache* old_picture_cache,

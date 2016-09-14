@@ -67,7 +67,7 @@ void ClipPathDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   }
 }
 
-void ClipPathDisplayItem::Serialize(SkWStream* stream) const {
+void ClipPathDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(ClipPath);
 }
 
@@ -127,7 +127,7 @@ void EndClipPathDisplayItem::AsValueInto(
                          visual_rect.ToString().c_str()));
 }
 
-void EndClipPathDisplayItem::Serialize(SkWStream* stream) const {
+void EndClipPathDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndClipPath);
 }
 

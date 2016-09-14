@@ -44,7 +44,7 @@ void TransformDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   TransformToProto(transform_, details->mutable_transform());
 }
 
-void TransformDisplayItem::Serialize(SkWStream* stream) const {
+void TransformDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(Transform);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
@@ -117,7 +117,7 @@ void EndTransformDisplayItem::AsValueInto(
                          visual_rect.ToString().c_str()));
 }
 
-void EndTransformDisplayItem::Serialize(SkWStream* stream) const {
+void EndTransformDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndTransform);
 }
 

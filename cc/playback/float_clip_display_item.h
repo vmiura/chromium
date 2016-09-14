@@ -36,7 +36,7 @@ class CC_EXPORT FloatClipDisplayItem : public DisplayItem {
 
   int ApproximateOpCount() const { return 1; }
 
-  void Serialize(SkWStream* stream) const override;
+  void Serialize(SkWStream* stream, bool flush_cache = false) const override;
   static void Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect);
 
  private:
@@ -63,7 +63,7 @@ class CC_EXPORT EndFloatClipDisplayItem : public DisplayItem {
   size_t ExternalMemoryUsage() const override;
 
   int ApproximateOpCount() const { return 0; }
-  void Serialize(SkWStream* stream) const override;
+  void Serialize(SkWStream* stream, bool flush_cache = false) const override;
   static void Deserialize(SkStream* stream, DisplayItemList* list, const gfx::Rect& visual_rect);
 
 };

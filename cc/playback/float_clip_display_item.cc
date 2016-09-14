@@ -58,7 +58,7 @@ void FloatClipDisplayItem::AsValueInto(
       clip_rect_.ToString().c_str(), visual_rect.ToString().c_str()));
 }
 
-void FloatClipDisplayItem::Serialize(SkWStream* stream) const {
+void FloatClipDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(FloatClip);
   float x = clip_rect_.x();
   float y = clip_rect_.y();
@@ -96,7 +96,7 @@ EndFloatClipDisplayItem::EndFloatClipDisplayItem(
 EndFloatClipDisplayItem::~EndFloatClipDisplayItem() {
 }
 
-void EndFloatClipDisplayItem::Serialize(SkWStream* stream) const {
+void EndFloatClipDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndFloatClip);
 }
 

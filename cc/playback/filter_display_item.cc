@@ -47,7 +47,7 @@ void FilterDisplayItem::SetNew(const FilterOperations& filters,
   bounds_ = bounds;
 }
 
-void FilterDisplayItem::Serialize(SkWStream* stream) const {
+void FilterDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(Filter);
 }
 
@@ -124,7 +124,7 @@ void EndFilterDisplayItem::AsValueInto(
                          visual_rect.ToString().c_str()));
 }
 
-void EndFilterDisplayItem::Serialize(SkWStream* stream) const {
+void EndFilterDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndFilter);
 }
 

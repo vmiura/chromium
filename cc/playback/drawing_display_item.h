@@ -42,7 +42,7 @@ class CC_EXPORT DrawingDisplayItem : public DisplayItem {
 
   int ApproximateOpCount() const;
 
-  void Serialize(SkWStream* stream) const override;
+  void Serialize(SkWStream* stream, bool flush_cache = false) const override;
   static void Deserialize(uint32_t picture_id,
                           SkStream* stream,
                           DisplayItemList* list,

@@ -62,7 +62,7 @@ CompositingDisplayItem::CompositingDisplayItem(
          lcd_text_requires_opaque_layer);
 }
 
-void CompositingDisplayItem::Serialize(SkWStream* stream) const {
+void CompositingDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(Compositing);
   stream->write8(alpha_);
 }
@@ -173,7 +173,7 @@ void EndCompositingDisplayItem::AsValueInto(
                          visual_rect.ToString().c_str()));
 }
 
-void EndCompositingDisplayItem::Serialize(SkWStream* stream) const {
+void EndCompositingDisplayItem::Serialize(SkWStream* stream, bool flush_cache) const {
   stream->write32(EndCompositing);
 }
 
