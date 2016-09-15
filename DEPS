@@ -37,7 +37,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'bb3e6bf20e9335da037af28b9fae1a8efdfd695b',
+  'skia_revision': '53ba41692eb004c07b21a63d1e07426791ee547e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -165,7 +165,7 @@ deps = {
    Var('chromium_git') + '/external/github.com/googlei18n/sfntly.git' + '@' + Var('sfntly_revision'),
 
   'src/third_party/skia':
-   Var('github_git') + '/ericrk/skia.git' + '@' +  Var('skia_revision'),
+   Var('github_git') + '/staraz/skia.git' + '@' +  Var('skia_revision'),
 
   'src/tools/page_cycler/acid3':
    Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + '6be0a66a1ebd7ebc5abc1b2f405a945f6d871521',
