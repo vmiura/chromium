@@ -25,6 +25,7 @@
 #include "cc/scheduler/delay_based_time_source.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/service/delegating_output_surface.h"
+#include "cc/service/display_compositor.h"
 #include "cc/service/display_output_surface.h"
 #include "cc/service/service_context_provider.h"
 #include "cc/surfaces/display.h"
@@ -168,6 +169,7 @@ class ContentFrameSink::ClientImpl : public LayerTreeHostImplClient,
 };
 
 ContentFrameSink::ContentFrameSink(
+    DisplayCompositor* display_compositor,
     uint32_t client_id,
     int32_t sink_id,
     const gpu::SurfaceHandle& handle,
@@ -180,7 +182,8 @@ ContentFrameSink::ContentFrameSink(
     gpu::ImageFactory* image_factory,
     SurfaceManager* surface_manager,
     TaskGraphRunner* task_graph_runner)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : display_compositor_(display_compositor),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()),
       client_(new ClientImpl(this, task_runner_)),
       shared_bitmap_manager_(shared_bitmap_manager),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
@@ -215,14 +218,15 @@ ContentFrameSink::ContentFrameSink(
       bulk_buffer_reader_(BulkBufferWriter::kDefaultBackingSize),
       content_frame_sink_client_(std::move(client)),
       binding_(this, std::move(request)),
-      private_binding_(this, std::move(private_request)) {
+      private_binding_(this, std::move(private_request)),
+      weak_factory_(this) {
   const bool root_compositor = widget_ != gfx::kNullAcceleratedWidget;
   LOG(ERROR) << "ContentFrameSink[" << this << "] is root " << root_compositor
              << " client_id: " << compositor_frame_sink_id_.client_id
              << " sink_id: " << compositor_frame_sink_id_.sink_id;
   content_frame_sink_client_->OnCompositorCreated(compositor_frame_sink_id_);
-  content_frame_sink_client_.set_connection_error_handler(
-      base::Bind([]() { LOG(ERROR) << "ContentFrameSink Lost Connection"; }));
+  content_frame_sink_client_.set_connection_error_handler(base::Bind(
+      &ContentFrameSink::OnConnectionLost, weak_factory_.GetWeakPtr()));
 }
 
 ContentFrameSink::~ContentFrameSink() {
@@ -921,6 +925,10 @@ void ContentFrameSink::FinishCommit() {
   // TODO(hackathon): micro benchmarks
   micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
 #endif
+}
+
+void ContentFrameSink::OnConnectionLost() {
+  display_compositor_->OnLostContentFrameSink(compositor_frame_sink_id_);
 }
 
 void ContentFrameSink::ScheduledActionCommit() {

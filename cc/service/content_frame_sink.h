@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "cc/base/bulk_buffer_queue.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
@@ -30,6 +31,7 @@ class ImageFactory;
 namespace cc {
 class AnimationHost;
 class Display;
+class DisplayCompositor;
 class SharedBitmapManager;
 class DelegatingOutputSurface;
 class SurfaceManager;
@@ -40,7 +42,8 @@ class CC_SERVICE_EXPORT ContentFrameSink
     : public cc::mojom::ContentFrameSink,
       public cc::mojom::ContentFrameSinkPrivate {
  public:
-  ContentFrameSink(uint32_t client_id,
+  ContentFrameSink(DisplayCompositor* display_compositor,
+                   uint32_t client_id,
                    int32_t sink_id,
                    const gpu::SurfaceHandle& handle,
                    cc::mojom::ContentFrameSinkRequest request,
@@ -118,6 +121,10 @@ class CC_SERVICE_EXPORT ContentFrameSink
 
   void FinishCommit();
 
+  void OnConnectionLost();
+
+  DisplayCompositor* const display_compositor_;
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<ClientImpl> client_;
 
@@ -139,8 +146,8 @@ class CC_SERVICE_EXPORT ContentFrameSink
   LayerTreeHostImpl host_impl_;
   BulkBufferReader bulk_buffer_reader_;
   cc::mojom::ContentFrameSinkClientPtr content_frame_sink_client_;
-  mojo::StrongBinding<cc::mojom::ContentFrameSink> binding_;
-  mojo::Binding<cc::mojom::ContentFrameSinkPrivate> private_binding_;
+  mojo::Binding<cc::mojom::ContentFrameSink> binding_;
+  mojo::StrongBinding<cc::mojom::ContentFrameSinkPrivate> private_binding_;
   mojom::ContentFramePtr frame_for_commit_;
   WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;
   WaitForActivationCallback activation_callback_;
@@ -151,6 +158,8 @@ class CC_SERVICE_EXPORT ContentFrameSink
 
   // TODO(hackathon): Should be owned by LTHI but le sigh.
   std::unique_ptr<DelegatingOutputSurface> output_surface_;
+
+  base::WeakPtrFactory<ContentFrameSink> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentFrameSink);
 };

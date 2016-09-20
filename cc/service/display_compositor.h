@@ -26,6 +26,7 @@ class MailboxManager;
 
 namespace cc {
 
+class ContentFrameSink;
 class LayerTreeSettings;
 class DisplayCompositorFactory;
 class SharedBitmapManager;
@@ -54,11 +55,18 @@ class DisplayCompositor : public mojom::DisplayCompositor,
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const SurfaceId& surface_id) override;
 
+  void OnLostContentFrameSink(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
+
  private:
   DisplayCompositorFactory* const factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
+  std::unordered_map<CompositorFrameSinkId,
+                     std::unique_ptr<ContentFrameSink>,
+                     CompositorFrameSinkIdHash>
+      content_frame_sinks_;
   SingleThreadTaskGraphRunner task_graph_runner_;
   cc::SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;

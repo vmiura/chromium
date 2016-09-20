@@ -54,7 +54,7 @@ class RenderWidgetHostViewGuestSurfaceTest;
 class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     : public RenderWidgetHostViewBase,
       public cc::SurfaceFactoryClient,
-      public cc::mojom::DisplayCompositorClient,
+      public cc::mojom::ContentFrameSinkObserver,
       public cc::BeginFrameObserver {
  public:
   RenderWidgetHostViewChildFrame(
@@ -246,7 +246,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   void RegisterContentFrameSinkObserver();
 
-  // cc::DisplayCompositorClient implementation.
+  // cc::ContentFrameSinkObserver implementation.
+  void OnConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 
@@ -261,7 +262,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   bool observing_begin_frame_source_;
 
   cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_;
-  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
+  mojo::Binding<cc::mojom::ContentFrameSinkObserver> binding_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);

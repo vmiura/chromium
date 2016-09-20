@@ -246,7 +246,9 @@ void SurfaceManager::RegisterSurfaceNamespaceHierarchy(
 
   auto& children =
       namespace_client_map_[parent_compositor_frame_sink_id].children;
-  DCHECK_EQ(0u, children.count(child_compositor_frame_sink_id));
+  // If the child is already registered because we throw away a FrameSink and
+  // recreate it again, then this is OK.
+  // DCHECK_EQ(0u, children.count(child_compositor_frame_sink_id));
   children.insert(child_compositor_frame_sink_id);
 
   // If the parent has no source, then attaching it to this child will

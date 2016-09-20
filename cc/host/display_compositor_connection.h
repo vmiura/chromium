@@ -30,7 +30,7 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
   void RegisterContentFrameSinkObserver(
       const CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::mojom::DisplayCompositorClientPtr display_compositor_client);
+      cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer);
 
   bool HasEncounteredError() const;
 
@@ -49,6 +49,8 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
       const CompositorFrameSinkId& compositor_frame_sink_id);
 
   // cc::mojom::DisplayCompositorClient implementation:
+  void OnLostContentFrameSink(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

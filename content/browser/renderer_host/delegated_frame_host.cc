@@ -183,6 +183,11 @@ bool DelegatedFrameHost::CanCopyToBitmap() const {
          client_->DelegatedFrameHostGetLayer()->has_external_content();
 }
 
+void DelegatedFrameHost::OnConnectionLost() {
+  fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
+  RegisterContentFrameSinkObserver();
+}
+
 void DelegatedFrameHost::OnSurfaceCreated(const gfx::Size& frame_size,
                                           const cc::SurfaceId& surface_id) {
   // If we have a surface then presumably we should have a parent? Right now the
@@ -475,9 +480,6 @@ void DelegatedFrameHost::RegisterContentFrameSinkObserver() {
   factory->GetContextFactory()->RegisterContentFrameSinkObserver(
       compositor_frame_sink_id_, mojo::GetProxy(&content_frame_sink_private_),
       binding_.CreateInterfacePtrAndBind());
-  content_frame_sink_private_.set_connection_error_handler(
-      base::Bind(&DelegatedFrameHost::RegisterContentFrameSinkObserver,
-                 base::Unretained(this)));
   if (compositor_)
     compositor_->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
 }
@@ -914,19 +916,6 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   DCHECK(!compositor_);
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   factory->GetContextFactory()->RemoveObserver(this);
-
-// The surface ID ref will be removed in the SurfaceLayer callback.
-#if 0
-  if (surface_factory_) {
-    // HACKATHON: surface_factory_ is always null and unused.
-    if (!surface_id_.is_null())
-      surface_factory_->Destroy(surface_id_);
-  }
-  factory->GetSurfaceManager()->UnregisterSurfaceFactoryClient(
-      id_allocator_->client_id());
-  factory->GetSurfaceManager()->InvalidateCompositorFrameSinkId(
-      id_allocator_->client_id());
-#endif
   DCHECK(!vsync_manager_.get());
 }
 

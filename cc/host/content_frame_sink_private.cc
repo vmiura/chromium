@@ -12,13 +12,13 @@ ContentFrameSinkPrivate::ContentFrameSinkPrivate(
     DisplayCompositorConnection* display_compositor_connection,
     const CompositorFrameSinkId& compositor_frame_sink_id,
     cc::mojom::ContentFrameSinkPrivateRequest request,
-    cc::mojom::DisplayCompositorClientPtr display_compositor_client)
+    cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer)
     : display_compositor_connection_(display_compositor_connection),
       compositor_frame_sink_id_(compositor_frame_sink_id),
-      display_compositor_client_(std::move(display_compositor_client)),
+      content_frame_sink_observer_(std::move(content_frame_sink_observer)),
       binding_(this, std::move(request)) {
   binding_.set_connection_error_handler(base::Bind(
-      &ContentFrameSinkPrivate::OnConnectionLost, base::Unretained(this)));
+      &ContentFrameSinkPrivate::OnObserverLost, base::Unretained(this)));
 
   pending_private_request_ = mojo::GetProxy(&content_frame_sink_private_);
 }
@@ -32,24 +32,32 @@ ContentFrameSinkPrivate::ContentFrameSinkPrivate(
       content_frame_sink_private_(std::move(content_frame_sink_private)),
       binding_(this) {}
 
-ContentFrameSinkPrivate::~ContentFrameSinkPrivate() {}
+ContentFrameSinkPrivate::~ContentFrameSinkPrivate() {
+  if (content_frame_sink_observer_)
+    content_frame_sink_observer_->OnConnectionLost();
+}
 
 void ContentFrameSinkPrivate::BindPrivilegedClient(
     cc::mojom::ContentFrameSinkPrivateRequest request,
-    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+    cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) {
   DCHECK(!binding_.is_bound());
   binding_.Bind(std::move(request));
   binding_.set_connection_error_handler(base::Bind(
-      &ContentFrameSinkPrivate::OnConnectionLost, base::Unretained(this)));
-  display_compositor_client_ = std::move(display_compositor_client);
+      &ContentFrameSinkPrivate::OnObserverLost, base::Unretained(this)));
+  content_frame_sink_observer_ = std::move(content_frame_sink_observer);
   if (!last_surface_id_.is_null()) {
-    display_compositor_client_->OnSurfaceCreated(last_frame_size_,
-                                                 last_surface_id_);
+    content_frame_sink_observer_->OnSurfaceCreated(last_frame_size_,
+                                                   last_surface_id_);
   }
+}
+
+bool ContentFrameSinkPrivate::HasPendingContentFrameSinkPrivateRequest() {
+  return pending_private_request_.is_pending();
 }
 
 cc::mojom::ContentFrameSinkPrivateRequest
 ContentFrameSinkPrivate::GetContentFrameSinkPrivateRequest() {
+  DCHECK(pending_private_request_.is_pending());
   return std::move(pending_private_request_);
 }
 
@@ -75,15 +83,20 @@ void ContentFrameSinkPrivate::OnSurfaceCreated(
     const gfx::Size& frame_size,
     const cc::SurfaceId& surface_id) {
   // TODO(fsamuel): We should probably return the last_surface_id back to the
-  // gpu immediately if we don't have a display_compositor_client_ or else we
+  // gpu immediately if we don't have a content_frame_sink_observer_ or else we
   // will leak refs (because we only keep track of the last surface ID).
   last_frame_size_ = frame_size;
   last_surface_id_ = surface_id;
-  if (display_compositor_client_)
-    display_compositor_client_->OnSurfaceCreated(frame_size, surface_id);
+  if (content_frame_sink_observer_)
+    content_frame_sink_observer_->OnSurfaceCreated(frame_size, surface_id);
 }
 
 void ContentFrameSinkPrivate::OnConnectionLost() {
+  if (content_frame_sink_observer_)
+    content_frame_sink_observer_->OnConnectionLost();
+}
+
+void ContentFrameSinkPrivate::OnObserverLost() {
   display_compositor_connection_->OnPrivateConnectionLost(
       compositor_frame_sink_id_);
 }

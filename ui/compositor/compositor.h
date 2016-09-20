@@ -117,7 +117,7 @@ class COMPOSITOR_EXPORT ContextFactory {
   virtual void RegisterContentFrameSinkObserver(
       const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::mojom::DisplayCompositorClientPtr display_compositor_client) = 0;
+      cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) = 0;
 
   // When true, the factory uses test contexts that do not do real GL
   // operations.
@@ -205,8 +205,7 @@ class COMPOSITOR_EXPORT CompositorLock
 class COMPOSITOR_EXPORT Compositor
     : NON_EXPORTED_BASE(public cc::LayerTreeHostClient),
       NON_EXPORTED_BASE(public cc::LayerTreeHostSingleThreadClient),
-      NON_EXPORTED_BASE(public cc::mojom::DisplayCompositorClient),
-      NON_EXPORTED_BASE(public cc::DisplayCompositorConnectionClient) {
+      NON_EXPORTED_BASE(public cc::mojom::ContentFrameSinkObserver) {
  public:
   Compositor(ui::ContextFactory* context_factory,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -371,8 +370,8 @@ class COMPOSITOR_EXPORT Compositor
   void DidPostSwapBuffers() override;
   void DidAbortSwapBuffers() override;
 
-  // cc::mojom::DisplayCompositorClient implementation:
-  // cc::DisplayCompositorConnectionClient implementation.
+  // cc::mojom::ContentFrameSinkObserver implementation.
+  void OnConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 
@@ -434,7 +433,7 @@ class COMPOSITOR_EXPORT Compositor
 
   LayerAnimatorCollection layer_animator_collection_;
   scoped_refptr<cc::AnimationTimeline> animation_timeline_;
-  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
+  mojo::Binding<cc::mojom::ContentFrameSinkObserver> binding_;
 
   base::WeakPtrFactory<Compositor> weak_ptr_factory_;
 

@@ -13,7 +13,7 @@ namespace cc {
 class DisplayCompositorConnection;
 
 class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
-                                public mojom::DisplayCompositorClient {
+                                public mojom::ContentFrameSinkObserver {
  public:
   // Use this constructor if a privileged DisplayCompositorHost client
   // Registers a ContentFrameSink observer before the ContentFrameSink
@@ -22,7 +22,7 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
       DisplayCompositorConnection* display_compositor_connection,
       const CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest request,
-      cc::mojom::DisplayCompositorClientPtr display_compositor_client);
+      cc::mojom::ContentFrameSinkObserverPtr display_compositor_client);
 
   // Use this constructor if a client creates a ContentFrameSink before
   // the privileged client registers a ContentFrameSink observer.
@@ -35,7 +35,9 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
 
   void BindPrivilegedClient(
       cc::mojom::ContentFrameSinkPrivateRequest request,
-      cc::mojom::DisplayCompositorClientPtr display_compositor_client);
+      cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer);
+
+  bool HasPendingContentFrameSinkPrivateRequest();
 
   cc::mojom::ContentFrameSinkPrivateRequest GetContentFrameSinkPrivateRequest();
 
@@ -46,12 +48,13 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
   void UnregisterChildSink(
       const CompositorFrameSinkId& child_client_id) override;
 
-  // cc::mojom::DisplayCompositorClient implementation:
+  // cc::mojom::ContentFrameSinkObserver implementation:
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
+  void OnConnectionLost() override;
 
  private:
-  void OnConnectionLost();
+  void OnObserverLost();
 
   DisplayCompositorConnection* const display_compositor_connection_;
 
@@ -59,7 +62,7 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
 
   // This is an InterfacePtr to the privileged client holding the
   // ContentFrameSinkPrivate interface.
-  cc::mojom::DisplayCompositorClientPtr display_compositor_client_;
+  cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer_;
 
   // This is the pending private request to pass on to the display compositor
   // once a ContentFrameSink with the provided CompositorFrameSinkId has been

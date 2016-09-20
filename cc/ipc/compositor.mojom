@@ -22,6 +22,7 @@ interface DisplayCompositorFactory {
 
 // GPU to browser/window server ("display compositor host").
 interface DisplayCompositorClient {
+  OnLostContentFrameSink(CompositorFrameSinkId compositor_frame_sink_id);
   OnSurfaceCreated(gfx.mojom.Size frame_size, cc.mojom.SurfaceId surface_id);
 };
 
@@ -72,7 +73,7 @@ interface DisplayCompositorHostPrivate {
   RegisterContentFrameSinkObserver(
     CompositorFrameSinkId compositor_frame_sink_id,
     ContentFrameSinkPrivate& content_frame_sink_private,
-    DisplayCompositorClient display_compositor_client);
+    ContentFrameSinkObserver content_frame_sink_observer);
 };
 
 // ContentFrameSinkPrivate is used by the display compositor host to set up
@@ -91,6 +92,11 @@ interface ContentFrameSinkPrivate {
   RegisterChildSink(CompositorFrameSinkId child_client_id);
 
   UnregisterChildSink(CompositorFrameSinkId child_client_id);
+};
+
+interface ContentFrameSinkObserver {
+  OnSurfaceCreated(gfx.mojom.Size frame_size, cc.mojom.SurfaceId surface_id);
+  OnConnectionLost();
 };
 
 // A ContentFrameSink corresponds to a LTH=>LTHI interface.

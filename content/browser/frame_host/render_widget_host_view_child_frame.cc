@@ -633,15 +633,16 @@ void RenderWidgetHostViewChildFrame::RegisterContentFrameSinkObserver() {
   factory->GetContextFactory()->RegisterContentFrameSinkObserver(
       compositor_frame_sink_id_, mojo::GetProxy(&content_frame_sink_private_),
       binding_.CreateInterfacePtrAndBind());
-  content_frame_sink_private_.set_connection_error_handler(base::Bind(
-      &RenderWidgetHostViewChildFrame::RegisterContentFrameSinkObserver,
-      base::Unretained(this)));
   if (frame_connector_) {
     RenderWidgetHostViewBase* parent_view =
         static_cast<RenderWidgetHostViewBase*>(
             frame_connector_->GetParentRenderWidgetHostView());
     parent_view->AddChildCompositorFrameSinkId(compositor_frame_sink_id_);
   }
+}
+
+void RenderWidgetHostViewChildFrame::OnConnectionLost() {
+  RegisterContentFrameSinkObserver();
 }
 
 void RenderWidgetHostViewChildFrame::OnSurfaceCreated(

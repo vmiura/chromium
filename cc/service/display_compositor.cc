@@ -31,20 +31,27 @@ void DisplayCompositor::CreateContentFrameSink(
     mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
   LayerTreeSettings layer_tree_settings(settings.get());
-  new ContentFrameSink(
-      client_id, sink_id, handle, std::move(content_frame_sink),
-      std::move(content_frame_sink_private),
-      std::move(content_frame_sink_client), layer_tree_settings,
-      factory_->shared_bitmap_manager(), factory_->gpu_memory_buffer_manager(),
-      // This image factory is going to the wrong thread, but the
-      // ServiceContextProvider will only use it on the main thread
-      // thanks to our custom InProcessCommandBuffer::Service.
-      factory_->image_factory(), &surface_manager_, &task_graph_runner_);
+  content_frame_sinks_[CompositorFrameSinkId(client_id, sink_id)] =
+      base::MakeUnique<ContentFrameSink>(
+          this, client_id, sink_id, handle, std::move(content_frame_sink),
+          std::move(content_frame_sink_private),
+          std::move(content_frame_sink_client), layer_tree_settings,
+          factory_->shared_bitmap_manager(),
+          factory_->gpu_memory_buffer_manager(),
+          // This image factory is going to the wrong thread, but the
+          // ServiceContextProvider will only use it on the main thread
+          // thanks to our custom InProcessCommandBuffer::Service.
+          factory_->image_factory(), &surface_manager_, &task_graph_runner_);
 }
 
 void DisplayCompositor::OnSurfaceCreated(const gfx::Size& size,
                                          const cc::SurfaceId& surface_id) {
   client_->OnSurfaceCreated(size, surface_id);
+}
+
+void DisplayCompositor::OnLostContentFrameSink(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  client_->OnLostContentFrameSink(compositor_frame_sink_id);
 }
 
 }  // namespace cc

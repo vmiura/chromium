@@ -26,17 +26,17 @@ DisplayCompositorConnection::~DisplayCompositorConnection() = default;
 void DisplayCompositorConnection::RegisterContentFrameSinkObserver(
     const CompositorFrameSinkId& compositor_frame_sink_id,
     cc::mojom::ContentFrameSinkPrivateRequest private_request,
-    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+    cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) {
   auto it = private_interfaces_.find(compositor_frame_sink_id);
   if (it != private_interfaces_.end()) {
     it->second->BindPrivilegedClient(std::move(private_request),
-                                     std::move(display_compositor_client));
+                                     std::move(content_frame_sink_observer));
     return;
   }
   std::unique_ptr<ContentFrameSinkPrivate> content_frame_sink_private(
       new ContentFrameSinkPrivate(this, compositor_frame_sink_id,
                                   std::move(private_request),
-                                  std::move(display_compositor_client)));
+                                  std::move(content_frame_sink_observer)));
   private_interfaces_[compositor_frame_sink_id] =
       std::move(content_frame_sink_private);
 }
@@ -52,10 +52,24 @@ void DisplayCompositorConnection::CreateContentFrameSink(
     mojom::LayerTreeSettingsPtr settings,
     mojom::ContentFrameSinkRequest content_frame_sink,
     mojom::ContentFrameSinkClientPtr content_frame_sink_client) {
-  auto it = private_interfaces_.find(CompositorFrameSinkId(client_id, sink_id));
+  // There is a race between RegisterContentFrameSinkObserver and
+  // CreateContentFrameSink. If RegisterContentFrameSinkObserver happens first
+  // then we create a ContentFrameSinkPrivate interface object first. We look up
+  // the private interface here and pass the InterfaceRequest end of the
+  // MessagePipe over to the display compositor. If we don't yet have a private
+  // interface object, then we create one and bind the privileged client in
+  // RegisterContentFrameSinkObserver.
+  CompositorFrameSinkId compositor_frame_sink_id(client_id, sink_id);
+  auto it = private_interfaces_.find(compositor_frame_sink_id);
   cc::mojom::ContentFrameSinkPrivateRequest private_request;
+  if (it != private_interfaces_.end() &&
+      !it->second->HasPendingContentFrameSinkPrivateRequest()) {
+    // We may have a stale ContentFrameSinkPrivate object. In this case,
+    // we sever the connection and create a new ContentFrameSinkPrivate.
+    it->second->OnConnectionLost();
+    it = private_interfaces_.end();
+  }
   if (it == private_interfaces_.end()) {
-    CompositorFrameSinkId compositor_frame_sink_id(client_id, sink_id);
     cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_ptr;
     private_request = mojo::GetProxy(&content_frame_sink_private_ptr);
     std::unique_ptr<ContentFrameSinkPrivate> content_frame_sink_private(
@@ -78,7 +92,15 @@ void DisplayCompositorConnection::OnConnectionLost() {
 
 void DisplayCompositorConnection::OnPrivateConnectionLost(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
+  // This happens when the ContentFrameSinkObserver goes away.
   private_interfaces_.erase(compositor_frame_sink_id);
+}
+
+void DisplayCompositorConnection::OnLostContentFrameSink(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
+  auto it = private_interfaces_.find(compositor_frame_sink_id);
+  if (it != private_interfaces_.end())
+    it->second->OnConnectionLost();
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(

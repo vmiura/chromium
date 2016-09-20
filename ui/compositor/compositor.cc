@@ -508,6 +508,8 @@ void Compositor::DidAbortSwapBuffers() {
                     OnCompositingAborted(this));
 }
 
+void Compositor::OnConnectionLost() {}
+
 void Compositor::OnSurfaceCreated(const gfx::Size& frame_size,
                                   const cc::SurfaceId& surface_id) {
   fprintf(stderr, ">>>%s frame_size(%d, %d) surface_id: %s ",

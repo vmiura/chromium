@@ -664,10 +664,10 @@ void GpuProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
 void GpuProcessTransportFactory::RegisterContentFrameSinkObserver(
     const cc::CompositorFrameSinkId& compositor_frame_sink_id,
     cc::mojom::ContentFrameSinkPrivateRequest private_request,
-    cc::mojom::DisplayCompositorClientPtr display_compositor_client) {
+    cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) {
   BrowserGpuChannelHostFactory::instance()->RegisterContentFrameSinkObserver(
       compositor_frame_sink_id, std::move(private_request),
-      std::move(display_compositor_client));
+      std::move(content_frame_sink_observer));
 }
 
 bool GpuProcessTransportFactory::DoesCreateTestContexts() { return false; }

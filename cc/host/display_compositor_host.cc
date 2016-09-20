@@ -61,10 +61,10 @@ void DisplayCompositorHost::CreateContentFrameSinkWithHandle(
 void DisplayCompositorHost::RegisterContentFrameSinkObserver(
     const CompositorFrameSinkId& compositor_frame_sink_id,
     mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
-    mojom::DisplayCompositorClientPtr display_compositor_client) {
+    mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) {
   GetDisplayCompositorConnection()->RegisterContentFrameSinkObserver(
       compositor_frame_sink_id, std::move(content_frame_sink_private),
-      std::move(display_compositor_client));
+      std::move(content_frame_sink_observer));
 }
 
 DisplayCompositorHost::DisplayCompositorHost(

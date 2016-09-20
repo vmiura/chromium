@@ -93,7 +93,7 @@ class CONTENT_EXPORT DelegatedFrameHost
       public ui::ContextFactoryObserver,
       public DelegatedFrameEvictorClient,
       public cc::SurfaceFactoryClient,
-      public cc::mojom::DisplayCompositorClient,
+      public cc::mojom::ContentFrameSinkObserver,
       public base::SupportsWeakPtr<DelegatedFrameHost> {
  public:
   DelegatedFrameHost(const cc::CompositorFrameSinkId& compositor_frame_sink_id,
@@ -130,7 +130,8 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   bool CanCopyToBitmap() const;
 
-  // cc::DisplayCompositorClient implementation.
+  // cc::ContentFrameSinkObserver implementation.
+  void OnConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 
@@ -359,7 +360,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<DelegatedFrameEvictor> delegated_frame_evictor_;
 
   cc::mojom::ContentFrameSinkPrivatePtr content_frame_sink_private_;
-  mojo::Binding<cc::mojom::DisplayCompositorClient> binding_;
+  mojo::Binding<cc::mojom::ContentFrameSinkObserver> binding_;
 };
 
 }  // namespace content

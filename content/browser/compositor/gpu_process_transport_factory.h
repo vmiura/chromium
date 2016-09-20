@@ -57,7 +57,8 @@ class GpuProcessTransportFactory
   void RegisterContentFrameSinkObserver(
       const cc::CompositorFrameSinkId& compositor_frame_sink_id,
       cc::mojom::ContentFrameSinkPrivateRequest private_request,
-      cc::mojom::DisplayCompositorClientPtr display_compositor_client) override;
+      cc::mojom::ContentFrameSinkObserverPtr content_frame_sink_observer)
+      override;
   scoped_refptr<cc::ContextProvider> SharedMainThreadContextProvider() override;
   bool DoesCreateTestContexts() override;
   uint32_t GetImageTextureTarget(gfx::BufferFormat format,

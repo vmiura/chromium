@@ -52,7 +52,7 @@ class DisplayCompositorHost : public mojom::DisplayCompositorHost,
   void RegisterContentFrameSinkObserver(
       const CompositorFrameSinkId& compositor_frame_sink_id,
       mojom::ContentFrameSinkPrivateRequest content_frame_sink_private,
-      mojom::DisplayCompositorClientPtr display_compositor_client) override;
+      mojom::ContentFrameSinkObserverPtr content_frame_sink_observer) override;
 
  private:
   DisplayCompositorHost(
