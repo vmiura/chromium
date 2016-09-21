@@ -49,9 +49,9 @@ class ContentFrameSinkPrivate : public mojom::ContentFrameSinkPrivate,
       const CompositorFrameSinkId& child_client_id) override;
 
   // cc::mojom::ContentFrameSinkObserver implementation:
+  void OnClientConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
-  void OnConnectionLost() override;
 
  private:
   void OnObserverLost();

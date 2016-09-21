@@ -225,8 +225,10 @@ ContentFrameSink::ContentFrameSink(
              << " client_id: " << compositor_frame_sink_id_.client_id
              << " sink_id: " << compositor_frame_sink_id_.sink_id;
   content_frame_sink_client_->OnCompositorCreated(compositor_frame_sink_id_);
-  content_frame_sink_client_.set_connection_error_handler(base::Bind(
-      &ContentFrameSink::OnConnectionLost, weak_factory_.GetWeakPtr()));
+  binding_.set_connection_error_handler(base::Bind(
+      &ContentFrameSink::OnClientConnectionLost, weak_factory_.GetWeakPtr()));
+  private_binding_.set_connection_error_handler(base::Bind(
+      &ContentFrameSink::OnPrivateConnectionLost, weak_factory_.GetWeakPtr()));
 }
 
 ContentFrameSink::~ContentFrameSink() {
@@ -237,6 +239,7 @@ ContentFrameSink::~ContentFrameSink() {
   scheduler_.DidLoseOutputSurface();
   host_impl_.ReleaseOutputSurface();
   output_surface_.reset();
+  client_.reset();
 
   surface_manager_->RemoveRefOnSurfaceId(surface_id_);
   // If this is a top level ContentFrameSink then we also take the ownership of
@@ -927,8 +930,16 @@ void ContentFrameSink::FinishCommit() {
 #endif
 }
 
-void ContentFrameSink::OnConnectionLost() {
-  display_compositor_->OnLostContentFrameSink(compositor_frame_sink_id_);
+void ContentFrameSink::OnClientConnectionLost() {
+  client_connection_lost_ = true;
+  display_compositor_->OnContentFrameSinkClientConnectionLost(
+      compositor_frame_sink_id_, private_connection_lost_);
+}
+
+void ContentFrameSink::OnPrivateConnectionLost() {
+  private_connection_lost_ = true;
+  display_compositor_->OnContentFrameSinkPrivateConnectionLost(
+      compositor_frame_sink_id_, client_connection_lost_);
 }
 
 void ContentFrameSink::ScheduledActionCommit() {

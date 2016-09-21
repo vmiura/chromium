@@ -45,11 +45,11 @@ class DisplayCompositorConnection : public mojom::DisplayCompositorClient {
 
   void OnConnectionLost();
 
-  void OnPrivateConnectionLost(
+  void OnContentFrameSinkPrivateConnectionLost(
       const CompositorFrameSinkId& compositor_frame_sink_id);
 
   // cc::mojom::DisplayCompositorClient implementation:
-  void OnLostContentFrameSink(
+  void OnContentFrameSinkClientConnectionLost(
       const cc::CompositorFrameSinkId& compositor_frame_sink_id) override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;

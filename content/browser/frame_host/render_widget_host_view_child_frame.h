@@ -247,7 +247,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void RegisterContentFrameSinkObserver();
 
   // cc::ContentFrameSinkObserver implementation.
-  void OnConnectionLost() override;
+  void OnClientConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

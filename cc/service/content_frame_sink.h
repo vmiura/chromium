@@ -121,9 +121,13 @@ class CC_SERVICE_EXPORT ContentFrameSink
 
   void FinishCommit();
 
-  void OnConnectionLost();
+  void OnClientConnectionLost();
+  void OnPrivateConnectionLost();
 
   DisplayCompositor* const display_compositor_;
+
+  bool client_connection_lost_ = false;
+  bool private_connection_lost_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<ClientImpl> client_;
@@ -147,7 +151,7 @@ class CC_SERVICE_EXPORT ContentFrameSink
   BulkBufferReader bulk_buffer_reader_;
   cc::mojom::ContentFrameSinkClientPtr content_frame_sink_client_;
   mojo::Binding<cc::mojom::ContentFrameSink> binding_;
-  mojo::StrongBinding<cc::mojom::ContentFrameSinkPrivate> private_binding_;
+  mojo::Binding<cc::mojom::ContentFrameSinkPrivate> private_binding_;
   mojom::ContentFramePtr frame_for_commit_;
   WaitForActivationState wait_for_activation_state_ = kWaitForActivationNone;
   WaitForActivationCallback activation_callback_;

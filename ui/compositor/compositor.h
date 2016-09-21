@@ -371,7 +371,7 @@ class COMPOSITOR_EXPORT Compositor
   void DidAbortSwapBuffers() override;
 
   // cc::mojom::ContentFrameSinkObserver implementation.
-  void OnConnectionLost() override;
+  void OnClientConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

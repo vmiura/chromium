@@ -49,9 +49,19 @@ void DisplayCompositor::OnSurfaceCreated(const gfx::Size& size,
   client_->OnSurfaceCreated(size, surface_id);
 }
 
-void DisplayCompositor::OnLostContentFrameSink(
-    const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
-  client_->OnLostContentFrameSink(compositor_frame_sink_id);
+void DisplayCompositor::OnContentFrameSinkClientConnectionLost(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+    bool destroy_content_frame_sink) {
+  if (destroy_content_frame_sink)
+    content_frame_sinks_.erase(compositor_frame_sink_id);
+  client_->OnContentFrameSinkClientConnectionLost(compositor_frame_sink_id);
+}
+
+void DisplayCompositor::OnContentFrameSinkPrivateConnectionLost(
+    const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+    bool destroy_content_frame_sink) {
+  if (destroy_content_frame_sink)
+    content_frame_sinks_.erase(compositor_frame_sink_id);
 }
 
 }  // namespace cc

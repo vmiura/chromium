@@ -641,7 +641,7 @@ void RenderWidgetHostViewChildFrame::RegisterContentFrameSinkObserver() {
   }
 }
 
-void RenderWidgetHostViewChildFrame::OnConnectionLost() {
+void RenderWidgetHostViewChildFrame::OnClientConnectionLost() {
   RegisterContentFrameSinkObserver();
 }
 

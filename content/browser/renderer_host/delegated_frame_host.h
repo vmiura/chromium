@@ -131,7 +131,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   bool CanCopyToBitmap() const;
 
   // cc::ContentFrameSinkObserver implementation.
-  void OnConnectionLost() override;
+  void OnClientConnectionLost() override;
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const cc::SurfaceId& surface_id) override;
 

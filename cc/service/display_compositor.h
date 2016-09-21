@@ -55,8 +55,12 @@ class DisplayCompositor : public mojom::DisplayCompositor,
   void OnSurfaceCreated(const gfx::Size& frame_size,
                         const SurfaceId& surface_id) override;
 
-  void OnLostContentFrameSink(
-      const cc::CompositorFrameSinkId& compositor_frame_sink_id);
+  void OnContentFrameSinkClientConnectionLost(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+      bool destroy_content_frame_sink);
+  void OnContentFrameSinkPrivateConnectionLost(
+      const cc::CompositorFrameSinkId& compositor_frame_sink_id,
+      bool destroy_content_frame_sink);
 
  private:
   DisplayCompositorFactory* const factory_;

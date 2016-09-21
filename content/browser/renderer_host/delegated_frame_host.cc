@@ -183,7 +183,7 @@ bool DelegatedFrameHost::CanCopyToBitmap() const {
          client_->DelegatedFrameHostGetLayer()->has_external_content();
 }
 
-void DelegatedFrameHost::OnConnectionLost() {
+void DelegatedFrameHost::OnClientConnectionLost() {
   fprintf(stderr, ">>>%s\n", __PRETTY_FUNCTION__);
   RegisterContentFrameSinkObserver();
 }

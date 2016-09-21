@@ -66,7 +66,7 @@ void DisplayCompositorConnection::CreateContentFrameSink(
       !it->second->HasPendingContentFrameSinkPrivateRequest()) {
     // We may have a stale ContentFrameSinkPrivate object. In this case,
     // we sever the connection and create a new ContentFrameSinkPrivate.
-    it->second->OnConnectionLost();
+    it->second->OnClientConnectionLost();
     it = private_interfaces_.end();
   }
   if (it == private_interfaces_.end()) {
@@ -90,17 +90,17 @@ void DisplayCompositorConnection::OnConnectionLost() {
   connection_client_->OnConnectionLost();
 }
 
-void DisplayCompositorConnection::OnPrivateConnectionLost(
+void DisplayCompositorConnection::OnContentFrameSinkPrivateConnectionLost(
     const CompositorFrameSinkId& compositor_frame_sink_id) {
   // This happens when the ContentFrameSinkObserver goes away.
   private_interfaces_.erase(compositor_frame_sink_id);
 }
 
-void DisplayCompositorConnection::OnLostContentFrameSink(
+void DisplayCompositorConnection::OnContentFrameSinkClientConnectionLost(
     const cc::CompositorFrameSinkId& compositor_frame_sink_id) {
   auto it = private_interfaces_.find(compositor_frame_sink_id);
   if (it != private_interfaces_.end())
-    it->second->OnConnectionLost();
+    it->second->OnClientConnectionLost();
 }
 
 void DisplayCompositorConnection::OnSurfaceCreated(

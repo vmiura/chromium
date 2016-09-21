@@ -33,8 +33,13 @@ ContentFrameSinkPrivate::ContentFrameSinkPrivate(
       binding_(this) {}
 
 ContentFrameSinkPrivate::~ContentFrameSinkPrivate() {
+  // If this object is going away then this means that
+  // 1. We've registered a new observer. This observer is invalid,
+  //    and so we would do nothing.
+  // 2. The display compositor connection is gone so we also lost
+  //    the client connection and we should inform the observer.
   if (content_frame_sink_observer_)
-    content_frame_sink_observer_->OnConnectionLost();
+    content_frame_sink_observer_->OnClientConnectionLost();
 }
 
 void ContentFrameSinkPrivate::BindPrivilegedClient(
@@ -79,6 +84,17 @@ void ContentFrameSinkPrivate::UnregisterChildSink(
   content_frame_sink_private_->UnregisterChildSink(child_client_id);
 }
 
+void ContentFrameSinkPrivate::OnClientConnectionLost() {
+  if (content_frame_sink_observer_) {
+    content_frame_sink_observer_->OnClientConnectionLost();
+  } else {
+    // If we don't have an observer then we should just get rid of this
+    // ContentFrameSink when the client goes away.
+    display_compositor_connection_->OnContentFrameSinkPrivateConnectionLost(
+        compositor_frame_sink_id_);
+  }
+}
+
 void ContentFrameSinkPrivate::OnSurfaceCreated(
     const gfx::Size& frame_size,
     const cc::SurfaceId& surface_id) {
@@ -91,13 +107,8 @@ void ContentFrameSinkPrivate::OnSurfaceCreated(
     content_frame_sink_observer_->OnSurfaceCreated(frame_size, surface_id);
 }
 
-void ContentFrameSinkPrivate::OnConnectionLost() {
-  if (content_frame_sink_observer_)
-    content_frame_sink_observer_->OnConnectionLost();
-}
-
 void ContentFrameSinkPrivate::OnObserverLost() {
-  display_compositor_connection_->OnPrivateConnectionLost(
+  display_compositor_connection_->OnContentFrameSinkPrivateConnectionLost(
       compositor_frame_sink_id_);
 }
 
