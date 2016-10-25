@@ -84,7 +84,8 @@ class DiscardableImagesMetadataCanvas : public SkNWayCanvas {
   }
 
   SaveLayerStrategy getSaveLayerStrategy(const SaveLayerRec& rec) override {
-    saved_paints_.push_back(*rec.fPaint);
+    // TODO(jellyfish): Upstream this NULL check to Chromium.
+    saved_paints_.push_back(rec.fPaint ? *rec.fPaint : SkPaint());
     return SkNWayCanvas::getSaveLayerStrategy(rec);
   }
 
