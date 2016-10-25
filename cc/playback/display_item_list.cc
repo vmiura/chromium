@@ -86,10 +86,20 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
     SkStream* stream,
     PictureCache* old_picture_cache,
     PictureCache* new_picture_cache) {
+
+  
+  int x = stream->readS32();
+  int y = stream->readS32();
+  int width = stream->readS32();
+  int height = stream->readS32();
+  gfx::Rect layer_rect(x, y, width, height);
+
   DisplayItemListSettings settings;
-  // TODO: Also find id from stream.
+  settings.use_cached_picture = stream->readBool();
+
+  // TODO: Also find id from stream. 
   scoped_refptr<DisplayItemList> display_item_list =
-      DisplayItemList::Create(gfx::Rect(), settings);
+      DisplayItemList::Create(layer_rect, settings);
   display_item_list->id_ = stream->readU32();
   uint32_t num_items = stream->readU32();
   for (uint32_t i = 0; i < num_items; ++i) {
@@ -161,6 +171,7 @@ scoped_refptr<DisplayItemList> DisplayItemList::CreateFromStream(
     }
   }
   display_item_list->Finalize();
+  display_item_list->GenerateDiscardableImagesMetadata();
   return display_item_list;
 }
 
@@ -434,6 +445,13 @@ void DisplayItemList::SerializeToStream(SkWStream* stream,
     PictureIdCache* old_picture_cache,
     PictureIdCache* new_picture_cache,
     bool flush_cache) const {
+  
+  stream->write32(inputs_.layer_rect.x());
+  stream->write32(inputs_.layer_rect.y());
+  stream->write32(inputs_.layer_rect.width());
+  stream->write32(inputs_.layer_rect.height());
+  stream->writeBool(inputs_.settings.use_cached_picture);
+
   stream->write32(id_);
   stream->write32(inputs_.items.size());
   DCHECK_EQ(inputs_.items.size(), inputs_.visual_rects.size());
