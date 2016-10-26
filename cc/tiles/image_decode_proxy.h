@@ -76,7 +76,6 @@ class CC_EXPORT ProxyImageGenerator : public SkImageGenerator {
 
  private:
   static SkImageGenerator* create(SkData* data);
-  const uint32_t unique_id_;
   ImageDecodeProxy* proxy_;
 };
 

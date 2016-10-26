@@ -146,7 +146,7 @@ SkImageGenerator* ProxyImageGenerator::create(SkData* data) {
 ProxyImageGenerator::ProxyImageGenerator(const SkImageInfo& info,
                                          uint32_t unique_id,
                                          ImageDecodeProxy* proxy)
-    : SkImageGenerator(info), unique_id_(unique_id), proxy_(proxy) {}
+    : SkImageGenerator(info, unique_id), proxy_(proxy) {}
 
 ProxyImageGenerator::~ProxyImageGenerator() {
   // TODO(hackathon): Should scope this a different way probably - don't want to
@@ -164,7 +164,7 @@ bool ProxyImageGenerator::onGetPixels(const SkImageInfo& info,
   if (getInfo().height() != info.height() || getInfo().width() != info.width())
     return false;
 
-  return proxy_->DecodeImage(unique_id_, getInfo(), pixels);
+  return proxy_->DecodeImage(uniqueID(), getInfo(), pixels);
 }
 
 SkData* ProxyPixelSerializer::onUseImage(const SkImage* image) {
