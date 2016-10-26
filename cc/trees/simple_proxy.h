@@ -79,6 +79,7 @@ class CC_EXPORT SimpleProxy : public Proxy,
       const CompositorFrameSinkId& compositor_frame_sink_id) override;
   void OnBackingsReturned(const std::vector<uint32_t>& backings) override;
   void OnBeginMainFrame(uint32_t begin_frame_id,
+                        bool evicted_ui_resources,
                         const BeginFrameArgs& begin_frame_args) override;
   void OnBeginMainFrameNotExpectedSoon() override;
   void OnDidCompletePageScaleAnimation() override;

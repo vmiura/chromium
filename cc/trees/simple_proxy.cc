@@ -292,7 +292,9 @@ void SimpleProxy::OnBackingsReturned(const std::vector<uint32_t>& backings) {
 }
 
 void SimpleProxy::OnBeginMainFrame(
-    uint32_t begin_frame_id, const BeginFrameArgs& begin_frame_args) {
+    uint32_t begin_frame_id,
+    bool evicted_ui_resources,
+    const BeginFrameArgs& begin_frame_args) {
   TRACE_EVENT0("cc", "SimpleProxy::OnBeginMainFrame");
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
       benchmark_instrumentation::kDoBeginFrame,
@@ -300,8 +302,6 @@ void SimpleProxy::OnBeginMainFrame(
 
   TRACE_EVENT_SYNTHETIC_DELAY_BEGIN("cc.BeginMainFrame");
   DCHECK(IsMainThread());
-  // TODO(jellyfish): Figure out why this DCHECK fails sometimes.
-  //DCHECK(begin_frame_requested_);
 
   if (defer_commits_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
@@ -345,8 +345,8 @@ void SimpleProxy::OnBeginMainFrame(
 
   // Recreate all UI resources if there were evicted UI resources when the impl
   // thread initiated the commit.
-  // if (begin_main_frame_state->evicted_ui_resources)
-  //   layer_tree_host_->RecreateUIResources();
+  if (evicted_ui_resources)
+    layer_tree_host_->RecreateUIResources();
 
   layer_tree_host_->RequestMainFrameUpdate();
   TRACE_EVENT_SYNTHETIC_DELAY_END("cc.BeginMainFrame");

@@ -118,7 +118,7 @@ interface ContentFrameSink {
 interface ContentFrameSinkClient {
   OnCompositorCreated(CompositorFrameSinkId compositor_frame_sink_id);
   OnBackingsReturned(array<uint32> backings);
-  OnBeginMainFrame(uint32 begin_frame_id, BeginFrameArgs args);
+  OnBeginMainFrame(uint32 begin_frame_id, bool eviced_ui_resources, BeginFrameArgs args);
   OnBeginMainFrameNotExpectedSoon();
   OnDidCompletePageScaleAnimation();
   OnDidCommitAndDrawFrame();

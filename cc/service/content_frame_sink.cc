@@ -128,7 +128,11 @@ class ContentFrameSink::ClientImpl : public LayerTreeHostImplClient,
     owner_->host_impl()->WillBeginImplFrame(args);
   }
   void ScheduledActionSendBeginMainFrame(const BeginFrameArgs& args) override {
-    owner_->content_frame_sink_client()->OnBeginMainFrame(0, args);
+    // TODO(jellyfish): layer tree mutations, scroll info,
+    // memory_allocation_limit_bytes
+    bool evicted_ui_resources = owner_->host_impl()->EvictedUIResourcesExist();
+    owner_->content_frame_sink_client()->OnBeginMainFrame(
+        0, evicted_ui_resources, args);
   }
   DrawResult ScheduledActionDrawAndSwapIfPossible() override {
     bool forced_draw = false;
