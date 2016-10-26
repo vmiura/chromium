@@ -23,6 +23,7 @@ class ScopedAllowWaitForLegacyWebViewApi;
 namespace cc {
 class CompletionEvent;
 class SingleThreadTaskGraphRunner;
+class CategorizedWorkerPool;
 }
 namespace chromeos {
 class BlockingMethodCaller;
@@ -200,6 +201,7 @@ class BASE_EXPORT ThreadRestrictions {
   friend class ::ScopedAllowWaitForLegacyWebViewApi;
   friend class cc::CompletionEvent;
   friend class cc::SingleThreadTaskGraphRunner;
+  friend class cc::CategorizedWorkerPool;
   friend class content::CategorizedWorkerPool;
   friend class remoting::AutoThread;
   friend class ui::WindowResizeHelperMac;

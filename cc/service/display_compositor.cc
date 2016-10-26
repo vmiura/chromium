@@ -14,10 +14,11 @@ DisplayCompositor::DisplayCompositor(DisplayCompositorFactory* factory,
                                      mojom::DisplayCompositorRequest request,
                                      mojom::DisplayCompositorClientPtr client)
     : factory_(factory),
+      task_graph_runner_(new CategorizedWorkerPool()),
       surface_manager_(this),
       client_(std::move(client)),
       display_compositor_binding_(this, std::move(request)) {
-  task_graph_runner_.Start("CompositorWorker", base::SimpleThread::Options());
+  task_graph_runner_->Start(4);
 }
 
 DisplayCompositor::~DisplayCompositor() = default;
@@ -41,7 +42,7 @@ void DisplayCompositor::CreateContentFrameSink(
           // This image factory is going to the wrong thread, but the
           // ServiceContextProvider will only use it on the main thread
           // thanks to our custom InProcessCommandBuffer::Service.
-          factory_->image_factory(), &surface_manager_, &task_graph_runner_);
+          factory_->image_factory(), &surface_manager_, task_graph_runner_.get());
 }
 
 void DisplayCompositor::OnSurfaceCreated(const gfx::Size& size,

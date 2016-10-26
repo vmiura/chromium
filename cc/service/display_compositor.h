@@ -7,7 +7,9 @@
 
 #include "base/containers/scoped_ptr_hash_map.h"
 #include "cc/ipc/compositor.mojom.h"
-#include "cc/raster/single_thread_task_graph_runner.h"
+//#include "cc/raster/single_thread_task_graph_runner.h"
+//#include "content/renderer/categorized_worker_pool.h"
+#include "cc/raster/categorized_worker_pool.h"
 #include "cc/surfaces/surface_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
@@ -71,7 +73,7 @@ class DisplayCompositor : public mojom::DisplayCompositor,
                      std::unique_ptr<ContentFrameSink>,
                      CompositorFrameSinkIdHash>
       content_frame_sinks_;
-  SingleThreadTaskGraphRunner task_graph_runner_;
+  scoped_refptr<CategorizedWorkerPool> task_graph_runner_;
   cc::SurfaceManager surface_manager_;
   mojom::DisplayCompositorClientPtr client_;
   mojo::Binding<mojom::DisplayCompositor> display_compositor_binding_;
