@@ -120,15 +120,11 @@ void ImageDecodeService::DoCloseMojoBinding(CompletionEvent* event) {
 }
 
 void ImageDecodeService::RegisterImage(sk_sp<const SkImage> image) {
-  TRACE_EVENT1("cc", "ImageDecodeService::RegisterImage", "image_id",
-               image->uniqueID());
   base::AutoLock hold(lock_);
   image_map_[image->uniqueID()] = std::move(image);
 }
 
 void ImageDecodeService::UnregisterImage(uint32_t image_id) {
-  TRACE_EVENT1("cc", "ImageDecodeService::UnregisterImage", "image_id",
-               image_id);
   base::AutoLock hold(lock_);
   image_map_.erase(image_id);
 }
