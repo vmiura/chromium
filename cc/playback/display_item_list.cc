@@ -254,8 +254,12 @@ void DisplayItemList::Raster(SkCanvas* canvas,
 void DisplayItemList::Raster(SkCanvas* canvas,
                              SkPicture::AbortCallback* callback) const {
   if (!inputs_.settings.use_cached_picture) {
-    for (const auto& item : inputs_.items)
+    for (const auto& item : inputs_.items) {
       item.Raster(canvas, callback);
+
+      if (callback && callback->abort())
+        break;
+    }
   } else {
     DCHECK(picture_);
 
