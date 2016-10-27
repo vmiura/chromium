@@ -258,7 +258,7 @@ void SimpleProxy::UpdateTopControlsState(TopControlsState constraints,
 }
 
 void SimpleProxy::SetNeedsBeginFrame() {
-  TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
+  //TRACE_EVENT0("cc", "SimpleProxy::SetNeedsBeginFrame");
   DCHECK(IsMainThread());
 
   if (!binding_) {
