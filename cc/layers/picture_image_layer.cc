@@ -13,7 +13,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -69,7 +69,7 @@ scoped_refptr<DisplayItemList> PictureImageLayer::PaintContentsToDisplayList(
   scoped_refptr<DisplayItemList> display_list =
       DisplayItemList::Create(settings);
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* canvas =
       recorder.beginRecording(gfx::RectToSkRect(PaintableRegion()));
 

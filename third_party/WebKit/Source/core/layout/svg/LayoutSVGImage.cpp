@@ -37,7 +37,7 @@
 #include "core/paint/SVGImagePainter.h"
 #include "core/svg/SVGImageElement.h"
 #include "platform/LengthFunctions.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace blink {
 

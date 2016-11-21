@@ -25,7 +25,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 class SkCanvas;
-class SkPictureRecorder;
+class CdlPictureRecorder;
 
 namespace cc {
 class ClientPictureCache;

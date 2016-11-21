@@ -22,13 +22,14 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/utils/SkPictureUtils.h"
+#include "skia/ext/cdl_picture.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
 
 DrawingDisplayItem::DrawingDisplayItem() {}
 
-DrawingDisplayItem::DrawingDisplayItem(sk_sp<const SkPicture> picture) {
+DrawingDisplayItem::DrawingDisplayItem(sk_sp<const CdlPicture> picture) {
   SetNew(std::move(picture));
 }
 
@@ -45,7 +46,7 @@ DrawingDisplayItem::DrawingDisplayItem(
   DCHECK(sk_picture_id.has_unique_id());
 
   uint32_t unique_id = sk_picture_id.unique_id();
-  sk_sp<const SkPicture> picture = client_picture_cache->GetPicture(unique_id);
+  sk_sp<const CdlPicture> picture = client_picture_cache->GetPicture(unique_id);
   DCHECK(picture);
 
   used_engine_picture_ids->push_back(unique_id);
@@ -59,7 +60,7 @@ DrawingDisplayItem::DrawingDisplayItem(const DrawingDisplayItem& item) {
 DrawingDisplayItem::~DrawingDisplayItem() {
 }
 
-void DrawingDisplayItem::SetNew(sk_sp<const SkPicture> picture) {
+void DrawingDisplayItem::SetNew(sk_sp<const CdlPicture> picture) {
   picture_ = std::move(picture);
 }
 
@@ -74,7 +75,7 @@ void DrawingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
       picture_->uniqueID());
 }
 
-sk_sp<const SkPicture> DrawingDisplayItem::GetPicture() const {
+sk_sp<const CdlPicture> DrawingDisplayItem::GetPicture() const {
   return picture_;
 }
 
@@ -89,7 +90,7 @@ void DrawingDisplayItem::Raster(SkCanvas* canvas,
   if (callback)
     picture_->playback(canvas, callback);
   else
-    canvas->drawPicture(picture_.get());
+    picture_->draw(canvas);
 }
 
 void DrawingDisplayItem::AsValueInto(
@@ -112,9 +113,10 @@ void DrawingDisplayItem::AsValueInto(
   array->AppendInteger(picture_->cullRect().height());
   array->EndArray();
 
-  std::string b64_picture;
-  PictureDebugUtil::SerializeAsBase64(picture_.get(), &b64_picture);
-  array->SetString("skp64", b64_picture);
+  // TODO(cdl): CdlPicture serialize.
+  // std::string b64_picture;
+  // PictureDebugUtil::SerializeAsBase64(picture_.get(), &b64_picture);
+  // array->SetString("skp64", b64_picture);
   array->EndDictionary();
 }
 
@@ -123,7 +125,9 @@ void DrawingDisplayItem::CloneTo(DrawingDisplayItem* item) const {
 }
 
 size_t DrawingDisplayItem::ExternalMemoryUsage() const {
-  return SkPictureUtils::ApproximateBytesUsed(picture_.get());
+  // TODO(cdl): Approximate CDL size.
+  // return SkPictureUtils::ApproximateBytesUsed(picture_.get());
+  return 1;
 }
 
 DISABLE_CFI_PERF

@@ -9,7 +9,7 @@
 #include "platform/RuntimeEnabledFeatures.h"
 #include "platform/geometry/FloatPoint.h"
 #include "platform/graphics/paint/DisplayItem.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ class PLATFORM_EXPORT DrawingDisplayItem final : public DisplayItem {
  public:
   DrawingDisplayItem(const DisplayItemClient& client,
                      Type type,
-                     sk_sp<const SkPicture> picture,
+                     sk_sp<const CdlPicture> picture,
                      bool knownToBeOpaque = false)
       : DisplayItem(client, type, sizeof(*this)),
         m_picture(picture && picture->approximateOpCount() ? std::move(picture)
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT DrawingDisplayItem final : public DisplayItem {
                                   WebDisplayItemList*) const override;
   bool drawsContent() const override;
 
-  const SkPicture* picture() const { return m_picture.get(); }
+  const CdlPicture* picture() const { return m_picture.get(); }
 
   bool knownToBeOpaque() const {
     DCHECK(RuntimeEnabledFeatures::slimmingPaintV2Enabled());
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT DrawingDisplayItem final : public DisplayItem {
 #endif
   bool equals(const DisplayItem& other) const final;
 
-  sk_sp<const SkPicture> m_picture;
+  sk_sp<const CdlPicture> m_picture;
 
   // True if there are no transparent areas. Only used for SlimmingPaintV2.
   const bool m_knownToBeOpaque;

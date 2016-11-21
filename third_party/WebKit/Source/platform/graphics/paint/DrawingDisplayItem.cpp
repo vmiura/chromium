@@ -31,7 +31,8 @@ bool DrawingDisplayItem::drawsContent() const {
 
 void DrawingDisplayItem::analyzeForGpuRasterization(
     SkPictureGpuAnalyzer& analyzer) const {
-  analyzer.analyzePicture(m_picture.get());
+  // TODO(cdl): Need drawable analyzer.
+  // analyzer.analyzePicture(m_picture.get());
 }
 
 #ifndef NDEBUG
@@ -47,28 +48,29 @@ void DrawingDisplayItem::dumpPropertiesAsDebugString(
 }
 #endif
 
-static bool picturesEqual(const SkPicture* picture1,
-                          const SkPicture* picture2) {
+static bool picturesEqual(const CdlPicture* picture1,
+                          const CdlPicture* picture2) {
   if (picture1->approximateOpCount() != picture2->approximateOpCount())
     return false;
 
-  sk_sp<SkData> data1 = picture1->serialize();
-  sk_sp<SkData> data2 = picture2->serialize();
+  sk_sp<SkData> data1 = picture1->toSkPicture()->serialize();
+  sk_sp<SkData> data2 = picture2->toSkPicture()->serialize();
   return data1->equals(data2.get());
 }
 
-static SkBitmap pictureToBitmap(const SkPicture* picture) {
+static SkBitmap pictureToBitmap(const CdlPicture* picture) {
   SkBitmap bitmap;
   SkRect rect = picture->cullRect();
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   SkCanvas canvas(bitmap);
   canvas.clear(SK_ColorTRANSPARENT);
   canvas.translate(-rect.x(), -rect.y());
-  canvas.drawPicture(picture);
+  picture->draw(&canvas);
   return bitmap;
 }
 
-static bool bitmapsEqual(const SkPicture* picture1, const SkPicture* picture2) {
+static bool bitmapsEqual(const CdlPicture* picture1,
+                         const CdlPicture* picture2) {
   SkRect rect = picture1->cullRect();
   if (rect != picture2->cullRect())
     return false;
@@ -99,8 +101,8 @@ bool DrawingDisplayItem::equals(const DisplayItem& other) const {
   if (!DisplayItem::equals(other))
     return false;
 
-  const SkPicture* picture = this->picture();
-  const SkPicture* otherPicture =
+  const CdlPicture* picture = this->picture();
+  const CdlPicture* otherPicture =
       static_cast<const DrawingDisplayItem&>(other).picture();
 
   if (!picture && !otherPicture)

@@ -45,7 +45,7 @@ class SkCanvas;
 class SkColorSpace;
 class SkImage;
 struct SkImageInfo;
-class SkPicture;
+class CdlPicture;
 
 namespace blink {
 
@@ -74,7 +74,7 @@ class PLATFORM_EXPORT ImageBufferSurface {
   virtual void setFilterQuality(SkFilterQuality) {}
   virtual void setIsHidden(bool) {}
   virtual void setImageBuffer(ImageBuffer*) {}
-  virtual sk_sp<SkPicture> getPicture();
+  virtual sk_sp<CdlPicture> getPicture();
   virtual void finalizeFrame(const FloatRect& dirtyRect) {}
   virtual void draw(GraphicsContext&,
                     const FloatRect& destRect,

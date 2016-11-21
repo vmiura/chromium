@@ -16,7 +16,7 @@
 #include "cc/proto/layer.pb.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
@@ -146,9 +146,9 @@ void PictureLayer::SetIsMask(bool is_mask) {
   is_mask_ = is_mask;
 }
 
-sk_sp<SkPicture> PictureLayer::GetPicture() const {
+sk_sp<CdlPicture> PictureLayer::GetPicture() const {
   // We could either flatten the RecordingSource into a single
-  // SkPicture, or paint a fresh one depending on what we intend to do with the
+  // CdlPicture, or paint a fresh one depending on what we intend to do with the
   // picture. For now we just paint a fresh one to get consistent results.
   if (!DrawsContent())
     return nullptr;
@@ -221,8 +221,8 @@ void PictureLayer::ToLayerPropertiesProto(proto::LayerProperties* proto) {
     picture_layer_inputs_.display_list->ToProtobuf(
         picture->mutable_display_list());
     for (const auto& item : *picture_layer_inputs_.display_list) {
-      sk_sp<const SkPicture> picture = item.GetPicture();
-      // Only DrawingDisplayItems have SkPictures.
+      sk_sp<const CdlPicture> picture = item.GetPicture();
+      // Only DrawingDisplayItems have CdlPictures.
       if (!picture)
         continue;
 

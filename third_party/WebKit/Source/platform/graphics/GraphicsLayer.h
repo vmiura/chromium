@@ -334,8 +334,8 @@ class PLATFORM_EXPORT GraphicsLayer : public WebLayerScrollClient,
   std::unique_ptr<JSONObject> layerAsJSONInternal(LayerTreeFlags,
                                                   RenderingContextMap&) const;
 
-  sk_sp<SkPicture> capturePicture();
-  void checkPaintUnderInvalidations(const SkPicture&);
+  sk_sp<CdlPicture> capturePicture();
+  void checkPaintUnderInvalidations(const CdlPicture&);
 
   GraphicsLayerClient* m_client;
 

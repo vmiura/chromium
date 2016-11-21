@@ -7,7 +7,7 @@
 #include "platform/geometry/FloatQuad.h"
 #include "platform/geometry/FloatRect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "wtf/Vector.h"
 #include "wtf/text/WTFString.h"
 #include <utility>
@@ -33,13 +33,13 @@ class DrawsRectangleCanvas : public SkCanvas {
 };
 
 class DrawsRectangleMatcher
-    : public ::testing::MatcherInterface<const SkPicture&> {
+    : public ::testing::MatcherInterface<const CdlPicture&> {
  public:
   DrawsRectangleMatcher(const FloatRect& rect, Color color)
       : m_rect(rect), m_color(color) {}
 
   bool MatchAndExplain(
-      const SkPicture& picture,
+      const CdlPicture& picture,
       ::testing::MatchResultListener* listener) const override {
     DrawsRectangleCanvas canvas;
     picture.playback(&canvas);
@@ -88,8 +88,8 @@ class DrawsRectangleMatcher
 
 }  // namespace
 
-::testing::Matcher<const SkPicture&> drawsRectangle(const FloatRect& rect,
-                                                    Color color) {
+::testing::Matcher<const CdlPicture&> drawsRectangle(const FloatRect& rect,
+                                                     Color color) {
   return ::testing::MakeMatcher(new DrawsRectangleMatcher(rect, color));
 }
 

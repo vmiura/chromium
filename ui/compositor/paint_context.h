@@ -16,7 +16,7 @@ namespace cc {
 class DisplayItemList;
 }
 
-class SkPictureRecorder;
+class CdlPictureRecorder;
 
 namespace ui {
 class ClipRecorder;
@@ -86,11 +86,11 @@ class COMPOSITOR_EXPORT PaintContext {
   gfx::Rect ToLayerSpaceRect(const gfx::Rect& rect) const;
 
   cc::DisplayItemList* list_;
-  std::unique_ptr<SkPictureRecorder> owned_recorder_;
+  std::unique_ptr<CdlPictureRecorder> owned_recorder_;
   // A pointer to the |owned_recorder_| in this PaintContext, or in another one
   // which this was copied from. We expect a copied-from PaintContext to outlive
   // copies made from it.
-  SkPictureRecorder* recorder_;
+  CdlPictureRecorder* recorder_;
   // The device scale of the frame being painted. Used to determine which bitmap
   // resources to use in the frame.
   float device_scale_factor_;

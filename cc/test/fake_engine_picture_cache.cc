@@ -10,7 +10,7 @@
 #include "cc/blimp/picture_data.h"
 #include "cc/playback/display_item_list.h"
 #include "cc/test/picture_cache_model.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace cc {
 
@@ -25,7 +25,7 @@ void FakeEnginePictureCache::MarkAllSkPicturesAsUsed(
     return;
 
   for (auto it = display_list->begin(); it != display_list->end(); ++it) {
-    sk_sp<const SkPicture> picture = it->GetPicture();
+    sk_sp<const CdlPicture> picture = it->GetPicture();
     if (!picture)
       continue;
 
@@ -37,7 +37,7 @@ const std::vector<uint32_t>& FakeEnginePictureCache::GetAllUsedPictureIds() {
   return used_picture_ids_;
 }
 
-void FakeEnginePictureCache::MarkUsed(const SkPicture* picture) {
+void FakeEnginePictureCache::MarkUsed(const CdlPicture* picture) {
   if (model_)
     model_->AddPicture(picture);
   used_picture_ids_.push_back(picture->uniqueID());

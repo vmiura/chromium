@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-class SkPicture;
+class CdlPicture;
 
 namespace cc {
 
@@ -25,12 +25,12 @@ class PictureCacheModel {
   PictureCacheModel();
   ~PictureCacheModel();
 
-  void AddPicture(const SkPicture* picture);
+  void AddPicture(const CdlPicture* picture);
 
-  sk_sp<const SkPicture> GetPicture(uint32_t unique_id);
+  sk_sp<const CdlPicture> GetPicture(uint32_t unique_id);
 
  private:
-  std::unordered_map<uint32_t, sk_sp<const SkPicture>> pictures_;
+  std::unordered_map<uint32_t, sk_sp<const CdlPicture>> pictures_;
 
   DISALLOW_COPY_AND_ASSIGN(PictureCacheModel);
 };

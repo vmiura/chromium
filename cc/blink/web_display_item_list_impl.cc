@@ -49,7 +49,7 @@ WebDisplayItemListImpl::WebDisplayItemListImpl(
 
 void WebDisplayItemListImpl::appendDrawingItem(
     const blink::WebRect& visual_rect,
-    sk_sp<const SkPicture> picture) {
+    sk_sp<const CdlPicture> picture) {
   display_item_list_->CreateAndAppendDrawingItem<cc::DrawingDisplayItem>(
       visual_rect, std::move(picture));
 }

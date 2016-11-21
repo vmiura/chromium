@@ -4,7 +4,7 @@
 
 #include "platform/graphics/paint/DisplayItemList.h"
 
-#include "SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "SkTypes.h"
 #include "platform/graphics/paint/DrawingDisplayItem.h"
 #include "platform/graphics/paint/SubsequenceDisplayItem.h"
@@ -34,8 +34,8 @@ class DisplayItemListTest : public ::testing::Test {
   FakeDisplayItemClient m_client;
 };
 
-static sk_sp<SkPicture> createRectPicture(const IntRect& bounds) {
-  SkPictureRecorder recorder;
+static sk_sp<CdlPicture> createRectPicture(const IntRect& bounds) {
+  CdlPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
   canvas->drawRect(
       SkRect::MakeXYWH(bounds.x(), bounds.y(), bounds.width(), bounds.height()),

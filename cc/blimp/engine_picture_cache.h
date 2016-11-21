@@ -7,7 +7,7 @@
 
 #include <vector>
 
-class SkPicture;
+class CdlPicture;
 
 namespace cc {
 struct PictureData;
@@ -21,7 +21,7 @@ class EnginePictureCache {
   virtual ~EnginePictureCache() {}
 
   // MarkUsed must be called when an SkPicture needs to available on the client.
-  virtual void MarkUsed(const SkPicture* picture) = 0;
+  virtual void MarkUsed(const CdlPicture* picture) = 0;
 
   // Called when a PictureCacheUpdate is going to be sent to the client. This
   // must contain all the new SkPictures that are in use since last call.

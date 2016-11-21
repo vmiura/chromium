@@ -39,7 +39,7 @@
 
 class SkMatrix;
 class SkPaint;
-class SkPicture;
+class CdlPicture;
 
 namespace blink {
 
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
 
   static PassRefPtr<Pattern> createImagePattern(PassRefPtr<Image>,
                                                 RepeatMode = RepeatModeXY);
-  static PassRefPtr<Pattern> createPicturePattern(sk_sp<SkPicture>,
+  static PassRefPtr<Pattern> createPicturePattern(sk_sp<CdlPicture>,
                                                   RepeatMode = RepeatModeXY);
   virtual ~Pattern();
 

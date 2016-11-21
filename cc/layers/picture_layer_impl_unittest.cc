@@ -348,7 +348,7 @@ TEST_F(PictureLayerImplTest, TileGridAlignment) {
     // This test verifies that when drawing the contents of a specific tile
     // at content scale 1.0, the playback canvas never receives content from
     // neighboring tiles which indicates that the tile grid embedded in
-    // SkPicture is perfectly aligned with the compositor's tiles.
+    // CdlPicture is perfectly aligned with the compositor's tiles.
     EXPECT_EQ(1u, mock_canvas.rects_.size());
     EXPECT_EQ(*rect_iter, mock_canvas.rects_[0]);
     rect_iter++;

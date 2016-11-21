@@ -10,7 +10,7 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/graphics/ImageBuffer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "wtf/PassRefPtr.h"
 #include "wtf/PtrUtil.h"
 #include <memory>
@@ -39,7 +39,7 @@ RecordingImageBufferSurface::~RecordingImageBufferSurface() {}
 
 void RecordingImageBufferSurface::initializeCurrentFrame() {
   static SkRTreeFactory rTreeFactory;
-  m_currentFrame = wrapUnique(new SkPictureRecorder);
+  m_currentFrame = wrapUnique(new CdlPictureRecorder);
   SkCanvas* canvas = m_currentFrame->beginRecording(
       size().width(), size().height(), &rTreeFactory);
   // Always save an initial frame, to support resetting the top level matrix
@@ -208,7 +208,7 @@ void RecordingImageBufferSurface::disableDeferral(
     fallBackToRasterCanvas(disableDeferralReasonToFallbackReason(reason));
 }
 
-sk_sp<SkPicture> RecordingImageBufferSurface::getPicture() {
+sk_sp<CdlPicture> RecordingImageBufferSurface::getPicture() {
   if (m_fallbackSurface)
     return nullptr;
 
@@ -327,7 +327,7 @@ void RecordingImageBufferSurface::draw(GraphicsContext& context,
     return;
   }
 
-  sk_sp<SkPicture> picture = getPicture();
+  sk_sp<CdlPicture> picture = getPicture();
   if (picture) {
     context.compositePicture(std::move(picture), destRect, srcRect, op);
   } else {

@@ -31,7 +31,7 @@
 #include "platform/graphics/PicturePattern.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include <v8.h>
 
@@ -42,7 +42,7 @@ PassRefPtr<Pattern> Pattern::createImagePattern(PassRefPtr<Image> tileImage,
   return ImagePattern::create(std::move(tileImage), repeatMode);
 }
 
-PassRefPtr<Pattern> Pattern::createPicturePattern(sk_sp<SkPicture> picture,
+PassRefPtr<Pattern> Pattern::createPicturePattern(sk_sp<CdlPicture> picture,
                                                   RepeatMode repeatMode) {
   return PicturePattern::create(std::move(picture), repeatMode);
 }

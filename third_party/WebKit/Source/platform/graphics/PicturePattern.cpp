@@ -5,17 +5,17 @@
 #include "platform/graphics/PicturePattern.h"
 
 #include "platform/graphics/skia/SkiaUtils.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkShader.h"
 
 namespace blink {
 
-PassRefPtr<PicturePattern> PicturePattern::create(sk_sp<SkPicture> picture,
+PassRefPtr<PicturePattern> PicturePattern::create(sk_sp<CdlPicture> picture,
                                                   RepeatMode repeatMode) {
   return adoptRef(new PicturePattern(std::move(picture), repeatMode));
 }
 
-PicturePattern::PicturePattern(sk_sp<SkPicture> picture, RepeatMode mode)
+PicturePattern::PicturePattern(sk_sp<CdlPicture> picture, RepeatMode mode)
     : Pattern(mode), m_tilePicture(std::move(picture)) {
   // All current clients use RepeatModeXY, so we only support this mode for now.
   ASSERT(isRepeatXY());
@@ -28,9 +28,9 @@ PicturePattern::~PicturePattern() {}
 sk_sp<SkShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
   SkRect tileBounds = m_tilePicture->cullRect();
 
-  return SkShader::MakePictureShader(m_tilePicture, SkShader::kRepeat_TileMode,
-                                     SkShader::kRepeat_TileMode, &localMatrix,
-                                     &tileBounds);
+  return SkShader::MakePictureShader(
+      m_tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
+      SkShader::kRepeat_TileMode, &localMatrix, &tileBounds);
 }
 
 }  // namespace blink

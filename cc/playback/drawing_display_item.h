@@ -17,6 +17,7 @@
 
 class SkCanvas;
 class SkPicture;
+class CdlPicture;
 
 namespace cc {
 class ClientPictureCache;
@@ -24,7 +25,7 @@ class ClientPictureCache;
 class CC_EXPORT DrawingDisplayItem : public DisplayItem {
  public:
   DrawingDisplayItem();
-  explicit DrawingDisplayItem(sk_sp<const SkPicture> picture);
+  explicit DrawingDisplayItem(sk_sp<const CdlPicture> picture);
   explicit DrawingDisplayItem(const proto::DisplayItem& proto,
                               ClientPictureCache* client_picture_cache,
                               std::vector<uint32_t>* used_engine_picture_ids);
@@ -32,7 +33,7 @@ class CC_EXPORT DrawingDisplayItem : public DisplayItem {
   ~DrawingDisplayItem() override;
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  sk_sp<const SkPicture> GetPicture() const override;
+  sk_sp<const CdlPicture> GetPicture() const override;
   void Raster(SkCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
@@ -44,9 +45,9 @@ class CC_EXPORT DrawingDisplayItem : public DisplayItem {
   void CloneTo(DrawingDisplayItem* item) const;
 
  private:
-  void SetNew(sk_sp<const SkPicture> picture);
+  void SetNew(sk_sp<const CdlPicture> picture);
 
-  sk_sp<const SkPicture> picture_;
+  sk_sp<const CdlPicture> picture_;
 };
 
 }  // namespace cc

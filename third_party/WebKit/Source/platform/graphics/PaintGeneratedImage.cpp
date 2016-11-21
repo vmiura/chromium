@@ -6,7 +6,7 @@
 
 #include "platform/geometry/FloatRect.h"
 #include "platform/graphics/GraphicsContext.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace blink {
 
@@ -23,7 +23,9 @@ void PaintGeneratedImage::draw(SkCanvas* canvas,
     canvas->scale(destRect.width() / srcRect.width(),
                   destRect.height() / srcRect.height());
   canvas->translate(-srcRect.x(), -srcRect.y());
-  canvas->drawPicture(m_picture.get(), nullptr, &paint);
+  // TODO(cdl): Need SkPaint on drawDrawable?
+  // canvas->drawDrawable(m_picture.get(), nullptr, &paint);
+  m_picture->draw(canvas);
 }
 
 void PaintGeneratedImage::drawTile(GraphicsContext& context,

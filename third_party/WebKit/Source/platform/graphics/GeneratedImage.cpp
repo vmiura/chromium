@@ -34,7 +34,7 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/graphics/paint/SkPictureBuilder.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace blink {
 
@@ -51,7 +51,7 @@ void GeneratedImage::drawPattern(GraphicsContext& destContext,
   SkPictureBuilder builder(tileRect, nullptr, &destContext);
   builder.context().beginRecording(tileRect);
   drawTile(builder.context(), srcRect);
-  sk_sp<SkPicture> tilePicture = builder.endRecording();
+  sk_sp<CdlPicture> tilePicture = builder.endRecording();
 
   SkMatrix patternMatrix = SkMatrix::MakeTrans(phase.x(), phase.y());
   patternMatrix.preScale(scale.width(), scale.height());
