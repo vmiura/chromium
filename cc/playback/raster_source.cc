@@ -16,7 +16,7 @@
 #include "skia/ext/analysis_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipStack.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
@@ -197,10 +197,10 @@ void RasterSource::RasterCommon(SkCanvas* canvas,
     display_list_->Raster(canvas, callback);
 }
 
-sk_sp<SkPicture> RasterSource::GetFlattenedPicture() {
+sk_sp<CdlPicture> RasterSource::GetFlattenedPicture() {
   TRACE_EVENT0("cc", "RasterSource::GetFlattenedPicture");
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(size_.width(), size_.height());
   if (!size_.IsEmpty()) {
     PrepareForPlaybackToCanvas(canvas);

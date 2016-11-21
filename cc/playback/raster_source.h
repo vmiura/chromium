@@ -15,6 +15,7 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/playback/recording_source.h"
 #include "skia/ext/analysis_canvas.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkPicture.h"
 
 namespace gfx {
@@ -118,7 +119,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // Tracing functionality.
   virtual void DidBeginTracing();
   virtual void AsValueInto(base::trace_event::TracedValue* array) const;
-  virtual sk_sp<SkPicture> GetFlattenedPicture();
+  virtual sk_sp<CdlPicture> GetFlattenedPicture();
   virtual size_t GetPictureMemoryUsage() const;
 
   // Return true if LCD anti-aliasing may be used when rastering text.

@@ -46,7 +46,7 @@
 
 class SkImage;
 struct SkImageInfo;
-class SkPictureRecorder;
+class CdlPictureRecorder;
 
 namespace gpu {
 namespace gles2 {
@@ -243,7 +243,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
   // changing texture bindings.
   void resetSkiaTextureBinding();
 
-  std::unique_ptr<SkPictureRecorder> m_recorder;
+  std::unique_ptr<CdlPictureRecorder> m_recorder;
   sk_sp<SkSurface> m_surface;
   sk_sp<SkImage> m_hibernationImage;
   int m_initialSurfaceSaveCount;

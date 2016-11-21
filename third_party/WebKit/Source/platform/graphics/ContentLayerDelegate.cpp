@@ -35,7 +35,7 @@
 #include "platform/tracing/TracedValue.h"
 #include "public/platform/WebDisplayItemList.h"
 #include "public/platform/WebRect.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 

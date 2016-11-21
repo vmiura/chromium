@@ -32,7 +32,7 @@
 #include "platform/graphics/BoxReflection.h"
 #include "platform/graphics/filters/FilterEffect.h"
 #include "platform/graphics/skia/SkiaUtils.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
 #include "third_party/skia/include/effects/SkOffsetImageFilter.h"
 #include "third_party/skia/include/effects/SkPictureImageFilter.h"
@@ -99,11 +99,12 @@ sk_sp<SkImageFilter> transformColorSpace(sk_sp<SkImageFilter> input,
                                         std::move(input));
 }
 
-void buildSourceGraphic(FilterEffect* sourceGraphic, sk_sp<SkPicture> picture) {
+void buildSourceGraphic(FilterEffect* sourceGraphic,
+                        sk_sp<CdlPicture> picture) {
   ASSERT(picture);
   SkRect cullRect = picture->cullRect();
   sk_sp<SkImageFilter> filter =
-      SkPictureImageFilter::Make(std::move(picture), cullRect);
+      SkPictureImageFilter::Make(picture->toSkPicture(), cullRect);
   populateSourceGraphicImageFilters(sourceGraphic, std::move(filter),
                                     sourceGraphic->operatingColorSpace());
 }
@@ -114,7 +115,7 @@ static float kMaxMaskBufferSize =
 sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
                                            sk_sp<SkImageFilter> input) {
   sk_sp<SkImageFilter> maskedInput;
-  if (SkPicture* maskPicture = reflection.mask()) {
+  if (CdlPicture* maskPicture = reflection.mask()) {
     // Since SkPictures can't be serialized to the browser process, first raster
     // the mask to a bitmap, then encode it in an SkImageSource, which can be
     // serialized.
@@ -128,7 +129,7 @@ sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
       SkCanvas canvas(bitmap);
       canvas.clear(SK_ColorTRANSPARENT);
       canvas.translate(-cullRect.x(), -cullRect.y());
-      canvas.drawPicture(maskPicture);
+      maskPicture->draw(&canvas);
       sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
 
       // SkXfermodeImageFilter can choose an excessively large size if the
@@ -147,7 +148,8 @@ sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
       SkImageFilter::CropRect cropRect(maskPicture->cullRect());
       maskedInput = SkXfermodeImageFilter::Make(
           SkBlendMode::kSrcOver,
-          SkPictureImageFilter::Make(sk_ref_sp(maskPicture)), input, &cropRect);
+          SkPictureImageFilter::Make(maskPicture->toSkPicture()), input,
+          &cropRect);
     }
   } else {
     maskedInput = input;

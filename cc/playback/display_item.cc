@@ -9,7 +9,7 @@ namespace cc {
 DisplayItem::DisplayItem() {
 }
 
-sk_sp<const SkPicture> DisplayItem::GetPicture() const {
+sk_sp<const CdlPicture> DisplayItem::GetPicture() const {
   return nullptr;
 }
 

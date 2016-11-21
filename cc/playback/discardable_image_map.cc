@@ -76,6 +76,8 @@ class DiscardableImagesMetadataCanvas : public SkNWayCanvas {
     SkCanvas::onDrawPicture(picture, matrix, paint);
   }
 
+  // TODO(cdl): Add onDrawDrwable.
+
   void onDrawImage(const SkImage* image,
                    SkScalar x,
                    SkScalar y,

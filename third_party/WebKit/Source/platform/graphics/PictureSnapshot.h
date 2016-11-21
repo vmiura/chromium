@@ -34,8 +34,8 @@
 #include "platform/PlatformExport.h"
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/json/JSONValues.h"
-#include "third_party/skia/include/core/SkPicture.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/RefCounted.h"
 #include <memory>

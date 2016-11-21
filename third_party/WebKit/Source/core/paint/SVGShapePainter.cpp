@@ -20,7 +20,7 @@
 #include "platform/graphics/GraphicsContextStateSaver.h"
 #include "platform/graphics/paint/SkPictureBuilder.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "wtf/Optional.h"
 
 namespace blink {

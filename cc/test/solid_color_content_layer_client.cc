@@ -10,7 +10,7 @@
 #include "cc/playback/drawing_display_item.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/skia_util.h"
@@ -24,7 +24,7 @@ gfx::Rect SolidColorContentLayerClient::PaintableRegion() {
 scoped_refptr<DisplayItemList>
 SolidColorContentLayerClient::PaintContentsToDisplayList(
     PaintingControlSetting painting_control) {
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   gfx::Rect clip(PaintableRegion());
   SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(clip));
 

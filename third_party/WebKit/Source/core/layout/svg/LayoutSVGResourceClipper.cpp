@@ -31,7 +31,7 @@
 #include "core/svg/SVGUseElement.h"
 #include "platform/RuntimeEnabledFeatures.h"
 #include "platform/graphics/paint/SkPictureBuilder.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 
 namespace blink {
@@ -165,7 +165,7 @@ bool LayoutSVGResourceClipper::asPath(
   return true;
 }
 
-sk_sp<const SkPicture> LayoutSVGResourceClipper::createContentPicture() {
+sk_sp<const CdlPicture> LayoutSVGResourceClipper::createContentPicture() {
   ASSERT(frame());
   if (m_clipContentPicture)
     return m_clipContentPicture;

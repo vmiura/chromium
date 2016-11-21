@@ -42,7 +42,8 @@ class MockWebDisplayItemList : public WebDisplayItemList {
  public:
   ~MockWebDisplayItemList() override {}
 
-  MOCK_METHOD2(appendDrawingItem, void(const WebRect&, sk_sp<const SkPicture>));
+  MOCK_METHOD2(appendDrawingItem,
+               void(const WebRect&, sk_sp<const CdlPicture>));
 };
 
 void paintRecursively(GraphicsLayer* layer, WebDisplayItemList* displayItems) {

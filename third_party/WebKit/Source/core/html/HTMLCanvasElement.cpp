@@ -786,7 +786,7 @@ bool HTMLCanvasElement::shouldAccelerate(const IntSize& size) const {
   if (RuntimeEnabledFeatures::displayList2dCanvasEnabled()) {
 #if 0
         // TODO(junov): re-enable this code once we solve the problem of recording
-        // GPU-backed images to an SkPicture for cross-context rendering crbug.com/490328
+        // GPU-backed images to an CdlPicture for cross-context rendering crbug.com/490328
 
         // If the compositor provides GPU acceleration to display list canvases, we
         // prefer that over direct acceleration.

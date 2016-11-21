@@ -39,7 +39,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "wtf/HexNumber.h"
@@ -923,7 +923,7 @@ std::unique_ptr<JSONArray> LoggingCanvas::log() {
 }
 
 #ifndef NDEBUG
-String pictureAsDebugString(const SkPicture* picture) {
+String pictureAsDebugString(const CdlPicture* picture) {
   const SkIRect bounds = picture->cullRect().roundOut();
   LoggingCanvas canvas(bounds.width(), bounds.height());
   picture->playback(&canvas);
@@ -933,7 +933,7 @@ String pictureAsDebugString(const SkPicture* picture) {
   return pictureAsJSON->toPrettyJSONString();
 }
 
-void showSkPicture(const SkPicture* picture) {
+void showSkPicture(const CdlPicture* picture) {
   WTFLogAlways("%s\n", pictureAsDebugString(picture).utf8().data());
 }
 #endif

@@ -33,7 +33,7 @@
 
 #include "platform/graphics/InterceptingCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace blink {
 

@@ -37,7 +37,7 @@
 #include "platform/graphics/ImageBufferSurface.h"
 #include "platform/transforms/AffineTransform.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Forward.h"
 #include "wtf/PassRefPtr.h"
@@ -169,7 +169,7 @@ class PLATFORM_EXPORT ImageBuffer {
       AccelerationHint = PreferNoAcceleration,
       SnapshotReason = SnapshotReasonUnknown) const;
 
-  sk_sp<SkPicture> getPicture() { return m_surface->getPicture(); }
+  sk_sp<CdlPicture> getPicture() { return m_surface->getPicture(); }
 
   void draw(GraphicsContext&, const FloatRect&, const FloatRect*, SkBlendMode);
 

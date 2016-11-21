@@ -35,7 +35,7 @@
 #include "platform/graphics/paint/SkPictureBuilder.h"
 #include "platform/text/TextStream.h"
 #include "platform/transforms/AffineTransform.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
 #include "third_party/skia/include/effects/SkPictureImageFilter.h"
 
@@ -185,7 +185,8 @@ sk_sp<SkImageFilter> FEImage::createImageFilterForLayoutObject(
     SVGPaintContext::paintSubtree(filterPicture.context(), &layoutObject);
   }
 
-  return SkPictureImageFilter::Make(filterPicture.endRecording(), dstRect);
+  return SkPictureImageFilter::Make(filterPicture.endRecording()->toSkPicture(),
+                                    dstRect);
 }
 
 sk_sp<SkImageFilter> FEImage::createImageFilter() {

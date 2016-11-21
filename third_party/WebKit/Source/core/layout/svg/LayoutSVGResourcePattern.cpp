@@ -30,7 +30,7 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/graphics/paint/PaintController.h"
 #include "platform/graphics/paint/SkPictureBuilder.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "wtf/PtrUtil.h"
 #include <memory>
 
@@ -186,7 +186,7 @@ LayoutSVGResourcePattern::resolveContentElement() const {
   return this;
 }
 
-sk_sp<SkPicture> LayoutSVGResourcePattern::asPicture(
+sk_sp<CdlPicture> LayoutSVGResourcePattern::asPicture(
     const FloatRect& tileBounds,
     const AffineTransform& tileTransform) const {
   ASSERT(!m_shouldCollectPatternAttributes);

@@ -40,8 +40,8 @@
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkPicture.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/effects/SkLumaColorFilter.h"
@@ -271,37 +271,38 @@ void GraphicsContext::beginRecording(const FloatRect& bounds) {
 
 namespace {
 
-sk_sp<SkPicture> createEmptyPicture() {
-  SkPictureRecorder recorder;
+sk_sp<CdlPicture> createEmptyPicture() {
+  CdlPictureRecorder recorder;
   recorder.beginRecording(SkRect::MakeEmpty(), nullptr);
   return recorder.finishRecordingAsPicture();
 }
 
 }  // anonymous namespace
 
-sk_sp<SkPicture> GraphicsContext::endRecording() {
+sk_sp<CdlPicture> GraphicsContext::endRecording() {
   if (contextDisabled()) {
     // Clients expect endRecording() to always return a non-null picture.
     // Cache an empty SKP to minimize overhead when disabled.
-    DEFINE_STATIC_LOCAL(sk_sp<SkPicture>, emptyPicture, (createEmptyPicture()));
+    DEFINE_STATIC_LOCAL(sk_sp<CdlPicture>, emptyPicture,
+                        (createEmptyPicture()));
     return emptyPicture;
   }
 
-  sk_sp<SkPicture> picture = m_pictureRecorder.finishRecordingAsPicture();
+  sk_sp<CdlPicture> picture = m_pictureRecorder.finishRecordingAsPicture();
   m_canvas = nullptr;
   ASSERT(picture);
   return picture;
 }
 
-void GraphicsContext::drawPicture(const SkPicture* picture) {
+void GraphicsContext::drawPicture(const CdlPicture* picture) {
   if (contextDisabled() || !picture || picture->cullRect().isEmpty())
     return;
 
   ASSERT(m_canvas);
-  m_canvas->drawPicture(picture);
+  picture->draw(m_canvas);
 }
 
-void GraphicsContext::compositePicture(sk_sp<SkPicture> picture,
+void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,
                                        const FloatRect& dest,
                                        const FloatRect& src,
                                        SkBlendMode op) {
@@ -319,7 +320,7 @@ void GraphicsContext::compositePicture(sk_sp<SkPicture> picture,
                                  SkMatrix::kFill_ScaleToFit);
   m_canvas->concat(pictureTransform);
   picturePaint.setImageFilter(SkPictureImageFilter::MakeForLocalSpace(
-      std::move(picture), sourceBounds,
+      picture->toSkPicture(), sourceBounds,
       static_cast<SkFilterQuality>(imageInterpolationQuality())));
   m_canvas->saveLayer(&sourceBounds, &picturePaint);
   m_canvas->restore();

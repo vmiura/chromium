@@ -13,6 +13,7 @@
 #include "cc/debug/traced_value.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/geometry/rect.h"
+#include "skia/ext/cdl_picture.h"
 
 class SkCanvas;
 
@@ -27,7 +28,7 @@ class CC_EXPORT DisplayItem {
   virtual ~DisplayItem() {}
 
   virtual void ToProtobuf(proto::DisplayItem* proto) const = 0;
-  virtual sk_sp<const SkPicture> GetPicture() const;
+  virtual sk_sp<const CdlPicture> GetPicture() const;
   virtual void Raster(SkCanvas* canvas,
                       SkPicture::AbortCallback* callback) const = 0;
   virtual void AsValueInto(const gfx::Rect& visual_rect,

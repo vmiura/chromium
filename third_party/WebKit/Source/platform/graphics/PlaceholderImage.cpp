@@ -12,7 +12,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
 
@@ -41,8 +41,8 @@ sk_sp<SkImage> PlaceholderImage::imageForCurrentFrame() {
   context.fillRect(destRect);
 
   m_imageForCurrentFrame = SkImage::MakeFromPicture(
-      builder.endRecording(), SkISize::Make(m_size.width(), m_size.height()),
-      nullptr, nullptr);
+      builder.endRecording()->toSkPicture(),
+      SkISize::Make(m_size.width(), m_size.height()), nullptr, nullptr);
 
   return m_imageForCurrentFrame;
 }

@@ -37,8 +37,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPicture.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "wtf/PassRefPtr.h"
@@ -84,7 +84,7 @@ const unsigned char animatedGIF[] = {
 
 struct Rasterizer {
   SkCanvas* canvas;
-  SkPicture* picture;
+  CdlPicture* picture;
 };
 
 }  // namespace
@@ -151,13 +151,13 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPicture) {
   EXPECT_EQ(1, image->width());
   EXPECT_EQ(1, image->height());
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
+  sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
 
-  m_surface->getCanvas()->drawPicture(picture);
+  picture->draw(m_surface->getCanvas());
   EXPECT_EQ(0, m_decodeRequestCount);
 
   SkBitmap canvasBitmap;
@@ -175,18 +175,18 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPictureProgressive) {
   m_lazyDecoder->setData(partialData, false);
   sk_sp<SkImage> image = m_lazyDecoder->createFrameAtIndex(0);
   ASSERT_TRUE(image);
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  m_surface->getCanvas()->drawPicture(recorder.finishRecordingAsPicture());
+  recorder.finishRecordingAsPicture()->draw(m_surface->getCanvas());
 
-  // Fully received the file and draw the SkPicture again.
+  // Fully received the file and draw the CdlPicture again.
   m_lazyDecoder->setData(m_data, true);
   image = m_lazyDecoder->createFrameAtIndex(0);
   ASSERT_TRUE(image);
   tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  m_surface->getCanvas()->drawPicture(recorder.finishRecordingAsPicture());
+  recorder.finishRecordingAsPicture()->draw(m_surface->getCanvas());
 
   SkBitmap canvasBitmap;
   canvasBitmap.allocN32Pixels(100, 100);
@@ -195,8 +195,8 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPictureProgressive) {
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), canvasBitmap.getColor(0, 0));
 }
 
-static void rasterizeMain(SkCanvas* canvas, SkPicture* picture) {
-  canvas->drawPicture(picture);
+static void rasterizeMain(SkCanvas* canvas, CdlPicture* picture) {
+  picture->draw(canvas);
 }
 
 TEST_F(DeferredImageDecoderTest, decodeOnOtherThread) {
@@ -206,13 +206,13 @@ TEST_F(DeferredImageDecoderTest, decodeOnOtherThread) {
   EXPECT_EQ(1, image->width());
   EXPECT_EQ(1, image->height());
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
+  sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
 
-  // Create a thread to rasterize SkPicture.
+  // Create a thread to rasterize CdlPicture.
   std::unique_ptr<WebThread> thread =
       wrapUnique(Platform::current()->createThread("RasterThread"));
   thread->getWebTaskRunner()->postTask(
@@ -306,12 +306,12 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
   useMockImageDecoderFactory();
 
   // The following code should not fail any assert.
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
+  sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
-  m_surface->getCanvas()->drawPicture(picture);
+  picture->draw(m_surface->getCanvas());
   EXPECT_EQ(1, m_decodeRequestCount);
 }
 

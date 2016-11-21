@@ -13,14 +13,14 @@
 #include <memory>
 
 class SkMetaData;
-class SkPicture;
+class CdlPicture;
 
 namespace blink {
 
 class GraphicsContext;
 class PaintController;
 
-// When slimming paint ships we can remove this SkPicture abstraction and
+// When slimming paint ships we can remove this CdlPicture abstraction and
 // rely on PaintController here.
 class PLATFORM_EXPORT SkPictureBuilder final : public DisplayItemClient {
   WTF_MAKE_NONCOPYABLE(SkPictureBuilder);
@@ -45,7 +45,7 @@ class PLATFORM_EXPORT SkPictureBuilder final : public DisplayItemClient {
 
   // Returns a picture capturing all drawing performed on the builder's context
   // since construction.
-  sk_sp<SkPicture> endRecording();
+  sk_sp<CdlPicture> endRecording();
 
   // DisplayItemClient methods
   String debugName() const final { return "SkPictureBuilder"; }

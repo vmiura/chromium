@@ -15,7 +15,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 #if !defined(OS_ANDROID)
@@ -39,7 +39,7 @@ class MaskContentLayerClient : public ContentLayerClient {
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
-    SkPictureRecorder recorder;
+    CdlPictureRecorder recorder;
     SkCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
@@ -162,7 +162,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
-    SkPictureRecorder recorder;
+    CdlPictureRecorder recorder;
     SkCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
@@ -206,7 +206,7 @@ class CircleContentLayerClient : public ContentLayerClient {
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
-    SkPictureRecorder recorder;
+    CdlPictureRecorder recorder;
     SkCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 

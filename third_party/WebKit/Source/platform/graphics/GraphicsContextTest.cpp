@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include <memory>
 
@@ -81,8 +81,8 @@ TEST(GraphicsContextTest, pictureRecording) {
 
   context.beginRecording(bounds);
   context.fillRect(FloatRect(0, 0, 50, 50), opaque, SkBlendMode::kSrcOver);
-  sk_sp<const SkPicture> picture = context.endRecording();
-  canvas.drawPicture(picture.get());
+  sk_sp<const CdlPicture> picture = context.endRecording();
+  picture->draw(&canvas);
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 50, 50))
 
   context.beginRecording(bounds);
@@ -92,7 +92,7 @@ TEST(GraphicsContextTest, pictureRecording) {
   // recording.
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 50, 50))
 
-  canvas.drawPicture(picture.get());
+  picture->draw(&canvas);
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 100, 100))
 }
 
@@ -124,8 +124,8 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
 
   // Make the device opaque in 10,10 40x40.
   context.fillRect(FloatRect(10, 10, 40, 40), opaque, SkBlendMode::kSrcOver);
-  sk_sp<const SkPicture> picture = context.endRecording();
-  canvas.drawPicture(picture.get());
+  sk_sp<const CdlPicture> picture = context.endRecording();
+  picture->draw(&canvas);
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(10, 10, 40, 40));
 
   context.beginRecording(bounds);
@@ -143,7 +143,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   context.drawPath(path.getSkPath(), paint);
 
   picture = context.endRecording();
-  canvas.drawPicture(picture.get());
+  picture->draw(&canvas);
   EXPECT_OPAQUE_PIXELS_IN_RECT(bitmap, IntRect(20, 10, 30, 40));
 }
 

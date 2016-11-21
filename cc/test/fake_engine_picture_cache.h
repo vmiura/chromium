@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "cc/blimp/engine_picture_cache.h"
 
-class SkPicture;
+class CdlPicture;
 
 namespace cc {
 class DisplayItemList;
@@ -29,7 +29,7 @@ class FakeEnginePictureCache : public EnginePictureCache {
 
   // EnginePictureCache implementation.
   std::vector<PictureData> CalculateCacheUpdateAndFlush() override;
-  void MarkUsed(const SkPicture* picture) override;
+  void MarkUsed(const CdlPicture* picture) override;
 
  private:
   PictureCacheModel* model_;

@@ -9,7 +9,7 @@
 
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-class SkPicture;
+class CdlPicture;
 
 namespace cc {
 struct PictureData;
@@ -30,7 +30,7 @@ class ClientPictureCache {
   // Retrieves an SkPicture from the in-memory cache. It is required that the
   // provided ID is the same as the unique ID that is given through the cache
   // update.
-  virtual sk_sp<const SkPicture> GetPicture(uint32_t engine_picture_id) = 0;
+  virtual sk_sp<const CdlPicture> GetPicture(uint32_t engine_picture_id) = 0;
 
   // Called when a PictureCacheUpdate has been retrieved from the engine. This
   // must contain all the new SkPictures that are in use.

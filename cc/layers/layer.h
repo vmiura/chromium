@@ -30,8 +30,8 @@
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/target_property.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -358,7 +358,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   virtual ScrollbarLayerInterface* ToScrollbarLayer();
 
-  virtual sk_sp<SkPicture> GetPicture() const;
+  virtual sk_sp<CdlPicture> GetPicture() const;
 
   // Constructs a LayerImpl of the correct runtime type for this Layer type.
   virtual std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl);

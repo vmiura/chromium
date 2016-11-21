@@ -18,6 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include <memory>
 
+#define CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION 0
+
 using testing::UnorderedElementsAre;
 
 namespace blink {
@@ -818,11 +820,11 @@ TEST_P(PaintControllerTest, CachedDisplayItems) {
                       TestDisplayItem(second, backgroundDrawingType));
   EXPECT_TRUE(getPaintController().clientCacheIsValid(first));
   EXPECT_TRUE(getPaintController().clientCacheIsValid(second));
-  const SkPicture* firstPicture =
+  const CdlPicture* firstPicture =
       static_cast<const DrawingDisplayItem&>(
           getPaintController().getDisplayItemList()[0])
           .picture();
-  const SkPicture* secondPicture =
+  const CdlPicture* secondPicture =
       static_cast<const DrawingDisplayItem&>(
           getPaintController().getDisplayItemList()[1])
           .picture();
@@ -1617,11 +1619,11 @@ TEST_P(PaintControllerTest, SkipCache) {
                       TestDisplayItem(multicol, backgroundDrawingType),
                       TestDisplayItem(content, foregroundDrawingType),
                       TestDisplayItem(content, foregroundDrawingType));
-  sk_sp<const SkPicture> picture1 =
+  sk_sp<const CdlPicture> picture1 =
       sk_ref_sp(static_cast<const DrawingDisplayItem&>(
                     getPaintController().getDisplayItemList()[1])
                     .picture());
-  sk_sp<const SkPicture> picture2 =
+  sk_sp<const CdlPicture> picture2 =
       sk_ref_sp(static_cast<const DrawingDisplayItem&>(
                     getPaintController().getDisplayItemList()[2])
                     .picture());
@@ -1740,15 +1742,15 @@ TEST_P(PaintControllerTest, PartialSkipCache) {
                       TestDisplayItem(content, backgroundDrawingType),
                       TestDisplayItem(content, foregroundDrawingType),
                       TestDisplayItem(content, foregroundDrawingType));
-  sk_sp<const SkPicture> picture0 =
+  sk_sp<const CdlPicture> picture0 =
       sk_ref_sp(static_cast<const DrawingDisplayItem&>(
                     getPaintController().getDisplayItemList()[0])
                     .picture());
-  sk_sp<const SkPicture> picture1 =
+  sk_sp<const CdlPicture> picture1 =
       sk_ref_sp(static_cast<const DrawingDisplayItem&>(
                     getPaintController().getDisplayItemList()[1])
                     .picture());
-  sk_sp<const SkPicture> picture2 =
+  sk_sp<const CdlPicture> picture2 =
       sk_ref_sp(static_cast<const DrawingDisplayItem&>(
                     getPaintController().getDisplayItemList()[2])
                     .picture());
@@ -1898,16 +1900,19 @@ void drawPath(GraphicsContext& context,
 }
 
 TEST_F(PaintControllerTestBase, IsSuitableForGpuRasterizationSinglePath) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
   GraphicsContext context(getPaintController());
   drawPath(context, client, backgroundDrawingType, 1);
   getPaintController().commitNewDisplayItems(LayoutSize());
   EXPECT_TRUE(
       getPaintController().paintArtifact().isSuitableForGpuRasterization());
+#endif
 }
 
 TEST_F(PaintControllerTestBase,
        IsNotSuitableForGpuRasterizationSinglePictureManyPaths) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
   GraphicsContext context(getPaintController());
 
@@ -1915,10 +1920,12 @@ TEST_F(PaintControllerTestBase,
   getPaintController().commitNewDisplayItems(LayoutSize());
   EXPECT_FALSE(
       getPaintController().paintArtifact().isSuitableForGpuRasterization());
+#endif
 }
 
 TEST_F(PaintControllerTestBase,
        IsNotSuitableForGpuRasterizationMultiplePicturesSinglePathEach) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
   GraphicsContext context(getPaintController());
   getPaintController().beginSkippingCache();
@@ -1930,10 +1937,12 @@ TEST_F(PaintControllerTestBase,
   getPaintController().commitNewDisplayItems(LayoutSize());
   EXPECT_FALSE(
       getPaintController().paintArtifact().isSuitableForGpuRasterization());
+#endif
 }
 
 TEST_F(PaintControllerTestBase,
        IsNotSuitableForGpuRasterizationSinglePictureManyPathsTwoPaints) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
 
   {
@@ -1953,10 +1962,12 @@ TEST_F(PaintControllerTestBase,
     EXPECT_FALSE(
         getPaintController().paintArtifact().isSuitableForGpuRasterization());
   }
+#endif
 }
 
 TEST_F(PaintControllerTestBase,
        IsNotSuitableForGpuRasterizationSinglePictureManyPathsCached) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
 
   {
@@ -1974,11 +1985,13 @@ TEST_F(PaintControllerTestBase,
     EXPECT_FALSE(
         getPaintController().paintArtifact().isSuitableForGpuRasterization());
   }
+#endif
 }
 
 TEST_F(
     PaintControllerTestBase,
     IsNotSuitableForGpuRasterizationSinglePictureManyPathsCachedSubsequence) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   FakeDisplayItemClient client("test client", LayoutRect(0, 0, 200, 100));
   FakeDisplayItemClient container("container", LayoutRect(0, 0, 200, 100));
 
@@ -2000,12 +2013,14 @@ TEST_F(
 #if CHECK_DISPLAY_ITEM_CLIENT_ALIVENESS
   DisplayItemClient::endShouldKeepAliveAllClients();
 #endif
+#endif
 }
 
 // Temporarily disabled (pref regressions due to GPU veto stickiness:
 // http://crbug.com/603969).
 TEST_F(PaintControllerTestBase,
        DISABLED_IsNotSuitableForGpuRasterizationConcaveClipPath) {
+#if CDL_SUPPORTS_SUITABLE_FOR_GPU_RASTERIZATION
   Path path;
   path.addLineTo(FloatPoint(50, 50));
   path.addLineTo(FloatPoint(100, 0));
@@ -2027,6 +2042,7 @@ TEST_F(PaintControllerTestBase,
     EXPECT_FALSE(
         getPaintController().paintArtifact().isSuitableForGpuRasterization());
   }
+#endif
 }
 
 // Death tests don't work properly on Android.

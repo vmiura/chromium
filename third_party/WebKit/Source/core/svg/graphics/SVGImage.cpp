@@ -56,7 +56,7 @@
 #include "platform/graphics/paint/DrawingRecorder.h"
 #include "platform/graphics/paint/SkPictureBuilder.h"
 #include "platform/tracing/TraceEvent.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 #include "wtf/PassRefPtr.h"
 
 namespace blink {
@@ -297,7 +297,7 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
     drawForContainer(patternPicture.context().canvas(), paint, containerSize,
                      zoom, tile, srcRect, url);
   }
-  sk_sp<SkPicture> tilePicture = patternPicture.endRecording();
+  sk_sp<CdlPicture> tilePicture = patternPicture.endRecording();
 
   SkMatrix patternTransform;
   patternTransform.setTranslate(phase.x() + spacedTile.x(),
@@ -305,7 +305,7 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
 
   SkPaint paint;
   paint.setShader(SkShader::MakePictureShader(
-      std::move(tilePicture), SkShader::kRepeat_TileMode,
+      tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &patternTransform, nullptr));
   paint.setBlendMode(compositeOp);
   paint.setColorFilter(sk_ref_sp(context.getColorFilter()));
@@ -320,13 +320,13 @@ sk_sp<SkImage> SVGImage::imageForCurrentFrameForContainer(
 
   const FloatRect containerRect((FloatPoint()), FloatSize(containerSize));
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(containerRect);
   drawForContainer(canvas, SkPaint(), containerRect.size(), 1, containerRect,
                    containerRect, url);
 
   return SkImage::MakeFromPicture(
-      recorder.finishRecordingAsPicture(),
+      recorder.finishRecordingAsPicture()->toSkPicture(),
       SkISize::Make(containerSize.width(), containerSize.height()), nullptr,
       nullptr);
 }
@@ -403,8 +403,8 @@ void SVGImage::drawInternal(SkCanvas* canvas,
       SkRect layerRect = dstRect;
       canvas->saveLayer(&layerRect, &paint);
     }
-    sk_sp<const SkPicture> recording = imagePicture.endRecording();
-    canvas->drawPicture(recording.get());
+    sk_sp<CdlPicture> recording = imagePicture.endRecording();
+    recording->draw(canvas);
   }
 
   // Start any (SMIL) animations if needed. This will restart or continue

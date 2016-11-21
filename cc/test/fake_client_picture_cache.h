@@ -25,7 +25,7 @@ class FakeClientPictureCache : public ClientPictureCache {
 
   // ClientPictureCache implementation.
   void MarkUsed(uint32_t engine_picture_id) override;
-  sk_sp<const SkPicture> GetPicture(uint32_t unique_id) override;
+  sk_sp<const CdlPicture> GetPicture(uint32_t unique_id) override;
   void ApplyCacheUpdate(const std::vector<PictureData>& cache_update) override;
   void Flush() override;
 

@@ -18,9 +18,10 @@
 
 class SkColorFilter;
 class SkMatrix44;
-class SkPicture;
+class CdlPicture;
 struct SkRect;
 class SkRRect;
+class CdlPicture;
 
 namespace cc {
 class FilterOperations;
@@ -41,7 +42,7 @@ class WebDisplayItemList {
   virtual ~WebDisplayItemList() {}
 
   virtual void appendDrawingItem(const WebRect& visualRect,
-                                 sk_sp<const SkPicture>) {}
+                                 sk_sp<const CdlPicture>) {}
 
   virtual void appendClipItem(const WebRect& clipRect,
                               const WebVector<SkRRect>& roundedClipRects) {}

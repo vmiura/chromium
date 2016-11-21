@@ -5,7 +5,7 @@
 #include "cc/test/fake_client_picture_cache.h"
 
 #include "cc/test/picture_cache_model.h"
-#include "third_party/skia/include/core/SkPicture.h"
+#include "skia/ext/cdl_picture.h"
 
 namespace cc {
 
@@ -22,7 +22,7 @@ void FakeClientPictureCache::MarkUsed(uint32_t engine_picture_id) {
   used_picture_ids_.push_back(engine_picture_id);
 }
 
-sk_sp<const SkPicture> FakeClientPictureCache::GetPicture(uint32_t unique_id) {
+sk_sp<const CdlPicture> FakeClientPictureCache::GetPicture(uint32_t unique_id) {
   if (!model_)
     return nullptr;
 

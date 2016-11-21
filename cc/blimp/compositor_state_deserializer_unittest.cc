@@ -28,7 +28,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 
 namespace cc {
 namespace {
@@ -338,7 +338,7 @@ TEST_F(CompositorStateDeserializerTest, PictureLayer) {
   gfx::Size layer_size = gfx::Size(5, 5);
 
   gfx::PointF offset(2.f, 3.f);
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* canvas;
   SkPaint red_paint;
   red_paint.setColor(SK_ColorRED);
@@ -346,7 +346,7 @@ TEST_F(CompositorStateDeserializerTest, PictureLayer) {
       offset.x(), offset.y(), layer_size.width(), layer_size.height()));
   canvas->translate(offset.x(), offset.y());
   canvas->drawRectCoords(0.f, 0.f, 4.f, 4.f, red_paint);
-  sk_sp<SkPicture> test_picture = recorder.finishRecordingAsPicture();
+  sk_sp<CdlPicture> test_picture = recorder.finishRecordingAsPicture();
 
   DisplayItemListSettings settings;
   settings.use_cached_picture = false;

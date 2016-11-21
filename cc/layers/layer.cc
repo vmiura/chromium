@@ -224,7 +224,7 @@ bool Layer::IsPropertyChangeAllowed() const {
   return !layer_tree_->in_paint_layer_contents();
 }
 
-sk_sp<SkPicture> Layer::GetPicture() const {
+sk_sp<CdlPicture> Layer::GetPicture() const {
   return nullptr;
 }
 

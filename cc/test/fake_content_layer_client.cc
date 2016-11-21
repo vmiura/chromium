@@ -11,7 +11,7 @@
 #include "cc/playback/drawing_display_item.h"
 #include "cc/playback/transform_display_item.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 
@@ -57,13 +57,13 @@ FakeContentLayerClient::PaintContentsToDisplayList(
   scoped_refptr<DisplayItemList> display_list =
       DisplayItemList::Create(settings);
   display_list->SetRetainVisualRectsForTesting(true);
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
 
   for (RectPaintVector::const_iterator it = draw_rects_.begin();
        it != draw_rects_.end(); ++it) {
     const gfx::RectF& draw_rect = it->first;
     const SkPaint& paint = it->second;
-    SkCanvas* canvas = recorder.beginRecording(gfx::RectFToSkRect(draw_rect));
+    CdlCanvas* canvas = recorder.beginRecording(gfx::RectFToSkRect(draw_rect));
     canvas->drawRect(gfx::RectFToSkRect(draw_rect), paint);
     display_list->CreateAndAppendDrawingItem<DrawingDisplayItem>(
         ToEnclosingRect(draw_rect), recorder.finishRecordingAsPicture());

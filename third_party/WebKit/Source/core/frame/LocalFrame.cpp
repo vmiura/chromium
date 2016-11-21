@@ -93,6 +93,7 @@
 #include "public/platform/WebScreenInfo.h"
 #include "public/platform/WebViewScheduler.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "wtf/PtrUtil.h"
 #include "wtf/StdLibExtras.h"
 #include <memory>
@@ -140,10 +141,17 @@ class DragImageBuilder {
     context().getPaintController().endItem<EndTransformDisplayItem>(
         *m_pictureBuilder);
     // TODO(fmalita): endRecording() should return a non-const SKP.
-    sk_sp<SkPicture> recording(
-        const_cast<SkPicture*>(m_pictureBuilder->endRecording().release()));
+    sk_sp<CdlPicture> recording(
+        const_cast<CdlPicture*>(m_pictureBuilder->endRecording().release()));
+
+    // TODO(cdl): Not entirely sure how we should handle this.
+    SkPictureRecorder recorder;
+    SkCanvas* canvas = recorder.beginRecording(m_bounds);
+    recording->draw(canvas);
+    ///
+
     sk_sp<SkImage> skImage = SkImage::MakeFromPicture(
-        std::move(recording),
+        recorder.finishRecordingAsPicture(),
         SkISize::Make(m_bounds.width(), m_bounds.height()), nullptr, nullptr);
     RefPtr<Image> image = StaticBitmapImage::create(std::move(skImage));
     float screenDeviceScaleFactor =

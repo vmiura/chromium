@@ -27,7 +27,7 @@
 #include <memory>
 #include <utility>
 
-class SkPicture;
+class CdlPicture;
 
 namespace blink {
 
@@ -177,7 +177,7 @@ class PLATFORM_EXPORT PaintController {
   DisplayItemList& newDisplayItemList() { return m_newDisplayItemList; }
 
   void appendDebugDrawingAfterCommit(const DisplayItemClient&,
-                                     sk_sp<SkPicture>,
+                                     sk_sp<CdlPicture>,
                                      const LayoutSize& offsetFromLayoutObject);
 
   void showDebugData() const { showDebugDataInternal(false); }

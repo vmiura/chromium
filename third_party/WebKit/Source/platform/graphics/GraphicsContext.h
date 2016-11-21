@@ -35,8 +35,10 @@
 #include "platform/graphics/GraphicsContextState.h"
 #include "platform/graphics/ImageOrientation.h"
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkMetaData.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkImageFilter.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "wtf/Allocator.h"
@@ -47,7 +49,7 @@
 class SkBitmap;
 class SkPaint;
 class SkPath;
-class SkPicture;
+class CdlPicture;
 class SkRRect;
 struct SkRect;
 
@@ -178,8 +180,8 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void strokeRect(const FloatRect&, float lineWidth);
 
-  void drawPicture(const SkPicture*);
-  void compositePicture(sk_sp<SkPicture>,
+  void drawPicture(const CdlPicture*);
+  void compositePicture(sk_sp<CdlPicture>,
                         const FloatRect& dest,
                         const FloatRect& src,
                         SkBlendMode);
@@ -286,7 +288,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // Returns a picture with any recorded draw commands since the prerequisite
   // call to beginRecording().  The picture is guaranteed to be non-null (but
   // not necessarily non-empty), even when the context is disabled.
-  sk_sp<SkPicture> endRecording();
+  sk_sp<CdlPicture> endRecording();
 
   void setShadow(const FloatSize& offset,
                  float blur,
@@ -442,7 +444,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // Raw pointer to the current state.
   GraphicsContextState* m_paintState;
 
-  SkPictureRecorder m_pictureRecorder;
+  CdlPictureRecorder m_pictureRecorder;
 
   SkMetaData m_metaData;
 

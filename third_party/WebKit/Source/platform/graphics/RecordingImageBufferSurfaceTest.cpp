@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "wtf/PtrUtil.h"
 #include "wtf/RefPtr.h"
 #include <memory>
@@ -115,7 +115,7 @@ class RecordingImageBufferSurfaceTest : public Test {
  public:
   void testEmptyPicture() {
     m_testSurface->initializeCurrentFrame();
-    sk_sp<SkPicture> picture = m_testSurface->getPicture();
+    sk_sp<CdlPicture> picture = m_testSurface->getPicture();
     EXPECT_TRUE((bool)picture.get());
     EXPECT_EQ(1, m_fakeImageBufferClient->frameCount());
     expectDisplayListEnabled(true);

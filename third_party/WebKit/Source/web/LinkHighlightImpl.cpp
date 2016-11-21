@@ -56,7 +56,7 @@
 #include "public/web/WebKit.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "web/WebLocalFrameImpl.h"
 #include "web/WebSettingsImpl.h"
@@ -317,7 +317,7 @@ void LinkHighlightImpl::paintContents(
   if (!m_node || !m_node->layoutObject())
     return;
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   gfx::Rect visualRect = paintableRegion();
   SkCanvas* canvas =
       recorder.beginRecording(visualRect.width(), visualRect.height());

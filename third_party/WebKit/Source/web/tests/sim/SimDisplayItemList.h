@@ -15,7 +15,7 @@ class SimDisplayItemList final : public WebDisplayItemList {
  public:
   SimDisplayItemList();
 
-  void appendDrawingItem(const WebRect&, sk_sp<const SkPicture>) override;
+  void appendDrawingItem(const WebRect&, sk_sp<const CdlPicture>) override;
 
   int drawCount() const { return m_commands.size(); }
 

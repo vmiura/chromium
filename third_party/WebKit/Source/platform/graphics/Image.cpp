@@ -42,7 +42,7 @@
 #include "public/platform/WebData.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "wtf/StdLibExtras.h"
 
 #include <math.h>
@@ -235,13 +235,14 @@ sk_sp<SkShader> createPatternShader(const SkImage* image,
   const SkRect tileRect = SkRect::MakeWH(image->width() + spacing.width(),
                                          image->height() + spacing.height());
 
-  SkPictureRecorder recorder;
+  CdlPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(tileRect);
   canvas->drawImage(image, 0, 0, &paint);
 
   return SkShader::MakePictureShader(
-      recorder.finishRecordingAsPicture(), SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &shaderMatrix, nullptr);
+      recorder.finishRecordingAsPicture()->toSkPicture(),
+      SkShader::kRepeat_TileMode, SkShader::kRepeat_TileMode, &shaderMatrix,
+      nullptr);
 }
 
 }  // anonymous namespace

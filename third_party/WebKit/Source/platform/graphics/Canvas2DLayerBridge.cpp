@@ -46,7 +46,7 @@
 #include "public/platform/WebTraceLocation.h"
 #include "skia/ext/texture_handle.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -170,7 +170,7 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
 
 void Canvas2DLayerBridge::startRecording() {
   DCHECK(m_isDeferralEnabled);
-  m_recorder = wrapUnique(new SkPictureRecorder);
+  m_recorder = wrapUnique(new CdlPictureRecorder);
   SkCanvas* canvas =
       m_recorder->beginRecording(m_size.width(), m_size.height(), nullptr);
   // Always save an initial frame, to support resetting the top level matrix
