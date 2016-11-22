@@ -114,7 +114,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
   void willWritePixels();
   void willOverwriteAllPixels();
   void willOverwriteCanvas();
-  SkCanvas* canvas();
+  CdlCanvas* canvas();
   void disableDeferral(DisableDeferralReason);
   bool checkSurfaceValid();
   bool restoreSurface();
@@ -208,6 +208,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
   void didProcessTask() override;
 
   SkSurface* getOrCreateSurface(AccelerationHint = PreferAcceleration);
+  CdlCanvas* getOrCreateCanvas(AccelerationHint = PreferAcceleration);
   bool shouldAccelerate(AccelerationHint) const;
 
   // Returns the GL filter associated with |m_filterQuality|.
@@ -245,6 +246,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
 
   std::unique_ptr<CdlPictureRecorder> m_recorder;
   sk_sp<SkSurface> m_surface;
+  sk_sp<CdlCanvas> m_canvas;
   sk_sp<SkImage> m_hibernationImage;
   int m_initialSurfaceSaveCount;
   std::unique_ptr<WebExternalTextureLayer> m_layer;

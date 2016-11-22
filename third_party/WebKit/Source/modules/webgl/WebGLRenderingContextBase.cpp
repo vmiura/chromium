@@ -4546,7 +4546,7 @@ PassRefPtr<Image> WebGLRenderingContextBase::drawImageIntoBuffer(
 
   IntRect srcRect(IntPoint(), image->size());
   IntRect destRect(0, 0, size.width(), size.height());
-  SkPaint paint;
+  CdlPaint paint;
   image->draw(buf->canvas(), paint, destRect, srcRect,
               DoNotRespectImageOrientation, Image::DoNotClampImageToSourceRect);
   return buf->newImageSnapshot(PreferNoAcceleration,
@@ -5126,6 +5126,7 @@ void WebGLRenderingContextBase::texImageHelperHTMLVideoElement(
           // WebMediaPlayer implementation to do any necessary color space
           // conversion on the GPU (though it
           // may still do a CPU conversion and upload the results).
+
           video->paintCurrentFrame(
               imageBuffer->canvas(),
               IntRect(0, 0, video->videoWidth(), video->videoHeight()),

@@ -76,7 +76,7 @@ void SVGShapePainter::paint(const PaintInfo& paintInfo) {
       for (int i = 0; i < 3; i++) {
         switch (svgStyle.paintOrderType(i)) {
           case PT_FILL: {
-            SkPaint fillPaint;
+            CdlPaint fillPaint;
             if (!SVGPaintContext::paintForLayoutObject(
                     paintContext.paintInfo(), m_layoutSVGShape.styleRef(),
                     m_layoutSVGShape, ApplyToFillMode, fillPaint))
@@ -105,7 +105,7 @@ void SVGShapePainter::paint(const PaintInfo& paintInfo) {
                 additionalPaintServerTransform = &nonScalingTransform;
               }
 
-              SkPaint strokePaint;
+              CdlPaint strokePaint;
               if (!SVGPaintContext::paintForLayoutObject(
                       paintContext.paintInfo(), m_layoutSVGShape.styleRef(),
                       m_layoutSVGShape, ApplyToStrokeMode, strokePaint,
@@ -158,7 +158,7 @@ class PathWithTemporaryWindingRule {
 };
 
 void SVGShapePainter::fillShape(GraphicsContext& context,
-                                const SkPaint& paint,
+                                const CdlPaint& paint,
                                 SkPath::FillType fillType) {
   switch (m_layoutSVGShape.geometryCodePath()) {
     case RectGeometryFastPath:
@@ -176,7 +176,7 @@ void SVGShapePainter::fillShape(GraphicsContext& context,
 }
 
 void SVGShapePainter::strokeShape(GraphicsContext& context,
-                                  const SkPaint& paint) {
+                                  const CdlPaint& paint) {
   if (!m_layoutSVGShape.style()->svgStyle().hasVisibleStroke())
     return;
 

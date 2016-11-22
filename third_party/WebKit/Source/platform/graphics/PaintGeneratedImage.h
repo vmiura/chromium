@@ -22,8 +22,8 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
   ~PaintGeneratedImage() override {}
 
  protected:
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect&,
             const FloatRect&,
             RespectImageOrientationEnum,

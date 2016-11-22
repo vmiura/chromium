@@ -53,7 +53,7 @@ class FakeImageBufferClient : public ImageBufferClient,
     m_imageBuffer->finalizeFrame(dirtyRect);
     ASSERT_FALSE(m_isDirty);
   }
-  void restoreCanvasMatrixClipStack(SkCanvas*) const override {}
+  void restoreCanvasMatrixClipStack(CdlCanvas*) const override {}
 
   void fakeDraw() {
     if (m_isDirty)

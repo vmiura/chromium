@@ -122,7 +122,7 @@ bool ImageBuffer::canCreateImageBuffer(const IntSize& size) {
   return true;
 }
 
-SkCanvas* ImageBuffer::canvas() const {
+CdlCanvas* ImageBuffer::canvas() const {
   return m_surface->canvas();
 }
 
@@ -175,7 +175,7 @@ void ImageBuffer::notifySurfaceInvalid() {
     m_client->notifySurfaceInvalid();
 }
 
-void ImageBuffer::resetCanvas(SkCanvas* canvas) const {
+void ImageBuffer::resetCanvas(CdlCanvas* canvas) const {
   if (m_client)
     m_client->restoreCanvasMatrixClipStack(canvas);
 }

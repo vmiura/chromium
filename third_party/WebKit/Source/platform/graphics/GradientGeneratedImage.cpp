@@ -31,8 +31,8 @@
 
 namespace blink {
 
-void GradientGeneratedImage::draw(SkCanvas* canvas,
-                                  const SkPaint& paint,
+void GradientGeneratedImage::draw(CdlCanvas* canvas,
+                                  const CdlPaint& paint,
                                   const FloatRect& destRect,
                                   const FloatRect& srcRect,
                                   RespectImageOrientationEnum,
@@ -47,20 +47,20 @@ void GradientGeneratedImage::draw(SkCanvas* canvas,
   SkRect visibleDestRect;
   transform.mapRect(&visibleDestRect, visibleSrcRect);
 
-  SkPaint gradientPaint(paint);
+  CdlPaint gradientPaint(paint);
   m_gradient->applyToPaint(gradientPaint, transform);
   canvas->drawRect(visibleDestRect, gradientPaint);
 }
 
 void GradientGeneratedImage::drawTile(GraphicsContext& context,
                                       const FloatRect& srcRect) {
-  SkPaint gradientPaint(context.fillPaint());
+  CdlPaint gradientPaint(context.fillPaint());
   m_gradient->applyToPaint(gradientPaint, SkMatrix::I());
 
   context.drawRect(srcRect, gradientPaint);
 }
 
-bool GradientGeneratedImage::applyShader(SkPaint& paint,
+bool GradientGeneratedImage::applyShader(CdlPaint& paint,
                                          const SkMatrix& localMatrix) {
   DCHECK(m_gradient);
   m_gradient->applyToPaint(paint, localMatrix);

@@ -29,7 +29,7 @@
 #include "wtf/text/AtomicString.h"
 #include "wtf/text/AtomicStringHash.h"
 
-class SkPaint;
+class CdlPaint;
 
 namespace blink {
 
@@ -81,8 +81,8 @@ class SVGFilterBuilder {
  public:
   SVGFilterBuilder(FilterEffect* sourceGraphic,
                    SVGFilterGraphNodeMap* = nullptr,
-                   const SkPaint* fillPaint = nullptr,
-                   const SkPaint* strokePaint = nullptr);
+                   const CdlPaint* fillPaint = nullptr,
+                   const CdlPaint* strokePaint = nullptr);
 
   void buildGraph(Filter*, SVGFilterElement&, const FloatRect&);
 

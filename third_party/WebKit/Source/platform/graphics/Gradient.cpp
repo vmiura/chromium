@@ -249,7 +249,7 @@ sk_sp<SkShader> Gradient::createShader(const SkMatrix& localMatrix) {
   return shader;
 }
 
-void Gradient::applyToPaint(SkPaint& paint, const SkMatrix& localMatrix) {
+void Gradient::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!m_cachedShader || localMatrix != m_cachedShader->getLocalMatrix())
     m_cachedShader = createShader(localMatrix);
 

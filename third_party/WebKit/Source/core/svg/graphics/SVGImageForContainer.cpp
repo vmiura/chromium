@@ -37,8 +37,8 @@ IntSize SVGImageForContainer::size() const {
   return roundedIntSize(scaledContainerSize);
 }
 
-void SVGImageForContainer::draw(SkCanvas* canvas,
-                                const SkPaint& paint,
+void SVGImageForContainer::draw(CdlCanvas* canvas,
+                                const CdlPaint& paint,
                                 const FloatRect& dstRect,
                                 const FloatRect& srcRect,
                                 RespectImageOrientationEnum,

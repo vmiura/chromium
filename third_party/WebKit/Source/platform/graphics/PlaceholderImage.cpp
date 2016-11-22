@@ -47,8 +47,8 @@ sk_sp<SkImage> PlaceholderImage::imageForCurrentFrame() {
   return m_imageForCurrentFrame;
 }
 
-void PlaceholderImage::draw(SkCanvas* canvas,
-                            const SkPaint& basePaint,
+void PlaceholderImage::draw(CdlCanvas* canvas,
+                            const CdlPaint& basePaint,
                             const FloatRect& destRect,
                             const FloatRect& srcRect,
                             RespectImageOrientationEnum,
@@ -59,7 +59,7 @@ void PlaceholderImage::draw(SkCanvas* canvas,
     return;
   }
 
-  SkPaint paint(basePaint);
+  CdlPaint paint(basePaint);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(kFillColor);
   canvas->drawRect(destRect, paint);

@@ -4,6 +4,7 @@
 
 #include "modules/csspaint/PaintRenderingContext2D.h"
 
+#include "skia/ext/cdl_canvas.h"
 #include "platform/graphics/ImageBuffer.h"
 #include <memory>
 
@@ -47,11 +48,11 @@ bool PaintRenderingContext2D::parseColorOrCurrentColor(
   return ::blink::parseColorOrCurrentColor(color, colorString, nullptr);
 }
 
-SkCanvas* PaintRenderingContext2D::drawingCanvas() const {
+CdlCanvas* PaintRenderingContext2D::drawingCanvas() const {
   return m_imageBuffer->canvas();
 }
 
-SkCanvas* PaintRenderingContext2D::existingDrawingCanvas() const {
+CdlCanvas* PaintRenderingContext2D::existingDrawingCanvas() const {
   ASSERT(m_imageBuffer);
   return m_imageBuffer->canvas();
 }

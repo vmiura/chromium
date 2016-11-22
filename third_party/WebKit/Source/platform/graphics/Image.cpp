@@ -225,7 +225,7 @@ namespace {
 
 sk_sp<SkShader> createPatternShader(const SkImage* image,
                                     const SkMatrix& shaderMatrix,
-                                    const SkPaint& paint,
+                                    const CdlPaint& paint,
                                     const FloatSize& spacing) {
   if (spacing.isZero())
     return image->makeShader(SkShader::kRepeat_TileMode,
@@ -238,7 +238,8 @@ sk_sp<SkShader> createPatternShader(const SkImage* image,
 
   CdlPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(tileRect);
-  canvas->drawImage(image, 0, 0, &paint);
+  SkPaint pt = paint.toSkPaint();
+  canvas->drawImage(image, 0, 0, &pt);
 
   return SkShader::MakePictureShader(
       recorder.finishRecordingAsPicture()->toSkPicture(),
@@ -289,7 +290,7 @@ void Image::drawPattern(GraphicsContext& context,
     return;
 
   {
-    SkPaint paint = context.fillPaint();
+    CdlPaint paint = context.fillPaint();
     paint.setColor(SK_ColorBLACK);
     paint.setBlendMode(static_cast<SkBlendMode>(compositeOp));
     paint.setFilterQuality(
@@ -317,7 +318,7 @@ bool Image::isTextureBacked() {
   return image ? image->isTextureBacked() : false;
 }
 
-bool Image::applyShader(SkPaint& paint, const SkMatrix& localMatrix) {
+bool Image::applyShader(CdlPaint& paint, const SkMatrix& localMatrix) {
   // Default shader impl: attempt to build a shader based on the current frame
   // SkImage.
   sk_sp<SkImage> image = imageForCurrentFrame();

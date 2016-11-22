@@ -37,7 +37,7 @@
 #include "wtf/Noncopyable.h"
 #include "wtf/text/StringHash.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace blink {
 
@@ -127,7 +127,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   // Canvas2D-specific interface
   virtual bool is2d() const { return false; }
-  virtual void restoreCanvasMatrixClipStack(SkCanvas*) const {}
+  virtual void restoreCanvasMatrixClipStack(CdlCanvas*) const {}
   virtual void reset() {}
   virtual void clearRect(double x, double y, double width, double height) {}
   virtual void didSetSurfaceSize() {}

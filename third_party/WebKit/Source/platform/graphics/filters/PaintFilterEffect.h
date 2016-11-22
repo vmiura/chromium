@@ -7,12 +7,13 @@
 
 #include "platform/graphics/filters/FilterEffect.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "skia/ext/cdl_paint.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT PaintFilterEffect : public FilterEffect {
  public:
-  static PaintFilterEffect* create(Filter*, const SkPaint&);
+  static PaintFilterEffect* create(Filter*, const CdlPaint&);
   ~PaintFilterEffect() override;
 
   FilterEffectType getFilterEffectType() const override {
@@ -23,9 +24,9 @@ class PLATFORM_EXPORT PaintFilterEffect : public FilterEffect {
   sk_sp<SkImageFilter> createImageFilter() override;
 
  private:
-  PaintFilterEffect(Filter*, const SkPaint&);
+  PaintFilterEffect(Filter*, const CdlPaint&);
 
-  SkPaint m_paint;
+  CdlPaint m_paint;
 };
 
 }  // namespace blink

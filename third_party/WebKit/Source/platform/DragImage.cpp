@@ -264,7 +264,7 @@ std::unique_ptr<DragImage> DragImage::create(const KURL& url,
   buffer->canvas()->drawRRect(rrect, backgroundPaint);
 
   // Draw the text
-  SkPaint textPaint;
+  CdlPaint textPaint;
   if (drawURLString) {
     if (clipURLString)
       urlString = StringTruncator::centerTruncate(

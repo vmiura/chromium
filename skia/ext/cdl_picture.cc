@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_lite_dl.h"
 
 CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture) : picture_(picture) {}
 

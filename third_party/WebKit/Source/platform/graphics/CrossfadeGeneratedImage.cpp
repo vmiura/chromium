@@ -41,8 +41,8 @@ CrossfadeGeneratedImage::CrossfadeGeneratedImage(PassRefPtr<Image> fromImage,
       m_percentage(percentage),
       m_crossfadeSize(crossfadeSize) {}
 
-void CrossfadeGeneratedImage::drawCrossfade(SkCanvas* canvas,
-                                            const SkPaint& paint,
+void CrossfadeGeneratedImage::drawCrossfade(CdlCanvas* canvas,
+                                            const CdlPaint& paint,
                                             ImageClampingMode clampMode) {
   FloatRect fromImageRect(FloatPoint(), FloatSize(m_fromImage->size()));
   FloatRect toImageRect(FloatPoint(), FloatSize(m_toImage->size()));
@@ -57,7 +57,7 @@ void CrossfadeGeneratedImage::drawCrossfade(SkCanvas* canvas,
   SkAutoCanvasRestore ar(canvas, false);
   canvas->saveLayer(nullptr, &layerPaint);
 
-  SkPaint imagePaint(paint);
+  CdlPaint imagePaint(paint);
   imagePaint.setBlendMode(SkBlendMode::kSrcOver);
   int imageAlpha = clampedAlphaForBlending(1 - m_percentage);
   imagePaint.setAlpha(imageAlpha > 255 ? 255 : imageAlpha);
@@ -75,8 +75,8 @@ void CrossfadeGeneratedImage::drawCrossfade(SkCanvas* canvas,
                   DoNotRespectImageOrientation, clampMode);
 }
 
-void CrossfadeGeneratedImage::draw(SkCanvas* canvas,
-                                   const SkPaint& paint,
+void CrossfadeGeneratedImage::draw(CdlCanvas* canvas,
+                                   const CdlPaint& paint,
                                    const FloatRect& dstRect,
                                    const FloatRect& srcRect,
                                    RespectImageOrientationEnum,
@@ -102,7 +102,7 @@ void CrossfadeGeneratedImage::drawTile(GraphicsContext& context,
   if (m_fromImage == Image::nullImage() || m_toImage == Image::nullImage())
     return;
 
-  SkPaint paint = context.fillPaint();
+  CdlPaint paint = context.fillPaint();
   paint.setBlendMode(SkBlendMode::kSrcOver);
   paint.setAntiAlias(context.shouldAntialias());
   FloatRect destRect((FloatPoint()), FloatSize(m_crossfadeSize));

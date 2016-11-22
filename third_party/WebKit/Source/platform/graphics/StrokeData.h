@@ -74,12 +74,12 @@ class PLATFORM_EXPORT StrokeData final {
   // If a non-zero length is provided, the number of dashes/dots on a
   // dashed/dotted line will be adjusted to start and end that length with a
   // dash/dot.
-  void setupPaint(SkPaint*, int length = 0) const;
+  void setupPaint(CdlPaint*, int length = 0) const;
 
   // Setup any DashPathEffect on the paint. If a non-zero length is provided,
   // and no line dash has been set, the number of dashes/dots on a dashed/dotted
   // line will be adjusted to start and end that length with a dash/dot.
-  void setupPaintDashPathEffect(SkPaint*, int) const;
+  void setupPaintDashPathEffect(CdlPaint*, int) const;
 
  private:
   StrokeStyle m_style;

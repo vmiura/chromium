@@ -14,6 +14,7 @@
 #include "modules/canvas2d/CanvasRenderingContext2DState.h"
 #include "modules/canvas2d/CanvasStyle.h"
 #include "platform/graphics/ExpensiveCanvasHeuristicParameters.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/effects/SkComposeImageFilter.h"
 
@@ -219,8 +220,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   virtual bool parseColorOrCurrentColor(Color&,
                                         const String& colorString) const = 0;
 
-  virtual SkCanvas* drawingCanvas() const = 0;
-  virtual SkCanvas* existingDrawingCanvas() const = 0;
+  virtual CdlCanvas* drawingCanvas() const = 0;
+  virtual CdlCanvas* existingDrawingCanvas() const = 0;
   virtual void disableDeferral(DisableDeferralReason) = 0;
 
   virtual AffineTransform baseTransform() const = 0;
@@ -237,7 +238,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   virtual bool isContextLost() const = 0;
 
-  void restoreMatrixClipStack(SkCanvas*) const;
+  void restoreMatrixClipStack(CdlCanvas*) const;
 
   DECLARE_VIRTUAL_TRACE();
 
@@ -318,7 +319,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   };
 
   void checkOverdraw(const SkRect&,
-                     const SkPaint*,
+                     const CdlPaint*,
                      CanvasRenderingContext2DState::ImageType,
                      DrawType);
 
@@ -343,12 +344,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   void drawPathInternal(const Path&,
                         CanvasRenderingContext2DState::PaintType,
                         SkPath::FillType = SkPath::kWinding_FillType);
-  void drawImageInternal(SkCanvas*,
+  void drawImageInternal(CdlCanvas*,
                          CanvasImageSource*,
                          Image*,
                          const FloatRect& srcRect,
                          const FloatRect& dstRect,
-                         const SkPaint*);
+                         const CdlPaint*);
   void clipInternal(const Path&, const String& windingRuleString);
 
   bool isPointInPathInternal(const Path&,
@@ -361,7 +362,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   template <typename DrawFunc>
   void compositedDraw(const DrawFunc&,
-                      SkCanvas*,
+                      CdlCanvas*,
                       CanvasRenderingContext2DState::PaintType,
                       CanvasRenderingContext2DState::ImageType);
 
@@ -397,14 +398,14 @@ bool BaseRenderingContext2D::draw(
     didDraw(clipBounds);
   } else if (state().globalComposite() == SkBlendMode::kSrc) {
     clearCanvas();  // takes care of checkOverdraw()
-    const SkPaint* paint =
+    const CdlPaint* paint =
         state().getPaint(paintType, DrawForegroundOnly, imageType);
     drawFunc(drawingCanvas(), paint);
     didDraw(clipBounds);
   } else {
     SkIRect dirtyRect;
     if (computeDirtyRect(bounds, clipBounds, &dirtyRect)) {
-      const SkPaint* paint =
+      const CdlPaint* paint =
           state().getPaint(paintType, DrawShadowAndForeground, imageType);
       if (paintType != CanvasRenderingContext2DState::StrokePaintType &&
           drawCoversClipBounds(clipBounds))
@@ -419,22 +420,22 @@ bool BaseRenderingContext2D::draw(
 template <typename DrawFunc>
 void BaseRenderingContext2D::compositedDraw(
     const DrawFunc& drawFunc,
-    SkCanvas* c,
+    CdlCanvas* c,
     CanvasRenderingContext2DState::PaintType paintType,
     CanvasRenderingContext2DState::ImageType imageType) {
   sk_sp<SkImageFilter> filter = stateGetFilter();
   ASSERT(isFullCanvasCompositeMode(state().globalComposite()) || filter);
   SkMatrix ctm = c->getTotalMatrix();
   c->resetMatrix();
-  SkPaint compositePaint;
+  CdlPaint compositePaint;
   compositePaint.setBlendMode((SkBlendMode)state().globalComposite());
   if (state().shouldDrawShadows()) {
     // unroll into two independently composited passes if drawing shadows
-    SkPaint shadowPaint =
+    CdlPaint shadowPaint =
         *state().getPaint(paintType, DrawShadowOnly, imageType);
     int saveCount = c->getSaveCount();
     if (filter) {
-      SkPaint foregroundPaint =
+      CdlPaint foregroundPaint =
           *state().getPaint(paintType, DrawForegroundOnly, imageType);
       sk_sp<SkImageFilter> composedFilter =
           sk_ref_sp(foregroundPaint.getImageFilter());
@@ -447,7 +448,8 @@ void BaseRenderingContext2D::compositedDraw(
       drawFunc(c, &foregroundPaint);
     } else {
       ASSERT(isFullCanvasCompositeMode(state().globalComposite()));
-      c->saveLayer(nullptr, &compositePaint);
+      SkPaint pt = compositePaint.toSkPaint();
+      c->saveLayer(nullptr, &pt);
       shadowPaint.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
       drawFunc(c, &shadowPaint);
@@ -456,8 +458,9 @@ void BaseRenderingContext2D::compositedDraw(
   }
 
   compositePaint.setImageFilter(std::move(filter));
-  c->saveLayer(nullptr, &compositePaint);
-  SkPaint foregroundPaint =
+  SkPaint pt = compositePaint.toSkPaint();
+  c->saveLayer(nullptr, &pt);
+  CdlPaint foregroundPaint =
       *state().getPaint(paintType, DrawForegroundOnly, imageType);
   foregroundPaint.setBlendMode(SkBlendMode::kSrcOver);
   c->setMatrix(ctm);

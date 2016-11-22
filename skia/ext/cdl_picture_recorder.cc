@@ -8,13 +8,14 @@
 #include "third_party/skia/include/core/SkBBHFactory.h"
 #include "skia/ext/cdl_lite_dl.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "skia/ext/cdl_picture.h"
 
 CdlPictureRecorder::CdlPictureRecorder() {
   fActivelyRecording = false;
 }
 CdlPictureRecorder::~CdlPictureRecorder() {}
 
-SkCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
+CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
                                              SkBBHFactory* bbhFactory,
                                              uint32_t recordFlags) {
   // return picture_recorder_.beginRecording(bounds, bbhFactory, recordFlags);
@@ -36,7 +37,7 @@ SkCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   return this->getRecordingCanvas();
 }
 
-SkCanvas* CdlPictureRecorder::getRecordingCanvas() {
+CdlCanvas* CdlPictureRecorder::getRecordingCanvas() {
   // return picture_recorder_.getRecordingCanvas();
   return fRecorder.get();
 }

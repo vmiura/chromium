@@ -22,8 +22,8 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   // texture-backed.
   bool isTextureBacked() { return false; }
 
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect& dstRect,
             const FloatRect& srcRect,
             RespectImageOrientationEnum,

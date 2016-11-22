@@ -33,6 +33,7 @@
 #include "wtf/text/WTFString.h"
 
 class SkPaint;
+class CdlPaint;
 
 namespace blink {
 
@@ -55,7 +56,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   CanvasGradient* getCanvasGradient() const { return m_gradient.get(); }
   CanvasPattern* getCanvasPattern() const { return m_pattern; }
 
-  void applyToPaint(SkPaint&) const;
+  void applyToPaint(CdlPaint&) const;
   RGBA32 paintColor() const;
 
   bool isEquivalentRGBA(RGBA32 rgba) const {

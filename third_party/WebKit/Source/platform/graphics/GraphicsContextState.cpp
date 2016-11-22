@@ -48,7 +48,7 @@ void GraphicsContextState::copy(const GraphicsContextState& source) {
   new (this) GraphicsContextState(source);
 }
 
-const SkPaint& GraphicsContextState::strokePaint(int strokedPathLength) const {
+const CdlPaint& GraphicsContextState::strokePaint(int strokedPathLength) const {
   m_strokeData.setupPaintDashPathEffect(&m_strokePaint, strokedPathLength);
   return m_strokePaint;
 }

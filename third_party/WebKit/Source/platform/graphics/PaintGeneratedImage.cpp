@@ -10,8 +10,8 @@
 
 namespace blink {
 
-void PaintGeneratedImage::draw(SkCanvas* canvas,
-                               const SkPaint& paint,
+void PaintGeneratedImage::draw(CdlCanvas* canvas,
+                               const CdlPaint& paint,
                                const FloatRect& destRect,
                                const FloatRect& srcRect,
                                RespectImageOrientationEnum,

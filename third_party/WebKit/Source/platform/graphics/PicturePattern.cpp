@@ -28,6 +28,7 @@ PicturePattern::~PicturePattern() {}
 sk_sp<SkShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
   SkRect tileBounds = m_tilePicture->cullRect();
 
+  // This affects SVG Cats.
   return SkShader::MakePictureShader(
       m_tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &localMatrix, &tileBounds);

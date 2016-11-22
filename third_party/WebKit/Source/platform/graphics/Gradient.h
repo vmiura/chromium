@@ -40,7 +40,7 @@
 #include "wtf/Vector.h"
 
 class SkMatrix;
-class SkPaint;
+class CdlPaint;
 class SkShader;
 
 namespace blink {
@@ -114,7 +114,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
     m_r1 = r;
   }
 
-  void applyToPaint(SkPaint&, const SkMatrix& localMatrix);
+  void applyToPaint(CdlPaint&, const SkMatrix& localMatrix);
 
   void setDrawsInPMColorSpace(bool drawInPMColorSpace);
 

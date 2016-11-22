@@ -56,7 +56,7 @@ class PLATFORM_EXPORT RecordingImageBufferSurface : public ImageBufferSurface {
   ~RecordingImageBufferSurface() override;
 
   // Implementation of ImageBufferSurface interfaces
-  SkCanvas* canvas() override;
+  CdlCanvas* canvas() override;
   void disableDeferral(DisableDeferralReason) override;
   sk_sp<CdlPicture> getPicture() override;
   void flush(FlushReason) override;

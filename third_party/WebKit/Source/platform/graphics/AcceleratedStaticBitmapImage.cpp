@@ -97,8 +97,8 @@ sk_sp<SkImage> AcceleratedStaticBitmapImage::imageForCurrentFrame() {
   return m_textureHolder->skImage();
 }
 
-void AcceleratedStaticBitmapImage::draw(SkCanvas* canvas,
-                                        const SkPaint& paint,
+void AcceleratedStaticBitmapImage::draw(CdlCanvas* canvas,
+                                        const CdlPaint& paint,
                                         const FloatRect& dstRect,
                                         const FloatRect& srcRect,
                                         RespectImageOrientationEnum,

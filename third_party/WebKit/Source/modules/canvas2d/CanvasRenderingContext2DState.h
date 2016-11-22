@@ -9,6 +9,7 @@
 #include "modules/canvas2d/ClipList.h"
 #include "platform/fonts/Font.h"
 #include "platform/transforms/AffineTransform.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Vector.h"
 
@@ -74,7 +75,7 @@ class CanvasRenderingContext2DState final
   void clipPath(const SkPath&, AntiAliasingMode);
   bool hasClip() const { return m_hasClip; }
   bool hasComplexClip() const { return m_hasComplexClip; }
-  void playbackClips(SkCanvas* canvas) const { m_clipList.playback(canvas); }
+  void playbackClips(CdlCanvas* canvas) const { m_clipList.playback(canvas); }
   const SkPath& getCurrentClipPath() const {
     return m_clipList.getCurrentClipPath();
   }
@@ -178,7 +179,7 @@ class CanvasRenderingContext2DState final
 
   // If paint will not be used for painting a bitmap, set bitmapOpacity to
   // Opaque.
-  const SkPaint* getPaint(PaintType, ShadowMode, ImageType = NoImage) const;
+  const CdlPaint* getPaint(PaintType, ShadowMode, ImageType = NoImage) const;
 
  private:
   CanvasRenderingContext2DState();
@@ -204,9 +205,9 @@ class CanvasRenderingContext2DState final
   Member<CanvasStyle> m_strokeStyle;
   Member<CanvasStyle> m_fillStyle;
 
-  mutable SkPaint m_strokePaint;
-  mutable SkPaint m_fillPaint;
-  mutable SkPaint m_imagePaint;
+  mutable CdlPaint m_strokePaint;
+  mutable CdlPaint m_fillPaint;
+  mutable CdlPaint m_imagePaint;
 
   FloatSize m_shadowOffset;
   double m_shadowBlur;

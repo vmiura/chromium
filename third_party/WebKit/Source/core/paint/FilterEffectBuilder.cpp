@@ -125,8 +125,8 @@ Vector<float> sepiaMatrix(double amount) {
 FilterEffectBuilder::FilterEffectBuilder(Node* target,
                                          const FloatRect& zoomedReferenceBox,
                                          float zoom,
-                                         const SkPaint* fillPaint,
-                                         const SkPaint* strokePaint)
+                                         const CdlPaint* fillPaint,
+                                         const CdlPaint* strokePaint)
     : m_targetContext(target),
       m_referenceBox(zoomedReferenceBox),
       m_zoom(zoom),

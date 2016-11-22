@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkSurface;
+class CdlCanvas;
 
 namespace blink {
 
@@ -52,13 +53,14 @@ class PLATFORM_EXPORT UnacceleratedImageBufferSurface
       SkColorType = kN32_SkColorType);
   ~UnacceleratedImageBufferSurface() override;
 
-  SkCanvas* canvas() override;
+  CdlCanvas* canvas() override;
   bool isValid() const override;
 
   sk_sp<SkImage> newImageSnapshot(AccelerationHint, SnapshotReason) override;
 
  private:
   sk_sp<SkSurface> m_surface;
+  sk_sp<CdlCanvas> m_canvas;
 };
 
 }  // namespace blink

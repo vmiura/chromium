@@ -29,6 +29,7 @@
 #include "platform/graphics/StrokeData.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "wtf/PtrUtil.h"
+#include "skia/ext/cdl_paint.h"
 #include <memory>
 
 namespace blink {
@@ -56,7 +57,7 @@ void StrokeData::setLineDash(const DashArray& dashes, float dashOffset) {
   m_dash = SkDashPathEffect::Make(intervals.get(), count, dashOffset);
 }
 
-void StrokeData::setupPaint(SkPaint* paint, int length) const {
+void StrokeData::setupPaint(CdlPaint* paint, int length) const {
   paint->setStyle(SkPaint::kStroke_Style);
   paint->setStrokeWidth(SkFloatToScalar(m_thickness));
   paint->setStrokeCap(m_lineCap);
@@ -66,7 +67,7 @@ void StrokeData::setupPaint(SkPaint* paint, int length) const {
   setupPaintDashPathEffect(paint, length);
 }
 
-void StrokeData::setupPaintDashPathEffect(SkPaint* paint, int length) const {
+void StrokeData::setupPaintDashPathEffect(CdlPaint* paint, int length) const {
   float width = m_thickness;
   if (m_dash) {
     paint->setPathEffect(m_dash);

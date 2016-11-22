@@ -227,8 +227,8 @@ FloatSize SVGImage::concreteObjectSize(
   return defaultObjectSize;
 }
 
-void SVGImage::drawForContainer(SkCanvas* canvas,
-                                const SkPaint& paint,
+void SVGImage::drawForContainer(CdlCanvas* canvas,
+                                const CdlPaint& paint,
                                 const FloatSize containerSize,
                                 float zoom,
                                 const FloatRect& dstRect,
@@ -293,7 +293,7 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
     // spacing area.
     if (tile != spacedTile)
       patternPicture.context().clip(tile);
-    SkPaint paint;
+    CdlPaint paint;
     drawForContainer(patternPicture.context().canvas(), paint, containerSize,
                      zoom, tile, srcRect, url);
   }
@@ -303,7 +303,7 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
   patternTransform.setTranslate(phase.x() + spacedTile.x(),
                                 phase.y() + spacedTile.y());
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setShader(SkShader::MakePictureShader(
       tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &patternTransform, nullptr));
@@ -321,8 +321,8 @@ sk_sp<SkImage> SVGImage::imageForCurrentFrameForContainer(
   const FloatRect containerRect((FloatPoint()), FloatSize(containerSize));
 
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(containerRect);
-  drawForContainer(canvas, SkPaint(), containerRect.size(), 1, containerRect,
+  CdlCanvas* canvas = recorder.beginRecording(containerRect);
+  drawForContainer(canvas, CdlPaint(), containerRect.size(), 1, containerRect,
                    containerRect, url);
 
   return SkImage::MakeFromPicture(
@@ -331,14 +331,14 @@ sk_sp<SkImage> SVGImage::imageForCurrentFrameForContainer(
       nullptr);
 }
 
-static bool drawNeedsLayer(const SkPaint& paint) {
+static bool drawNeedsLayer(const CdlPaint& paint) {
   if (SkColorGetA(paint.getColor()) < 255)
     return true;
   return !paint.isSrcOver();
 }
 
-void SVGImage::draw(SkCanvas* canvas,
-                    const SkPaint& paint,
+void SVGImage::draw(CdlCanvas* canvas,
+                    const CdlPaint& paint,
                     const FloatRect& dstRect,
                     const FloatRect& srcRect,
                     RespectImageOrientationEnum shouldRespectImageOrientation,
@@ -350,8 +350,8 @@ void SVGImage::draw(SkCanvas* canvas,
                clampMode, KURL());
 }
 
-void SVGImage::drawInternal(SkCanvas* canvas,
-                            const SkPaint& paint,
+void SVGImage::drawInternal(CdlCanvas* canvas,
+                            const CdlPaint& paint,
                             const FloatRect& dstRect,
                             const FloatRect& srcRect,
                             RespectImageOrientationEnum,
@@ -401,7 +401,8 @@ void SVGImage::drawInternal(SkCanvas* canvas,
     SkAutoCanvasRestore ar(canvas, false);
     if (drawNeedsLayer(paint)) {
       SkRect layerRect = dstRect;
-      canvas->saveLayer(&layerRect, &paint);
+      SkPaint pt = paint.toSkPaint();
+      canvas->saveLayer(&layerRect, &pt);
     }
     sk_sp<CdlPicture> recording = imagePicture.endRecording();
     recording->draw(canvas);

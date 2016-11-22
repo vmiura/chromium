@@ -31,6 +31,7 @@
 #include "platform/graphics/PicturePattern.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include <v8.h>
@@ -56,7 +57,7 @@ Pattern::~Pattern() {
   adjustExternalMemoryAllocated(-m_externalMemoryAllocated);
 }
 
-void Pattern::applyToPaint(SkPaint& paint, const SkMatrix& localMatrix) {
+void Pattern::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!m_cachedShader || isLocalMatrixChanged(localMatrix))
     m_cachedShader = createShader(localMatrix);
 
