@@ -110,9 +110,9 @@ class PLATFORM_EXPORT ImageBuffer {
 
   // Called by subclasses of ImageBufferSurface to install a new canvas object.
   // Virtual for mocking
-  virtual void resetCanvas(SkCanvas*) const;
+  virtual void resetCanvas(CdlCanvas*) const;
 
-  SkCanvas* canvas() const;
+  CdlCanvas* canvas() const;
   void disableDeferral(DisableDeferralReason) const;
 
   // Called at the end of a task that rendered a whole frame

@@ -5,6 +5,7 @@
 #include "modules/canvas2d/ClipList.h"
 
 #include "platform/transforms/AffineTransform.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 
@@ -27,7 +28,7 @@ void ClipList::clipPath(const SkPath& path,
   m_clipList.append(newClip);
 }
 
-void ClipList::playback(SkCanvas* canvas) const {
+void ClipList::playback(CdlCanvas* canvas) const {
   for (const ClipOp* it = m_clipList.begin(); it < m_clipList.end(); it++) {
     canvas->clipPath(it->m_path, SkRegion::kIntersect_Op,
                      it->m_antiAliasingMode == AntiAliased);

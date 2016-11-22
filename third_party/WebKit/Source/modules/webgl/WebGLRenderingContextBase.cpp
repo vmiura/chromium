@@ -4505,7 +4505,7 @@ PassRefPtr<Image> WebGLRenderingContextBase::drawImageIntoBuffer(
 
   IntRect srcRect(IntPoint(), image->size());
   IntRect destRect(0, 0, size.width(), size.height());
-  SkPaint paint;
+  CdlPaint paint;
   image->draw(buf->canvas(), paint, destRect, srcRect,
               DoNotRespectImageOrientation, Image::DoNotClampImageToSourceRect);
   return buf->newImageSnapshot(PreferNoAcceleration,

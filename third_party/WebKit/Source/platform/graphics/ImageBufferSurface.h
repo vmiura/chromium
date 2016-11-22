@@ -41,7 +41,7 @@
 #include "wtf/Allocator.h"
 #include "wtf/Noncopyable.h"
 
-class SkCanvas;
+class CdlCanvas;
 class SkColorSpace;
 class SkImage;
 struct SkImageInfo;
@@ -61,7 +61,7 @@ class PLATFORM_EXPORT ImageBufferSurface {
  public:
   virtual ~ImageBufferSurface();
 
-  virtual SkCanvas* canvas() = 0;
+  virtual CdlCanvas* canvas() = 0;
   virtual void disableDeferral(DisableDeferralReason) {}
   virtual void willOverwriteCanvas() {}
   virtual void didDraw(const FloatRect& rect) {}

@@ -60,7 +60,7 @@ void GeneratedImage::drawPattern(GraphicsContext& destContext,
   RefPtr<Pattern> picturePattern =
       Pattern::createPicturePattern(std::move(tilePicture));
 
-  SkPaint fillPaint = destContext.fillPaint();
+  CdlPaint fillPaint = destContext.fillPaint();
   picturePattern->applyToPaint(fillPaint, patternMatrix);
   fillPaint.setColor(SK_ColorBLACK);
   fillPaint.setBlendMode(compositeOp);

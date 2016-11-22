@@ -198,14 +198,14 @@ bool OffscreenCanvasRenderingContext2D::parseColorOrCurrentColor(
   return ::blink::parseColorOrCurrentColor(color, colorString, nullptr);
 }
 
-SkCanvas* OffscreenCanvasRenderingContext2D::drawingCanvas() const {
+CdlCanvas* OffscreenCanvasRenderingContext2D::drawingCanvas() const {
   ImageBuffer* buffer = imageBuffer();
   if (!buffer)
     return nullptr;
   return imageBuffer()->canvas();
 }
 
-SkCanvas* OffscreenCanvasRenderingContext2D::existingDrawingCanvas() const {
+CdlCanvas* OffscreenCanvasRenderingContext2D::existingDrawingCanvas() const {
   if (!m_imageBuffer)
     return nullptr;
   return m_imageBuffer->canvas();

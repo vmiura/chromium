@@ -9,11 +9,8 @@
 #include "cdl_lite_recorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
-// TODO(cdl): Figure out if this is important.
-
-// SkCanvas({0,0,1,1}, SkCanvas::kConservativeRasterClip_InitFlag)
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
-    : SkCanvas(bounds.width(), bounds.height()), fDL(dl) {}
+    : CdlCanvas(bounds.width(), bounds.height()), fDL(dl) {}
 
 sk_sp<SkSurface> CdlLiteRecorder::onNewSurface(const SkImageInfo&,
                                                const SkSurfaceProps&) {
@@ -256,4 +253,10 @@ void CdlLiteRecorder::onDrawShadowedPicture(const SkPicture* picture,
                                             const SkPaint* paint,
                                             const SkShadowParams& params) {
   fDL->drawShadowedPicture(picture, matrix, paint, params);
+}
+
+// CdlCanvas overrides
+
+void CdlLiteRecorder::onDrawRect(const SkRect& r, const CdlPaint& paint) {
+  fDL->drawRectX(r, paint);
 }

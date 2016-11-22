@@ -39,8 +39,8 @@
 #include "wtf/MathExtras.h"
 #include "wtf/text/CharacterNames.h"
 
-class SkCanvas;
-class SkPaint;
+class CdlCanvas;
+class CdlPaint;
 
 namespace blink {
 
@@ -79,23 +79,23 @@ class PLATFORM_EXPORT Font {
     DoNotPaintIfFontNotReady,
     UseFallbackIfFontNotReady
   };
-  bool drawText(SkCanvas*,
+  bool drawText(CdlCanvas*,
                 const TextRunPaintInfo&,
                 const FloatPoint&,
                 float deviceScaleFactor,
-                const SkPaint&) const;
-  bool drawBidiText(SkCanvas*,
+                const CdlPaint&) const;
+  bool drawBidiText(CdlCanvas*,
                     const TextRunPaintInfo&,
                     const FloatPoint&,
                     CustomFontNotReadyAction,
                     float deviceScaleFactor,
-                    const SkPaint&) const;
-  void drawEmphasisMarks(SkCanvas*,
+                    const CdlPaint&) const;
+  void drawEmphasisMarks(CdlCanvas*,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
                          const FloatPoint&,
                          float deviceScaleFactor,
-                         const SkPaint&) const;
+                         const CdlPaint&) const;
 
   struct TextIntercept {
     float m_begin, m_end;
@@ -177,8 +177,8 @@ class PLATFORM_EXPORT Font {
   float buildGlyphBuffer(const TextRunPaintInfo&,
                          GlyphBuffer&,
                          const GlyphData* emphasisData = nullptr) const;
-  void drawGlyphBuffer(SkCanvas*,
-                       const SkPaint&,
+  void drawGlyphBuffer(CdlCanvas*,
+                       const CdlPaint&,
                        const TextRunPaintInfo&,
                        const GlyphBuffer&,
                        const FloatPoint&,

@@ -27,6 +27,8 @@
 #include "core/style/ComputedStyle.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 
 namespace blink {
 
@@ -40,7 +42,7 @@ SVGPaintServer::SVGPaintServer(PassRefPtr<Pattern> pattern,
                                const AffineTransform& transform)
     : m_pattern(pattern), m_transform(transform), m_color(Color::black) {}
 
-void SVGPaintServer::applyToSkPaint(SkPaint& paint, float paintAlpha) {
+void SVGPaintServer::applyToSkPaint(CdlPaint& paint, float paintAlpha) {
   SkColor baseColor = m_gradient || m_pattern ? SK_ColorBLACK : m_color.rgb();
   paint.setColor(scaleAlpha(baseColor, paintAlpha));
   if (m_pattern) {

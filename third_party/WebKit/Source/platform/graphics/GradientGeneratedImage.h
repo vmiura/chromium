@@ -44,11 +44,11 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
   ~GradientGeneratedImage() override {}
 
-  bool applyShader(SkPaint&, const SkMatrix&) override;
+  bool applyShader(CdlPaint&, const SkMatrix&) override;
 
  protected:
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect&,
             const FloatRect&,
             RespectImageOrientationEnum,

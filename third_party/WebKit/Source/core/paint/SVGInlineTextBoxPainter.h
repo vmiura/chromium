@@ -9,6 +9,8 @@
 #include "core/layout/svg/LayoutSVGResourcePaintServer.h"
 #include "wtf/Allocator.h"
 
+class CdlPaint;
+
 namespace blink {
 
 class Font;
@@ -65,13 +67,13 @@ class SVGInlineTextBoxPainter {
   bool setupTextPaint(const PaintInfo&,
                       const ComputedStyle&,
                       LayoutSVGResourceMode,
-                      SkPaint&);
+                      CdlPaint&);
   void paintText(const PaintInfo&,
                  TextRun&,
                  const SVGTextFragment&,
                  int startPosition,
                  int endPosition,
-                 const SkPaint&);
+                 const CdlPaint&);
   void paintText(const PaintInfo&,
                  const ComputedStyle&,
                  const ComputedStyle& selectionStyle,

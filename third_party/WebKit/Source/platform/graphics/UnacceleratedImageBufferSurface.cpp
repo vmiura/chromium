@@ -31,6 +31,7 @@
 #include "platform/graphics/UnacceleratedImageBufferSurface.h"
 
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "wtf/PassRefPtr.h"
 
@@ -53,25 +54,28 @@ UnacceleratedImageBufferSurface::UnacceleratedImageBufferSurface(
   m_surface =
       SkSurface::MakeRaster(info, Opaque == opacityMode ? 0 : &disableLCDProps);
 
+  if (!m_surface)
+    return;
+
+  m_canvas.reset(new CdlCanvas(m_surface->getCanvas()));
+
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
-  if (m_surface)
-    m_surface->getCanvas()->save();
+  canvas()->save();
 
   if (initializationMode == InitializeImagePixels) {
-    if (m_surface)
-      clear();
+    clear();
   }
 }
 
 UnacceleratedImageBufferSurface::~UnacceleratedImageBufferSurface() {}
 
-SkCanvas* UnacceleratedImageBufferSurface::canvas() {
-  return m_surface->getCanvas();
+CdlCanvas* UnacceleratedImageBufferSurface::canvas() {
+  return m_canvas.get();
 }
 
 bool UnacceleratedImageBufferSurface::isValid() const {
-  return m_surface;
+  return m_canvas;
 }
 
 sk_sp<SkImage> UnacceleratedImageBufferSurface::newImageSnapshot(

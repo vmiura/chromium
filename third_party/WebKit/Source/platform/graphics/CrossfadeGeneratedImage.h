@@ -32,6 +32,9 @@
 #include "platform/graphics/ImageObserver.h"
 #include "wtf/RefPtr.h"
 
+class CdlPaint;
+class CdlCanvas;
+
 namespace blink {
 
 class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
@@ -52,8 +55,8 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
   IntSize size() const override { return m_crossfadeSize; }
 
  protected:
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect&,
             const FloatRect&,
             RespectImageOrientationEnum,
@@ -67,7 +70,7 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
                           const IntSize&);
 
  private:
-  void drawCrossfade(SkCanvas*, const SkPaint&, ImageClampingMode);
+  void drawCrossfade(CdlCanvas*, const CdlPaint&, ImageClampingMode);
 
   RefPtr<Image> m_fromImage;
   RefPtr<Image> m_toImage;

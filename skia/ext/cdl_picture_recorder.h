@@ -8,23 +8,28 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "skia/ext/cdl_lite_recorder.h"
+
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkBBHFactory.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
-#include "skia/ext/cdl_lite_recorder.h"
-#include "skia/ext/cdl_picture.h"
+
+class CdlLiteDL;
+class CdlLiteRecorder;
+class CdlCanvas;
+class CdlPicture;
 
 class CdlPictureRecorder : SkNoncopyable {
  public:
   CdlPictureRecorder();
   ~CdlPictureRecorder();
 
-  SkCanvas* beginRecording(const SkRect& bounds,
+  CdlCanvas* beginRecording(const SkRect& bounds,
                            SkBBHFactory* bbhFactory = NULL,
                            uint32_t recordFlags = 0);
 
-  SkCanvas* beginRecording(SkScalar width,
+  CdlCanvas* beginRecording(SkScalar width,
                            SkScalar height,
                            SkBBHFactory* bbhFactory = NULL,
                            uint32_t recordFlags = 0) {
@@ -35,7 +40,7 @@ class CdlPictureRecorder : SkNoncopyable {
   /** Returns the recording canvas if one is active, or NULL if recording is
       not active. This does not alter the refcnt on the canvas (if present).
   */
-  SkCanvas* getRecordingCanvas();
+  CdlCanvas* getRecordingCanvas();
 
   sk_sp<CdlPicture> finishRecordingAsPicture(uint32_t endFlags = 0);
 

@@ -243,9 +243,13 @@ std::unique_ptr<Shape> Shape::createRasterShape(Image* image,
     SkPaint paint;
     IntRect imageSourceRect(IntPoint(), image->size());
     IntRect imageDestRect(IntPoint(), imageRect.size());
+
+    // TODO(cdl): CdlCanvas->SkCanvas...
+    /*
     image->draw(imageBuffer->canvas(), paint, imageDestRect, imageSourceRect,
                 DoNotRespectImageOrientation,
                 Image::DoNotClampImageToSourceRect);
+    */
 
     WTF::ArrayBufferContents contents;
     imageBuffer->getImageData(Unmultiplied,

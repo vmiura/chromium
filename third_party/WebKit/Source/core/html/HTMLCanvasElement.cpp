@@ -72,6 +72,7 @@
 #include "public/platform/Platform.h"
 #include "public/platform/WebTraceLocation.h"
 #include "public/platform/modules/offscreencanvas/offscreen_canvas_surface.mojom-blink.h"
+#include "skia/ext/cdl_canvas.h"
 #include "wtf/CheckedNumeric.h"
 #include "wtf/PtrUtil.h"
 #include <math.h>
@@ -373,7 +374,7 @@ void HTMLCanvasElement::didDisableAcceleration() {
   didDraw(FloatRect(0, 0, size().width(), size().height()));
 }
 
-void HTMLCanvasElement::restoreCanvasMatrixClipStack(SkCanvas* canvas) const {
+void HTMLCanvasElement::restoreCanvasMatrixClipStack(CdlCanvas* canvas) const {
   if (m_context)
     m_context->restoreCanvasMatrixClipStack(canvas);
 }
@@ -1052,7 +1053,7 @@ void HTMLCanvasElement::updateExternallyAllocatedMemory() const {
   m_externallyAllocatedMemory = externallyAllocatedMemory;
 }
 
-SkCanvas* HTMLCanvasElement::drawingCanvas() const {
+CdlCanvas* HTMLCanvasElement::drawingCanvas() const {
   return buffer() ? m_imageBuffer->canvas() : nullptr;
 }
 
@@ -1061,7 +1062,7 @@ void HTMLCanvasElement::disableDeferral(DisableDeferralReason reason) const {
     m_imageBuffer->disableDeferral(reason);
 }
 
-SkCanvas* HTMLCanvasElement::existingDrawingCanvas() const {
+CdlCanvas* HTMLCanvasElement::existingDrawingCanvas() const {
   if (!hasImageBuffer())
     return nullptr;
 

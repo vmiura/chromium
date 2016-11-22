@@ -13,8 +13,8 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/PassRefPtr.h"
 
-class SkCanvas;
-class SkPaint;
+class CdlCanvas;
+class CdlPaint;
 
 namespace blink {
 
@@ -35,8 +35,8 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
 
   sk_sp<SkImage> imageForCurrentFrame() override;
 
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect& destRect,
             const FloatRect& srcRect,
             RespectImageOrientationEnum,

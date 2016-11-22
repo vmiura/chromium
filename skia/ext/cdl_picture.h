@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "cdl_lite_dl.h"
-
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkDrawable.h"
+
+class CdlLiteDL;
 
 class CdlPicture : public SkRefCnt {
  public:

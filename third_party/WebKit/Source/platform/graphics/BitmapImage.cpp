@@ -36,6 +36,8 @@
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "platform/tracing/TraceEvent.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "wtf/PassRefPtr.h"
 #include "wtf/PtrUtil.h"
 #include "wtf/text/WTFString.h"
@@ -240,8 +242,8 @@ String BitmapImage::filenameExtension() const {
 }
 
 void BitmapImage::draw(
-    SkCanvas* canvas,
-    const SkPaint& paint,
+    CdlCanvas* canvas,
+    const CdlPaint& paint,
     const FloatRect& dstRect,
     const FloatRect& srcRect,
     RespectImageOrientationEnum shouldRespectImageOrientation,
@@ -284,7 +286,8 @@ void BitmapImage::draw(
     }
   }
 
-  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, &paint,
+  SkPaint pt = paint.toSkPaint();
+  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, &pt,
                         WebCoreClampingModeToSkiaRectConstraint(clampMode));
 
   if (image->isLazyGenerated())

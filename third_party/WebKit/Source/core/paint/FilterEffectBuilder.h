@@ -31,7 +31,7 @@
 #include "platform/heap/Handle.h"
 #include "wtf/Allocator.h"
 
-class SkPaint;
+class CdlPaint;
 
 namespace blink {
 
@@ -52,8 +52,8 @@ class CORE_EXPORT FilterEffectBuilder final {
   FilterEffectBuilder(Node*,
                       const FloatRect& zoomedReferenceBox,
                       float zoom,
-                      const SkPaint* fillPaint = nullptr,
-                      const SkPaint* strokePaint = nullptr);
+                      const CdlPaint* fillPaint = nullptr,
+                      const CdlPaint* strokePaint = nullptr);
 
   Filter* buildReferenceFilter(SVGFilterElement&,
                                FilterEffect* previousEffect,
@@ -70,8 +70,8 @@ class CORE_EXPORT FilterEffectBuilder final {
   Member<Node> m_targetContext;
   FloatRect m_referenceBox;
   float m_zoom;
-  const SkPaint* m_fillPaint;
-  const SkPaint* m_strokePaint;
+  const CdlPaint* m_fillPaint;
+  const CdlPaint* m_strokePaint;
 };
 
 }  // namespace blink

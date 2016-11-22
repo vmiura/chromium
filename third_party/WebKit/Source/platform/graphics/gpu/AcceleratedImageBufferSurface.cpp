@@ -33,6 +33,7 @@
 #include "platform/graphics/gpu/SharedGpuContext.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "skia/ext/texture_handle.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/gpu/GrContext.h"
 #include "wtf/PtrUtil.h"
 #include "wtf/RefPtr.h"
@@ -61,15 +62,16 @@ AcceleratedImageBufferSurface::AcceleratedImageBufferSurface(
       Opaque == opacityMode ? nullptr : &disableLCDProps);
   if (!m_surface)
     return;
+  m_canvas.reset(new CdlCanvas(m_surface->getCanvas()));
   clear();
 
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
-  m_surface->getCanvas()->save();
+  canvas()->save();
 }
 
 bool AcceleratedImageBufferSurface::isValid() const {
-  return m_surface && SharedGpuContext::isValid() &&
+  return m_canvas && SharedGpuContext::isValid() &&
          m_contextId == SharedGpuContext::contextId();
 }
 

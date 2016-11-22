@@ -52,6 +52,8 @@
 
 #define CanvasDefaultInterpolationQuality InterpolationLow
 
+class CdlCanvas;
+
 namespace blink {
 
 class AffineTransform;
@@ -135,9 +137,9 @@ class CORE_EXPORT HTMLCanvasElement final : public HTMLElement,
 
   void paint(GraphicsContext&, const LayoutRect&);
 
-  SkCanvas* drawingCanvas() const;
+  CdlCanvas* drawingCanvas() const;
   void disableDeferral(DisableDeferralReason) const;
-  SkCanvas* existingDrawingCanvas() const;
+  CdlCanvas* existingDrawingCanvas() const;
 
   CanvasRenderingContext* renderingContext() const { return m_context.get(); }
 
@@ -190,7 +192,7 @@ class CORE_EXPORT HTMLCanvasElement final : public HTMLElement,
   bool isDirty() override { return !m_dirtyRect.isEmpty(); }
   void didDisableAcceleration() override;
   void didFinalizeFrame() override;
-  void restoreCanvasMatrixClipStack(SkCanvas*) const override;
+  void restoreCanvasMatrixClipStack(CdlCanvas*) const override;
 
   void doDeferredPaintInvalidation();
 

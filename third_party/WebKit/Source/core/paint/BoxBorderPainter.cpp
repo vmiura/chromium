@@ -311,7 +311,7 @@ void drawBleedAdjustedDRRect(GraphicsContext& context,
       path.addRRect(inner);
       path.setFillType(SkPath::kInverseWinding_FillType);
 
-      SkPaint paint;
+      CdlPaint paint;
       paint.setColor(color.rgb());
       paint.setStyle(SkPaint::kFill_Style);
       paint.setAntiAlias(true);

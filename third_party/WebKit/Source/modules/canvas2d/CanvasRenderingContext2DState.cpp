@@ -23,6 +23,8 @@
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include <memory>
 
 static const char defaultFont[] = "10px sans-serif";
@@ -298,10 +300,10 @@ sk_sp<SkImageFilter> CanvasRenderingContext2DState::getFilter(
 
     // We can't reuse m_fillPaint and m_strokePaint for the filter, since these
     // incorporate the global alpha, which isn't applicable here.
-    SkPaint fillPaintForFilter;
+    CdlPaint fillPaintForFilter;
     m_fillStyle->applyToPaint(fillPaintForFilter);
     fillPaintForFilter.setColor(m_fillStyle->paintColor());
-    SkPaint strokePaintForFilter;
+    CdlPaint strokePaintForFilter;
     m_strokeStyle->applyToPaint(strokePaintForFilter);
     strokePaintForFilter.setColor(m_strokeStyle->paintColor());
 
@@ -492,11 +494,11 @@ bool CanvasRenderingContext2DState::shouldDrawShadows() const {
          (m_shadowBlur || !m_shadowOffset.isZero());
 }
 
-const SkPaint* CanvasRenderingContext2DState::getPaint(
+const CdlPaint* CanvasRenderingContext2DState::getPaint(
     PaintType paintType,
     ShadowMode shadowMode,
     ImageType imageType) const {
-  SkPaint* paint;
+  CdlPaint* paint;
   switch (paintType) {
     case StrokePaintType:
       updateLineDash();

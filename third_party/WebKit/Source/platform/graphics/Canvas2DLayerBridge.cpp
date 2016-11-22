@@ -171,7 +171,7 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
 void Canvas2DLayerBridge::startRecording() {
   DCHECK(m_isDeferralEnabled);
   m_recorder = wrapUnique(new CdlPictureRecorder);
-  SkCanvas* canvas =
+  CdlCanvas* canvas =
       m_recorder->beginRecording(m_size.width(), m_size.height(), nullptr);
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -600,16 +600,27 @@ SkSurface* Canvas2DLayerBridge::getOrCreateSurface(AccelerationHint hint) {
       m_imageBuffer->updateGPUMemoryUsage();
 
     if (m_imageBuffer && !m_isDeferralEnabled)
-      m_imageBuffer->resetCanvas(m_surface->getCanvas());
+      m_imageBuffer->resetCanvas(m_canvas.get());
   }
 
   return m_surface.get();
 }
 
-SkCanvas* Canvas2DLayerBridge::canvas() {
+CdlCanvas* Canvas2DLayerBridge::getOrCreateCanvas(AccelerationHint hint) {
+  if (m_canvas)
+    return m_canvas.get();
+
+  SkSurface* surface = getOrCreateSurface(hint);
+  if (!surface)
+    return nullptr;
+
+  m_canvas.reset(new CdlCanvas(surface->getCanvas()));
+  return m_canvas.get();
+}
+
+CdlCanvas* Canvas2DLayerBridge::canvas() {
   if (!m_isDeferralEnabled) {
-    SkSurface* s = getOrCreateSurface();
-    return s ? s->getCanvas() : nullptr;
+    return getOrCreateCanvas();
   }
   return m_recorder->getRecordingCanvas();
 }
@@ -643,7 +654,7 @@ void Canvas2DLayerBridge::disableDeferral(DisableDeferralReason reason) {
   // install the current matrix/clip stack onto the immediate canvas
   SkSurface* surface = getOrCreateSurface();
   if (m_imageBuffer && surface)
-    m_imageBuffer->resetCanvas(surface->getCanvas());
+    m_imageBuffer->resetCanvas(m_canvas.get());
 }
 
 void Canvas2DLayerBridge::setImageBuffer(ImageBuffer* imageBuffer) {
@@ -722,6 +733,7 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
 
     sk_sp<SkSurface> oldSurface = std::move(m_surface);
     m_surface.reset();
+    m_canvas.reset();
 
     m_softwareRenderingWhileHidden = false;
     SkSurface* newSurface =
@@ -730,7 +742,9 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
       if (oldSurface)
         oldSurface->draw(newSurface->getCanvas(), 0, 0, &copyPaint);
       if (m_imageBuffer && !m_isDeferralEnabled) {
-        m_imageBuffer->resetCanvas(m_surface->getCanvas());
+        // TODO(cdl): was nullptr dereference here?
+        //m_imageBuffer->resetCanvas(m_surface->getCanvas());
+        m_imageBuffer->resetCanvas(nullptr);
       }
     }
   }

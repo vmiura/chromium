@@ -43,6 +43,8 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "wtf/StdLibExtras.h"
 #include "wtf/text/CharacterNames.h"
 #include "wtf/text/Unicode.h"
@@ -121,11 +123,11 @@ float Font::buildGlyphBuffer(const TextRunPaintInfo& runInfo,
   return width;
 }
 
-bool Font::drawText(SkCanvas* canvas,
+bool Font::drawText(CdlCanvas* canvas,
                     const TextRunPaintInfo& runInfo,
                     const FloatPoint& point,
                     float deviceScaleFactor,
-                    const SkPaint& paint) const {
+                    const CdlPaint& paint) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading.
   if (shouldSkipDrawing())
@@ -133,8 +135,9 @@ bool Font::drawText(SkCanvas* canvas,
 
   if (runInfo.cachedTextBlob && runInfo.cachedTextBlob->get()) {
     // we have a pre-cached blob -- happy joy!
+    SkPaint pt = paint.toSkPaint();
     canvas->drawTextBlob(runInfo.cachedTextBlob->get(), point.x(), point.y(),
-                         paint);
+                         pt);
     return true;
   }
 
@@ -146,12 +149,12 @@ bool Font::drawText(SkCanvas* canvas,
   return true;
 }
 
-bool Font::drawBidiText(SkCanvas* canvas,
+bool Font::drawBidiText(CdlCanvas* canvas,
                         const TextRunPaintInfo& runInfo,
                         const FloatPoint& point,
                         CustomFontNotReadyAction customFontNotReadyAction,
                         float deviceScaleFactor,
-                        const SkPaint& paint) const {
+                        const CdlPaint& paint) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading, except if the 'force' argument is set to true (in which case it
   // will use a fallback font).
@@ -201,12 +204,12 @@ bool Font::drawBidiText(SkCanvas* canvas,
   return true;
 }
 
-void Font::drawEmphasisMarks(SkCanvas* canvas,
+void Font::drawEmphasisMarks(CdlCanvas* canvas,
                              const TextRunPaintInfo& runInfo,
                              const AtomicString& mark,
                              const FloatPoint& point,
                              float deviceScaleFactor,
-                             const SkPaint& paint) const {
+                             const CdlPaint& paint) const {
   if (shouldSkipDrawing())
     return;
 
@@ -349,14 +352,16 @@ class GlyphBufferBloberizer {
 
 }  // anonymous namespace
 
-void Font::drawGlyphBuffer(SkCanvas* canvas,
-                           const SkPaint& paint,
+void Font::drawGlyphBuffer(CdlCanvas* canvas,
+                           const CdlPaint& paint,
                            const TextRunPaintInfo& runInfo,
                            const GlyphBuffer& glyphBuffer,
                            const FloatPoint& point,
                            float deviceScaleFactor) const {
   GlyphBufferBloberizer bloberizer(glyphBuffer, this, deviceScaleFactor);
   std::pair<sk_sp<SkTextBlob>, BlobRotation> blob;
+
+  SkPaint pt = paint.toSkPaint();
 
   while (!bloberizer.done()) {
     blob = bloberizer.next();
@@ -371,7 +376,7 @@ void Font::drawGlyphBuffer(SkCanvas* canvas,
       canvas->concat(m);
     }
 
-    canvas->drawTextBlob(blob.first, point.x(), point.y(), paint);
+    canvas->drawTextBlob(blob.first, point.x(), point.y(), pt);
   }
 
   // Cache results when

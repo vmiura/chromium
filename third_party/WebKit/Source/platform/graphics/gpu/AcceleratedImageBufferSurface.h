@@ -35,6 +35,7 @@
 #include "public/platform/WebGraphicsContext3DProvider.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "skia/ext/cdl_canvas.h"
 #include <memory>
 
 namespace blink {
@@ -51,8 +52,8 @@ class PLATFORM_EXPORT AcceleratedImageBufferSurface
                                 SkColorType = kN32_SkColorType);
   ~AcceleratedImageBufferSurface() override {}
 
-  SkCanvas* canvas() override {
-    return m_surface ? m_surface->getCanvas() : nullptr;
+  CdlCanvas* canvas() override {
+    return m_canvas.get();
   }
   bool isValid() const override;
   bool isAccelerated() const override { return true; }
@@ -62,6 +63,7 @@ class PLATFORM_EXPORT AcceleratedImageBufferSurface
  private:
   unsigned m_contextId;
   sk_sp<SkSurface> m_surface;  // Uses m_contextProvider.
+  sk_sp<CdlCanvas> m_canvas;
 };
 
 }  // namespace blink

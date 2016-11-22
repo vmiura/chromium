@@ -23,8 +23,8 @@ PassRefPtr<StaticBitmapImage> StaticBitmapImage::create(sk_sp<SkImage> image) {
   return UnacceleratedStaticBitmapImage::create(std::move(image));
 }
 
-void StaticBitmapImage::drawHelper(SkCanvas* canvas,
-                                   const SkPaint& paint,
+void StaticBitmapImage::drawHelper(CdlCanvas* canvas,
+                                   const CdlPaint& paint,
                                    const FloatRect& dstRect,
                                    const FloatRect& srcRect,
                                    ImageClampingMode clampMode,
@@ -35,7 +35,8 @@ void StaticBitmapImage::drawHelper(SkCanvas* canvas,
   if (dstRect.isEmpty() || adjustedSrcRect.isEmpty())
     return;  // Nothing to draw.
 
-  canvas->drawImageRect(image.get(), adjustedSrcRect, dstRect, &paint,
+  SkPaint pt = paint.toSkPaint();
+  canvas->drawImageRect(image.get(), adjustedSrcRect, dstRect, &pt,
                         WebCoreClampingModeToSkiaRectConstraint(clampMode));
 }
 

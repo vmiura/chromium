@@ -8,7 +8,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "wtf/Allocator.h"
 
-class SkPaint;
+class CdlPaint;
 
 namespace blink {
 
@@ -29,8 +29,8 @@ class SVGShapePainter {
   void paint(const PaintInfo&);
 
  private:
-  void fillShape(GraphicsContext&, const SkPaint&, SkPath::FillType);
-  void strokeShape(GraphicsContext&, const SkPaint&);
+  void fillShape(GraphicsContext&, const CdlPaint&, SkPath::FillType);
+  void strokeShape(GraphicsContext&, const CdlPaint&);
 
   void paintMarkers(const PaintInfo&, const FloatRect& boundingBox);
   void paintMarker(const PaintInfo&,

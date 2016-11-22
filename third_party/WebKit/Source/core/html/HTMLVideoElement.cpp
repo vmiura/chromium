@@ -191,13 +191,13 @@ void HTMLVideoElement::updateDisplayState() {
     setDisplayMode(Poster);
 }
 
-void HTMLVideoElement::paintCurrentFrame(SkCanvas* canvas,
+void HTMLVideoElement::paintCurrentFrame(CdlCanvas* canvas,
                                          const IntRect& destRect,
-                                         const SkPaint* paint) const {
+                                         const CdlPaint* paint) const {
   if (!webMediaPlayer())
     return;
 
-  SkPaint mediaPaint;
+  CdlPaint mediaPaint;
   if (paint) {
     mediaPaint = *paint;
   } else {
@@ -205,7 +205,8 @@ void HTMLVideoElement::paintCurrentFrame(SkCanvas* canvas,
     mediaPaint.setFilterQuality(kLow_SkFilterQuality);
   }
 
-  webMediaPlayer()->paint(canvas, destRect, mediaPaint);
+  SkPaint pt = mediaPaint.toSkPaint();
+  webMediaPlayer()->paint(canvas, destRect, pt);
 }
 
 bool HTMLVideoElement::copyVideoTextureToPlatformTexture(

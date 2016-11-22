@@ -201,7 +201,7 @@ sk_sp<CdlPicture> RasterSource::GetFlattenedPicture() {
   TRACE_EVENT0("cc", "RasterSource::GetFlattenedPicture");
 
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(size_.width(), size_.height());
+  CdlCanvas* canvas = recorder.beginRecording(size_.width(), size_.height());
   if (!size_.IsEmpty()) {
     PrepareForPlaybackToCanvas(canvas);
     RasterCommon(canvas, nullptr);

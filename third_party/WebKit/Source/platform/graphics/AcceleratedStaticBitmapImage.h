@@ -41,8 +41,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   sk_sp<SkImage> imageForCurrentFrame() override;
   bool isTextureBacked() final { return true; }
 
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect& dstRect,
             const FloatRect& srcRect,
             RespectImageOrientationEnum,

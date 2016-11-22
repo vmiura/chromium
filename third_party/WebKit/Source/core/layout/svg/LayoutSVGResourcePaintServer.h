@@ -27,7 +27,7 @@
 #include "platform/transforms/AffineTransform.h"
 #include "wtf/Allocator.h"
 
-class SkPaint;
+class CdlPaint;
 
 namespace blink {
 
@@ -55,7 +55,7 @@ class SVGPaintServer {
                                     const ComputedStyle&,
                                     LayoutSVGResourceMode);
 
-  void applyToSkPaint(SkPaint&, float paintAlpha);
+  void applyToSkPaint(CdlPaint&, float paintAlpha);
 
   static SVGPaintServer invalid() {
     return SVGPaintServer(Color(Color::transparent));

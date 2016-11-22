@@ -9,6 +9,8 @@
 #include "core/html/ImageData.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "platform/image-decoders/ImageDecoder.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "wtf/CheckedNumeric.h"
@@ -440,7 +442,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
     buffer->canvas()->translate(0, buffer->size().height());
     buffer->canvas()->scale(1, -1);
   }
-  SkPaint paint;
+  CdlPaint paint;
   if (parsedOptions.shouldScaleInput) {
     float scaleRatioX = static_cast<float>(parsedOptions.resizeWidth) /
                         parsedOptions.cropRect.width();

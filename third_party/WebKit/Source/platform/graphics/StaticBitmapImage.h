@@ -11,6 +11,8 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
+class CdlPaint;
+
 namespace blink {
 
 class WebGraphicsContext3DProvider;
@@ -24,8 +26,8 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   bool currentFrameKnownToBeOpaque(MetadataMode = UseCurrentMetadata) = 0;
   sk_sp<SkImage> imageForCurrentFrame() = 0;
   bool isTextureBacked() = 0;
-  void draw(SkCanvas*,
-            const SkPaint&,
+  void draw(CdlCanvas*,
+            const CdlPaint&,
             const FloatRect& dstRect,
             const FloatRect& srcRect,
             RespectImageOrientationEnum,
@@ -66,8 +68,8 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
  protected:
   // Helper for sub-classes
-  void drawHelper(SkCanvas*,
-                  const SkPaint&,
+  void drawHelper(CdlCanvas*,
+                  const CdlPaint&,
                   const FloatRect&,
                   const FloatRect&,
                   ImageClampingMode,

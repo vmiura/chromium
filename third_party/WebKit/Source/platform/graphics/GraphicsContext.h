@@ -47,9 +47,9 @@
 #include <memory>
 
 class SkBitmap;
-class SkPaint;
 class SkPath;
 class CdlPicture;
+class CdlPaint;
 class SkRRect;
 struct SkRect;
 
@@ -78,8 +78,8 @@ class PLATFORM_EXPORT GraphicsContext {
 
   ~GraphicsContext();
 
-  SkCanvas* canvas() { return m_canvas; }
-  const SkCanvas* canvas() const { return m_canvas; }
+  CdlCanvas* canvas() { return m_canvas; }
+  const CdlCanvas* canvas() const { return m_canvas; }
 
   PaintController& getPaintController() { return m_paintController; }
 
@@ -214,10 +214,10 @@ class PLATFORM_EXPORT GraphicsContext {
   // These methods write to the canvas.
   // Also drawLine(const IntPoint& point1, const IntPoint& point2) and
   // fillRoundedRect().
-  void drawOval(const SkRect&, const SkPaint&);
-  void drawPath(const SkPath&, const SkPaint&);
-  void drawRect(const SkRect&, const SkPaint&);
-  void drawRRect(const SkRRect&, const SkPaint&);
+  void drawOval(const SkRect&, const CdlPaint&);
+  void drawPath(const SkPath&, const CdlPaint&);
+  void drawRect(const SkRect&, const CdlPaint&);
+  void drawRRect(const SkRRect&, const CdlPaint&);
 
   void clip(const IntRect& rect) { clipRect(rect); }
   void clip(const FloatRect& rect) { clipRect(rect); }
@@ -243,7 +243,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void drawText(const Font&,
                 const TextRunPaintInfo&,
                 const FloatPoint&,
-                const SkPaint&);
+                const CdlPaint&);
   void drawEmphasisMarks(const Font&,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
@@ -322,8 +322,8 @@ class PLATFORM_EXPORT GraphicsContext {
                        float shadowSpread,
                        Edges clippedEdges = NoEdge);
 
-  const SkPaint& fillPaint() const { return immutableState()->fillPaint(); }
-  const SkPaint& strokePaint() const { return immutableState()->strokePaint(); }
+  const CdlPaint& fillPaint() const { return immutableState()->fillPaint(); }
+  const CdlPaint& strokePaint() const { return immutableState()->strokePaint(); }
 
   // ---------- Transformation methods -----------------
   void concatCTM(const AffineTransform&);
@@ -389,7 +389,7 @@ class PLATFORM_EXPORT GraphicsContext {
   static void draw2xMarker(SkBitmap*, int);
 #endif
 
-  void saveLayer(const SkRect* bounds, const SkPaint*);
+  void saveLayer(const SkRect* bounds, const CdlPaint*);
   void restoreLayer();
 
   // Helpers for drawing a focus ring (drawFocusRing)
@@ -429,7 +429,7 @@ class PLATFORM_EXPORT GraphicsContext {
   const SkMetaData& metaData() const { return m_metaData; }
 
   // null indicates painting is contextDisabled. Never delete this object.
-  SkCanvas* m_canvas;
+  CdlCanvas* m_canvas;
 
   PaintController& m_paintController;
 

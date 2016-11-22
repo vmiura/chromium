@@ -17,6 +17,8 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/private/SkTDArray.h"
 
+class CdlPaint;
+
 class CdlLiteDL : public SkDrawable {
  public:
   CdlLiteDL(SkRect bounds);
@@ -127,6 +129,13 @@ class CdlLiteDL : public SkDrawable {
                  const SkPaint*);
 
   void setBounds(const SkRect& bounds);
+
+  // Cdl extended ops.
+  void drawRectX(const SkRect&, const CdlPaint&);
+
+  // Cdl
+  struct DrawContext {
+  };
 
  private:
   SkRect onGetBounds() override;

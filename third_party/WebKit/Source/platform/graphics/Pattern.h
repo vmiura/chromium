@@ -38,7 +38,7 @@
 #include "wtf/RefCounted.h"
 
 class SkMatrix;
-class SkPaint;
+class CdlPaint;
 class CdlPicture;
 
 namespace blink {
@@ -61,7 +61,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
                                                   RepeatMode = RepeatModeXY);
   virtual ~Pattern();
 
-  void applyToPaint(SkPaint&, const SkMatrix&);
+  void applyToPaint(CdlPaint&, const SkMatrix&);
 
   bool isRepeatX() const { return m_repeatMode & RepeatModeX; }
   bool isRepeatY() const { return m_repeatMode & RepeatModeY; }

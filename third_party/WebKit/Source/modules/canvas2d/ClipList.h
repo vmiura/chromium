@@ -9,7 +9,7 @@
 #include "wtf/Allocator.h"
 #include "wtf/Vector.h"
 
-class SkCanvas;
+class CdlCanvas;
 class SkPath;
 
 namespace blink {
@@ -23,7 +23,7 @@ class ClipList {
   ~ClipList() {}
 
   void clipPath(const SkPath&, AntiAliasingMode, const SkMatrix&);
-  void playback(SkCanvas*) const;
+  void playback(CdlCanvas*) const;
   const SkPath& getCurrentClipPath() const;
 
  private:

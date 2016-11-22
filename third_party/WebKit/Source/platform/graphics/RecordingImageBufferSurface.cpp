@@ -40,7 +40,7 @@ RecordingImageBufferSurface::~RecordingImageBufferSurface() {}
 void RecordingImageBufferSurface::initializeCurrentFrame() {
   static SkRTreeFactory rTreeFactory;
   m_currentFrame = wrapUnique(new CdlPictureRecorder);
-  SkCanvas* canvas = m_currentFrame->beginRecording(
+  CdlCanvas* canvas = m_currentFrame->beginRecording(
       size().width(), size().height(), &rTreeFactory);
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -165,7 +165,7 @@ sk_sp<SkImage> RecordingImageBufferSurface::newImageSnapshot(
   return m_fallbackSurface->newImageSnapshot(hint, reason);
 }
 
-SkCanvas* RecordingImageBufferSurface::canvas() {
+CdlCanvas* RecordingImageBufferSurface::canvas() {
   if (m_fallbackSurface)
     return m_fallbackSurface->canvas();
 

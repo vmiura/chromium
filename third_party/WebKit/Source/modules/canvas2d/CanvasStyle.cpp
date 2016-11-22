@@ -37,6 +37,7 @@
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "wtf/PassRefPtr.h"
+#include "skia/ext/cdl_paint.h"
 
 namespace blink {
 
@@ -105,7 +106,7 @@ CanvasStyle* CanvasStyle::createFromPattern(CanvasPattern* pattern) {
   return new CanvasStyle(pattern);
 }
 
-void CanvasStyle::applyToPaint(SkPaint& paint) const {
+void CanvasStyle::applyToPaint(CdlPaint& paint) const {
   switch (m_type) {
     case ColorRGBA:
       paint.setShader(nullptr);

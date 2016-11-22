@@ -9,10 +9,18 @@
 #define SKIA_EXT_CDL_LITE_RECORDER_H_
 
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkDrawLooper.h"
+#include "third_party/skia/include/core/SkImageFilter.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPathEffect.h"
+#include "cdl_canvas.h"
 
+class CdlPaint;
+class CdlCanvas;
 class CdlLiteDL;
 
-class CdlLiteRecorder final : public SkCanvas {
+class CdlLiteRecorder final : public CdlCanvas {
  public:
   CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
 
@@ -157,6 +165,9 @@ class CdlLiteRecorder final : public SkCanvas {
                              const SkPaint*,
                              const SkShadowParams& params);
 #endif
+
+  // CdlCanvas overrides
+  void onDrawRect(const SkRect&, const CdlPaint&) override;
 
  private:
   CdlLiteDL* fDL;
