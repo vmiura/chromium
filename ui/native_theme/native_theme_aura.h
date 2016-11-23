@@ -23,29 +23,29 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   // Overridden from NativeThemeBase:
   SkColor GetSystemColor(ColorId color_id) const override;
   void PaintMenuPopupBackground(
-      SkCanvas* canvas,
+      CdlCanvas* canvas,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background) const override;
   void PaintMenuItemBackground(
-      SkCanvas* canvas,
+      CdlCanvas* canvas,
       State state,
       const gfx::Rect& rect,
       const MenuItemExtraParams& menu_item) const override;
-  void PaintArrowButton(SkCanvas* gc,
+  void PaintArrowButton(CdlCanvas* gc,
                         const gfx::Rect& rect,
                         Part direction,
                         State state) const override;
-  void PaintScrollbarTrack(SkCanvas* canvas,
+  void PaintScrollbarTrack(CdlCanvas* canvas,
                            Part part,
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
                            const gfx::Rect& rect) const override;
-  void PaintScrollbarThumb(SkCanvas* canvas,
+  void PaintScrollbarThumb(CdlCanvas* canvas,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
                            ScrollbarOverlayColorTheme theme) const override;
-  void PaintScrollbarCorner(SkCanvas* canvas,
+  void PaintScrollbarCorner(CdlCanvas* canvas,
                             State state,
                             const gfx::Rect& rect) const override;
   gfx::Size GetPartSize(Part part,

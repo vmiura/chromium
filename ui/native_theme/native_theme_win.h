@@ -107,7 +107,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
-  void Paint(SkCanvas* canvas,
+  void Paint(CdlCanvas* canvas,
              Part part,
              State state,
              const gfx::Rect& rect,

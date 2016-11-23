@@ -24,6 +24,7 @@
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace cc {
@@ -541,7 +542,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         SkCanvas canvas(lock.sk_bitmap());
         // This is software path, so canvas and video_frame are always backed
         // by software.
-        video_renderer_->Copy(video_frame, &canvas, media::Context3D());
+        video_renderer_->Copy(video_frame, CdlCanvas::Make(&canvas).get(), media::Context3D());
       } else {
         size_t bytes_per_row = ResourceUtil::CheckedWidthInBytes<size_t>(
             video_frame->coded_size().width(), ResourceFormat::RGBA_8888);

@@ -324,7 +324,7 @@ void CdlCanvas::onDrawArc(const SkRect& oval, SkScalar startAngle,
 void CdlCanvas::onDrawRRect(SkRRect const& r, SkPaint const& paint) { canvas_->drawRRect(r, paint); }
 void CdlCanvas::onDrawDRRect(const SkRRect& outer, const SkRRect& inner, const SkPaint& paint) { canvas_->drawDRRect(outer, inner, paint); }
 void CdlCanvas::onDrawDrawable(SkDrawable* d, SkMatrix const* m) { canvas_->drawDrawable(d, m); }
-void CdlCanvas::onDrawPicture(SkPicture const* p, SkMatrix const* m, SkPaint const* paint) { canvas_->drawPicture(p, m, paint); }
+//void CdlCanvas::onDrawPicture(SkPicture const* p, SkMatrix const* m, SkPaint const* paint) { canvas_->drawPicture(p, m, paint); }
 void CdlCanvas::onDrawAnnotation(SkRect const& r, char const* c, SkData* d)  { canvas_->drawAnnotation(r, c, d); }
 void CdlCanvas::onDrawText(const void* text, size_t byteLength, SkScalar x, SkScalar y,
                           const SkPaint& paint)  { canvas_->drawText(text, byteLength, x, y, paint); }

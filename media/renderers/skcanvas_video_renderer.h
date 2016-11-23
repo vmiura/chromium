@@ -21,7 +21,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace gfx {
 class RectF;
@@ -42,7 +42,7 @@ class MEDIA_EXPORT SkCanvasVideoRenderer {
   //
   // Black will be painted on |canvas| if |video_frame| is null.
   void Paint(const scoped_refptr<VideoFrame>& video_frame,
-             SkCanvas* canvas,
+             CdlCanvas* canvas,
              const gfx::RectF& dest_rect,
              SkPaint& paint,
              VideoRotation video_rotation,
@@ -52,7 +52,7 @@ class MEDIA_EXPORT SkCanvasVideoRenderer {
   // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
   // must be provided.
   void Copy(const scoped_refptr<VideoFrame>& video_frame,
-            SkCanvas* canvas,
+            CdlCanvas* canvas,
             const Context3D& context_3d);
 
   enum class ConvertingSize { VISUAL, CODED };

@@ -156,7 +156,7 @@ gfx::Size NativeThemeBase::GetPartSize(Part part,
   return gfx::Size();
 }
 
-void NativeThemeBase::Paint(SkCanvas* canvas,
+void NativeThemeBase::Paint(CdlCanvas* canvas,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
@@ -251,7 +251,7 @@ NativeThemeBase::~NativeThemeBase() {
 }
 
 void NativeThemeBase::PaintArrowButton(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     const gfx::Rect& rect, Part direction, State state) const {
   SkPaint paint;
 
@@ -331,7 +331,7 @@ void NativeThemeBase::PaintArrowButton(
   PaintArrow(canvas, rect, direction, GetArrowColor(state));
 }
 
-void NativeThemeBase::PaintArrow(SkCanvas* gc,
+void NativeThemeBase::PaintArrow(CdlCanvas* gc,
                                  const gfx::Rect& rect,
                                  Part direction,
                                  SkColor color) const {
@@ -388,7 +388,7 @@ gfx::Rect NativeThemeBase::BoundingRectForArrow(const gfx::Rect& rect) const {
                    side_length, side_length);
 }
 
-void NativeThemeBase::PaintScrollbarTrack(SkCanvas* canvas,
+void NativeThemeBase::PaintScrollbarTrack(CdlCanvas* canvas,
     Part part,
     State state,
     const ScrollbarTrackExtraParams& extra_params,
@@ -409,7 +409,7 @@ void NativeThemeBase::PaintScrollbarTrack(SkCanvas* canvas,
   DrawBox(canvas, rect, paint);
 }
 
-void NativeThemeBase::PaintScrollbarThumb(SkCanvas* canvas,
+void NativeThemeBase::PaintScrollbarThumb(CdlCanvas* canvas,
                                           Part part,
                                           State state,
                                           const gfx::Rect& rect,
@@ -489,12 +489,12 @@ void NativeThemeBase::PaintScrollbarThumb(SkCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintScrollbarCorner(SkCanvas* canvas,
+void NativeThemeBase::PaintScrollbarCorner(CdlCanvas* canvas,
                                            State state,
                                            const gfx::Rect& rect) const {
 }
 
-void NativeThemeBase::PaintCheckbox(SkCanvas* canvas,
+void NativeThemeBase::PaintCheckbox(CdlCanvas* canvas,
                                     State state,
                                     const gfx::Rect& rect,
                                     const ButtonExtraParams& button) const {
@@ -533,7 +533,7 @@ void NativeThemeBase::PaintCheckbox(SkCanvas* canvas,
 // Returns the rectangle within which any additional decorations should be
 // drawn, or empty if none.
 SkRect NativeThemeBase::PaintCheckboxRadioCommon(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const SkScalar borderRadius) const {
@@ -619,7 +619,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   return skrect;
 }
 
-void NativeThemeBase::PaintRadio(SkCanvas* canvas,
+void NativeThemeBase::PaintRadio(CdlCanvas* canvas,
                                   State state,
                                   const gfx::Rect& rect,
                                   const ButtonExtraParams& button) const {
@@ -645,7 +645,7 @@ void NativeThemeBase::PaintRadio(SkCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintButton(SkCanvas* canvas,
+void NativeThemeBase::PaintButton(CdlCanvas* canvas,
                                   State state,
                                   const gfx::Rect& rect,
                                   const ButtonExtraParams& button) const {
@@ -699,7 +699,7 @@ void NativeThemeBase::PaintButton(SkCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintTextField(SkCanvas* canvas,
+void NativeThemeBase::PaintTextField(CdlCanvas* canvas,
                                      State state,
                                      const gfx::Rect& rect,
                                      const TextFieldExtraParams& text) const {
@@ -720,7 +720,7 @@ void NativeThemeBase::PaintTextField(SkCanvas* canvas,
 }
 
 void NativeThemeBase::PaintMenuList(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const MenuListExtraParams& menu_list) const {
@@ -757,21 +757,21 @@ void NativeThemeBase::PaintMenuList(
 }
 
 void NativeThemeBase::PaintMenuPopupBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background) const {
   canvas->drawColor(kMenuPopupBackgroundColor, SkBlendMode::kSrc);
 }
 
 void NativeThemeBase::PaintMenuItemBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item) const {
   // By default don't draw anything over the normal background.
 }
 
-void NativeThemeBase::PaintSliderTrack(SkCanvas* canvas,
+void NativeThemeBase::PaintSliderTrack(CdlCanvas* canvas,
                                        State state,
                                        const gfx::Rect& rect,
                                        const SliderExtraParams& slider) const {
@@ -796,7 +796,7 @@ void NativeThemeBase::PaintSliderTrack(SkCanvas* canvas,
   canvas->drawRect(skrect, paint);
 }
 
-void NativeThemeBase::PaintSliderThumb(SkCanvas* canvas,
+void NativeThemeBase::PaintSliderThumb(CdlCanvas* canvas,
                                        State state,
                                        const gfx::Rect& rect,
                                        const SliderExtraParams& slider) const {
@@ -834,7 +834,7 @@ void NativeThemeBase::PaintSliderThumb(SkCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintInnerSpinButton(SkCanvas* canvas,
+void NativeThemeBase::PaintInnerSpinButton(CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const InnerSpinButtonExtraParams& spin_button) const {
@@ -857,7 +857,7 @@ void NativeThemeBase::PaintInnerSpinButton(SkCanvas* canvas,
 }
 
 void NativeThemeBase::PaintProgressBar(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const ProgressBarExtraParams& progress_bar) const {
@@ -924,7 +924,7 @@ SkColor NativeThemeBase::GetArrowColor(State state) const {
   return OutlineColor(track_hsv, thumb_hsv);
 }
 
-void NativeThemeBase::DrawVertLine(SkCanvas* canvas,
+void NativeThemeBase::DrawVertLine(CdlCanvas* canvas,
                                    int x,
                                    int y1,
                                    int y2,
@@ -934,7 +934,7 @@ void NativeThemeBase::DrawVertLine(SkCanvas* canvas,
   canvas->drawIRect(skrect, paint);
 }
 
-void NativeThemeBase::DrawHorizLine(SkCanvas* canvas,
+void NativeThemeBase::DrawHorizLine(CdlCanvas* canvas,
                                     int x1,
                                     int x2,
                                     int y,
@@ -944,7 +944,7 @@ void NativeThemeBase::DrawHorizLine(SkCanvas* canvas,
   canvas->drawIRect(skrect, paint);
 }
 
-void NativeThemeBase::DrawBox(SkCanvas* canvas,
+void NativeThemeBase::DrawBox(CdlCanvas* canvas,
                               const gfx::Rect& rect,
                               const SkPaint& paint) const {
   const int right = rect.x() + rect.width() - 1;

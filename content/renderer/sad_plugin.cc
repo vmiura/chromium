@@ -18,8 +18,8 @@ void PaintSadPlugin(blink::WebCanvas* webcanvas,
   const int width = plugin_rect.width();
   const int height = plugin_rect.height();
 
-  SkCanvas* canvas = webcanvas;
-  SkAutoCanvasRestore auto_restore(canvas, true);
+  CdlCanvas* canvas = webcanvas;
+  CdlAutoCanvasRestore auto_restore(canvas, true);
   // We draw the sad-plugin bitmap at the origin of canvas.
   // Add a translation so that it appears at the origin of plugin rect.
   canvas->translate(plugin_rect.x(), plugin_rect.y());

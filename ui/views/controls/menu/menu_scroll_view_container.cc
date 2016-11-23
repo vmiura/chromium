@@ -74,15 +74,12 @@ class MenuScrollButton : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     const MenuConfig& config = MenuConfig::instance();
 
-    // TODO(cdl): Theme stuff.
-    /*
     // The background.
     gfx::Rect item_bounds(0, 0, width(), height());
     NativeTheme::ExtraParams extra;
     GetNativeTheme()->Paint(canvas->sk_canvas(),
                             NativeTheme::kMenuItemBackground,
                             NativeTheme::kNormal, item_bounds, extra);
-    */
 
     // Then the arrow.
     int x = width() / 2;
@@ -251,15 +248,12 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
     return;
   }
 
-  // TODO(cdl): Theme stuff
-  /*
   gfx::Rect bounds(0, 0, width(), height());
   NativeTheme::ExtraParams extra;
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.corner_radius;
   GetNativeTheme()->Paint(canvas->sk_canvas(),
       NativeTheme::kMenuPopupBackground, NativeTheme::kNormal, bounds, extra);
-  */
 }
 
 void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {

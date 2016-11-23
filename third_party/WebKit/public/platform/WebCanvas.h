@@ -33,11 +33,11 @@
 
 #include "WebCommon.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace blink {
 
-typedef SkCanvas WebCanvas;
+typedef CdlCanvas WebCanvas;
 
 }  // namespace blink
 

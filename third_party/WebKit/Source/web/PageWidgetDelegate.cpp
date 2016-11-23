@@ -95,7 +95,7 @@ static void paintInternal(Page& page,
       paintContext.fillRect(dirtyRect, Color::white);
     }
   }
-  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
+  pictureBuilder.endRecording()->playback(canvas);
 }
 
 void PageWidgetDelegate::paint(Page& page,

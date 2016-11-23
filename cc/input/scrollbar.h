@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace cc {
 
@@ -33,7 +33,7 @@ class Scrollbar {
   virtual gfx::Rect TrackRect() const = 0;
   virtual float ThumbOpacity() const = 0;
   virtual bool NeedsPaintPart(ScrollbarPart part) const = 0;
-  virtual void PaintPart(SkCanvas* canvas,
+  virtual void PaintPart(CdlCanvas* canvas,
                          ScrollbarPart part,
                          const gfx::Rect& content_rect) = 0;
 };

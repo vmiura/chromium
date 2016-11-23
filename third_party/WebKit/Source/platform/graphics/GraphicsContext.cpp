@@ -337,15 +337,13 @@ void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,
 void GraphicsContext::drawFocusRingPath(const SkPath& path,
                                         const Color& color,
                                         float width) {
-  // TODO(cdl): focus ring
-  //drawPlatformFocusRing(path, m_canvas, color.rgb(), width);
+  drawPlatformFocusRing(path, m_canvas, color.rgb(), width);
 }
 
 void GraphicsContext::drawFocusRingRect(const SkRect& rect,
                                         const Color& color,
                                         float width) {
-  // TODO(cdl): focus ring
-  //drawPlatformFocusRing(rect, m_canvas, color.rgb(), width);
+  drawPlatformFocusRing(rect, m_canvas, color.rgb(), width);
 }
 
 void GraphicsContext::drawFocusRing(const Path& focusRingPath,

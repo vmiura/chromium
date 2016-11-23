@@ -13,6 +13,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/yuv_convert.h"
 #include "skia/ext/texture_handle.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -331,7 +332,7 @@ SkCanvasVideoRenderer::~SkCanvasVideoRenderer() {
 }
 
 void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
-                                  SkCanvas* canvas,
+                                  CdlCanvas* canvas,
                                   const gfx::RectF& dest_rect,
                                   SkPaint& paint,
                                   VideoRotation video_rotation,
@@ -432,7 +433,7 @@ void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
 }
 
 void SkCanvasVideoRenderer::Copy(const scoped_refptr<VideoFrame>& video_frame,
-                                 SkCanvas* canvas,
+                                 CdlCanvas* canvas,
                                  const Context3D& context_3d) {
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);

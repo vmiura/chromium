@@ -212,12 +212,9 @@ void ScrollbarTheme::paintScrollCorner(
 #if OS(MACOSX)
   context.fillRect(cornerRect, Color::white);
 #else
-  // TODO(cdl): Theme stuff.
-  /*
   Platform::current()->themeEngine()->paint(
       context.canvas(), WebThemeEngine::PartScrollbarCorner,
       WebThemeEngine::StateNormal, WebRect(cornerRect), 0);
-  */
 #endif
 }
 

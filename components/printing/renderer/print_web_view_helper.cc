@@ -569,7 +569,7 @@ void PrintWebViewHelper::PrintHeaderAndFooter(
     float webkit_scale_factor,
     const PageSizeMargins& page_layout,
     const PrintMsg_Print_Params& params) {
-  SkAutoCanvasRestore auto_restore(canvas, true);
+  CdlAutoCanvasRestore auto_restore(canvas, true);
   canvas->scale(1 / webkit_scale_factor, 1 / webkit_scale_factor);
 
   blink::WebSize page_size(page_layout.margin_left + page_layout.margin_right +
@@ -626,7 +626,7 @@ float PrintWebViewHelper::RenderPageContent(blink::WebFrame* frame,
                                             const gfx::Rect& content_area,
                                             double scale_factor,
                                             blink::WebCanvas* canvas) {
-  SkAutoCanvasRestore auto_restore(canvas, true);
+  CdlAutoCanvasRestore auto_restore(canvas, true);
   canvas->translate((content_area.x() - canvas_area.x()) / scale_factor,
                     (content_area.y() - canvas_area.y()) / scale_factor);
   return frame->printPage(page_number, canvas);
@@ -1889,7 +1889,7 @@ void PrintWebViewHelper::PrintPageInternal(
     const float fudge_factor = kPrintingMinimumShrinkFactor;
 #endif
     // |page_number| is 0-based, so 1 is added.
-    PrintHeaderAndFooter(canvas, params.page_number + 1,
+    PrintHeaderAndFooter(CdlCanvas::Make(canvas).get(), params.page_number + 1,
                          print_preview_context_.total_page_count(), *frame,
                          scale_factor / fudge_factor, page_layout_in_points,
                          params.params);
@@ -1898,7 +1898,7 @@ void PrintWebViewHelper::PrintPageInternal(
 
   float webkit_scale_factor =
       RenderPageContent(frame, params.page_number, canvas_area, content_area,
-                        scale_factor, canvas);
+                        scale_factor, CdlCanvas::Make(canvas).get());
   DCHECK_GT(webkit_scale_factor, 0.0f);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.

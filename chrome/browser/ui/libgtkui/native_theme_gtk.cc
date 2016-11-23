@@ -171,7 +171,7 @@ NativeThemeGtk2::NativeThemeGtk2() {}
 NativeThemeGtk2::~NativeThemeGtk2() {}
 
 void NativeThemeGtk2::PaintMenuPopupBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background) const {
   if (menu_background.corner_radius > 0) {
@@ -196,7 +196,7 @@ void NativeThemeGtk2::PaintMenuPopupBackground(
 }
 
 void NativeThemeGtk2::PaintMenuItemBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item) const {

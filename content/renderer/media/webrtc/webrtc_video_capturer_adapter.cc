@@ -115,7 +115,7 @@ class WebRtcVideoCapturerAdapter::TextureFrameCopier
         frame->natural_size(), frame->timestamp());
     DCHECK(provider_->ContextGL());
     canvas_video_renderer_->Copy(
-        frame.get(), surface->getCanvas(),
+        frame.get(), CdlCanvas::Make(surface->getCanvas()).get(),
         media::Context3D(provider_->ContextGL(), provider_->GrContext()));
 
     SkPixmap pixmap;

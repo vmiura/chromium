@@ -475,7 +475,7 @@ static void PrintDocument(blink::WebFrame* frame, SkDocument* doc) {
     canvas->scale(page_shrink, page_shrink);
 #endif
 
-    frame->printPage(i, canvas);
+    frame->printPage(i, CdlCanvas::Make(canvas).get());
   }
   frame->printEnd();
 }

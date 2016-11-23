@@ -44,6 +44,7 @@
 #include "platform/geometry/FloatSize.h"
 #include "platform/graphics/GraphicsTypes.h"
 #include "platform/graphics/ImageBuffer.h"
+#include "skia/ext/cdl_paint.h"
 #include "wtf/MathExtras.h"
 #include "wtf/PtrUtil.h"
 #include "wtf/typed_arrays/ArrayBufferContents.h"
@@ -240,16 +241,13 @@ std::unique_ptr<Shape> Shape::createRasterShape(Image* image,
     // that loads SVG Images during paint invalidations to mark layoutObjects
     // for layout, which is not allowed. See https://crbug.com/429346
     ImageObserverDisabler disabler(image);
-    SkPaint paint;
+    CdlPaint paint;
     IntRect imageSourceRect(IntPoint(), image->size());
     IntRect imageDestRect(IntPoint(), imageRect.size());
 
-    // TODO(cdl): CdlCanvas->SkCanvas...
-    /*
     image->draw(imageBuffer->canvas(), paint, imageDestRect, imageSourceRect,
                 DoNotRespectImageOrientation,
                 Image::DoNotClampImageToSourceRect);
-    */
 
     WTF::ArrayBufferContents contents;
     imageBuffer->getImageData(Unmultiplied,

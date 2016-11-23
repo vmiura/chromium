@@ -147,8 +147,6 @@ ThemePainterDefault::ThemePainterDefault() : ThemePainter() {}
 bool ThemePainterDefault::paintCheckbox(const LayoutObject& o,
                                         const PaintInfo& i,
                                         const IntRect& rect) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.button.checked = LayoutTheme::isChecked(o);
@@ -169,15 +167,12 @@ bool ThemePainterDefault::paintCheckbox(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartCheckbox, getWebThemeState(o),
       WebRect(unzoomedRect), &extraParams);
-  */
   return false;
 }
 
 bool ThemePainterDefault::paintRadio(const LayoutObject& o,
                                      const PaintInfo& i,
                                      const IntRect& rect) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.button.checked = LayoutTheme::isChecked(o);
@@ -185,18 +180,12 @@ bool ThemePainterDefault::paintRadio(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(canvas, WebThemeEngine::PartRadio,
                                             getWebThemeState(o), WebRect(rect),
                                             &extraParams);
-  */
   return false;
 }
 
 bool ThemePainterDefault::paintButton(const LayoutObject& o,
                                       const PaintInfo& i,
                                       const IntRect& rect) {
-  (void)defaultButtonBackgroundColor;
-  (void)getWebThemeState;
-
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.button.hasBorder = true;
@@ -209,7 +198,6 @@ bool ThemePainterDefault::paintButton(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(canvas, WebThemeEngine::PartButton,
                                             getWebThemeState(o), WebRect(rect),
                                             &extraParams);
-  */
   return false;
 }
 
@@ -227,8 +215,6 @@ bool ThemePainterDefault::paintTextField(const LayoutObject& o,
   extraParams.textField.isTextArea = part == TextAreaPart;
   extraParams.textField.isListbox = part == ListboxPart;
 
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebCanvas* canvas = i.context.canvas();
 
   Color backgroundColor = o.resolveColor(CSSPropertyBackgroundColor);
@@ -237,7 +223,6 @@ bool ThemePainterDefault::paintTextField(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartTextField, getWebThemeState(o), WebRect(rect),
       &extraParams);
-  */
   return false;
 }
 
@@ -269,13 +254,10 @@ bool ThemePainterDefault::paintMenuList(const LayoutObject& o,
 
   setupMenuListArrow(box, rect, extraParams);
 
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebCanvas* canvas = i.context.canvas();
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartMenuList, getWebThemeState(o), WebRect(rect),
       &extraParams);
-  */
   return false;
 }
 
@@ -292,13 +274,10 @@ bool ThemePainterDefault::paintMenuListButton(const LayoutObject& o,
   extraParams.menuList.fillContentArea = false;
   setupMenuListArrow(toLayoutBox(o), rect, extraParams);
 
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebCanvas* canvas = i.context.canvas();
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartMenuList, getWebThemeState(o), WebRect(rect),
       &extraParams);
-  */
   return false;
 }
 
@@ -341,8 +320,6 @@ void ThemePainterDefault::setupMenuListArrow(
 bool ThemePainterDefault::paintSliderTrack(const LayoutObject& o,
                                            const PaintInfo& i,
                                            const IntRect& rect) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.slider.vertical = o.styleRef().appearance() == SliderVerticalPart;
@@ -365,15 +342,12 @@ bool ThemePainterDefault::paintSliderTrack(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartSliderTrack, getWebThemeState(o),
       WebRect(unzoomedRect), &extraParams);
-  */
   return false;
 }
 
 bool ThemePainterDefault::paintSliderThumb(const LayoutObject& o,
                                            const PaintInfo& i,
                                            const IntRect& rect) {
-    // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.slider.vertical =
@@ -396,15 +370,12 @@ bool ThemePainterDefault::paintSliderThumb(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartSliderThumb, getWebThemeState(o),
       WebRect(unzoomedRect), &extraParams);
-  */
   return false;
 }
 
 bool ThemePainterDefault::paintInnerSpinButton(const LayoutObject& o,
                                                const PaintInfo& i,
                                                const IntRect& rect) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.innerSpin.spinUp =
@@ -414,7 +385,6 @@ bool ThemePainterDefault::paintInnerSpinButton(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartInnerSpinButton, getWebThemeState(o),
       WebRect(rect), &extraParams);
-  */
   return false;
 }
 
@@ -427,9 +397,6 @@ bool ThemePainterDefault::paintProgressBar(const LayoutObject& o,
   const LayoutProgress& layoutProgress = toLayoutProgress(o);
   IntRect valueRect = progressValueRectFor(layoutProgress, rect);
 
-  (void)valueRect;
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebThemeEngine::ExtraParams extraParams;
   extraParams.progressBar.determinate = layoutProgress.isDeterminate();
   extraParams.progressBar.valueRectX = valueRect.x();
@@ -442,7 +409,6 @@ bool ThemePainterDefault::paintProgressBar(const LayoutObject& o,
   Platform::current()->themeEngine()->paint(
       canvas, WebThemeEngine::PartProgressBar, getWebThemeState(o),
       WebRect(rect), &extraParams);
-  */
   return false;
 }
 

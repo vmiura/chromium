@@ -159,13 +159,10 @@ void WebPluginContainerImpl::paint(GraphicsContext& context,
   context.translate(static_cast<float>(-origin.x()),
                     static_cast<float>(-origin.y()));
 
-  // TODO(cdl): Record plugin stuff into SkPicture.
-  /*
   WebCanvas* canvas = context.canvas();
 
   IntRect windowRect = view->contentsToRootFrame(cullRect.m_rect);
   m_webPlugin->paint(canvas, windowRect);
-  */
 
   context.restore();
 }
@@ -351,11 +348,8 @@ void WebPluginContainerImpl::printPage(int pageNumber,
       gc, *m_element->layoutObject(), DisplayItem::Type::kWebPlugin, printRect);
   gc.save();
 
-  // TODO(cdl): Print page to SkCanvas.
-  /*
   WebCanvas* canvas = gc.canvas();
   m_webPlugin->printPage(pageNumber, canvas);
-  */
   gc.restore();
 }
 
