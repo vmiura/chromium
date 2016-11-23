@@ -4,6 +4,7 @@
 
 #include "ui/views/round_rect_painter.h"
 
+#include "skia/ext/cdl_canvas.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/path.h"
 #include "ui/gfx/skia_util.h"

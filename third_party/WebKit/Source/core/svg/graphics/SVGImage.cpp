@@ -398,7 +398,7 @@ void SVGImage::drawInternal(CdlCanvas* canvas,
   }
 
   {
-    SkAutoCanvasRestore ar(canvas, false);
+    CdlAutoCanvasRestore ar(canvas, false);
     if (drawNeedsLayer(paint)) {
       SkRect layerRect = dstRect;
       SkPaint pt = paint.toSkPaint();

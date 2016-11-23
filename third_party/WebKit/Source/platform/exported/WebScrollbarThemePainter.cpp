@@ -30,6 +30,7 @@
 #include "platform/scroll/Scrollbar.h"
 #include "platform/scroll/ScrollbarTheme.h"
 #include "public/platform/WebRect.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
 namespace blink {
@@ -54,7 +55,7 @@ void WebScrollbarThemePainter::paintScrollbarBackground(WebCanvas* canvas,
   SkPictureBuilder pictureBuilder(intRect);
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintScrollbarBackground(pictureBuilder.context(), *m_scrollbar);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintTrackBackground(WebCanvas* canvas,
@@ -64,7 +65,7 @@ void WebScrollbarThemePainter::paintTrackBackground(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintTrackBackground(pictureBuilder.context(), *m_scrollbar,
                                 intRect);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
   if (!m_theme->shouldRepaintAllPartsOnInvalidation())
     m_scrollbar->clearTrackNeedsRepaint();
 }
@@ -76,7 +77,7 @@ void WebScrollbarThemePainter::paintBackTrackPart(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintTrackPiece(pictureBuilder.context(), *m_scrollbar, intRect,
                            BackTrackPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintForwardTrackPart(WebCanvas* canvas,
@@ -86,7 +87,7 @@ void WebScrollbarThemePainter::paintForwardTrackPart(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintTrackPiece(pictureBuilder.context(), *m_scrollbar, intRect,
                            ForwardTrackPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintBackButtonStart(WebCanvas* canvas,
@@ -96,7 +97,7 @@ void WebScrollbarThemePainter::paintBackButtonStart(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintButton(pictureBuilder.context(), *m_scrollbar, intRect,
                        BackButtonStartPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintBackButtonEnd(WebCanvas* canvas,
@@ -106,7 +107,7 @@ void WebScrollbarThemePainter::paintBackButtonEnd(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintButton(pictureBuilder.context(), *m_scrollbar, intRect,
                        BackButtonEndPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintForwardButtonStart(WebCanvas* canvas,
@@ -116,7 +117,7 @@ void WebScrollbarThemePainter::paintForwardButtonStart(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintButton(pictureBuilder.context(), *m_scrollbar, intRect,
                        ForwardButtonStartPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintForwardButtonEnd(WebCanvas* canvas,
@@ -126,7 +127,7 @@ void WebScrollbarThemePainter::paintForwardButtonEnd(WebCanvas* canvas,
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintButton(pictureBuilder.context(), *m_scrollbar, intRect,
                        ForwardButtonEndPart);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintTickmarks(WebCanvas* canvas,
@@ -135,7 +136,7 @@ void WebScrollbarThemePainter::paintTickmarks(WebCanvas* canvas,
   SkPictureBuilder pictureBuilder(intRect);
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintTickmarks(pictureBuilder.context(), *m_scrollbar, intRect);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
 }
 
 void WebScrollbarThemePainter::paintThumb(WebCanvas* canvas,
@@ -144,7 +145,7 @@ void WebScrollbarThemePainter::paintThumb(WebCanvas* canvas,
   SkPictureBuilder pictureBuilder(intRect);
   pictureBuilder.context().setDeviceScaleFactor(m_deviceScaleFactor);
   m_theme->paintThumb(pictureBuilder.context(), *m_scrollbar, intRect);
-  pictureBuilder.endRecording()->playback(canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
   if (!m_theme->shouldRepaintAllPartsOnInvalidation())
     m_scrollbar->clearThumbNeedsRepaint();
 }

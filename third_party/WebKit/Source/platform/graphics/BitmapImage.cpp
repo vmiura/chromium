@@ -264,7 +264,7 @@ void BitmapImage::draw(
   if (shouldRespectImageOrientation == RespectImageOrientation)
     orientation = frameOrientationAtIndex(m_currentFrame);
 
-  SkAutoCanvasRestore autoRestore(canvas, false);
+  CdlAutoCanvasRestore autoRestore(canvas, false);
   FloatRect adjustedDstRect = dstRect;
   if (orientation != DefaultImageOrientation) {
     canvas->save();

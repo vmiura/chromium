@@ -319,7 +319,7 @@ void LinkHighlightImpl::paintContents(
 
   CdlPictureRecorder recorder;
   gfx::Rect visualRect = paintableRegion();
-  SkCanvas* canvas =
+  CdlCanvas* canvas =
       recorder.beginRecording(visualRect.width(), visualRect.height());
 
   SkPaint paint;

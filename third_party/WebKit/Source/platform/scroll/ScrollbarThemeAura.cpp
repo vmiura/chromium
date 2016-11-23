@@ -299,11 +299,14 @@ void ScrollbarThemeAura::paintTrackPiece(GraphicsContext& gc,
   extraParams.scrollbarTrack.trackY = alignRect.y();
   extraParams.scrollbarTrack.trackWidth = alignRect.width();
   extraParams.scrollbarTrack.trackHeight = alignRect.height();
+  // TODO(cdl): Theme stuff.
+  /*
   Platform::current()->themeEngine()->paint(
       gc.canvas(), scrollbar.orientation() == HorizontalScrollbar
                        ? WebThemeEngine::PartScrollbarHorizontalTrack
                        : WebThemeEngine::PartScrollbarVerticalTrack,
       state, WebRect(rect), &extraParams);
+  */
 }
 
 void ScrollbarThemeAura::paintButton(GraphicsContext& gc,
@@ -318,9 +321,12 @@ void ScrollbarThemeAura::paintButton(GraphicsContext& gc,
       buttonPartPaintingParams(scrollbar, scrollbar.currentPos(), part);
   if (!params.shouldPaint)
     return;
+  // TODO(cdl): Theme stuff.
+  /*
   DrawingRecorder recorder(gc, scrollbar, displayItemType, rect);
   Platform::current()->themeEngine()->paint(
       gc.canvas(), params.part, params.state, WebRect(rect), nullptr);
+  */
 }
 
 void ScrollbarThemeAura::paintThumb(GraphicsContext& gc,
@@ -330,6 +336,8 @@ void ScrollbarThemeAura::paintThumb(GraphicsContext& gc,
                                                   DisplayItem::kScrollbarThumb))
     return;
 
+  // TODO(cdl): Theme stuff.
+  /*
   DrawingRecorder recorder(gc, scrollbar, DisplayItem::kScrollbarThumb, rect);
 
   WebThemeEngine::State state;
@@ -346,6 +354,7 @@ void ScrollbarThemeAura::paintThumb(GraphicsContext& gc,
                   ? WebThemeEngine::PartScrollbarHorizontalThumb
                   : WebThemeEngine::PartScrollbarVerticalThumb,
       state, WebRect(rect), nullptr);
+  */
 }
 
 bool ScrollbarThemeAura::shouldRepaintAllPartsOnInvalidation() const {

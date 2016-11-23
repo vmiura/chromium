@@ -42,7 +42,7 @@ void TransformDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   TransformToProto(transform_, details->mutable_transform());
 }
 
-void TransformDisplayItem::Raster(SkCanvas* canvas,
+void TransformDisplayItem::Raster(CdlCanvas* canvas,
                                   SkPicture::AbortCallback* callback) const {
   canvas->save();
   if (!transform_.IsIdentity())
@@ -76,7 +76,7 @@ void EndTransformDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 }
 
 void EndTransformDisplayItem::Raster(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }

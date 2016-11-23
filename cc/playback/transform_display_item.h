@@ -25,7 +25,7 @@ class CC_EXPORT TransformDisplayItem : public DisplayItem {
   ~TransformDisplayItem() override;
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;
@@ -50,7 +50,7 @@ class CC_EXPORT EndTransformDisplayItem : public DisplayItem {
   }
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;

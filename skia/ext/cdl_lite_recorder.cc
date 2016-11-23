@@ -9,6 +9,8 @@
 #include "cdl_lite_recorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
+#define INHERITED(method, ...) this->CdlCanvas::method(__VA_ARGS__)
+
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
     : CdlCanvas(bounds.width(), bounds.height()), fDL(dl) {}
 
@@ -27,11 +29,13 @@ SkDrawFilter* CdlLiteRecorder::setDrawFilter(SkDrawFilter* df) {
 void CdlLiteRecorder::willSave() {
   fDL->save();
 }
-SkCanvas::SaveLayerStrategy CdlLiteRecorder::getSaveLayerStrategy(
-    const SaveLayerRec& rec) {
+
+CdlCanvas::SaveLayerStrategy CdlLiteRecorder::getSaveLayerStrategy(
+    const SkCanvas::SaveLayerRec& rec) {
   fDL->saveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
-  return SkCanvas::kNoLayer_SaveLayerStrategy;
+  return kNoLayer_SaveLayerStrategy;
 }
+
 void CdlLiteRecorder::willRestore() {
   fDL->restore();
 }
@@ -47,26 +51,26 @@ void CdlLiteRecorder::didTranslate(SkScalar dx, SkScalar dy) {
 }
 
 void CdlLiteRecorder::onClipRect(const SkRect& rect,
-                                 ClipOp op,
+                                 SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
+  INHERITED(onClipRect, rect, op, style);
   fDL->clipRect(rect, op, style == kSoft_ClipEdgeStyle);
-  SkCanvas::onClipRect(rect, op, style);
 }
 void CdlLiteRecorder::onClipRRect(const SkRRect& rrect,
-                                  ClipOp op,
+                                  SkCanvas::ClipOp op,
                                   ClipEdgeStyle style) {
+  INHERITED(onClipRRect, rrect, op, style);
   fDL->clipRRect(rrect, op, style == kSoft_ClipEdgeStyle);
-  SkCanvas::onClipRRect(rrect, op, style);
 }
 void CdlLiteRecorder::onClipPath(const SkPath& path,
-                                 ClipOp op,
+                                 SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
+  INHERITED(onClipPath, path, op, style);
   fDL->clipPath(path, op, style == kSoft_ClipEdgeStyle);
-  SkCanvas::onClipPath(path, op, style);
 }
-void CdlLiteRecorder::onClipRegion(const SkRegion& region, ClipOp op) {
+void CdlLiteRecorder::onClipRegion(const SkRegion& region, SkCanvas::ClipOp op) {
+  INHERITED(onClipRegion, region, op);
   fDL->clipRegion(region, op);
-  SkCanvas::onClipRegion(region, op);
 }
 
 void CdlLiteRecorder::onDrawPaint(const SkPaint& paint) {
@@ -163,6 +167,7 @@ void CdlLiteRecorder::onDrawBitmap(const SkBitmap& bm,
                                    const SkPaint* paint) {
   fDL->drawImage(SkImage::MakeFromBitmap(bm), x, y, paint);
 }
+/*
 void CdlLiteRecorder::onDrawBitmapNine(const SkBitmap& bm,
                                        const SkIRect& center,
                                        const SkRect& dst,
@@ -173,7 +178,7 @@ void CdlLiteRecorder::onDrawBitmapRect(const SkBitmap& bm,
                                        const SkRect* src,
                                        const SkRect& dst,
                                        const SkPaint* paint,
-                                       SrcRectConstraint constraint) {
+                                       SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(SkImage::MakeFromBitmap(bm), src, dst, paint, constraint);
 }
 void CdlLiteRecorder::onDrawBitmapLattice(const SkBitmap& bm,
@@ -182,26 +187,29 @@ void CdlLiteRecorder::onDrawBitmapLattice(const SkBitmap& bm,
                                           const SkPaint* paint) {
   fDL->drawImageLattice(SkImage::MakeFromBitmap(bm), lattice, dst, paint);
 }
-
+*/
 void CdlLiteRecorder::onDrawImage(const SkImage* img,
                                   SkScalar x,
                                   SkScalar y,
                                   const SkPaint* paint) {
   fDL->drawImage(sk_ref_sp(img), x, y, paint);
 }
+/*
 void CdlLiteRecorder::onDrawImageNine(const SkImage* img,
                                       const SkIRect& center,
                                       const SkRect& dst,
                                       const SkPaint* paint) {
   fDL->drawImageNine(sk_ref_sp(img), center, dst, paint);
 }
+*/
 void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
                                       const SkRect* src,
                                       const SkRect& dst,
                                       const SkPaint* paint,
-                                      SrcRectConstraint constraint) {
+                                      SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
 }
+/*
 void CdlLiteRecorder::onDrawImageLattice(const SkImage* img,
                                          const SkCanvas::Lattice& lattice,
                                          const SkRect& dst,
@@ -216,12 +224,14 @@ void CdlLiteRecorder::onDrawPatch(const SkPoint cubics[12],
                                   const SkPaint& paint) {
   fDL->drawPatch(cubics, colors, texCoords, bmode, paint);
 }
+*/
 void CdlLiteRecorder::onDrawPoints(SkCanvas::PointMode mode,
                                    size_t count,
                                    const SkPoint pts[],
                                    const SkPaint& paint) {
   fDL->drawPoints(mode, count, pts, paint);
 }
+/*
 void CdlLiteRecorder::onDrawVertices(SkCanvas::VertexMode mode,
                                      int count,
                                      const SkPoint vertices[],
@@ -244,6 +254,7 @@ void CdlLiteRecorder::onDrawAtlas(const SkImage* atlas,
                                   const SkPaint* paint) {
   fDL->drawAtlas(atlas, xforms, texs, colors, count, bmode, cull, paint);
 }
+*/
 
 void CdlLiteRecorder::didTranslateZ(SkScalar dz) {
   fDL->translateZ(dz);

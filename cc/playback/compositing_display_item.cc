@@ -96,7 +96,7 @@ void CompositingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 }
 
 void CompositingDisplayItem::Raster(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     SkPicture::AbortCallback* callback) const {
   SkPaint paint;
   paint.setBlendMode(static_cast<SkBlendMode>(xfermode_));
@@ -144,7 +144,7 @@ void EndCompositingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 }
 
 void EndCompositingDisplayItem::Raster(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }

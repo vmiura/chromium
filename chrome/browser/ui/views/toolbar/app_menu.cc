@@ -219,9 +219,12 @@ class InMenuButtonBackground : public views::Background {
         const int kBackgroundCornerRadius = 2;
         params.menu_item.corner_radius = kBackgroundCornerRadius;
       }
+      // TODO(cdl): native theme
+      /*
       view->GetNativeTheme()->Paint(canvas->sk_canvas(),
                                     ui::NativeTheme::kMenuItemBackground,
                                     ui::NativeTheme::kHovered, bounds, params);
+                                    */
     }
   }
 

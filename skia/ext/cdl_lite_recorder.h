@@ -32,17 +32,17 @@ class CdlLiteRecorder final : public CdlCanvas {
 #endif
 
   void willSave() override;
-  SaveLayerStrategy getSaveLayerStrategy(const SaveLayerRec&) override;
+  SaveLayerStrategy getSaveLayerStrategy(const SkCanvas::SaveLayerRec&) override;
   void willRestore() override;
 
   void didConcat(const SkMatrix&) override;
   void didSetMatrix(const SkMatrix&) override;
   void didTranslate(SkScalar, SkScalar) override;
 
-  void onClipRect(const SkRect&, ClipOp, ClipEdgeStyle) override;
-  void onClipRRect(const SkRRect&, ClipOp, ClipEdgeStyle) override;
-  void onClipPath(const SkPath&, ClipOp, ClipEdgeStyle) override;
-  void onClipRegion(const SkRegion&, ClipOp) override;
+  void onClipRect(const SkRect&, SkCanvas::ClipOp, ClipEdgeStyle) override;
+  void onClipRRect(const SkRRect&, SkCanvas::ClipOp, ClipEdgeStyle) override;
+  void onClipPath(const SkPath&, SkCanvas::ClipOp, ClipEdgeStyle) override;
+  void onClipRegion(const SkRegion&, SkCanvas::ClipOp) override;
 
   void onDrawPaint(const SkPaint&) override;
   void onDrawPath(const SkPath&, const SkPaint&) override;
@@ -96,8 +96,9 @@ class CdlLiteRecorder final : public CdlCanvas {
                     SkScalar,
                     SkScalar,
                     const SkPaint*) override;
+  /*
   void onDrawBitmapLattice(const SkBitmap&,
-                           const Lattice&,
+                           const SkCanvas::Lattice&,
                            const SkRect&,
                            const SkPaint*) override;
   void onDrawBitmapNine(const SkBitmap&,
@@ -108,33 +109,38 @@ class CdlLiteRecorder final : public CdlCanvas {
                         const SkRect*,
                         const SkRect&,
                         const SkPaint*,
-                        SrcRectConstraint) override;
-
+                        SkCanvas::SrcRectConstraint) override;
+  */
   void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
+  /*
   void onDrawImageLattice(const SkImage*,
-                          const Lattice&,
+                          const SkCanvas::Lattice&,
                           const SkRect&,
                           const SkPaint*) override;
   void onDrawImageNine(const SkImage*,
                        const SkIRect&,
                        const SkRect&,
                        const SkPaint*) override;
+                       */
   void onDrawImageRect(const SkImage*,
                        const SkRect*,
                        const SkRect&,
                        const SkPaint*,
-                       SrcRectConstraint) override;
+                       SkCanvas::SrcRectConstraint) override;
 
+  /*
   void onDrawPatch(const SkPoint[12],
                    const SkColor[4],
                    const SkPoint[4],
                    SkBlendMode,
                    const SkPaint&) override;
-  void onDrawPoints(PointMode,
+                   */
+  void onDrawPoints(SkCanvas::PointMode,
                     size_t count,
                     const SkPoint pts[],
                     const SkPaint&) override;
-  void onDrawVertices(VertexMode,
+  /*
+  void onDrawVertices(SkCanvas::VertexMode,
                       int,
                       const SkPoint[],
                       const SkPoint[],
@@ -151,6 +157,7 @@ class CdlLiteRecorder final : public CdlCanvas {
                    SkBlendMode,
                    const SkRect*,
                    const SkPaint*) override;
+                   */
 
 #ifdef SK_EXPERIMENTAL_SHADOWING
   void didTranslateZ(SkScalar) override;

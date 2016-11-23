@@ -15,7 +15,7 @@ CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture) : picture_(picture) {}
 
 CdlPicture::~CdlPicture() {}
 
-void CdlPicture::draw(SkCanvas* canvas) const {
+void CdlPicture::draw(CdlCanvas* canvas) const {
   canvas->drawDrawable(picture_.get());
 }
 
@@ -31,7 +31,7 @@ sk_sp<SkDrawable> CdlPicture::toSkDrawable() const {
   return nullptr;
 }
 
-void CdlPicture::playback(SkCanvas* canvas,
+void CdlPicture::playback(CdlCanvas* canvas,
                           SkPicture::AbortCallback* callback) const {
   // TODO(cdl): SkDrawable doesn't support AbortCallback.
   canvas->drawDrawable(picture_.get());

@@ -42,7 +42,7 @@ void FloatClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   RectFToProto(clip_rect_, details->mutable_clip_rect());
 }
 
-void FloatClipDisplayItem::Raster(SkCanvas* canvas,
+void FloatClipDisplayItem::Raster(CdlCanvas* canvas,
                                   SkPicture::AbortCallback* callback) const {
   canvas->save();
   canvas->clipRect(gfx::RectFToSkRect(clip_rect_));
@@ -75,7 +75,7 @@ void EndFloatClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 }
 
 void EndFloatClipDisplayItem::Raster(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }

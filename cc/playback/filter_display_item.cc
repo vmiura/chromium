@@ -56,7 +56,7 @@ void FilterDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   // TODO(dtrainor): Support serializing FilterOperations (crbug.com/541321).
 }
 
-void FilterDisplayItem::Raster(SkCanvas* canvas,
+void FilterDisplayItem::Raster(CdlCanvas* canvas,
                                SkPicture::AbortCallback* callback) const {
   canvas->save();
   canvas->translate(origin_.x(), origin_.y());
@@ -100,7 +100,7 @@ void EndFilterDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndFilter);
 }
 
-void EndFilterDisplayItem::Raster(SkCanvas* canvas,
+void EndFilterDisplayItem::Raster(CdlCanvas* canvas,
                                   SkPicture::AbortCallback* callback) const {
   canvas->restore();
   canvas->restore();

@@ -12,6 +12,7 @@
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/skia_conversions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_canvas.h"
 
 namespace cc {
 
@@ -65,7 +66,7 @@ void ClipPathDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   }
 }
 
-void ClipPathDisplayItem::Raster(SkCanvas* canvas,
+void ClipPathDisplayItem::Raster(CdlCanvas* canvas,
                                  SkPicture::AbortCallback* callback) const {
   canvas->save();
   canvas->clipPath(clip_path_, clip_op_, antialias_);
@@ -100,7 +101,7 @@ void EndClipPathDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 }
 
 void EndClipPathDisplayItem::Raster(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }
