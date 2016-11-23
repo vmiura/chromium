@@ -520,6 +520,7 @@ void Canvas2DLayerBridge::hibernate() {
   m_surface->draw(tempHibernationSurface->getCanvas(), 0, 0,
                   &copyPaint);  // GPU readback
   m_hibernationImage = tempHibernationSurface->makeImageSnapshot();
+  m_canvas.reset();
   m_surface.reset();  // destroy the GPU-backed buffer
   m_layer->clearTexture();
 #if USE_IOSURFACE_FOR_2D_CANVAS
@@ -614,7 +615,7 @@ CdlCanvas* Canvas2DLayerBridge::getOrCreateCanvas(AccelerationHint hint) {
   if (!surface)
     return nullptr;
 
-  m_canvas.reset(new CdlCanvas(surface->getCanvas()));
+  m_canvas = CdlCanvas::Make(surface->getCanvas());
   return m_canvas.get();
 }
 
@@ -654,7 +655,7 @@ void Canvas2DLayerBridge::disableDeferral(DisableDeferralReason reason) {
   // install the current matrix/clip stack onto the immediate canvas
   SkSurface* surface = getOrCreateSurface();
   if (m_imageBuffer && surface)
-    m_imageBuffer->resetCanvas(m_canvas.get());
+    m_imageBuffer->resetCanvas(getOrCreateCanvas());
 }
 
 void Canvas2DLayerBridge::setImageBuffer(ImageBuffer* imageBuffer) {
@@ -674,6 +675,7 @@ void Canvas2DLayerBridge::beginDestruction() {
   m_imageBuffer = nullptr;
   m_destructionInProgress = true;
   setIsHidden(true);
+  m_canvas.reset();
   m_surface.reset();
 
   unregisterTaskObserver();
@@ -732,8 +734,8 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
     copyPaint.setBlendMode(SkBlendMode::kSrc);
 
     sk_sp<SkSurface> oldSurface = std::move(m_surface);
-    m_surface.reset();
     m_canvas.reset();
+    m_surface.reset();
 
     m_softwareRenderingWhileHidden = false;
     SkSurface* newSurface =
@@ -743,8 +745,7 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
         oldSurface->draw(newSurface->getCanvas(), 0, 0, &copyPaint);
       if (m_imageBuffer && !m_isDeferralEnabled) {
         // TODO(cdl): was nullptr dereference here?
-        //m_imageBuffer->resetCanvas(m_surface->getCanvas());
-        m_imageBuffer->resetCanvas(nullptr);
+        m_imageBuffer->resetCanvas(CdlCanvas::Make(m_surface->getCanvas()).get());
       }
     }
   }
@@ -794,7 +795,7 @@ void Canvas2DLayerBridge::flushRecordingOnly() {
   if (m_haveRecordedDrawCommands && getOrCreateSurface()) {
     TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecordingOnly");
     m_recorder->finishRecordingAsPicture()->playback(
-        getOrCreateSurface()->getCanvas());
+        CdlCanvas::Make(getOrCreateSurface()->getCanvas()).get());
     if (m_isDeferralEnabled)
       startRecording();
     m_haveRecordedDrawCommands = false;
@@ -842,6 +843,7 @@ bool Canvas2DLayerBridge::checkSurfaceValid() {
     return false;
   if (m_contextProvider->contextGL()->GetGraphicsResetStatusKHR() !=
       GL_NO_ERROR) {
+    m_canvas.reset();
     m_surface.reset();
     for (auto mailboxInfo = m_mailboxes.begin();
          mailboxInfo != m_mailboxes.end(); ++mailboxInfo) {

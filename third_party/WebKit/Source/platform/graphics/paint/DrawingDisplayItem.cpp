@@ -65,7 +65,7 @@ static SkBitmap pictureToBitmap(const CdlPicture* picture) {
   SkCanvas canvas(bitmap);
   canvas.clear(SK_ColorTRANSPARENT);
   canvas.translate(-rect.x(), -rect.y());
-  picture->draw(&canvas);
+  picture->draw(CdlCanvas::Make(&canvas).get());
   return bitmap;
 }
 

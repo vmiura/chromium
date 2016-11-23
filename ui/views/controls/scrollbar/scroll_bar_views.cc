@@ -81,10 +81,13 @@ gfx::Size ScrollBarButton::GetPreferredSize() const {
 }
 
 void ScrollBarButton::OnPaint(gfx::Canvas* canvas) {
+  // TODO(cdl): theme stuff.
+  /*
   gfx::Rect bounds(GetPreferredSize());
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetNativeThemePart(),
                           GetNativeThemeState(), bounds,
                           GetNativeThemeParams());
+  */
 }
 
 ui::NativeTheme::ExtraParams ScrollBarButton::GetNativeThemeParams() const {
@@ -150,6 +153,8 @@ gfx::Size ScrollBarThumb::GetPreferredSize() const {
 }
 
 void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
+  // TODO(cdl): theme stuff.
+  /*
   const gfx::Rect local_bounds(GetLocalBounds());
   const ui::NativeTheme::State theme_state = GetNativeThemeState();
   const ui::NativeTheme::ExtraParams extra_params(GetNativeThemeParams());
@@ -160,6 +165,7 @@ void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
                                   : ui::NativeTheme::kScrollbarVerticalGripper;
   GetNativeTheme()->Paint(canvas->sk_canvas(), gripper_part, theme_state,
                           local_bounds, extra_params);
+  */
 }
 
 ui::NativeTheme::ExtraParams ScrollBarThumb::GetNativeThemeParams() const {
@@ -274,7 +280,10 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   params_.scrollbar_track.track_height = bounds.height();
   params_.scrollbar_track.classic_state = 0;
 
+  // TODO(cdl): theme stuff.
+  /*
   GetNativeTheme()->Paint(canvas->sk_canvas(), part_, state_, bounds, params_);
+  */
 }
 
 gfx::Size ScrollBarViews::GetPreferredSize() const {

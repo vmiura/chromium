@@ -54,7 +54,7 @@ void CrossfadeGeneratedImage::drawCrossfade(CdlCanvas* canvas,
   // this code.  This should be investigated further. crbug.com/472634
   SkPaint layerPaint;
   layerPaint.setBlendMode(paint.getBlendMode());
-  SkAutoCanvasRestore ar(canvas, false);
+  CdlAutoCanvasRestore ar(canvas, false);
   canvas->saveLayer(nullptr, &layerPaint);
 
   CdlPaint imagePaint(paint);
@@ -85,7 +85,7 @@ void CrossfadeGeneratedImage::draw(CdlCanvas* canvas,
   if (m_fromImage == Image::nullImage() || m_toImage == Image::nullImage())
     return;
 
-  SkAutoCanvasRestore ar(canvas, true);
+  CdlAutoCanvasRestore ar(canvas, true);
   canvas->clipRect(dstRect);
   canvas->translate(dstRect.x(), dstRect.y());
   if (dstRect.size() != srcRect.size())

@@ -367,7 +367,7 @@ void Font::drawGlyphBuffer(CdlCanvas* canvas,
     blob = bloberizer.next();
     ASSERT(blob.first);
 
-    SkAutoCanvasRestore autoRestore(canvas, false);
+    CdlAutoCanvasRestore autoRestore(canvas, false);
     if (blob.second == CCWRotation) {
       canvas->save();
 

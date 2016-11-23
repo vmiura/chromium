@@ -16,7 +16,7 @@ void PaintGeneratedImage::draw(CdlCanvas* canvas,
                                const FloatRect& srcRect,
                                RespectImageOrientationEnum,
                                ImageClampingMode) {
-  SkAutoCanvasRestore ar(canvas, true);
+  CdlAutoCanvasRestore ar(canvas, true);
   canvas->clipRect(destRect);
   canvas->translate(destRect.x(), destRect.y());
   if (destRect.size() != srcRect.size())

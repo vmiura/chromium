@@ -272,7 +272,7 @@ void GraphicsContext::beginRecording(const FloatRect& bounds) {
 
   m_canvas = m_pictureRecorder.beginRecording(bounds, nullptr);
   if (m_hasMetaData)
-    skia::GetMetaData(*m_canvas) = m_metaData;
+    skia::GetMetaData(*m_canvas->getSkCanvas()) = m_metaData;
 }
 
 namespace {
@@ -337,13 +337,15 @@ void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,
 void GraphicsContext::drawFocusRingPath(const SkPath& path,
                                         const Color& color,
                                         float width) {
-  drawPlatformFocusRing(path, m_canvas, color.rgb(), width);
+  // TODO(cdl): focus ring
+  //drawPlatformFocusRing(path, m_canvas, color.rgb(), width);
 }
 
 void GraphicsContext::drawFocusRingRect(const SkRect& rect,
                                         const Color& color,
                                         float width) {
-  drawPlatformFocusRing(rect, m_canvas, color.rgb(), width);
+  // TODO(cdl): focus ring
+  //drawPlatformFocusRing(rect, m_canvas, color.rgb(), width);
 }
 
 void GraphicsContext::drawFocusRing(const Path& focusRingPath,
@@ -861,7 +863,7 @@ void GraphicsContext::drawImageRRect(
     m_canvas->drawRRect(dest, imagePaint.toSkPaint());
   } else {
     // Clip-based fallback.
-    SkAutoCanvasRestore autoRestore(m_canvas, true);
+    CdlAutoCanvasRestore autoRestore(m_canvas, true);
     m_canvas->clipRRect(dest, SkRegion::kIntersect_Op,
                         imagePaint.isAntiAlias());
     image->draw(m_canvas, imagePaint, dest.rect(), srcRect, respectOrientation,
@@ -1242,7 +1244,8 @@ void GraphicsContext::setURLForRect(const KURL& link, const IntRect& destRect) {
   ASSERT(m_canvas);
 
   sk_sp<SkData> url(SkData::MakeWithCString(link.getString().utf8().data()));
-  SkAnnotateRectWithURL(m_canvas, destRect, url.get());
+  // TODO(cdl): annotate
+  //SkAnnotateRectWithURL(m_canvas, destRect, url.get());
 }
 
 void GraphicsContext::setURLFragmentForRect(const String& destName,
@@ -1252,7 +1255,8 @@ void GraphicsContext::setURLFragmentForRect(const String& destName,
   ASSERT(m_canvas);
 
   sk_sp<SkData> skDestName(SkData::MakeWithCString(destName.utf8().data()));
-  SkAnnotateLinkToDestination(m_canvas, rect, skDestName.get());
+  // TODO(cdl): annotate
+  //SkAnnotateLinkToDestination(m_canvas, rect, skDestName.get());
 }
 
 void GraphicsContext::setURLDestinationLocation(const String& name,
@@ -1262,8 +1266,9 @@ void GraphicsContext::setURLDestinationLocation(const String& name,
   ASSERT(m_canvas);
 
   sk_sp<SkData> skName(SkData::MakeWithCString(name.utf8().data()));
-  SkAnnotateNamedDestination(
-      m_canvas, SkPoint::Make(location.x(), location.y()), skName.get());
+  // TODO(cdl): annotate
+  //SkAnnotateNamedDestination(
+  //    m_canvas, SkPoint::Make(location.x(), location.y()), skName.get());
 }
 
 void GraphicsContext::concatCTM(const AffineTransform& affine) {

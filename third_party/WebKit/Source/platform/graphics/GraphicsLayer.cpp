@@ -1254,7 +1254,7 @@ void GraphicsLayer::checkPaintUnderInvalidations(const CdlPicture& newPicture) {
     SkCanvas canvas(oldBitmap);
     canvas.clear(SK_ColorTRANSPARENT);
     canvas.translate(-rect.x(), -rect.y());
-    tracking->lastPaintedPicture->draw(&canvas);
+    tracking->lastPaintedPicture->draw(CdlCanvas::Make(&canvas).get());
   }
 
   SkBitmap newBitmap;
@@ -1264,7 +1264,7 @@ void GraphicsLayer::checkPaintUnderInvalidations(const CdlPicture& newPicture) {
     SkCanvas canvas(newBitmap);
     canvas.clear(SK_ColorTRANSPARENT);
     canvas.translate(-rect.x(), -rect.y());
-    newPicture.draw(&canvas);
+    newPicture.draw(CdlCanvas::Make(&canvas).get());
   }
 
   oldBitmap.lockPixels();

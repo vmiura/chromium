@@ -44,7 +44,7 @@ bool DisplayItemsTracingEnabled() {
   return tracing_enabled;
 }
 
-bool GetCanvasClipBounds(SkCanvas* canvas, gfx::Rect* clip_bounds) {
+bool GetCanvasClipBounds(CdlCanvas* canvas, gfx::Rect* clip_bounds) {
   SkRect canvas_clip_bounds;
   if (!canvas->getClipBounds(&canvas_clip_bounds))
     return false;
@@ -111,7 +111,7 @@ void DisplayItemList::ToProtobuf(proto::DisplayItemList* proto) {
   }
 }
 
-void DisplayItemList::Raster(SkCanvas* canvas,
+void DisplayItemList::Raster(CdlCanvas* canvas,
                              SkPicture::AbortCallback* callback,
                              const gfx::Rect& canvas_target_playback_rect,
                              float contents_scale) const {
@@ -130,7 +130,7 @@ void DisplayItemList::Raster(SkCanvas* canvas,
 }
 
 DISABLE_CFI_PERF
-void DisplayItemList::Raster(SkCanvas* canvas,
+void DisplayItemList::Raster(CdlCanvas* canvas,
                              SkPicture::AbortCallback* callback) const {
   gfx::Rect canvas_playback_rect;
   if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
@@ -234,7 +234,7 @@ DisplayItemList::AsValue(bool include_items) const {
   SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
   canvas->translate(-bounds.x(), -bounds.y());
   canvas->clipRect(gfx::RectToSkRect(bounds));
-  Raster(canvas, nullptr, gfx::Rect(), 1.f);
+  Raster(CdlCanvas::Make(canvas).get(), nullptr, gfx::Rect(), 1.f);
   sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
   std::string b64_picture;
@@ -261,7 +261,7 @@ void DisplayItemList::GenerateDiscardableImagesMetadata() {
   gfx::Rect bounds = rtree_.GetBounds();
   DiscardableImageMap::ScopedMetadataGenerator generator(
       &image_map_, gfx::Size(bounds.right(), bounds.bottom()));
-  Raster(generator.canvas(), nullptr, gfx::Rect(), 1.f);
+  Raster(CdlCanvas::Make(generator.canvas()).get(), nullptr, gfx::Rect(), 1.f);
 }
 
 void DisplayItemList::GetDiscardableImagesInRect(

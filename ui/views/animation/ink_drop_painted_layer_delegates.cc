@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRRect.h"

@@ -34,7 +34,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 
-class SkCanvas;
+class CdlCanvas;
 class SkDrawLooper;
 struct SkPoint;
 class SkShader;
@@ -109,7 +109,7 @@ class GFX_EXPORT SkiaTextRenderer {
   };
 
   Canvas* canvas_;
-  SkCanvas* canvas_skia_;
+  CdlCanvas* canvas_skia_;
   SkPaint paint_;
   SkScalar underline_thickness_;
   SkScalar underline_position_;

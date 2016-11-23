@@ -129,7 +129,7 @@ sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
       SkCanvas canvas(bitmap);
       canvas.clear(SK_ColorTRANSPARENT);
       canvas.translate(-cullRect.x(), -cullRect.y());
-      maskPicture->draw(&canvas);
+      maskPicture->draw(CdlCanvas::Make(&canvas).get());
       sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
 
       // SkXfermodeImageFilter can choose an excessively large size if the

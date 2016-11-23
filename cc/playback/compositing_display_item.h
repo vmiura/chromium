@@ -33,7 +33,7 @@ class CC_EXPORT CompositingDisplayItem : public DisplayItem {
   ~CompositingDisplayItem() override;
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;
@@ -67,7 +67,7 @@ class CC_EXPORT EndCompositingDisplayItem : public DisplayItem {
   }
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;

@@ -70,7 +70,7 @@ scoped_refptr<DisplayItemList> PictureImageLayer::PaintContentsToDisplayList(
       DisplayItemList::Create(settings);
 
   CdlPictureRecorder recorder;
-  SkCanvas* canvas =
+  CdlCanvas* canvas =
       recorder.beginRecording(gfx::RectToSkRect(PaintableRegion()));
 
   SkScalar content_to_layer_scale_x =

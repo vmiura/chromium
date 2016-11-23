@@ -62,7 +62,7 @@ void ClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   details->set_antialias(antialias_);
 }
 
-void ClipDisplayItem::Raster(SkCanvas* canvas,
+void ClipDisplayItem::Raster(CdlCanvas* canvas,
                              SkPicture::AbortCallback* callback) const {
   canvas->save();
   canvas->clipRect(gfx::RectToSkRect(clip_rect_), SkRegion::kIntersect_Op,
@@ -123,7 +123,7 @@ void EndClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndClip);
 }
 
-void EndClipDisplayItem::Raster(SkCanvas* canvas,
+void EndClipDisplayItem::Raster(CdlCanvas* canvas,
                                 SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }

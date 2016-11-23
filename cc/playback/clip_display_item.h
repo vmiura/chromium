@@ -28,7 +28,7 @@ class CC_EXPORT ClipDisplayItem : public DisplayItem {
   ~ClipDisplayItem() override;
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;
@@ -53,7 +53,7 @@ class CC_EXPORT EndClipDisplayItem : public DisplayItem {
   ~EndClipDisplayItem() override;
 
   void ToProtobuf(proto::DisplayItem* proto) const override;
-  void Raster(SkCanvas* canvas,
+  void Raster(CdlCanvas* canvas,
               SkPicture::AbortCallback* callback) const override;
   void AsValueInto(const gfx::Rect& visual_rect,
                    base::trace_event::TracedValue* array) const override;

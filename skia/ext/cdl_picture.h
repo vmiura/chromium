@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "cdl_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkDrawable.h"
@@ -20,12 +21,12 @@ class CdlPicture : public SkRefCnt {
   CdlPicture(sk_sp<CdlLiteDL> picture);
   ~CdlPicture() override;
 
-  void draw(SkCanvas* canvas) const;
+  void draw(CdlCanvas* canvas) const;
 
   sk_sp<SkPicture> toSkPicture() const;
   sk_sp<SkDrawable> toSkDrawable() const;
   int approximateOpCount() const { return 1; }
-  void playback(SkCanvas*, SkPicture::AbortCallback* = NULL) const;
+  void playback(CdlCanvas*, SkPicture::AbortCallback* = NULL) const;
   SkRect cullRect() const;
   uint32_t uniqueID() const;
 

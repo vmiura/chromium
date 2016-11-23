@@ -19,6 +19,8 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 
+class CdlCanvas;
+
 namespace gfx {
 
 class Rect;
@@ -91,7 +93,8 @@ class GFX_EXPORT Canvas {
   // so no additional scaling is applied.
   // Note: the caller must ensure that sk_canvas outlives this object, or until
   // RecreateBackingCanvas is called.
-  Canvas(SkCanvas* sk_canvas, float image_scale);
+  // TODO(cdl): Update CdlCanvas to non ref-counted.
+  Canvas(sk_sp<CdlCanvas> sk_canvas, float image_scale);
 
   virtual ~Canvas();
 
@@ -477,7 +480,7 @@ class GFX_EXPORT Canvas {
                        const Rect& display_rect,
                        int flags);
 
-  SkCanvas* sk_canvas() { return canvas_; }
+  CdlCanvas* sk_canvas() { return canvas_.get(); }
   float image_scale() const { return image_scale_; }
 
  private:
@@ -510,7 +513,8 @@ class GFX_EXPORT Canvas {
   // borrowing someone else's canvas, in which case canvas_ will point there
   // but canvas_owner_ will be null.
   std::unique_ptr<SkCanvas> canvas_owner_;
-  SkCanvas* canvas_;
+  // TODO(cdl) update CdlCanvas ownership.
+  sk_sp<CdlCanvas> canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(Canvas);
 };

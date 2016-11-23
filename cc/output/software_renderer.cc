@@ -21,6 +21,7 @@
 #include "cc/quads/tile_draw_quad.h"
 #include "cc/resources/scoped_resource.h"
 #include "skia/ext/opacity_filter_canvas.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
@@ -355,12 +356,12 @@ void SoftwareRenderer::DrawPictureQuad(const DrawingFrame* frame,
                                               quad->shared_quad_state->opacity,
                                               disable_image_filtering);
     quad->raster_source->PlaybackToCanvas(
-        &filtered_canvas, quad->content_rect, quad->content_rect,
+        CdlCanvas::Make(&filtered_canvas).get(), quad->content_rect, quad->content_rect,
         gfx::SizeF(quad->contents_scale, quad->contents_scale),
         playback_settings);
   } else {
     quad->raster_source->PlaybackToCanvas(
-        current_canvas_, quad->content_rect, quad->content_rect,
+        CdlCanvas::Make(current_canvas_).get(), quad->content_rect, quad->content_rect,
         gfx::SizeF(quad->contents_scale, quad->contents_scale),
         playback_settings);
   }

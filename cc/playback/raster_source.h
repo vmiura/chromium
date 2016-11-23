@@ -16,6 +16,7 @@
 #include "cc/playback/recording_source.h"
 #include "skia/ext/analysis_canvas.h"
 #include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 
 namespace gfx {
@@ -49,7 +50,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
       bool can_use_lcd_text);
 
   // TODO(trchen): Deprecated.
-  void PlaybackToCanvas(SkCanvas* canvas,
+  void PlaybackToCanvas(CdlCanvas* canvas,
                         const gfx::Rect& canvas_bitmap_rect,
                         const gfx::Rect& canvas_playback_rect,
                         const gfx::SizeF& raster_scales,
@@ -64,7 +65,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   //
   // Note that this should only be called after the image decode controller has
   // been set, which happens during commit.
-  virtual void PlaybackToCanvas(SkCanvas* canvas,
+  virtual void PlaybackToCanvas(CdlCanvas* canvas,
                                 const PlaybackSettings& settings) const;
 
   // Returns whether the given rect at given scale is of solid color in
@@ -163,9 +164,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   ImageDecodeCache* image_decode_cache_;
 
  private:
-  void RasterCommon(SkCanvas* canvas, SkPicture::AbortCallback* callback) const;
+  void RasterCommon(CdlCanvas* canvas, SkPicture::AbortCallback* callback) const;
 
-  void PrepareForPlaybackToCanvas(SkCanvas* canvas) const;
+  void PrepareForPlaybackToCanvas(CdlCanvas* canvas) const;
 
   DISALLOW_COPY_AND_ASSIGN(RasterSource);
 };

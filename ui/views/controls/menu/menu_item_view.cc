@@ -766,11 +766,14 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
     gfx::Rect item_bounds(0, 0, width(), height());
     AdjustBoundsForRTLUI(&item_bounds);
 
+    // TODO(cdl): Native theme.
+    /*
     native_theme->Paint(canvas->sk_canvas(),
                         ui::NativeTheme::kMenuItemBackground,
                         ui::NativeTheme::kHovered,
                         item_bounds,
                         ui::NativeTheme::ExtraParams());
+    */
   }
 
   const int icon_x = config.item_left_margin + left_icon_margin_;

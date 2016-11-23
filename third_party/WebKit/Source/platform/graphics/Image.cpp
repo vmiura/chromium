@@ -236,7 +236,7 @@ sk_sp<SkShader> createPatternShader(const SkImage* image,
                                          image->height() + spacing.height());
 
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(tileRect);
+  CdlCanvas* canvas = recorder.beginRecording(tileRect);
   SkPaint pt = paint.toSkPaint();
   canvas->drawImage(image, 0, 0, &pt);
 

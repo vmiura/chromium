@@ -144,11 +144,9 @@ class DragImageBuilder {
     sk_sp<CdlPicture> recording(
         const_cast<CdlPicture*>(m_pictureBuilder->endRecording().release()));
 
-    // TODO(cdl): Not entirely sure how we should handle this.
     SkPictureRecorder recorder;
     SkCanvas* canvas = recorder.beginRecording(m_bounds);
-    recording->draw(canvas);
-    ///
+    recording->draw(CdlCanvas::Make(canvas).get());
 
     sk_sp<SkImage> skImage = SkImage::MakeFromPicture(
         recorder.finishRecordingAsPicture(),

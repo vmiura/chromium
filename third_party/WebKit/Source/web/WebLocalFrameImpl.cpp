@@ -305,7 +305,7 @@ class ChromePrintContext : public PrintContext {
     pictureBuilder.context().setPrinting(true);
 
     float scale = spoolPage(pictureBuilder, pageNumber);
-    pictureBuilder.endRecording()->playback(canvas);
+    pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
     return scale;
   }
 
@@ -372,7 +372,7 @@ class ChromePrintContext : public PrintContext {
         currentHeight += pageSizeInPixels.height() + 1;
       }
     }
-    pictureBuilder.endRecording()->playback(canvas);
+    pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
   }
 
  protected:

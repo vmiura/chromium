@@ -9,6 +9,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -31,7 +32,7 @@ Canvas::Canvas(const Size& size, float image_scale, bool is_opaque)
   Size pixel_size = ScaleToCeiledSize(size, image_scale);
   canvas_owner_ = skia::CreatePlatformCanvas(pixel_size.width(),
                                              pixel_size.height(), is_opaque);
-  canvas_ = canvas_owner_.get();
+  canvas_ = CdlCanvas::Make(canvas_owner_.get());
 
 #if !defined(USE_CAIRO)
   // skia::PlatformCanvas instances are initialized to 0 by Cairo, but
@@ -47,10 +48,10 @@ Canvas::Canvas(const Size& size, float image_scale, bool is_opaque)
 Canvas::Canvas()
     : image_scale_(1.f),
       canvas_owner_(skia::CreatePlatformCanvas(0, 0, false)),
-      canvas_(canvas_owner_.get()) {}
+      canvas_(CdlCanvas::Make(canvas_owner_.get())) {}
 
-Canvas::Canvas(SkCanvas* canvas, float image_scale)
-    : image_scale_(image_scale), canvas_(canvas) {
+Canvas::Canvas(sk_sp<CdlCanvas> canvas, float image_scale)
+    : image_scale_(image_scale), canvas_(std::move(canvas)) {
   DCHECK(canvas_);
 }
 
@@ -64,7 +65,7 @@ void Canvas::RecreateBackingCanvas(const Size& size,
   Size pixel_size = ScaleToFlooredSize(size, image_scale);
   canvas_owner_ = skia::CreatePlatformCanvas(pixel_size.width(),
                                              pixel_size.height(), is_opaque);
-  canvas_ = canvas_owner_.get();
+  canvas_ = CdlCanvas::Make(canvas_owner_.get());
 
   SkScalar scale_scalar = SkFloatToScalar(image_scale);
   canvas_->scale(scale_scalar, scale_scalar);

@@ -143,12 +143,12 @@ void LabelButtonAssetBorder::Paint(const View& view, gfx::Canvas* canvas) {
         static_cast<uint8_t>(animation->CurrentValueBetween(0, 255));
 
     const SkRect sk_rect = gfx::RectToSkRect(rect);
-    SkAutoCanvasRestore auto_restore(canvas->sk_canvas(), false);
+    CdlAutoCanvasRestore auto_restore(canvas->sk_canvas(), false);
     canvas->sk_canvas()->saveLayer(&sk_rect, nullptr);
 
     {
       // First, modulate the background by 1 - alpha.
-      SkAutoCanvasRestore auto_restore(canvas->sk_canvas(), false);
+      CdlAutoCanvasRestore auto_restore(canvas->sk_canvas(), false);
       canvas->sk_canvas()->saveLayerAlpha(&sk_rect, 255 - fg_alpha);
       state = native_theme_delegate->GetBackgroundThemeState(&extra);
       PaintHelper(this, canvas, state, rect, extra);

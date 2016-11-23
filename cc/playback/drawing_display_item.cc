@@ -80,7 +80,7 @@ sk_sp<const CdlPicture> DrawingDisplayItem::GetPicture() const {
 }
 
 DISABLE_CFI_PERF
-void DrawingDisplayItem::Raster(SkCanvas* canvas,
+void DrawingDisplayItem::Raster(CdlCanvas* canvas,
                                 SkPicture::AbortCallback* callback) const {
   if (canvas->quickReject(picture_->cullRect()))
     return;
