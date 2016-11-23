@@ -343,9 +343,9 @@ PP_Bool BrowserFontResource_Trusted::DrawTextAt(
     SkSurfaceProps props(0, kUnknown_SkPixelGeometry);
     SkCanvas temp_canvas(bm, props);
 
-    DrawTextToCanvas(&temp_canvas, *text, position, color, clip);
+    DrawTextToCanvas(CdlCanvas::Make(&temp_canvas).get(), *text, position, color, clip);
   } else {
-    DrawTextToCanvas(canvas, *text, position, color, clip);
+    DrawTextToCanvas(CdlCanvas::Make(canvas).get(), *text, position, color, clip);
   }
 
   if (needs_unmapping)
@@ -414,7 +414,7 @@ int32_t BrowserFontResource_Trusted::PixelOffsetForCharacter(
 }
 
 void BrowserFontResource_Trusted::DrawTextToCanvas(
-    SkCanvas* destination,
+    CdlCanvas* destination,
     const PP_BrowserFont_Trusted_TextRun& text,
     const PP_Point* position,
     uint32_t color,

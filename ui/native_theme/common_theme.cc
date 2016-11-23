@@ -320,7 +320,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
 
 void CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     NativeTheme::State state,
     const gfx::Rect& rect,
     const NativeTheme::MenuItemExtraParams& menu_item) {

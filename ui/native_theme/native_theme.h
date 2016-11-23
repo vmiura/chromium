@@ -12,7 +12,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme_export.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace gfx {
 class Rect;
@@ -228,7 +228,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                 const ExtraParams& extra) const = 0;
 
   // Paint the part to the canvas.
-  virtual void Paint(SkCanvas* canvas,
+  virtual void Paint(CdlCanvas* canvas,
                      Part part,
                      State state,
                      const gfx::Rect& rect,
@@ -236,7 +236,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // Paint part during state transition, used for overlay scrollbar state
   // transition animation.
-  virtual void PaintStateTransition(SkCanvas* canvas,
+  virtual void PaintStateTransition(CdlCanvas* canvas,
                                     Part part,
                                     State startState,
                                     State endState,

@@ -1042,8 +1042,6 @@ void CanvasRenderingContext2D::drawFocusRing(const Path& path) {
   if (!drawingCanvas())
     return;
 
-  // TODO(cdl): Blah focus ring?
-  /*
   SkColor color = LayoutTheme::theme().focusRingColor().rgb();
   const int focusRingWidth = 5;
 
@@ -1059,7 +1057,6 @@ void CanvasRenderingContext2D::drawFocusRing(const Path& path) {
     return;
 
   didDraw(dirtyRect);
-  */
 }
 
 void CanvasRenderingContext2D::updateElementAccessibility(const Path& path,

@@ -109,11 +109,13 @@ void CdlLiteRecorder::onDrawDrawable(SkDrawable* drawable,
                                      const SkMatrix* matrix) {
   fDL->drawDrawable(drawable, matrix);
 }
+/*
 void CdlLiteRecorder::onDrawPicture(const SkPicture* picture,
                                     const SkMatrix* matrix,
                                     const SkPaint* paint) {
   fDL->drawPicture(picture, matrix, paint);
 }
+*/
 void CdlLiteRecorder::onDrawAnnotation(const SkRect& rect,
                                        const char key[],
                                        SkData* val) {

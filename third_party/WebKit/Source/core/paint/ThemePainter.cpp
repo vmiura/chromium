@@ -40,6 +40,7 @@
 #include "public/platform/Platform.h"
 #include "public/platform/WebFallbackThemeEngine.h"
 #include "public/platform/WebRect.h"
+#include "skia/ext/cdl_canvas.h"
 
 // The methods in this file are shared by all themes on every platform.
 
@@ -362,11 +363,8 @@ bool ThemePainter::paintUsingFallbackTheme(const LayoutObject& o,
 bool ThemePainter::paintCheckboxUsingFallbackTheme(const LayoutObject& o,
                                                    const PaintInfo& i,
                                                    const IntRect& r) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  (void)getWebFallbackThemeState;
-  /*
   WebFallbackThemeEngine::ExtraParams extraParams;
-  WebCanvas* canvas = i.context.canvas();
+  CdlCanvas* canvas = i.context.canvas();
   extraParams.button.checked = LayoutTheme::isChecked(o);
   extraParams.button.indeterminate = LayoutTheme::isIndeterminate(o);
 
@@ -384,15 +382,12 @@ bool ThemePainter::paintCheckboxUsingFallbackTheme(const LayoutObject& o,
   Platform::current()->fallbackThemeEngine()->paint(
       canvas, WebFallbackThemeEngine::PartCheckbox, getWebFallbackThemeState(o),
       WebRect(unzoomedRect), &extraParams);
-  */
   return false;
 }
 
 bool ThemePainter::paintRadioUsingFallbackTheme(const LayoutObject& o,
                                                 const PaintInfo& i,
                                                 const IntRect& r) {
-  // TODO(cdl): Record theme stuff into SkPicture.
-  /*
   WebFallbackThemeEngine::ExtraParams extraParams;
   WebCanvas* canvas = i.context.canvas();
   extraParams.button.checked = LayoutTheme::isChecked(o);
@@ -412,7 +407,6 @@ bool ThemePainter::paintRadioUsingFallbackTheme(const LayoutObject& o,
   Platform::current()->fallbackThemeEngine()->paint(
       canvas, WebFallbackThemeEngine::PartRadio, getWebFallbackThemeState(o),
       WebRect(unzoomedRect), &extraParams);
-  */
   return false;
 }
 

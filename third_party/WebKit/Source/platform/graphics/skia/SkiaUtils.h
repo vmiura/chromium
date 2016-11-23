@@ -131,7 +131,7 @@ inline SkScalar skBlurRadiusToSigma(SkScalar radius) {
 
 template <typename PrimitiveType>
 void drawPlatformFocusRing(const PrimitiveType&,
-                           SkCanvas*,
+                           CdlCanvas*,
                            SkColor,
                            float width);
 

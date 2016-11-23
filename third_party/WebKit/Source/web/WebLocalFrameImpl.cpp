@@ -303,11 +303,11 @@ class ChromePrintContext : public PrintContext {
       return 0;
 
     IntRect pageRect = m_pageRects[pageNumber];
-    SkPictureBuilder pictureBuilder(pageRect, &skia::GetMetaData(*canvas));
+    SkPictureBuilder pictureBuilder(pageRect, &skia::GetMetaData(*canvas->getSkCanvas()));
     pictureBuilder.context().setPrinting(true);
 
     float scale = spoolPage(pictureBuilder, pageNumber);
-    pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
+    pictureBuilder.endRecording()->playback(canvas);
     return scale;
   }
 
@@ -330,7 +330,7 @@ class ChromePrintContext : public PrintContext {
     int totalHeight = numPages * (pageSizeInPixels.height() + 1) - 1;
     IntRect allPagesRect(0, 0, pageWidth, totalHeight);
 
-    SkPictureBuilder pictureBuilder(allPagesRect, &skia::GetMetaData(*canvas));
+    SkPictureBuilder pictureBuilder(allPagesRect, &skia::GetMetaData(*canvas->getSkCanvas()));
     pictureBuilder.context().setPrinting(true);
 
     {
@@ -374,7 +374,7 @@ class ChromePrintContext : public PrintContext {
         currentHeight += pageSizeInPixels.height() + 1;
       }
     }
-    pictureBuilder.endRecording()->playback(CdlCanvas::Make(canvas).get());
+    pictureBuilder.endRecording()->playback(canvas);
   }
 
  protected:

@@ -98,7 +98,7 @@ SkColor NativeThemeAura::GetSystemColor(ColorId color_id) const {
 }
 
 void NativeThemeAura::PaintMenuPopupBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background) const {
   SkColor color = GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor);
@@ -123,14 +123,14 @@ void NativeThemeAura::PaintMenuPopupBackground(
 }
 
 void NativeThemeAura::PaintMenuItemBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item) const {
   CommonThemePaintMenuItemBackground(this, canvas, state, rect, menu_item);
 }
 
-void NativeThemeAura::PaintArrowButton(SkCanvas* canvas,
+void NativeThemeAura::PaintArrowButton(CdlCanvas* canvas,
                                        const gfx::Rect& rect,
                                        Part direction,
                                        State state) const {
@@ -164,7 +164,7 @@ void NativeThemeAura::PaintArrowButton(SkCanvas* canvas,
 }
 
 void NativeThemeAura::PaintScrollbarTrack(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     Part part,
     State state,
     const ScrollbarTrackExtraParams& extra_params,
@@ -177,7 +177,7 @@ void NativeThemeAura::PaintScrollbarTrack(
 }
 
 void NativeThemeAura::PaintScrollbarThumb(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     Part part,
     State state,
     const gfx::Rect& rect,
@@ -247,7 +247,7 @@ void NativeThemeAura::PaintScrollbarThumb(
   canvas->drawIRect(gfx::RectToSkIRect(thumb_rect), paint);
 }
 
-void NativeThemeAura::PaintScrollbarCorner(SkCanvas* canvas,
+void NativeThemeAura::PaintScrollbarCorner(CdlCanvas* canvas,
                                            State state,
                                            const gfx::Rect& rect) const {
   // Overlay Scrollbar should never paint a scrollbar corner.

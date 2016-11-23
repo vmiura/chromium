@@ -58,9 +58,11 @@ class CdlLiteRecorder final : public CdlCanvas {
   void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override;
 
   void onDrawDrawable(SkDrawable*, const SkMatrix*) override;
+  /*
   void onDrawPicture(const SkPicture*,
                      const SkMatrix*,
                      const SkPaint*) override;
+                     */
   void onDrawAnnotation(const SkRect&, const char[], SkData*) override;
 
   void onDrawText(const void*,

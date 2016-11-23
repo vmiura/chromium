@@ -327,7 +327,7 @@ void PepperGraphics2DHost::Paint(blink::WebCanvas* canvas,
   gfx::Rect invalidate_rect = plugin_rect;
   invalidate_rect.Intersect(paint_rect);
   SkRect sk_invalidate_rect = gfx::RectToSkRect(invalidate_rect);
-  SkAutoCanvasRestore auto_restore(canvas, true);
+  CdlAutoCanvasRestore auto_restore(canvas, true);
   canvas->clipRect(sk_invalidate_rect);
   gfx::Size pixel_image_size(image_data_->width(), image_data_->height());
   gfx::Size image_size = gfx::ScaleToFlooredSize(pixel_image_size, scale_);
@@ -343,7 +343,7 @@ void PepperGraphics2DHost::Paint(blink::WebCanvas* canvas,
     // show white (typically less jarring) rather than black or uninitialized.
     // We don't do this for non-full-frame plugins since we specifically want
     // the page background to show through.
-    SkAutoCanvasRestore auto_restore(canvas, true);
+    CdlAutoCanvasRestore auto_restore(canvas, true);
     SkRect image_data_rect =
         gfx::RectToSkRect(gfx::Rect(plugin_rect.origin(), image_size));
     canvas->clipRect(image_data_rect, SkRegion::kDifference_Op);

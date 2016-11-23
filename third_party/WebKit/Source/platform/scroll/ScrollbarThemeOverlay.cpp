@@ -171,8 +171,6 @@ void ScrollbarThemeOverlay::paintThumb(GraphicsContext& context,
   else if (scrollbar.hoveredPart() == ThumbPart)
     state = WebThemeEngine::StateHover;
 
-  // TODO(cdl): Theme stuff.
-  /*
   WebCanvas* canvas = context.canvas();
 
   WebThemeEngine::Part part = WebThemeEngine::PartScrollbarHorizontalThumb;
@@ -186,7 +184,6 @@ void ScrollbarThemeOverlay::paintThumb(GraphicsContext& context,
 
   Platform::current()->themeEngine()->paint(canvas, part, state, WebRect(rect),
                                             &params);
-  */
 }
 
 ScrollbarPart ScrollbarThemeOverlay::hitTest(

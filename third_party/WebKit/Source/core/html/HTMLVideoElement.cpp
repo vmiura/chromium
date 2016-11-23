@@ -205,11 +205,8 @@ void HTMLVideoElement::paintCurrentFrame(CdlCanvas* canvas,
     mediaPaint.setFilterQuality(kLow_SkFilterQuality);
   }
 
-  // TODO(cdl): WebMediaPlayer play to CdlCanvas.
-  /*
   SkPaint pt = mediaPaint.toSkPaint();
   webMediaPlayer()->paint(canvas, destRect, pt);
-  */
 }
 
 bool HTMLVideoElement::copyVideoTextureToPlatformTexture(

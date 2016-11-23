@@ -33,6 +33,8 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
 
+class CdlCanvas;
+
 namespace blink {
 
 static const struct CompositOpToXfermodeMode {
@@ -306,7 +308,7 @@ SkColor scaleAlpha(SkColor color, int alpha) {
 
 template <typename PrimitiveType>
 void drawFocusRingPrimitive(const PrimitiveType&,
-                            SkCanvas*,
+                            CdlCanvas*,
                             const SkPaint&,
                             float cornerRadius) {
   ASSERT_NOT_REACHED();  // Missing an explicit specialization?
@@ -314,7 +316,7 @@ void drawFocusRingPrimitive(const PrimitiveType&,
 
 template <>
 void drawFocusRingPrimitive<SkRect>(const SkRect& rect,
-                                    SkCanvas* canvas,
+                                    CdlCanvas* canvas,
                                     const SkPaint& paint,
                                     float cornerRadius) {
   SkRRect rrect;
@@ -325,7 +327,7 @@ void drawFocusRingPrimitive<SkRect>(const SkRect& rect,
 
 template <>
 void drawFocusRingPrimitive<SkPath>(const SkPath& path,
-                                    SkCanvas* canvas,
+                                    CdlCanvas* canvas,
                                     const SkPaint& paint,
                                     float cornerRadius) {
   SkPaint pathPaint = paint;
@@ -336,7 +338,7 @@ void drawFocusRingPrimitive<SkPath>(const SkPath& path,
 
 template <typename PrimitiveType>
 void drawPlatformFocusRing(const PrimitiveType& primitive,
-                           SkCanvas* canvas,
+                           CdlCanvas* canvas,
                            SkColor color,
                            float width) {
   SkPaint paint;
@@ -363,11 +365,11 @@ void drawPlatformFocusRing(const PrimitiveType& primitive,
 }
 
 template void PLATFORM_EXPORT drawPlatformFocusRing<SkRect>(const SkRect&,
-                                                            SkCanvas*,
+                                                            CdlCanvas*,
                                                             SkColor,
                                                             float width);
 template void PLATFORM_EXPORT drawPlatformFocusRing<SkPath>(const SkPath&,
-                                                            SkCanvas*,
+                                                            CdlCanvas*,
                                                             SkColor,
                                                             float width);
 

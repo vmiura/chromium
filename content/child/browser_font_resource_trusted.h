@@ -17,7 +17,7 @@
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/thunk/ppb_browser_font_trusted_api.h"
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace blink {
 class WebFont;
@@ -61,7 +61,7 @@ class BrowserFontResource_Trusted
   ~BrowserFontResource_Trusted() override;
 
   // Internal version of DrawTextAt that takes a mapped PlatformCanvas.
-  void DrawTextToCanvas(SkCanvas* destination,
+  void DrawTextToCanvas(CdlCanvas* destination,
                         const PP_BrowserFont_Trusted_TextRun& text,
                         const PP_Point* position,
                         uint32_t color,

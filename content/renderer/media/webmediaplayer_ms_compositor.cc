@@ -55,7 +55,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     if (surface && provider) {
       DCHECK(provider->ContextGL());
       video_renderer->Copy(
-          frame.get(), surface->getCanvas(),
+          frame.get(), CdlCanvas::Make(surface->getCanvas()).get(),
           media::Context3D(provider->ContextGL(), provider->GrContext()));
     } else {
       // Return a black frame (yuv = {0, 0x80, 0x80}).

@@ -270,7 +270,7 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
       gfx::Size(13, 13) : gfx::Size();
 }
 
-void NativeThemeWin::Paint(SkCanvas* canvas,
+void NativeThemeWin::Paint(CdlCanvas* canvas,
                            Part part,
                            State state,
                            const gfx::Rect& rect,

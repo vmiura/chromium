@@ -102,6 +102,12 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                         SkScalar bottom, const SkPaint& paint);
   void drawRRect(const SkRRect& rrect, const SkPaint& paint);
   void drawDRRect(const SkRRect& outer, const SkRRect& inner, const SkPaint&);
+  void drawIRect(const SkIRect& rect, const SkPaint& paint) {
+      SkRect r;
+      r.set(rect);    // promotes the ints to scalars
+      this->drawRect(r, paint);
+  }
+
   void drawPath(const SkPath& path, const SkPaint& paint);
 
 
@@ -222,9 +228,11 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
   virtual void onDrawDrawable(SkDrawable*, const SkMatrix*);
+  /*
   virtual void onDrawPicture(const SkPicture*,
                      const SkMatrix*,
                      const SkPaint*);
+                     */
   virtual void onDrawAnnotation(const SkRect&, const char[], SkData*);
 
   virtual void onDrawText(const void*,
