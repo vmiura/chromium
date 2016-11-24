@@ -127,9 +127,19 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
       this->drawImage(image.get(), left, top, paint);
   }
 
+  void drawImage(const SkImage* image, SkScalar left, SkScalar top, const CdlPaint& paint);
+  void drawImage(const sk_sp<SkImage>& image, SkScalar left, SkScalar top,
+                 const CdlPaint& paint) {
+      this->drawImage(image.get(), left, top, paint);
+  }
+
   void drawImageRect(const SkImage* image, const SkRect& src, const SkRect& dst,
                      const SkPaint* paint,
                      SkCanvas::SrcRectConstraint constraint = SkCanvas::kStrict_SrcRectConstraint);
+  void drawImageRect(const SkImage* image, const SkRect& src, const SkRect& dst,
+                     const CdlPaint& paint,
+                     SkCanvas::SrcRectConstraint constraint = SkCanvas::kStrict_SrcRectConstraint);
+
   // variant that takes src SkIRect
   void drawImageRect(const SkImage* image, const SkIRect& isrc, const SkRect& dst,
                      const SkPaint* paint, SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
@@ -284,6 +294,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                         SkCanvas::SrcRectConstraint);
   */
   virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*);
+  virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&);
   /*
   virtual void onDrawImageLattice(const SkImage*,
                           const SkCanvas::Lattice&,
@@ -298,6 +309,11 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                        const SkRect*,
                        const SkRect&,
                        const SkPaint*,
+                       SkCanvas::SrcRectConstraint);
+  virtual void onDrawImageRect(const SkImage*,
+                       const SkRect*,
+                       const SkRect&,
+                       const CdlPaint&,
                        SkCanvas::SrcRectConstraint);
 
   /*

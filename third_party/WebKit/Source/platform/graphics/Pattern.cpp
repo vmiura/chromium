@@ -61,7 +61,7 @@ void Pattern::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!m_cachedShader || isLocalMatrixChanged(localMatrix))
     m_cachedShader = createShader(localMatrix);
 
-  paint.setShader(m_cachedShader);
+  paint.setCdlShader(m_cachedShader);
 }
 
 bool Pattern::isLocalMatrixChanged(const SkMatrix& localMatrix) const {

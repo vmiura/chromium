@@ -6,6 +6,7 @@
 
 #include "platform/graphics/Image.h"
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkShader.h"
@@ -37,7 +38,9 @@ bool ImagePattern::isLocalMatrixChanged(const SkMatrix& localMatrix) const {
   return localMatrix != m_previousLocalMatrix;
 }
 
-sk_sp<SkShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
+sk_sp<CdlShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
+  // TODO(cdl): Shaders
+  /*
   if (!m_tileImage)
     return SkShader::MakeColorShader(SK_ColorTRANSPARENT);
 
@@ -79,6 +82,8 @@ sk_sp<SkShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
 
   return surface->makeImageSnapshot()->makeShader(tileModeX, tileModeY,
                                                   &adjustedMatrix);
+  */
+  return nullptr;
 }
 
 bool ImagePattern::isTextureBacked() const {

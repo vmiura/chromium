@@ -40,6 +40,7 @@
 class SkMatrix;
 class CdlPaint;
 class CdlPicture;
+class CdlShader;
 
 namespace blink {
 
@@ -70,7 +71,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
   virtual bool isTextureBacked() const { return false; }
 
  protected:
-  virtual sk_sp<SkShader> createShader(const SkMatrix&) = 0;
+  virtual sk_sp<CdlShader> createShader(const SkMatrix&) = 0;
   virtual bool isLocalMatrixChanged(const SkMatrix&) const;
 
   void adjustExternalMemoryAllocated(int64_t delta);
@@ -78,7 +79,7 @@ class PLATFORM_EXPORT Pattern : public RefCounted<Pattern> {
   RepeatMode m_repeatMode;
 
   Pattern(RepeatMode, int64_t externalMemoryAllocated = 0);
-  mutable sk_sp<SkShader> m_cachedShader;
+  mutable sk_sp<CdlShader> m_cachedShader;
 
  private:
   int64_t m_externalMemoryAllocated;

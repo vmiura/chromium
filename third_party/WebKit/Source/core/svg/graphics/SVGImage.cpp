@@ -304,8 +304,8 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
                                 phase.y() + spacedTile.y());
 
   CdlPaint paint;
-  paint.setShader(SkShader::MakePictureShader(
-      tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
+  paint.setCdlShader(CdlShader::MakePictureShader(
+      tilePicture, SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &patternTransform, nullptr));
   paint.setBlendMode(compositeOp);
   paint.setColorFilter(sk_ref_sp(context.getColorFilter()));

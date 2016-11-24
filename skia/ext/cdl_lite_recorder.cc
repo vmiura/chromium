@@ -82,6 +82,9 @@ void CdlLiteRecorder::onDrawPath(const SkPath& path, const SkPaint& paint) {
 void CdlLiteRecorder::onDrawRect(const SkRect& rect, const SkPaint& paint) {
   fDL->drawRect(rect, paint);
 }
+void CdlLiteRecorder::onDrawRect(const SkRect& r, const CdlPaint& paint) {
+  fDL->drawRect(r, paint);
+}
 void CdlLiteRecorder::onDrawRegion(const SkRegion& region,
                                    const SkPaint& paint) {
   fDL->drawRegion(region, paint);
@@ -196,6 +199,13 @@ void CdlLiteRecorder::onDrawImage(const SkImage* img,
                                   const SkPaint* paint) {
   fDL->drawImage(sk_ref_sp(img), x, y, paint);
 }
+
+void CdlLiteRecorder::onDrawImage(const SkImage* img,
+                                  SkScalar x,
+                                  SkScalar y,
+                                  const CdlPaint& paint) {
+  fDL->drawImage(sk_ref_sp(img), x, y, paint);
+}
 /*
 void CdlLiteRecorder::onDrawImageNine(const SkImage* img,
                                       const SkIRect& center,
@@ -208,6 +218,13 @@ void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
                                       const SkRect* src,
                                       const SkRect& dst,
                                       const SkPaint* paint,
+                                      SkCanvas::SrcRectConstraint constraint) {
+  fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
+}
+void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
+                                      const SkRect* src,
+                                      const SkRect& dst,
+                                      const CdlPaint& paint,
                                       SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
 }
@@ -270,6 +287,3 @@ void CdlLiteRecorder::onDrawShadowedPicture(const SkPicture* picture,
 
 // CdlCanvas overrides
 
-void CdlLiteRecorder::onDrawRect(const SkRect& r, const CdlPaint& paint) {
-  fDL->drawRectX(r, paint);
-}

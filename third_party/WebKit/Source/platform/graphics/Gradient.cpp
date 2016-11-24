@@ -176,7 +176,10 @@ static void fillStops(const Gradient::ColorStop* stopData,
   }
 }
 
-sk_sp<SkShader> Gradient::createShader(const SkMatrix& localMatrix) {
+sk_sp<CdlShader> Gradient::createShader(const SkMatrix& localMatrix) {
+  // TODO(cdl): Shaders
+  ALLOW_UNUSED_LOCAL(m_aspectRatio);
+  /*
   sortStopsIfNecessary();
   ASSERT(m_stopsSorted);
 
@@ -247,13 +250,15 @@ sk_sp<SkShader> Gradient::createShader(const SkMatrix& localMatrix) {
   }
 
   return shader;
+  */
+  return nullptr;
 }
 
 void Gradient::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!m_cachedShader || localMatrix != m_cachedShader->getLocalMatrix())
     m_cachedShader = createShader(localMatrix);
 
-  paint.setShader(m_cachedShader);
+  paint.setCdlShader(m_cachedShader);
 
   // Legacy behavior: gradients are always dithered.
   paint.setDither(true);

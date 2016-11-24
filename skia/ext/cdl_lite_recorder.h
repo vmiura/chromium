@@ -47,6 +47,7 @@ class CdlLiteRecorder final : public CdlCanvas {
   void onDrawPaint(const SkPaint&) override;
   void onDrawPath(const SkPath&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const SkPaint&) override;
+  void onDrawRect(const SkRect&, const CdlPaint&) override;
   void onDrawRegion(const SkRegion&, const SkPaint&) override;
   void onDrawOval(const SkRect&, const SkPaint&) override;
   void onDrawArc(const SkRect&,
@@ -114,6 +115,7 @@ class CdlLiteRecorder final : public CdlCanvas {
                         SkCanvas::SrcRectConstraint) override;
   */
   void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
+  void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&) override;
   /*
   void onDrawImageLattice(const SkImage*,
                           const SkCanvas::Lattice&,
@@ -128,6 +130,11 @@ class CdlLiteRecorder final : public CdlCanvas {
                        const SkRect*,
                        const SkRect&,
                        const SkPaint*,
+                       SkCanvas::SrcRectConstraint) override;
+  void onDrawImageRect(const SkImage*,
+                       const SkRect*,
+                       const SkRect&,
+                       const CdlPaint&,
                        SkCanvas::SrcRectConstraint) override;
 
   /*
@@ -174,9 +181,6 @@ class CdlLiteRecorder final : public CdlCanvas {
                              const SkPaint*,
                              const SkShadowParams& params);
 #endif
-
-  // CdlCanvas overrides
-  void onDrawRect(const SkRect&, const CdlPaint&) override;
 
  private:
   CdlLiteDL* fDL;

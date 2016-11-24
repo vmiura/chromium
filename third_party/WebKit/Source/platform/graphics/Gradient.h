@@ -41,7 +41,7 @@
 
 class SkMatrix;
 class CdlPaint;
-class SkShader;
+class CdlShader;
 
 namespace blink {
 
@@ -129,7 +129,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
            float r1,
            float aspectRatio);
 
-  sk_sp<SkShader> createShader(const SkMatrix& localMatrix);
+  sk_sp<CdlShader> createShader(const SkMatrix& localMatrix);
 
   void sortStopsIfNecessary();
 
@@ -144,7 +144,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   bool m_drawInPMColorSpace;
   GradientSpreadMethod m_spreadMethod;
 
-  mutable sk_sp<SkShader> m_cachedShader;
+  mutable sk_sp<CdlShader> m_cachedShader;
 };
 
 }  // namespace blink

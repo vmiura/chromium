@@ -222,13 +222,15 @@ void Image::drawTiledBorder(GraphicsContext& ctxt,
 
 namespace {
 
-sk_sp<SkShader> createPatternShader(const SkImage* image,
+sk_sp<CdlShader> createPatternShader(const SkImage* image,
                                     const SkMatrix& shaderMatrix,
                                     const CdlPaint& paint,
                                     const FloatSize& spacing) {
   if (spacing.isZero())
-    return image->makeShader(SkShader::kRepeat_TileMode,
-                             SkShader::kRepeat_TileMode, &shaderMatrix);
+    return CdlShader::MakeImageShader(sk_ref_sp(const_cast<SkImage*>(image)),
+                                      SkShader::kRepeat_TileMode,
+                                      SkShader::kRepeat_TileMode,
+                                      &shaderMatrix);
 
   // Arbitrary tiling is currently only supported for SkPictureShader, so we use
   // that instead of a plain bitmap shader to implement spacing.
@@ -237,11 +239,10 @@ sk_sp<SkShader> createPatternShader(const SkImage* image,
 
   CdlPictureRecorder recorder;
   CdlCanvas* canvas = recorder.beginRecording(tileRect);
-  SkPaint pt = paint.toSkPaint();
-  canvas->drawImage(image, 0, 0, &pt);
+  canvas->drawImage(image, 0, 0, paint);
 
-  return SkShader::MakePictureShader(
-      recorder.finishRecordingAsPicture()->toSkPicture(),
+  return CdlShader::MakePictureShader(
+      recorder.finishRecordingAsPicture(),
       SkShader::kRepeat_TileMode, SkShader::kRepeat_TileMode, &shaderMatrix,
       nullptr);
 }
@@ -295,7 +296,7 @@ void Image::drawPattern(GraphicsContext& context,
     paint.setFilterQuality(
         context.computeFilterQuality(this, destRect, normSrcRect));
     paint.setAntiAlias(context.shouldAntialias());
-    paint.setShader(createPatternShader(
+    paint.setCdlShader(createPatternShader(
         image.get(), localMatrix, paint,
         FloatSize(repeatSpacing.width() / scale.width(),
                   repeatSpacing.height() / scale.height())));
@@ -324,8 +325,11 @@ bool Image::applyShader(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!image)
     return false;
 
-  paint.setShader(image->makeShader(SkShader::kRepeat_TileMode,
-                                    SkShader::kRepeat_TileMode, &localMatrix));
+  paint.setCdlShader(CdlShader::MakeImageShader(
+                                    image,
+                                    SkShader::kRepeat_TileMode,
+                                    SkShader::kRepeat_TileMode,
+                                    &localMatrix));
 
   // Animation is normally refreshed in draw() impls, which we don't call when
   // painting via shaders.
