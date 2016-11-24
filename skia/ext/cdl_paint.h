@@ -8,6 +8,7 @@
 #ifndef SKIA_EXT_CDL_PAINT_H_
 #define SKIA_EXT_CDL_PAINT_H_
 
+#include "cdl_shader.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -16,17 +17,22 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
 
+
 class CdlPaint {
  public:
   CdlPaint();
-  CdlPaint(const CdlPaint& paint) { sk_paint = paint.sk_paint; }
-  explicit CdlPaint(const SkPaint& paint) { sk_paint = paint; }
-  SkPaint toSkPaint() const { return sk_paint; }
+  ~CdlPaint();
+  CdlPaint(const CdlPaint& paint);
+  explicit CdlPaint(const SkPaint& paint);
+  SkPaint toSkPaint() const;
 
   void setStyle(SkPaint::Style style) { sk_paint.setStyle(style); }
   SkPaint::Style getStyle() const { return sk_paint.getStyle(); }
 
-  void setColor(SkColor color) { sk_paint.setColor(color); }
+  void setColor(SkColor color) {
+    sk_paint.setColor(color);
+    is_dirty_ = true;
+  }
   SkColor getColor() const { return sk_paint.getColor(); }
 
   void setAlpha(U8CPU a) { sk_paint.setAlpha(a); }
@@ -65,6 +71,13 @@ class CdlPaint {
   void setShader(sk_sp<SkShader> shader) { sk_paint.setShader(shader); }
   SkShader* getShader() const { return sk_paint.getShader(); }
 
+  void setCdlShader(sk_sp<CdlShader> shader) {
+    shader_ = shader;
+    is_dirty_ = true;
+  }
+
+  CdlShader* getCdlShader() const { return shader_.get(); }
+
   void setPathEffect(sk_sp<SkPathEffect> effect) { sk_paint.setPathEffect(effect); }
   SkPathEffect* getPathEffect() const { return sk_paint.getPathEffect(); }
 
@@ -79,8 +92,11 @@ class CdlPaint {
   SkDrawLooper* getDrawLooper() const { return sk_paint.getDrawLooper(); }
   SkDrawLooper* getLooper() const { return sk_paint.getLooper(); }
 
-  SkPaint sk_paint;
-  int foo;
+ protected:
+  mutable SkPaint sk_paint;
+  mutable bool is_dirty_;
+  sk_sp<CdlShader> shader_;
+
 };
 
 #endif  // SKIA_EXT_CDL_LITE_RECORDER_H_

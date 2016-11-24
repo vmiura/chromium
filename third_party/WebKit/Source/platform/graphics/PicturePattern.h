@@ -17,7 +17,7 @@ class PLATFORM_EXPORT PicturePattern final : public Pattern {
   ~PicturePattern() override;
 
  protected:
-  sk_sp<SkShader> createShader(const SkMatrix&) override;
+  sk_sp<CdlShader> createShader(const SkMatrix&) override;
 
  private:
   PicturePattern(sk_sp<CdlPicture>, RepeatMode);

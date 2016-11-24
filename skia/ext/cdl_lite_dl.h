@@ -56,6 +56,7 @@ class CdlLiteDL : public SkDrawable {
   void drawPaint(const SkPaint&);
   void drawPath(const SkPath&, const SkPaint&);
   void drawRect(const SkRect&, const SkPaint&);
+  void drawRect(const SkRect&, const CdlPaint&);
   void drawRegion(const SkRegion&, const SkPaint&);
   void drawOval(const SkRect&, const SkPaint&);
   void drawArc(const SkRect&, SkScalar, SkScalar, bool, const SkPaint&);
@@ -90,6 +91,8 @@ class CdlLiteDL : public SkDrawable {
   void drawTextBlob(const SkTextBlob*, SkScalar, SkScalar, const SkPaint&);
 
   void drawImage(sk_sp<const SkImage>, SkScalar, SkScalar, const SkPaint*);
+  void drawImage(sk_sp<const SkImage>, SkScalar, SkScalar, const CdlPaint&);
+
   void drawImageNine(sk_sp<const SkImage>,
                      const SkIRect&,
                      const SkRect&,
@@ -98,6 +101,11 @@ class CdlLiteDL : public SkDrawable {
                      const SkRect*,
                      const SkRect&,
                      const SkPaint*,
+                     SkCanvas::SrcRectConstraint);
+  void drawImageRect(sk_sp<const SkImage>,
+                     const SkRect*,
+                     const SkRect&,
+                     const CdlPaint&,
                      SkCanvas::SrcRectConstraint);
   void drawImageLattice(sk_sp<const SkImage>,
                         const SkCanvas::Lattice&,
@@ -130,8 +138,6 @@ class CdlLiteDL : public SkDrawable {
 
   void setBounds(const SkRect& bounds);
 
-  // Cdl extended ops.
-  void drawRectX(const SkRect&, const CdlPaint&);
 
   // Cdl
   struct DrawContext {

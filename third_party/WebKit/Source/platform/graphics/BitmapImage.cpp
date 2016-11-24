@@ -286,8 +286,7 @@ void BitmapImage::draw(
     }
   }
 
-  SkPaint pt = paint.toSkPaint();
-  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, &pt,
+  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, paint,
                         WebCoreClampingModeToSkiaRectConstraint(clampMode));
 
   if (image->isLazyGenerated())

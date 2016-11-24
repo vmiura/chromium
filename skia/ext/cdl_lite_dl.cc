@@ -73,7 +73,9 @@ namespace {
                                   M(DrawTextRSXform) M(DrawTextBlob)     \
                                       M(DrawPatch) M(DrawPoints)         \
                                           M(DrawVertices) M(DrawAtlas)   \
-                                              M(DrawRectX)
+                                              M(DrawRectX)               \
+                                              M(DrawImageX)              \
+                                              M(DrawImageRectX)
 
 #define M(T) T,
 enum class Type : uint8_t { TYPES(M) };
@@ -232,7 +234,7 @@ struct DrawRectX final : Op {
       : rect(rect), paint(paint) {}
   SkRect rect;
   CdlPaint paint;
-  void draw(SkCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) { c->drawRect(rect, paint.sk_paint); }
+  void draw(SkCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) { c->drawRect(rect, paint.toSkPaint()); }
 };
 
 struct DrawRegion final : Op {
@@ -389,6 +391,23 @@ struct DrawImage final : Op {
     c->drawImage(image.get(), x, y, &paint);
   }
 };
+struct DrawImageX final : Op {
+  static const auto kType = Type::DrawImage;
+  DrawImageX(sk_sp<const SkImage>&& image,
+            SkScalar x,
+            SkScalar y,
+            const CdlPaint& paint)
+      : image(std::move(image)), x(x), y(y), paint(paint) {
+  }
+  sk_sp<const SkImage> image;
+  SkScalar x, y;
+  CdlPaint paint;
+  void draw(SkCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
+    SkPaint pt = paint.toSkPaint();
+    c->drawImage(image.get(), x, y, &pt);
+  }
+};
+
 struct DrawImageNine final : Op {
   static const auto kType = Type::DrawImageNine;
   DrawImageNine(sk_sp<const SkImage>&& image,
@@ -429,6 +448,26 @@ struct DrawImageRect final : Op {
     c->drawImageRect(image.get(), src, dst, &paint, constraint);
   }
 };
+struct DrawImageRectX final : Op {
+  static const auto kType = Type::DrawImageRect;
+  DrawImageRectX(sk_sp<const SkImage>&& image,
+                const SkRect* src,
+                const SkRect& dst,
+                const CdlPaint& paint,
+                SkCanvas::SrcRectConstraint constraint)
+      : image(std::move(image)), dst(dst), paint(paint), constraint(constraint) {
+    this->src = src ? *src : SkRect::MakeIWH(image->width(), image->height());
+  }
+  sk_sp<const SkImage> image;
+  SkRect src, dst;
+  CdlPaint paint;
+  SkCanvas::SrcRectConstraint constraint;
+  void draw(SkCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
+    SkPaint pt = paint.toSkPaint();
+    c->drawImageRect(image.get(), src, dst, &pt, constraint);
+  }
+};
+
 struct DrawImageLattice final : Op {
   static const auto kType = Type::DrawImageLattice;
   DrawImageLattice(sk_sp<const SkImage>&& image,
@@ -763,7 +802,7 @@ void CdlLiteDL::drawPath(const SkPath& path, const SkPaint& paint) {
 void CdlLiteDL::drawRect(const SkRect& rect, const SkPaint& paint) {
   this->push<DrawRect>(0, rect, paint);
 }
-void CdlLiteDL::drawRectX(const SkRect& rect, const CdlPaint& paint) {
+void CdlLiteDL::drawRect(const SkRect& rect, const CdlPaint& paint) {
   this->push<DrawRectX>(0, rect, paint);
 }
 
@@ -817,6 +856,13 @@ void CdlLiteDL::drawImage(sk_sp<const SkImage> image,
                           const SkPaint* paint) {
   this->push<DrawImage>(0, std::move(image), x, y, paint);
 }
+void CdlLiteDL::drawImage(sk_sp<const SkImage> image,
+                          SkScalar x,
+                          SkScalar y,
+                          const CdlPaint& paint) {
+  this->push<DrawImageX>(0, std::move(image), x, y, paint);
+}
+
 void CdlLiteDL::drawImageNine(sk_sp<const SkImage> image,
                               const SkIRect& center,
                               const SkRect& dst,
@@ -829,6 +875,13 @@ void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
                               const SkPaint* paint,
                               SkCanvas::SrcRectConstraint constraint) {
   this->push<DrawImageRect>(0, std::move(image), src, dst, paint, constraint);
+}
+void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
+                              const SkRect* src,
+                              const SkRect& dst,
+                              const CdlPaint& paint,
+                              SkCanvas::SrcRectConstraint constraint) {
+  this->push<DrawImageRectX>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlLiteDL::drawImageLattice(sk_sp<const SkImage> image,
                                  const SkCanvas::Lattice& lattice,

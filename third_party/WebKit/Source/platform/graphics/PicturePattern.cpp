@@ -5,7 +5,9 @@
 #include "platform/graphics/PicturePattern.h"
 
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/skia/include/core/SkShader.h"
 
 namespace blink {
@@ -25,12 +27,13 @@ PicturePattern::PicturePattern(sk_sp<CdlPicture> picture, RepeatMode mode)
 
 PicturePattern::~PicturePattern() {}
 
-sk_sp<SkShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
+sk_sp<CdlShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
+  // TODO(cdl): Shaders
+  // This affects SVG Cats.
   SkRect tileBounds = m_tilePicture->cullRect();
 
-  // This affects SVG Cats.
-  return SkShader::MakePictureShader(
-      m_tilePicture->toSkPicture(), SkShader::kRepeat_TileMode,
+  return CdlShader::MakePictureShader(
+      m_tilePicture, SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &localMatrix, &tileBounds);
 }
 
