@@ -252,7 +252,7 @@ SkColor NativeThemeMac::GetSystemColor(ColorId color_id) const {
 }
 
 void NativeThemeMac::PaintMenuPopupBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background) const {
   SkPaint paint;
@@ -267,7 +267,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
 }
 
 void NativeThemeMac::PaintMenuItemBackground(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item) const {
@@ -369,7 +369,7 @@ sk_sp<SkShader> NativeThemeMac::GetButtonBorderShader(ButtonBackgroundType type,
 }
 
 // static
-void NativeThemeMac::PaintStyledGradientButton(SkCanvas* canvas,
+void NativeThemeMac::PaintStyledGradientButton(CdlCanvas* canvas,
                                                const gfx::Rect& integer_bounds,
                                                ButtonBackgroundType type,
                                                bool round_left,

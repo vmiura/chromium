@@ -39,6 +39,7 @@
 #include "public/platform/WebThemeEngine.h"
 #include "public/platform/Platform.h"
 #include "public/platform/WebRect.h"
+#include "skia/ext/cdl_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "wtf/HashSet.h"
 #include "wtf/RetainPtr.h"

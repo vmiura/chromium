@@ -70,6 +70,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual bool getClipDeviceBounds(SkIRect* bounds) const;
   virtual SkISize getBaseLayerSize() const;
   virtual bool isClipEmpty() const;
+  virtual bool isClipRect() const;
 
   int saveLayerPreserveLCDTextRequests(const SkRect* bounds, const SkPaint* paint);
 

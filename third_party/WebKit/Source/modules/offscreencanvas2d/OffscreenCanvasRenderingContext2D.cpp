@@ -13,6 +13,7 @@
 #include "platform/graphics/StaticBitmapImage.h"
 #include "platform/graphics/UnacceleratedImageBufferSurface.h"
 #include "platform/graphics/gpu/AcceleratedImageBufferSurface.h"
+#include "skia/ext/cdl_canvas.h"
 #include "wtf/Assertions.h"
 #include "wtf/CurrentTime.h"
 
@@ -238,7 +239,7 @@ sk_sp<SkImageFilter> OffscreenCanvasRenderingContext2D::stateGetFilter() {
 
 void OffscreenCanvasRenderingContext2D::validateStateStack() const {
 #if DCHECK_IS_ON()
-  if (SkCanvas* skCanvas = existingDrawingCanvas()) {
+  if (CdlCanvas* skCanvas = existingDrawingCanvas()) {
     DCHECK_EQ(static_cast<size_t>(skCanvas->getSaveCount()),
               m_stateStack.size() + 1);
   }

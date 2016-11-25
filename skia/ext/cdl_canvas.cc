@@ -180,6 +180,22 @@ void CdlCanvas::drawPoints(SkCanvas::PointMode mode, size_t count, const SkPoint
     this->onDrawPoints(mode, count, pts, paint);
 }
 
+void CdlCanvas::drawPoint(SkScalar x, SkScalar y, const SkPaint& paint) {
+    SkPoint pt;
+
+    pt.set(x, y);
+    this->drawPoints(SkCanvas::kPoints_PointMode, 1, &pt, paint);
+}
+
+void CdlCanvas::drawPoint(SkScalar x, SkScalar y, SkColor color) {
+    SkPoint pt;
+    SkPaint paint;
+
+    pt.set(x, y);
+    paint.setColor(color);
+    this->drawPoints(SkCanvas::kPoints_PointMode, 1, &pt, paint);
+}
+
 void CdlCanvas::drawLine(SkScalar x0, SkScalar y0, SkScalar x1, SkScalar y1,
                         const SkPaint& paint) {
   SkPoint pts[2];
@@ -315,7 +331,15 @@ void CdlCanvas::restoreToCount(int count) {
 bool CdlCanvas::getClipBounds(SkRect* bounds) const { return canvas_->getClipBounds(bounds); }
 bool CdlCanvas::getClipDeviceBounds(SkIRect* bounds) const { return canvas_->getClipDeviceBounds(bounds);  }
 SkISize CdlCanvas::getBaseLayerSize() const { return canvas_->getBaseLayerSize(); }
-bool CdlCanvas::isClipEmpty() const { return canvas_->isClipEmpty(); }
+
+bool CdlCanvas::isClipEmpty() const {
+  return canvas_->isClipEmpty();
+}
+
+bool CdlCanvas::isClipRect() const {
+  return canvas_->isClipRect();
+}
+
 sk_sp<SkSurface> CdlCanvas::onNewSurface(SkImageInfo const&, SkSurfaceProps const&) { return nullptr; }
 
 void CdlCanvas::didConcat(SkMatrix const&) {}

@@ -144,14 +144,14 @@ void PrintWebViewHelper::RenderPage(const PrintMsg_Print_Params& params,
     skia::SetIsPreviewMetafile(*canvas, is_preview);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     if (params.display_header_footer) {
-      PrintHeaderAndFooter(static_cast<blink::WebCanvas*>(canvas),
+      PrintHeaderAndFooter(CdlCanvas::Make(canvas).get(),
                            page_number + 1,
                            print_preview_context_.total_page_count(), *frame,
                            scale_factor, page_layout_in_points, params);
     }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
     RenderPageContent(frame, page_number, canvas_area, content_area,
-                      scale_factor, static_cast<blink::WebCanvas*>(canvas));
+                      scale_factor, CdlCanvas::Make(canvas).get());
   }
 
   // Done printing. Close the device context to retrieve the compiled metafile.

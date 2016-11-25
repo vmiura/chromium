@@ -694,7 +694,7 @@ void BaseRenderingContext2D::fillRect(double x,
 static void strokeRectOnCanvas(const FloatRect& rect,
                                CdlCanvas* canvas,
                                const CdlPaint* paint) {
-  ASSERT(paint->getStyle() == CdlPaint::kStroke_Style);
+  ASSERT(paint->getStyle() == SkPaint::kStroke_Style);
   if ((rect.width() > 0) != (rect.height() > 0)) {
     // When stroking, we must skip the zero-dimension segments
     SkPath path;

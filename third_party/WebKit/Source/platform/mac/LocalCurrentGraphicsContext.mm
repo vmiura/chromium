@@ -23,6 +23,7 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/mac/ThemeMac.h"
 #include "platform_canvas.h"
+#include "skia/ext/cdl_canvas.h"
 
 namespace blink {
 
@@ -43,7 +44,7 @@ static IntRect clampRect(int size, const IntRect& rect) {
 static const int kMaxDirtyRectPixelSize = 10000;
 
 LocalCurrentGraphicsContext::LocalCurrentGraphicsContext(
-    SkCanvas* canvas,
+    CdlCanvas* canvas,
     float deviceScaleFactor,
     const IntRect& dirtyRect)
     : m_didSetGraphicsContext(false),
