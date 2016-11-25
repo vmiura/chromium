@@ -15,7 +15,7 @@
 struct SkIRect;
 struct SkPoint;
 struct SkRect;
-class SkCanvas;
+class CdlCanvas;
 class SkMatrix;
 #ifdef __LP64__
 typedef CGSize NSSize;
@@ -104,7 +104,7 @@ class SK_API SkiaBitLocker {
     SkIRect::MakeSize(canvas->getBaseLayerSize()) transformed by the inverse
     CTM.
    */
-  SkiaBitLocker(SkCanvas* canvas,
+  SkiaBitLocker(CdlCanvas* canvas,
                 const SkIRect& userClipRect,
                 SkScalar bitmapScaleFactor = 1);
   ~SkiaBitLocker();
@@ -115,7 +115,7 @@ class SK_API SkiaBitLocker {
   void releaseIfNeeded();
   SkIRect computeDirtyRect();
 
-  SkCanvas* canvas_;
+  CdlCanvas* canvas_;
 
   CGContextRef cgContext_;
   // offscreen_ is only valid if useDeviceBits_ is false

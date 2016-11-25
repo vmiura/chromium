@@ -39,6 +39,7 @@
 #include "public/platform/WebThemeEngine.h"
 #include "public/platform/Platform.h"
 #include "public/platform/WebRect.h"
+#include "skia/ext/cdl_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "wtf/HashSet.h"
 #include "wtf/RetainPtr.h"
@@ -132,7 +133,7 @@ ScrollbarTheme& ScrollbarTheme::nativeTheme() {
   return overlayTheme;
 }
 
-void ScrollbarThemeMac::paintGivenTickmarks(SkCanvas* canvas,
+void ScrollbarThemeMac::paintGivenTickmarks(CdlCanvas* canvas,
                                             const Scrollbar& scrollbar,
                                             const IntRect& rect,
                                             const Vector<IntRect>& tickmarks) {
@@ -145,14 +146,14 @@ void ScrollbarThemeMac::paintGivenTickmarks(SkCanvas* canvas,
   if (!tickmarks.size())
     return;
 
-  SkAutoCanvasRestore stateSaver(canvas, true);
+  CdlAutoCanvasRestore stateSaver(canvas, true);
 
-  SkPaint strokePaint;
+  CdlPaint strokePaint;
   strokePaint.setAntiAlias(false);
   strokePaint.setColor(SkColorSetRGB(0xCC, 0xAA, 0x00));
   strokePaint.setStyle(SkPaint::kStroke_Style);
 
-  SkPaint fillPaint;
+  CdlPaint fillPaint;
   fillPaint.setAntiAlias(false);
   fillPaint.setColor(SkColorSetRGB(0xFF, 0xDD, 0x00));
   fillPaint.setStyle(SkPaint::kFill_Style);

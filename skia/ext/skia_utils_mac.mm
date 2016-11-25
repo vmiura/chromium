@@ -262,7 +262,7 @@ NSImage* SkBitmapToNSImage(const SkBitmap& skiaBitmap) {
   return SkBitmapToNSImageWithColorSpace(skiaBitmap, colorSpace.get());
 }
 
-SkiaBitLocker::SkiaBitLocker(SkCanvas* canvas,
+SkiaBitLocker::SkiaBitLocker(CdlCanvas* canvas,
                              const SkIRect& userClipRect,
                              SkScalar bitmapScaleFactor)
     : canvas_(canvas),
@@ -328,11 +328,11 @@ CGContextRef SkiaBitLocker::cgContext() {
 
   // Now make clip_bounds be relative to the current layer/device
   if (!bitmapIsDummy_) {
-    canvas_->temporary_internal_describeTopLayer(nullptr, &clip_bounds);
+    canvas_->getSkCanvas()->temporary_internal_describeTopLayer(nullptr, &clip_bounds);
   }
 
   SkPixmap devicePixels;
-  skia::GetWritablePixels(canvas_, &devicePixels);
+  skia::GetWritablePixels(canvas_->getSkCanvas(), &devicePixels);
 
   // Only draw directly if we have pixels, and we're only rect-clipped.
   // If not, we allocate an offscreen and draw into that, relying on the

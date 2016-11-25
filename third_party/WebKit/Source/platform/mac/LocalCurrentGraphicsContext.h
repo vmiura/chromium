@@ -24,7 +24,7 @@
 
 OBJC_CLASS NSGraphicsContext;
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace blink {
 
@@ -37,14 +37,14 @@ class PLATFORM_EXPORT LocalCurrentGraphicsContext {
 
  public:
   LocalCurrentGraphicsContext(GraphicsContext&, const IntRect& dirtyRect);
-  LocalCurrentGraphicsContext(SkCanvas*,
+  LocalCurrentGraphicsContext(CdlCanvas*,
                               float deviceScaleFactor,
                               const IntRect& dirtyRect);
   ~LocalCurrentGraphicsContext();
   CGContextRef cgContext();
 
  private:
-  SkCanvas* m_savedCanvas;
+  CdlCanvas* m_savedCanvas;
   NSGraphicsContext* m_savedNSGraphicsContext;
   bool m_didSetGraphicsContext;
   IntRect m_inflatedDirtyRect;

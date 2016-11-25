@@ -31,7 +31,7 @@
 
 typedef id ScrollbarPainter;
 
-class SkCanvas;
+class CdlCanvas;
 
 namespace blink {
 
@@ -90,7 +90,7 @@ class PLATFORM_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
 
   virtual void updateButtonPlacement(WebScrollbarButtonsPlacement) {}
 
-  void paintGivenTickmarks(SkCanvas*,
+  void paintGivenTickmarks(CdlCanvas*,
                            const Scrollbar&,
                            const IntRect&,
                            const Vector<IntRect>&);

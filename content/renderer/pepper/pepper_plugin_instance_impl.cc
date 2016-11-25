@@ -1813,7 +1813,7 @@ void PepperPluginInstanceImpl::PrintPage(int page_number,
   bool save_for_later =
       (printing::MetafileSkiaWrapper::GetMetafileFromCanvas(*canvas->getSkCanvas()) != NULL);
 #if defined(OS_MACOSX)
-  save_for_later = save_for_later && skia::IsPreviewMetafile(*canvas);
+  save_for_later = save_for_later && skia::IsPreviewMetafile(*canvas->getSkCanvas());
 #endif  // defined(OS_MACOSX)
   if (save_for_later) {
     ranges_.push_back(page_range);
