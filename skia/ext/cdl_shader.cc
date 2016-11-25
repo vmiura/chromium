@@ -27,6 +27,22 @@ CdlShader::~CdlShader() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
+class CdlWrapSkShader : public CdlShader {
+ public:
+  CdlWrapSkShader(sk_sp<SkShader> shader) : fShader(shader) {}
+
+  sk_sp<SkShader> createSkShader() override { return fShader; }
+
+ private:
+  sk_sp<SkShader> fShader;
+};
+
+sk_sp<CdlShader> CdlShader::WrapSkShader(sk_sp<SkShader> shader) {
+  return sk_sp<CdlShader>(new CdlWrapSkShader(shader));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 class CdlImageShader : public CdlShader {
  public:
   CdlImageShader(sk_sp<SkImage> image,
