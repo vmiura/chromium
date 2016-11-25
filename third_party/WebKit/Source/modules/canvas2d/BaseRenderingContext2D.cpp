@@ -1741,7 +1741,7 @@ void BaseRenderingContext2D::checkOverdraw(
     deviceRect = SkRect::Make(skIBounds);
   }
 
-  const SkImageInfo& imageInfo = c->imageInfo();
+  const SkImageInfo& imageInfo = c->skCanvas()->imageInfo();
   if (!deviceRect.contains(
           SkRect::MakeWH(imageInfo.width(), imageInfo.height())))
     return;

@@ -14,40 +14,34 @@
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
     : CdlCanvas(bounds.width(), bounds.height()), fDL(dl) {}
 
-sk_sp<SkSurface> CdlLiteRecorder::onNewSurface(const SkImageInfo&,
-                                               const SkSurfaceProps&) {
-  return nullptr;
-}
-
-#ifdef SK_SUPPORT_LEGACY_DRAWFILTER
-SkDrawFilter* CdlLiteRecorder::setDrawFilter(SkDrawFilter* df) {
-  fDL->setDrawFilter(df);
-  return SkCanvas::setDrawFilter(df);
-}
-#endif
-
-void CdlLiteRecorder::willSave() {
+int CdlLiteRecorder::onSave() {
   fDL->save();
+  return CdlCanvas::onSave();
 }
 
-CdlCanvas::SaveLayerStrategy CdlLiteRecorder::getSaveLayerStrategy(
-    const SkCanvas::SaveLayerRec& rec) {
+int CdlLiteRecorder::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
   fDL->saveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
-  return kNoLayer_SaveLayerStrategy;
+  return CdlCanvas::onSaveLayer(rec);
 }
 
-void CdlLiteRecorder::willRestore() {
+void CdlLiteRecorder::onRestore() {
   fDL->restore();
+  CdlCanvas::onRestore();
 }
 
-void CdlLiteRecorder::didConcat(const SkMatrix& matrix) {
+void CdlLiteRecorder::onConcat(const SkMatrix& matrix) {
   fDL->concat(matrix);
+  CdlCanvas::onConcat(matrix);
 }
-void CdlLiteRecorder::didSetMatrix(const SkMatrix& matrix) {
+
+void CdlLiteRecorder::onSetMatrix(const SkMatrix& matrix) {
   fDL->setMatrix(matrix);
+  CdlCanvas::onSetMatrix(matrix);
 }
-void CdlLiteRecorder::didTranslate(SkScalar dx, SkScalar dy) {
+
+void CdlLiteRecorder::onTranslate(SkScalar dx, SkScalar dy) {
   fDL->translate(dx, dy);
+  CdlCanvas::onTranslate(dx, dy);
 }
 
 void CdlLiteRecorder::onClipRect(const SkRect& rect,

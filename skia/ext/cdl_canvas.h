@@ -29,10 +29,11 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   CdlCanvas(int width, int height);
   ~CdlCanvas() override;
 
-  SkCanvas* getSkCanvas();
-  SkImageInfo imageInfo() const;
+  SkCanvas* skCanvas();
 
+  // Save / Restore
   int save();
+  void restore();
 
   int saveLayer(const SkRect* bounds, const SkPaint* paint);
   int saveLayer(const SkRect& bounds, const SkPaint* paint) {
@@ -40,68 +41,81 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   }
   int saveLayer(const SkCanvas::SaveLayerRec& origRec);
   int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
-  void restore();
-
-  void discard() { this->onDiscard(); }
-  void flush();
+  int saveLayerPreserveLCDTextRequests(const SkRect* bounds,
+                                     const SkPaint* paint);
 
   int getSaveCount() const;
   void restoreToCount(int saveCount);
-  const SkClipStack* getClipStack() const;
-  bool readPixels(SkBitmap* bitmap, int srcX, int srcY);
 
-  void translate(SkScalar dx, SkScalar dy);
-  void scale(SkScalar sx, SkScalar sy);
+  // Transform
+  void concat(const SkMatrix& matrix);
   void rotate(SkScalar degrees);
   void rotate(SkScalar degrees, SkScalar px, SkScalar py);
-  void skew(SkScalar sx, SkScalar sy);
-  void concat(const SkMatrix& matrix);
-  void setMatrix(const SkMatrix& matrix);
-  void resetMatrix();
+  void scale(SkScalar sx, SkScalar sy);
+  void translate(SkScalar dx, SkScalar dy);
 
+  void resetMatrix();
+  void setMatrix(const SkMatrix& matrix);
+  const SkMatrix& getTotalMatrix() const;
+
+  // Clip
+  SkISize getBaseLayerSize() const;
+  bool getClipBounds(SkRect* bounds) const;
+  bool getClipDeviceBounds(SkIRect* bounds) const;
+  const SkClipStack* getClipStack() const;
+  bool isClipEmpty() const;
+  bool isClipRect() const;
   bool quickReject(const SkRect& rect) const;
 
-  const SkMatrix& getTotalMatrix() const;
-  virtual bool getClipBounds(SkRect* bounds) const;
-  virtual bool getClipDeviceBounds(SkIRect* bounds) const;
-  virtual SkISize getBaseLayerSize() const;
-  virtual bool isClipEmpty() const;
-  virtual bool isClipRect() const;
+  void clipRect(const SkRect& rect, SkCanvas::ClipOp, bool doAntiAlias);
+  void clipRect(const SkRect& rect, SkCanvas::ClipOp op) {
+    this->clipRect(rect, op, false);
+  }
+  void clipRect(const SkRect& rect, bool doAntiAlias = false) {
+    this->clipRect(rect, SkCanvas::kIntersect_Op, doAntiAlias);
+  }
 
-  int saveLayerPreserveLCDTextRequests(const SkRect* bounds,
-                                       const SkPaint* paint);
+  void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op, bool doAntiAlias);
+  void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op) {
+    this->clipRRect(rrect, op, false);
+  }
+  void clipRRect(const SkRRect& rrect, bool doAntiAlias = false) {
+    this->clipRRect(rrect, SkCanvas::kIntersect_Op, doAntiAlias);
+  }
 
-  bool writePixels(const SkImageInfo&,
-                   const void* pixels,
-                   size_t rowBytes,
-                   int x,
-                   int y);
-  bool writePixels(const SkBitmap& bitmap, int x, int y);
+  void clipPath(const SkPath& path, SkCanvas::ClipOp op, bool doAntiAlias);
+  void clipPath(const SkPath& path, SkCanvas::ClipOp op) {
+    this->clipPath(path, op, false);
+  }
+  void clipPath(const SkPath& path, bool doAntiAlias = false) {
+    this->clipPath(path, SkCanvas::kIntersect_Op, doAntiAlias);
+  }
 
-  void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
-  void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
+  void clipRegion(const SkRegion& deviceRgn,
+                  SkCanvas::ClipOp op = SkCanvas::kIntersect_Op);
 
+  // Draw
   void drawColor(SkColor color, SkBlendMode mode = SkBlendMode::kSrcOver);
-  void clear(SkColor color) { this->drawColor(color, SkBlendMode::kSrc); }
-
   void drawPaint(const SkPaint& paint);
+  void drawPoint(SkScalar x, SkScalar y, const SkPaint& paint);
+  void drawPoint(SkScalar x, SkScalar y, SkColor color);
   void drawPoints(SkCanvas::PointMode mode,
                   size_t count,
                   const SkPoint pts[],
                   const SkPaint& paint);
-  void drawPoint(SkScalar x, SkScalar y, const SkPaint& paint);
-  void drawPoint(SkScalar x, SkScalar y, SkColor color);
-
+  
   void drawLine(SkScalar x0,
                 SkScalar y0,
                 SkScalar x1,
                 SkScalar y1,
                 const SkPaint& paint);
+  
   void drawCircle(SkScalar cx,
                   SkScalar cy,
                   SkScalar radius,
                   const SkPaint& paint);
   void drawOval(const SkRect& oval, const SkPaint&);
+  
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
   void drawRoundRect(const SkRect& rect,
@@ -123,25 +137,10 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
 
   void drawPath(const SkPath& path, const SkPaint& paint);
 
-  void drawText(const void* text,
-                size_t byteLength,
-                SkScalar x,
-                SkScalar y,
-                const SkPaint& paint);
-  void drawPosText(const void* text,
-                   size_t byteLength,
-                   const SkPoint pos[],
-                   const SkPaint& paint);
-  void drawTextBlob(const SkTextBlob* blob,
-                    SkScalar x,
-                    SkScalar y,
-                    const SkPaint& paint);
-  void drawTextBlob(const sk_sp<SkTextBlob>& blob,
-                    SkScalar x,
-                    SkScalar y,
-                    const SkPaint& paint) {
-    this->drawTextBlob(blob.get(), x, y, paint);
-  }
+  void drawBitmap(const SkBitmap& bitmap,
+                  SkScalar left,
+                  SkScalar top,
+                  const SkPaint* paint = NULL);
 
   void drawImage(const SkImage* image,
                  SkScalar left,
@@ -216,59 +215,55 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
     this->drawImageRect(image.get(), dst, paint, cons);
   }
 
-  void drawBitmap(const SkBitmap& bitmap,
-                  SkScalar left,
-                  SkScalar top,
-                  const SkPaint* paint = NULL);
-
-  void clipRect(const SkRect& rect, SkCanvas::ClipOp, bool doAntiAlias);
-  void clipRect(const SkRect& rect, SkCanvas::ClipOp op) {
-    this->clipRect(rect, op, false);
-  }
-  void clipRect(const SkRect& rect, bool doAntiAlias = false) {
-    this->clipRect(rect, SkCanvas::kIntersect_Op, doAntiAlias);
-  }
-
-  void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op, bool doAntiAlias);
-  void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op) {
-    this->clipRRect(rrect, op, false);
-  }
-  void clipRRect(const SkRRect& rrect, bool doAntiAlias = false) {
-    this->clipRRect(rrect, SkCanvas::kIntersect_Op, doAntiAlias);
-  }
-
-  void clipPath(const SkPath& path, SkCanvas::ClipOp op, bool doAntiAlias);
-  void clipPath(const SkPath& path, SkCanvas::ClipOp op) {
-    this->clipPath(path, op, false);
-  }
-  void clipPath(const SkPath& path, bool doAntiAlias = false) {
-    this->clipPath(path, SkCanvas::kIntersect_Op, doAntiAlias);
+  void drawText(const void* text,
+                size_t byteLength,
+                SkScalar x,
+                SkScalar y,
+                const SkPaint& paint);
+  void drawPosText(const void* text,
+                   size_t byteLength,
+                   const SkPoint pos[],
+                   const SkPaint& paint);
+  void drawTextBlob(const SkTextBlob* blob,
+                    SkScalar x,
+                    SkScalar y,
+                    const SkPaint& paint);
+  void drawTextBlob(const sk_sp<SkTextBlob>& blob,
+                    SkScalar x,
+                    SkScalar y,
+                    const SkPaint& paint) {
+    this->drawTextBlob(blob.get(), x, y, paint);
   }
 
-  void clipRegion(const SkRegion& deviceRgn,
-                  SkCanvas::ClipOp op = SkCanvas::kIntersect_Op);
+  void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
+  void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
+
+  // Misc
+  void flush();
+  void discard() { this->onDiscard(); }
+  void clear(SkColor color) { this->drawColor(color, SkBlendMode::kSrc); }
+  bool readPixels(SkBitmap* bitmap, int srcX, int srcY);
+  bool writePixels(const SkImageInfo&,
+                   const void* pixels,
+                   size_t rowBytes,
+                   int x,
+                   int y);
+  bool writePixels(const SkBitmap& bitmap, int x, int y);
 
  protected:
-  virtual sk_sp<SkSurface> onNewSurface(const SkImageInfo&,
-                                        const SkSurfaceProps&);
-
-#ifdef SK_SUPPORT_LEGACY_DRAWFILTER
-  virtual SkDrawFilter* setDrawFilter(SkDrawFilter*);
-#endif
 
   enum SaveLayerStrategy {
     kFullLayer_SaveLayerStrategy,
     kNoLayer_SaveLayerStrategy,
   };
 
-  virtual void willSave() {}
-  virtual SaveLayerStrategy getSaveLayerStrategy(const SkCanvas::SaveLayerRec&);
-  virtual void willRestore() {}
-  virtual void didRestore() {}
+  virtual int  onSave();
+  virtual int  onSaveLayer(const SkCanvas::SaveLayerRec&);
+  virtual void onRestore();
 
-  virtual void didConcat(const SkMatrix&);
-  virtual void didSetMatrix(const SkMatrix&);
-  virtual void didTranslate(SkScalar, SkScalar);
+  virtual void onConcat(const SkMatrix&);
+  virtual void onSetMatrix(const SkMatrix&);
+  virtual void onTranslate(SkScalar, SkScalar);
 
   enum ClipEdgeStyle { kHard_ClipEdgeStyle, kSoft_ClipEdgeStyle };
 
@@ -282,6 +277,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void onDrawPaint(const SkPaint&);
   virtual void onDrawPath(const SkPath&, const SkPaint&);
   virtual void onDrawRect(const SkRect&, const SkPaint&);
+  virtual void onDrawRect(const SkRect&, const CdlPaint&);
   virtual void onDrawRegion(const SkRegion&, const SkPaint&);
   virtual void onDrawOval(const SkRect&, const SkPaint&);
   virtual void onDrawArc(const SkRect&,
@@ -402,22 +398,7 @@ virtual void onDrawAtlas(const SkImage*,
                  const SkRect*,
                  const SkPaint*);
                  */
-
-#ifdef SK_EXPERIMENTAL_SHADOWING
-  void didTranslateZ(SkScalar);
-  void onDrawShadowedPicture(const SkPicture*,
-                             const SkMatrix*,
-                             const SkPaint*,
-                             const SkShadowParams& params);
-#else
-  void didTranslateZ(SkScalar);
-  void onDrawShadowedPicture(const SkPicture*,
-                             const SkMatrix*,
-                             const SkPaint*,
-                             const SkShadowParams& params);
-#endif
-
-  virtual void onDrawRect(const SkRect&, const CdlPaint&);
+  
 
   SkCanvas* canvas_;
 };

@@ -120,7 +120,7 @@ void RasterSource::PrepareForPlaybackToCanvas(CdlCanvas* canvas) const {
   // TODO(hendrikw): See if we can split this up into separate functions.
 
   if (canvas->getClipStack()->quickContains(
-          SkRect::MakeFromIRect(canvas->imageInfo().bounds()))) {
+          SkRect::MakeFromIRect(canvas->skCanvas()->imageInfo().bounds()))) {
     canvas->discard();
   }
 
