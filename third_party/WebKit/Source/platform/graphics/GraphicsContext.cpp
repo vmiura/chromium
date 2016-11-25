@@ -273,7 +273,7 @@ void GraphicsContext::beginRecording(const FloatRect& bounds) {
 
   m_canvas = m_pictureRecorder.beginRecording(bounds, nullptr);
   if (m_hasMetaData)
-    skia::GetMetaData(*m_canvas->getSkCanvas()) = m_metaData;
+    skia::GetMetaData(*m_canvas->skCanvas()) = m_metaData;
 }
 
 namespace {
@@ -634,9 +634,9 @@ void GraphicsContext::drawLineForDocumentMarker(const FloatPoint& pt,
   localMatrix.setTranslate(originX, originY);
 
   CdlPaint paint;
-  paint.setShader(SkShader::MakeBitmapShader(
+  paint.setCdlShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(
       *misspellBitmap[index], SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &localMatrix));
+      SkShader::kRepeat_TileMode, &localMatrix)));
 
   SkRect rect;
   rect.set(originX, originY,

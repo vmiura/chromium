@@ -24,21 +24,13 @@ class CdlLiteRecorder final : public CdlCanvas {
  public:
   CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
 
-  sk_sp<SkSurface> onNewSurface(const SkImageInfo&,
-                                const SkSurfaceProps&) override;
+  int  onSave() override;
+  int  onSaveLayer(const SkCanvas::SaveLayerRec&) override;
+  void onRestore() override;
 
-#ifdef SK_SUPPORT_LEGACY_DRAWFILTER
-  SkDrawFilter* setDrawFilter(SkDrawFilter*) override;
-#endif
-
-  void willSave() override;
-  SaveLayerStrategy getSaveLayerStrategy(
-      const SkCanvas::SaveLayerRec&) override;
-  void willRestore() override;
-
-  void didConcat(const SkMatrix&) override;
-  void didSetMatrix(const SkMatrix&) override;
-  void didTranslate(SkScalar, SkScalar) override;
+  void onConcat(const SkMatrix&) override;
+  void onSetMatrix(const SkMatrix&) override;
+  void onTranslate(SkScalar, SkScalar) override;
 
   void onClipRect(const SkRect&, SkCanvas::ClipOp, ClipEdgeStyle) override;
   void onClipRRect(const SkRRect&, SkCanvas::ClipOp, ClipEdgeStyle) override;

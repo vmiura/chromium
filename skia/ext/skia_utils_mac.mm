@@ -328,12 +328,12 @@ CGContextRef SkiaBitLocker::cgContext() {
 
   // Now make clip_bounds be relative to the current layer/device
   if (!bitmapIsDummy_) {
-    canvas_->getSkCanvas()->temporary_internal_describeTopLayer(nullptr,
+    canvas_->skCanvas()->temporary_internal_describeTopLayer(nullptr,
                                                                 &clip_bounds);
   }
 
   SkPixmap devicePixels;
-  skia::GetWritablePixels(canvas_->getSkCanvas(), &devicePixels);
+  skia::GetWritablePixels(canvas_->skCanvas(), &devicePixels);
 
   // Only draw directly if we have pixels, and we're only rect-clipped.
   // If not, we allocate an offscreen and draw into that, relying on the

@@ -1811,10 +1811,10 @@ void PepperPluginInstanceImpl::PrintPage(int page_number,
   page_range.first_page_number = page_range.last_page_number = page_number;
   // The canvas only has a metafile on it for print preview.
   bool save_for_later = (printing::MetafileSkiaWrapper::GetMetafileFromCanvas(
-                             *canvas->getSkCanvas()) != NULL);
+                             *canvas->skCanvas()) != NULL);
 #if defined(OS_MACOSX)
   save_for_later =
-      save_for_later && skia::IsPreviewMetafile(*canvas->getSkCanvas());
+      save_for_later && skia::IsPreviewMetafile(*canvas->skCanvas());
 #endif  // defined(OS_MACOSX)
   if (save_for_later) {
     ranges_.push_back(page_range);
@@ -2033,7 +2033,7 @@ bool PepperPluginInstanceImpl::PrintPDFOutput(PP_Resource print_output,
 
   printing::PdfMetafileSkia* metafile =
       printing::MetafileSkiaWrapper::GetMetafileFromCanvas(
-          *canvas->getSkCanvas());
+          *canvas->skCanvas());
   if (metafile)
     return metafile->InitFromData(mapper.data(), mapper.size());
 

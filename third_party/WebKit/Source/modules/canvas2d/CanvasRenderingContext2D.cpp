@@ -296,7 +296,7 @@ void CanvasRenderingContext2D::reset() {
 #if DCHECK_IS_ON()
     SkIRect clipBounds;
     DCHECK(c->getClipDeviceBounds(&clipBounds));
-    DCHECK(clipBounds == c->imageInfo().bounds());
+    DCHECK(clipBounds == c->skCanvas()->imageInfo().bounds());
 #endif
   }
   validateStateStack();

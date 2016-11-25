@@ -84,7 +84,7 @@ void GraphicsContextState::setMiterLimit(float miterLimit) {
 
 void GraphicsContextState::setFillColor(const Color& color) {
   m_fillPaint.setColor(color.rgb());
-  m_fillPaint.setShader(0);
+  m_fillPaint.setCdlShader(0);
 }
 
 // Shadow. (This will need tweaking if we use draw loopers for other things.)
