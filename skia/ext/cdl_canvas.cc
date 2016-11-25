@@ -103,14 +103,12 @@ void CdlCanvas::translate(SkScalar dx, SkScalar dy) {
 }
 
 void CdlCanvas::rotate(SkScalar degrees) {
-  canvas_->rotate(degrees);
   SkMatrix m;
   m.setRotate(degrees);
   this->concat(m);
 }
 
 void CdlCanvas::scale(SkScalar sx, SkScalar sy) {
-  canvas_->scale(sx, sy);
   SkMatrix m;
   m.setScale(sx, sy);
   this->concat(m);
