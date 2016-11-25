@@ -19,7 +19,7 @@ class CdlShader : public SkRefCnt {
   CdlShader(const SkMatrix* localMatrix = NULL);
   ~CdlShader() override;
 
-  static sk_sp<SkShader> MakeColorShader(SkColor);
+  static sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader);
 
   static sk_sp<CdlShader> MakeImageShader(sk_sp<SkImage>,
                                           SkShader::TileMode tx,

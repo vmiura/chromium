@@ -28,8 +28,6 @@ PicturePattern::PicturePattern(sk_sp<CdlPicture> picture, RepeatMode mode)
 PicturePattern::~PicturePattern() {}
 
 sk_sp<CdlShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
-  // TODO(cdl): Shaders
-  // This affects SVG Cats.
   SkRect tileBounds = m_tilePicture->cullRect();
 
   return CdlShader::MakePictureShader(m_tilePicture, SkShader::kRepeat_TileMode,

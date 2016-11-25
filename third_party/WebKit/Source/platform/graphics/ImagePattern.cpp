@@ -39,15 +39,14 @@ bool ImagePattern::isLocalMatrixChanged(const SkMatrix& localMatrix) const {
 }
 
 sk_sp<CdlShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
-  // TODO(cdl): Shaders
-  /*
   if (!m_tileImage)
-    return SkShader::MakeColorShader(SK_ColorTRANSPARENT);
+    return CdlShader::WrapSkShader(
+        SkShader::MakeColorShader(SK_ColorTRANSPARENT));
 
   if (isRepeatXY()) {
     // Fast path: for repeatXY we just return a shader from the original image.
-    return m_tileImage->makeShader(SkShader::kRepeat_TileMode,
-                                   SkShader::kRepeat_TileMode, &localMatrix);
+    return CdlShader::MakeImageShader(m_tileImage, SkShader::kRepeat_TileMode,
+                                      SkShader::kRepeat_TileMode, &localMatrix);
   }
 
   // Skia does not have a "draw the tile only once" option. Clamp_TileMode
@@ -69,7 +68,8 @@ sk_sp<CdlShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
       SkSurface::MakeRasterN32Premul(m_tileImage->width() + 2 * borderPixelX,
                                      m_tileImage->height() + 2 * borderPixelY);
   if (!surface)
-    return SkShader::MakeColorShader(SK_ColorTRANSPARENT);
+    return CdlShader::WrapSkShader(
+        SkShader::MakeColorShader(SK_ColorTRANSPARENT));
 
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
@@ -80,10 +80,8 @@ sk_sp<CdlShader> ImagePattern::createShader(const SkMatrix& localMatrix) {
   SkMatrix adjustedMatrix(localMatrix);
   adjustedMatrix.postTranslate(-borderPixelX, -borderPixelY);
 
-  return surface->makeImageSnapshot()->makeShader(tileModeX, tileModeY,
-                                                  &adjustedMatrix);
-  */
-  return nullptr;
+  return CdlShader::MakeImageShader(surface->makeImageSnapshot(), tileModeX,
+                                    tileModeY, &adjustedMatrix);
 }
 
 bool ImagePattern::isTextureBacked() const {

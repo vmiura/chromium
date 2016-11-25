@@ -60,21 +60,21 @@ static void make_threadsafe(SkPath* path, SkMatrix* matrix) {
 }
 
 namespace {
-#define TYPES(M)                                                             \
-  M(SetDrawFilter)                                                           \
-  M(Save)                                                                    \
-  M(Restore) M(SaveLayer) M(Concat) M(SetMatrix) M(Translate) M(TranslateZ)  \
-      M(ClipPath) M(ClipRect) M(ClipRRect) M(ClipRegion) M(DrawPaint)        \
-          M(DrawPath) M(DrawRect) M(DrawRegion) M(DrawOval) M(DrawArc)       \
-              M(DrawRRect) M(DrawDRRect) M(DrawAnnotation) M(DrawDrawable)   \
-                  M(DrawPicture) M(DrawShadowedPicture) M(DrawImage)         \
-                      M(DrawImageNine) M(DrawImageRect) M(DrawImageLattice)  \
-                          M(DrawText) M(DrawPosText) M(DrawPosTextH)         \
-                              M(DrawTextOnPath) M(DrawTextRSXform)           \
-                                  M(DrawTextBlob) M(DrawPatch) M(DrawPoints) \
-                                      M(DrawVertices) M(DrawAtlas)           \
-                                          M(DrawRectX) M(DrawImageX)         \
-                                              M(DrawImageRectX)
+#define TYPES(M)                                                              \
+  M(SetDrawFilter)                                                            \
+  M(Save)                                                                     \
+  M(Restore)                                                                  \
+  M(SaveLayer) M(Concat) M(SetMatrix) M(Translate) M(TranslateZ) M(ClipPath)  \
+      M(ClipRect) M(ClipRRect) M(ClipRegion) M(DrawPaint) M(DrawPath)         \
+          M(DrawRect) M(DrawRegion) M(DrawOval) M(DrawArc) M(DrawRRect)       \
+              M(DrawDRRect) M(DrawAnnotation) M(DrawDrawable) M(DrawPicture)  \
+                  M(DrawShadowedPicture) M(DrawImage) M(DrawImageNine)        \
+                      M(DrawImageRect) M(DrawImageLattice) M(DrawText)        \
+                          M(DrawPosText) M(DrawPosTextH) M(DrawTextOnPath)    \
+                              M(DrawTextRSXform) M(DrawTextBlob) M(DrawPatch) \
+                                  M(DrawPoints) M(DrawVertices) M(DrawAtlas)  \
+                                      M(DrawRectX) M(DrawImageX)              \
+                                          M(DrawImageRectX)
 
 #define M(T) T,
 enum class Type : uint8_t { TYPES(M) };

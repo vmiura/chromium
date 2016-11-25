@@ -177,9 +177,6 @@ static void fillStops(const Gradient::ColorStop* stopData,
 }
 
 sk_sp<CdlShader> Gradient::createShader(const SkMatrix& localMatrix) {
-  // TODO(cdl): Shaders
-  ALLOW_UNUSED_LOCAL(m_aspectRatio);
-  /*
   sortStopsIfNecessary();
   ASSERT(m_stopsSorted);
 
@@ -249,9 +246,7 @@ sk_sp<CdlShader> Gradient::createShader(const SkMatrix& localMatrix) {
     shader = SkShader::MakeColorShader(colors[countUsed - 1]);
   }
 
-  return shader;
-  */
-  return nullptr;
+  return CdlShader::WrapSkShader(shader);
 }
 
 void Gradient::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
