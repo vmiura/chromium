@@ -305,8 +305,8 @@ void SVGImage::drawPatternForContainer(GraphicsContext& context,
 
   CdlPaint paint;
   paint.setCdlShader(CdlShader::MakePictureShader(
-      tilePicture, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &patternTransform, nullptr));
+      tilePicture, SkShader::kRepeat_TileMode, SkShader::kRepeat_TileMode,
+      &patternTransform, nullptr));
   paint.setBlendMode(compositeOp);
   paint.setColorFilter(sk_ref_sp(context.getColorFilter()));
   context.drawRect(dstRect, paint);

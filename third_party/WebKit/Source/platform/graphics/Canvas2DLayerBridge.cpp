@@ -745,7 +745,8 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
         oldSurface->draw(newSurface->getCanvas(), 0, 0, &copyPaint);
       if (m_imageBuffer && !m_isDeferralEnabled) {
         // TODO(cdl): was nullptr dereference here?
-        m_imageBuffer->resetCanvas(CdlCanvas::Make(m_surface->getCanvas()).get());
+        m_imageBuffer->resetCanvas(
+            CdlCanvas::Make(m_surface->getCanvas()).get());
       }
     }
   }

@@ -343,9 +343,11 @@ PP_Bool BrowserFontResource_Trusted::DrawTextAt(
     SkSurfaceProps props(0, kUnknown_SkPixelGeometry);
     SkCanvas temp_canvas(bm, props);
 
-    DrawTextToCanvas(CdlCanvas::Make(&temp_canvas).get(), *text, position, color, clip);
+    DrawTextToCanvas(CdlCanvas::Make(&temp_canvas).get(), *text, position,
+                     color, clip);
   } else {
-    DrawTextToCanvas(CdlCanvas::Make(canvas).get(), *text, position, color, clip);
+    DrawTextToCanvas(CdlCanvas::Make(canvas).get(), *text, position, color,
+                     clip);
   }
 
   if (needs_unmapping)

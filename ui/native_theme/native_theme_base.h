@@ -38,11 +38,10 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
   ~NativeThemeBase() override;
 
   // Draw the arrow. Used by scrollbar and inner spin button.
-  virtual void PaintArrowButton(
-      CdlCanvas* gc,
-      const gfx::Rect& rect,
-      Part direction,
-      State state) const;
+  virtual void PaintArrowButton(CdlCanvas* gc,
+                                const gfx::Rect& rect,
+                                Part direction,
+                                State state) const;
   // Paint the scrollbar track. Done before the thumb so that it can contain
   // alpha.
   virtual void PaintScrollbarTrack(
@@ -63,35 +62,30 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
                                     State state,
                                     const gfx::Rect& rect) const;
 
-  virtual void PaintCheckbox(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const ButtonExtraParams& button) const;
+  virtual void PaintCheckbox(CdlCanvas* canvas,
+                             State state,
+                             const gfx::Rect& rect,
+                             const ButtonExtraParams& button) const;
 
-  virtual void PaintRadio(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const ButtonExtraParams& button) const;
+  virtual void PaintRadio(CdlCanvas* canvas,
+                          State state,
+                          const gfx::Rect& rect,
+                          const ButtonExtraParams& button) const;
 
-  virtual void PaintButton(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const ButtonExtraParams& button) const;
+  virtual void PaintButton(CdlCanvas* canvas,
+                           State state,
+                           const gfx::Rect& rect,
+                           const ButtonExtraParams& button) const;
 
-  virtual void PaintTextField(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const TextFieldExtraParams& text) const;
+  virtual void PaintTextField(CdlCanvas* canvas,
+                              State state,
+                              const gfx::Rect& rect,
+                              const TextFieldExtraParams& text) const;
 
-  virtual void PaintMenuList(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const MenuListExtraParams& menu_list) const;
+  virtual void PaintMenuList(CdlCanvas* canvas,
+                             State state,
+                             const gfx::Rect& rect,
+                             const MenuListExtraParams& menu_list) const;
 
   virtual void PaintMenuPopupBackground(
       CdlCanvas* canvas,
@@ -104,17 +98,15 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       const gfx::Rect& rect,
       const MenuItemExtraParams& menu_item) const;
 
-  virtual void PaintSliderTrack(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const SliderExtraParams& slider) const;
+  virtual void PaintSliderTrack(CdlCanvas* canvas,
+                                State state,
+                                const gfx::Rect& rect,
+                                const SliderExtraParams& slider) const;
 
-  virtual void PaintSliderThumb(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const SliderExtraParams& slider) const;
+  virtual void PaintSliderThumb(CdlCanvas* canvas,
+                                State state,
+                                const gfx::Rect& rect,
+                                const SliderExtraParams& slider) const;
 
   virtual void PaintInnerSpinButton(
       CdlCanvas* canvas,
@@ -181,11 +173,10 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
 
   // Paint the common parts of the checkboxes and radio buttons.
   // borderRadius specifies how rounded the corners should be.
-  SkRect PaintCheckboxRadioCommon(
-      CdlCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const SkScalar borderRadius) const;
+  SkRect PaintCheckboxRadioCommon(CdlCanvas* canvas,
+                                  State state,
+                                  const gfx::Rect& rect,
+                                  const SkScalar borderRadius) const;
 
   // The length of the arrow buttons, 0 means no buttons are drawn.
   int scrollbar_button_length_;

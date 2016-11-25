@@ -68,7 +68,8 @@ void CdlLiteRecorder::onClipPath(const SkPath& path,
   INHERITED(onClipPath, path, op, style);
   fDL->clipPath(path, op, style == kSoft_ClipEdgeStyle);
 }
-void CdlLiteRecorder::onClipRegion(const SkRegion& region, SkCanvas::ClipOp op) {
+void CdlLiteRecorder::onClipRegion(const SkRegion& region,
+                                   SkCanvas::ClipOp op) {
   INHERITED(onClipRegion, region, op);
   fDL->clipRegion(region, op);
 }
@@ -286,4 +287,3 @@ void CdlLiteRecorder::onDrawShadowedPicture(const SkPicture* picture,
 }
 
 // CdlCanvas overrides
-

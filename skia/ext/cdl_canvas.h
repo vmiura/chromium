@@ -16,13 +16,9 @@
 #include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
-#define FULL_REPLACEMENT_CDL_CANVAS 1
-
 class CdlPaint;
 class CdlCanvas;
 class CdlLiteDL;
-
-#if FULL_REPLACEMENT_CDL_CANVAS
 
 class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
  public:
@@ -40,7 +36,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
 
   int saveLayer(const SkRect* bounds, const SkPaint* paint);
   int saveLayer(const SkRect& bounds, const SkPaint* paint) {
-      return this->saveLayer(&bounds, paint);
+    return this->saveLayer(&bounds, paint);
   }
   int saveLayer(const SkCanvas::SaveLayerRec& origRec);
   int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
@@ -72,136 +68,197 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual bool isClipEmpty() const;
   virtual bool isClipRect() const;
 
-  int saveLayerPreserveLCDTextRequests(const SkRect* bounds, const SkPaint* paint);
+  int saveLayerPreserveLCDTextRequests(const SkRect* bounds,
+                                       const SkPaint* paint);
 
-  bool writePixels(const SkImageInfo&, const void* pixels, size_t rowBytes, int x, int y);
+  bool writePixels(const SkImageInfo&,
+                   const void* pixels,
+                   size_t rowBytes,
+                   int x,
+                   int y);
   bool writePixels(const SkBitmap& bitmap, int x, int y);
 
   void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
   void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
 
   void drawColor(SkColor color, SkBlendMode mode = SkBlendMode::kSrcOver);
-  void clear(SkColor color) {
-      this->drawColor(color, SkBlendMode::kSrc);
-  }
+  void clear(SkColor color) { this->drawColor(color, SkBlendMode::kSrc); }
 
   void drawPaint(const SkPaint& paint);
-  void drawPoints(SkCanvas::PointMode mode, size_t count, const SkPoint pts[], const SkPaint& paint);
+  void drawPoints(SkCanvas::PointMode mode,
+                  size_t count,
+                  const SkPoint pts[],
+                  const SkPaint& paint);
   void drawPoint(SkScalar x, SkScalar y, const SkPaint& paint);
   void drawPoint(SkScalar x, SkScalar y, SkColor color);
 
-  void drawLine(SkScalar x0, SkScalar y0, SkScalar x1, SkScalar y1,
+  void drawLine(SkScalar x0,
+                SkScalar y0,
+                SkScalar x1,
+                SkScalar y1,
+                const SkPaint& paint);
+  void drawCircle(SkScalar cx,
+                  SkScalar cy,
+                  SkScalar radius,
                   const SkPaint& paint);
-  void drawCircle(SkScalar cx, SkScalar cy, SkScalar radius,
-                    const SkPaint& paint);
   void drawOval(const SkRect& oval, const SkPaint&);
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
-  void drawRoundRect(const SkRect& rect, SkScalar rx, SkScalar ry,
-                       const SkPaint& paint);
-  void drawRectCoords(SkScalar left, SkScalar top, SkScalar right,
-                        SkScalar bottom, const SkPaint& paint);
+  void drawRoundRect(const SkRect& rect,
+                     SkScalar rx,
+                     SkScalar ry,
+                     const SkPaint& paint);
+  void drawRectCoords(SkScalar left,
+                      SkScalar top,
+                      SkScalar right,
+                      SkScalar bottom,
+                      const SkPaint& paint);
   void drawRRect(const SkRRect& rrect, const SkPaint& paint);
   void drawDRRect(const SkRRect& outer, const SkRRect& inner, const SkPaint&);
   void drawIRect(const SkIRect& rect, const SkPaint& paint) {
-      SkRect r;
-      r.set(rect);    // promotes the ints to scalars
-      this->drawRect(r, paint);
+    SkRect r;
+    r.set(rect);  // promotes the ints to scalars
+    this->drawRect(r, paint);
   }
 
   void drawPath(const SkPath& path, const SkPaint& paint);
 
-
-
-  void drawText(const void* text, size_t byteLength, SkScalar x, SkScalar y,
-                  const SkPaint& paint);
-  void drawPosText(const void* text, size_t byteLength, const SkPoint pos[],
-                     const SkPaint& paint);
-  void drawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y, const SkPaint& paint);
-  void drawTextBlob(const sk_sp<SkTextBlob>& blob, SkScalar x, SkScalar y, const SkPaint& paint) {
-      this->drawTextBlob(blob.get(), x, y, paint);
+  void drawText(const void* text,
+                size_t byteLength,
+                SkScalar x,
+                SkScalar y,
+                const SkPaint& paint);
+  void drawPosText(const void* text,
+                   size_t byteLength,
+                   const SkPoint pos[],
+                   const SkPaint& paint);
+  void drawTextBlob(const SkTextBlob* blob,
+                    SkScalar x,
+                    SkScalar y,
+                    const SkPaint& paint);
+  void drawTextBlob(const sk_sp<SkTextBlob>& blob,
+                    SkScalar x,
+                    SkScalar y,
+                    const SkPaint& paint) {
+    this->drawTextBlob(blob.get(), x, y, paint);
   }
 
-  void drawImage(const SkImage* image, SkScalar left, SkScalar top, const SkPaint* paint = NULL);
-  void drawImage(const sk_sp<SkImage>& image, SkScalar left, SkScalar top,
+  void drawImage(const SkImage* image,
+                 SkScalar left,
+                 SkScalar top,
+                 const SkPaint* paint = NULL);
+  void drawImage(const sk_sp<SkImage>& image,
+                 SkScalar left,
+                 SkScalar top,
                  const SkPaint* paint = NULL) {
-      this->drawImage(image.get(), left, top, paint);
+    this->drawImage(image.get(), left, top, paint);
   }
 
-  void drawImage(const SkImage* image, SkScalar left, SkScalar top, const CdlPaint& paint);
-  void drawImage(const sk_sp<SkImage>& image, SkScalar left, SkScalar top,
+  void drawImage(const SkImage* image,
+                 SkScalar left,
+                 SkScalar top,
+                 const CdlPaint& paint);
+  void drawImage(const sk_sp<SkImage>& image,
+                 SkScalar left,
+                 SkScalar top,
                  const CdlPaint& paint) {
-      this->drawImage(image.get(), left, top, paint);
+    this->drawImage(image.get(), left, top, paint);
   }
 
-  void drawImageRect(const SkImage* image, const SkRect& src, const SkRect& dst,
+  void drawImageRect(const SkImage* image,
+                     const SkRect& src,
+                     const SkRect& dst,
                      const SkPaint* paint,
-                     SkCanvas::SrcRectConstraint constraint = SkCanvas::kStrict_SrcRectConstraint);
-  void drawImageRect(const SkImage* image, const SkRect& src, const SkRect& dst,
+                     SkCanvas::SrcRectConstraint constraint =
+                         SkCanvas::kStrict_SrcRectConstraint);
+  void drawImageRect(const SkImage* image,
+                     const SkRect& src,
+                     const SkRect& dst,
                      const CdlPaint& paint,
-                     SkCanvas::SrcRectConstraint constraint = SkCanvas::kStrict_SrcRectConstraint);
+                     SkCanvas::SrcRectConstraint constraint =
+                         SkCanvas::kStrict_SrcRectConstraint);
 
   // variant that takes src SkIRect
-  void drawImageRect(const SkImage* image, const SkIRect& isrc, const SkRect& dst,
-                     const SkPaint* paint, SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
+  void drawImageRect(
+      const SkImage* image,
+      const SkIRect& isrc,
+      const SkRect& dst,
+      const SkPaint* paint,
+      SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
   // variant that assumes src == image-bounds
-  void drawImageRect(const SkImage* image, const SkRect& dst, const SkPaint* paint,
-                     SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
+  void drawImageRect(
+      const SkImage* image,
+      const SkRect& dst,
+      const SkPaint* paint,
+      SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
 
-  void drawImageRect(const sk_sp<SkImage>& image, const SkRect& src, const SkRect& dst,
+  void drawImageRect(const sk_sp<SkImage>& image,
+                     const SkRect& src,
+                     const SkRect& dst,
                      const SkPaint* paint,
-                     SkCanvas::SrcRectConstraint constraint = SkCanvas::kStrict_SrcRectConstraint) {
-      this->drawImageRect(image.get(), src, dst, paint, constraint);
+                     SkCanvas::SrcRectConstraint constraint =
+                         SkCanvas::kStrict_SrcRectConstraint) {
+    this->drawImageRect(image.get(), src, dst, paint, constraint);
   }
-  void drawImageRect(const sk_sp<SkImage>& image, const SkIRect& isrc, const SkRect& dst,
-                     const SkPaint* paint, SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
-      this->drawImageRect(image.get(), isrc, dst, paint, cons);
+  void drawImageRect(
+      const sk_sp<SkImage>& image,
+      const SkIRect& isrc,
+      const SkRect& dst,
+      const SkPaint* paint,
+      SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
+    this->drawImageRect(image.get(), isrc, dst, paint, cons);
   }
-  void drawImageRect(const sk_sp<SkImage>& image, const SkRect& dst, const SkPaint* paint,
-                     SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
-      this->drawImageRect(image.get(), dst, paint, cons);
+  void drawImageRect(
+      const sk_sp<SkImage>& image,
+      const SkRect& dst,
+      const SkPaint* paint,
+      SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
+    this->drawImageRect(image.get(), dst, paint, cons);
   }
 
-  void drawBitmap(const SkBitmap& bitmap, SkScalar left, SkScalar top,
-                    const SkPaint* paint = NULL);
+  void drawBitmap(const SkBitmap& bitmap,
+                  SkScalar left,
+                  SkScalar top,
+                  const SkPaint* paint = NULL);
 
   void clipRect(const SkRect& rect, SkCanvas::ClipOp, bool doAntiAlias);
   void clipRect(const SkRect& rect, SkCanvas::ClipOp op) {
-      this->clipRect(rect, op, false);
+    this->clipRect(rect, op, false);
   }
   void clipRect(const SkRect& rect, bool doAntiAlias = false) {
-      this->clipRect(rect, SkCanvas::kIntersect_Op, doAntiAlias);
+    this->clipRect(rect, SkCanvas::kIntersect_Op, doAntiAlias);
   }
 
   void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op, bool doAntiAlias);
   void clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op) {
-      this->clipRRect(rrect, op, false);
+    this->clipRRect(rrect, op, false);
   }
   void clipRRect(const SkRRect& rrect, bool doAntiAlias = false) {
-      this->clipRRect(rrect, SkCanvas::kIntersect_Op, doAntiAlias);
+    this->clipRRect(rrect, SkCanvas::kIntersect_Op, doAntiAlias);
   }
 
   void clipPath(const SkPath& path, SkCanvas::ClipOp op, bool doAntiAlias);
   void clipPath(const SkPath& path, SkCanvas::ClipOp op) {
-      this->clipPath(path, op, false);
+    this->clipPath(path, op, false);
   }
   void clipPath(const SkPath& path, bool doAntiAlias = false) {
-      this->clipPath(path, SkCanvas::kIntersect_Op, doAntiAlias);
+    this->clipPath(path, SkCanvas::kIntersect_Op, doAntiAlias);
   }
 
-  void clipRegion(const SkRegion& deviceRgn, SkCanvas::ClipOp op = SkCanvas::kIntersect_Op);
+  void clipRegion(const SkRegion& deviceRgn,
+                  SkCanvas::ClipOp op = SkCanvas::kIntersect_Op);
 
  protected:
- virtual sk_sp<SkSurface> onNewSurface(const SkImageInfo&,
-                                const SkSurfaceProps&);
+  virtual sk_sp<SkSurface> onNewSurface(const SkImageInfo&,
+                                        const SkSurfaceProps&);
 
 #ifdef SK_SUPPORT_LEGACY_DRAWFILTER
   virtual SkDrawFilter* setDrawFilter(SkDrawFilter*);
 #endif
 
   enum SaveLayerStrategy {
-      kFullLayer_SaveLayerStrategy,
-      kNoLayer_SaveLayerStrategy,
+    kFullLayer_SaveLayerStrategy,
+    kNoLayer_SaveLayerStrategy,
   };
 
   virtual void willSave() {}
@@ -213,10 +270,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void didSetMatrix(const SkMatrix&);
   virtual void didTranslate(SkScalar, SkScalar);
 
-  enum ClipEdgeStyle {
-      kHard_ClipEdgeStyle,
-      kSoft_ClipEdgeStyle
-  };
+  enum ClipEdgeStyle { kHard_ClipEdgeStyle, kSoft_ClipEdgeStyle };
 
   virtual void onClipRect(const SkRect&, SkCanvas::ClipOp, ClipEdgeStyle);
   virtual void onClipRRect(const SkRRect&, SkCanvas::ClipOp, ClipEdgeStyle);
@@ -231,10 +285,10 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void onDrawRegion(const SkRegion&, const SkPaint&);
   virtual void onDrawOval(const SkRect&, const SkPaint&);
   virtual void onDrawArc(const SkRect&,
-                 SkScalar,
-                 SkScalar,
-                 bool,
-                 const SkPaint&);
+                         SkScalar,
+                         SkScalar,
+                         bool,
+                         const SkPaint&);
   virtual void onDrawRRect(const SkRRect&, const SkPaint&);
   virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
@@ -247,38 +301,38 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void onDrawAnnotation(const SkRect&, const char[], SkData*);
 
   virtual void onDrawText(const void*,
-                  size_t,
-                  SkScalar x,
-                  SkScalar y,
-                  const SkPaint&);
+                          size_t,
+                          SkScalar x,
+                          SkScalar y,
+                          const SkPaint&);
   virtual void onDrawPosText(const void*,
-                     size_t,
-                     const SkPoint[],
-                     const SkPaint&);
+                             size_t,
+                             const SkPoint[],
+                             const SkPaint&);
   virtual void onDrawPosTextH(const void*,
-                      size_t,
-                      const SkScalar[],
-                      SkScalar,
-                      const SkPaint&);
+                              size_t,
+                              const SkScalar[],
+                              SkScalar,
+                              const SkPaint&);
   virtual void onDrawTextOnPath(const void*,
-                        size_t,
-                        const SkPath&,
-                        const SkMatrix*,
-                        const SkPaint&);
+                                size_t,
+                                const SkPath&,
+                                const SkMatrix*,
+                                const SkPaint&);
   virtual void onDrawTextRSXform(const void*,
-                         size_t,
-                         const SkRSXform[],
-                         const SkRect*,
-                         const SkPaint&);
+                                 size_t,
+                                 const SkRSXform[],
+                                 const SkRect*,
+                                 const SkPaint&);
   virtual void onDrawTextBlob(const SkTextBlob*,
-                      SkScalar,
-                      SkScalar,
-                      const SkPaint&);
+                              SkScalar,
+                              SkScalar,
+                              const SkPaint&);
 
   virtual void onDrawBitmap(const SkBitmap&,
-                    SkScalar,
-                    SkScalar,
-                    const SkPaint*);
+                            SkScalar,
+                            SkScalar,
+                            const SkPaint*);
   /*
   virtual void onDrawBitmapLattice(const SkBitmap&,
                            const SkCanvas::Lattice&,
@@ -307,15 +361,15 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                        const SkPaint*);
                     */
   virtual void onDrawImageRect(const SkImage*,
-                       const SkRect*,
-                       const SkRect&,
-                       const SkPaint*,
-                       SkCanvas::SrcRectConstraint);
+                               const SkRect*,
+                               const SkRect&,
+                               const SkPaint*,
+                               SkCanvas::SrcRectConstraint);
   virtual void onDrawImageRect(const SkImage*,
-                       const SkRect*,
-                       const SkRect&,
-                       const CdlPaint&,
-                       SkCanvas::SrcRectConstraint);
+                               const SkRect*,
+                               const SkRect&,
+                               const CdlPaint&,
+                               SkCanvas::SrcRectConstraint);
 
   /*
   virtual void onDrawPatch(const SkPoint[12],
@@ -325,29 +379,29 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                    const SkPaint&);
                    */
   virtual void onDrawPoints(SkCanvas::PointMode,
-                    size_t count,
-                    const SkPoint pts[],
+                            size_t count,
+                            const SkPoint pts[],
+                            const SkPaint&);
+/*
+virtual void onDrawVertices(SkCanvas::VertexMode,
+                    int,
+                    const SkPoint[],
+                    const SkPoint[],
+                    const SkColor[],
+                    SkBlendMode,
+                    const uint16_t[],
+                    int,
                     const SkPaint&);
-  /*
-  virtual void onDrawVertices(SkCanvas::VertexMode,
-                      int,
-                      const SkPoint[],
-                      const SkPoint[],
-                      const SkColor[],
-                      SkBlendMode,
-                      const uint16_t[],
-                      int,
-                      const SkPaint&);
 
-  virtual void onDrawAtlas(const SkImage*,
-                   const SkRSXform[],
-                   const SkRect[],
-                   const SkColor[],
-                   int,
-                   SkBlendMode,
-                   const SkRect*,
-                   const SkPaint*);
-                   */
+virtual void onDrawAtlas(const SkImage*,
+                 const SkRSXform[],
+                 const SkRect[],
+                 const SkColor[],
+                 int,
+                 SkBlendMode,
+                 const SkRect*,
+                 const SkPaint*);
+                 */
 
 #ifdef SK_EXPERIMENTAL_SHADOWING
   void didTranslateZ(SkScalar);
@@ -367,59 +421,38 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
 
   SkCanvas* canvas_;
 };
-#else
-
-class CdlCanvas : public SkNWayCanvas {
- public:
-  static sk_sp<CdlCanvas> Make(SkCanvas* canvas);
-
-  CdlCanvas();
-  explicit CdlCanvas(SkCanvas* canvas);
-  CdlCanvas(int width, int height);
-  ~CdlCanvas() override;
-
-  SkCanvas* getSkCanvas();
-
-  using SkNWayCanvas::drawRect;
-  void drawRect(const SkRect&, const CdlPaint&);
-
- protected:
-  using SkNWayCanvas::onDrawRect;
-  virtual void onDrawRect(const SkRect&, const CdlPaint&);
-};
-
-#endif
 
 class CdlAutoCanvasRestore : SkNoncopyable {
-public:
-    CdlAutoCanvasRestore(CdlCanvas* canvas, bool doSave) : fCanvas(canvas), fSaveCount(0) {
-        if (fCanvas) {
-            fSaveCount = canvas->getSaveCount();
-            if (doSave) {
-                canvas->save();
-            }
-        }
+ public:
+  CdlAutoCanvasRestore(CdlCanvas* canvas, bool doSave)
+      : fCanvas(canvas), fSaveCount(0) {
+    if (fCanvas) {
+      fSaveCount = canvas->getSaveCount();
+      if (doSave) {
+        canvas->save();
+      }
     }
-    ~CdlAutoCanvasRestore() {
-        if (fCanvas) {
-            fCanvas->restoreToCount(fSaveCount);
-        }
+  }
+  ~CdlAutoCanvasRestore() {
+    if (fCanvas) {
+      fCanvas->restoreToCount(fSaveCount);
     }
+  }
 
-    /**
-     *  Perform the restore now, instead of waiting for the destructor. Will
-     *  only do this once.
-     */
-    void restore() {
-        if (fCanvas) {
-            fCanvas->restoreToCount(fSaveCount);
-            fCanvas = NULL;
-        }
+  /**
+   *  Perform the restore now, instead of waiting for the destructor. Will
+   *  only do this once.
+   */
+  void restore() {
+    if (fCanvas) {
+      fCanvas->restoreToCount(fSaveCount);
+      fCanvas = NULL;
     }
+  }
 
-private:
-    CdlCanvas*   fCanvas;
-    int         fSaveCount;
+ private:
+  CdlCanvas* fCanvas;
+  int fSaveCount;
 };
 
 #endif  // SKIA_EXT_CDL_CANVAS_H_

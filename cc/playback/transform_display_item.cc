@@ -75,9 +75,8 @@ void EndTransformDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndTransform);
 }
 
-void EndTransformDisplayItem::Raster(
-    CdlCanvas* canvas,
-    SkPicture::AbortCallback* callback) const {
+void EndTransformDisplayItem::Raster(CdlCanvas* canvas,
+                                     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }
 

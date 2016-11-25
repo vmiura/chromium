@@ -276,7 +276,8 @@ void CanvasRenderingContext2D::reset() {
   BaseRenderingContext2D::reset();
 }
 
-void CanvasRenderingContext2D::restoreCanvasMatrixClipStack(CdlCanvas* c) const {
+void CanvasRenderingContext2D::restoreCanvasMatrixClipStack(
+    CdlCanvas* c) const {
   restoreMatrixClipStack(c);
 }
 

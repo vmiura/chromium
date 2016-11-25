@@ -100,9 +100,8 @@ void EndClipPathDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndClipPath);
 }
 
-void EndClipPathDisplayItem::Raster(
-    CdlCanvas* canvas,
-    SkPicture::AbortCallback* callback) const {
+void EndClipPathDisplayItem::Raster(CdlCanvas* canvas,
+                                    SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }
 

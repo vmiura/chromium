@@ -32,9 +32,9 @@ sk_sp<CdlShader> PicturePattern::createShader(const SkMatrix& localMatrix) {
   // This affects SVG Cats.
   SkRect tileBounds = m_tilePicture->cullRect();
 
-  return CdlShader::MakePictureShader(
-      m_tilePicture, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &localMatrix, &tileBounds);
+  return CdlShader::MakePictureShader(m_tilePicture, SkShader::kRepeat_TileMode,
+                                      SkShader::kRepeat_TileMode, &localMatrix,
+                                      &tileBounds);
 }
 
 }  // namespace blink

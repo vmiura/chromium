@@ -27,9 +27,10 @@ class CdlShader : public SkRefCnt {
                                           const SkMatrix* localMatrix);
 
   static sk_sp<CdlShader> MakePictureShader(sk_sp<CdlPicture> picture,
-                   SkShader::TileMode tmx, SkShader::TileMode tmy,
-                   const SkMatrix* localMatrix, const SkRect* tile);
-
+                                            SkShader::TileMode tmx,
+                                            SkShader::TileMode tmy,
+                                            const SkMatrix* localMatrix,
+                                            const SkRect* tile);
 
   const SkMatrix& getLocalMatrix() const { return fLocalMatrix; }
 

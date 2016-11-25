@@ -266,7 +266,8 @@ void VideoTrackRecorder::Encoder::RetrieveFrameOnMainThread(
       video_renderer_.reset(new media::SkCanvasVideoRenderer);
 
     DCHECK(context_provider->ContextGL());
-    video_renderer_->Copy(video_frame.get(), CdlCanvas::Make(surface_->getCanvas()).get(),
+    video_renderer_->Copy(video_frame.get(),
+                          CdlCanvas::Make(surface_->getCanvas()).get(),
                           media::Context3D(context_provider->ContextGL(),
                                            context_provider->GrContext()));
 

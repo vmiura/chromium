@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkShader.h"
 
-
 CdlShader::CdlShader(const SkMatrix* localMatrix) {
   if (localMatrix) {
     fLocalMatrix = *localMatrix;
@@ -31,14 +30,13 @@ CdlShader::~CdlShader() {}
 class CdlImageShader : public CdlShader {
  public:
   CdlImageShader(sk_sp<SkImage> image,
-                  SkShader::TileMode tmx,
-                  SkShader::TileMode tmy,
-                  const SkMatrix* localMatrix)
-   : CdlShader(localMatrix),
-     fImage(std::move(image)),
-     fTmx(tmx),
-     fTmy(tmy) {
-  }
+                 SkShader::TileMode tmx,
+                 SkShader::TileMode tmy,
+                 const SkMatrix* localMatrix)
+      : CdlShader(localMatrix),
+        fImage(std::move(image)),
+        fTmx(tmx),
+        fTmy(tmy) {}
 
   sk_sp<SkShader> createSkShader() override {
     if (fShader.get())
@@ -48,51 +46,53 @@ class CdlImageShader : public CdlShader {
   }
 
  private:
-  sk_sp<SkImage>      fImage;
-  SkShader::TileMode  fTmx, fTmy;
-  sk_sp<SkShader>     fShader;
+  sk_sp<SkImage> fImage;
+  SkShader::TileMode fTmx, fTmy;
+  sk_sp<SkShader> fShader;
 };
 
 sk_sp<CdlShader> CdlShader::MakeImageShader(sk_sp<SkImage> image,
-                                          SkShader::TileMode tmx,
-                                          SkShader::TileMode tmy,
-                                          const SkMatrix* localMatrix) {
+                                            SkShader::TileMode tmx,
+                                            SkShader::TileMode tmy,
+                                            const SkMatrix* localMatrix) {
   return sk_sp<CdlShader>(new CdlImageShader(image, tmx, tmy, localMatrix));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
 class CdlPictureShader : public CdlShader {
  public:
-  CdlPictureShader(sk_sp<CdlPicture> picture, SkShader::TileMode tmx, SkShader::TileMode tmy,
-                   const SkMatrix* localMatrix, const SkRect* tile)
-   : CdlShader(localMatrix),
-     fPicture(std::move(picture)),
-     fTile(tile ? *tile : fPicture->cullRect()),
-     fTmx(tmx),
-     fTmy(tmy) {
-  }
+  CdlPictureShader(sk_sp<CdlPicture> picture,
+                   SkShader::TileMode tmx,
+                   SkShader::TileMode tmy,
+                   const SkMatrix* localMatrix,
+                   const SkRect* tile)
+      : CdlShader(localMatrix),
+        fPicture(std::move(picture)),
+        fTile(tile ? *tile : fPicture->cullRect()),
+        fTmx(tmx),
+        fTmy(tmy) {}
 
   sk_sp<SkShader> createSkShader() override {
     if (fShader.get())
       return fShader;
 
-    return fShader = SkShader::MakePictureShader(fPicture->toSkPicture(), fTmx, fTmy, &getLocalMatrix(), &fTile);
+    return fShader = SkShader::MakePictureShader(
+               fPicture->toSkPicture(), fTmx, fTmy, &getLocalMatrix(), &fTile);
   }
 
  private:
-  sk_sp<CdlPicture>   fPicture;
-  SkRect              fTile;
-  SkShader::TileMode  fTmx, fTmy;
-  sk_sp<SkShader>     fShader;
+  sk_sp<CdlPicture> fPicture;
+  SkRect fTile;
+  SkShader::TileMode fTmx, fTmy;
+  sk_sp<SkShader> fShader;
 };
 
-
-
-
 sk_sp<CdlShader> CdlShader::MakePictureShader(sk_sp<CdlPicture> picture,
-                   SkShader::TileMode tmx, SkShader::TileMode tmy,
-                   const SkMatrix* localMatrix, const SkRect* tile) {
-  return sk_sp<CdlShader>(new CdlPictureShader(picture, tmx, tmy, localMatrix, tile));
+                                              SkShader::TileMode tmx,
+                                              SkShader::TileMode tmy,
+                                              const SkMatrix* localMatrix,
+                                              const SkRect* tile) {
+  return sk_sp<CdlShader>(
+      new CdlPictureShader(picture, tmx, tmy, localMatrix, tile));
 }

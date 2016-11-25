@@ -250,9 +250,10 @@ NativeThemeBase::NativeThemeBase()
 NativeThemeBase::~NativeThemeBase() {
 }
 
-void NativeThemeBase::PaintArrowButton(
-    CdlCanvas* canvas,
-    const gfx::Rect& rect, Part direction, State state) const {
+void NativeThemeBase::PaintArrowButton(CdlCanvas* canvas,
+                                       const gfx::Rect& rect,
+                                       Part direction,
+                                       State state) const {
   SkPaint paint;
 
   // Calculate button color.
@@ -388,7 +389,8 @@ gfx::Rect NativeThemeBase::BoundingRectForArrow(const gfx::Rect& rect) const {
                    side_length, side_length);
 }
 
-void NativeThemeBase::PaintScrollbarTrack(CdlCanvas* canvas,
+void NativeThemeBase::PaintScrollbarTrack(
+    CdlCanvas* canvas,
     Part part,
     State state,
     const ScrollbarTrackExtraParams& extra_params,
@@ -491,8 +493,7 @@ void NativeThemeBase::PaintScrollbarThumb(CdlCanvas* canvas,
 
 void NativeThemeBase::PaintScrollbarCorner(CdlCanvas* canvas,
                                            State state,
-                                           const gfx::Rect& rect) const {
-}
+                                           const gfx::Rect& rect) const {}
 
 void NativeThemeBase::PaintCheckbox(CdlCanvas* canvas,
                                     State state,
@@ -537,7 +538,6 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     State state,
     const gfx::Rect& rect,
     const SkScalar borderRadius) const {
-
   SkRect skrect = gfx::RectToSkRect(rect);
 
   // Use the largest square that fits inside the provided rectangle.
@@ -620,10 +620,9 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
 }
 
 void NativeThemeBase::PaintRadio(CdlCanvas* canvas,
-                                  State state,
-                                  const gfx::Rect& rect,
-                                  const ButtonExtraParams& button) const {
-
+                                 State state,
+                                 const gfx::Rect& rect,
+                                 const ButtonExtraParams& button) const {
   // Most of a radio button is the same as a checkbox, except the the rounded
   // square is a circle (i.e. border radius >= 100%).
   const SkScalar radius = SkFloatToScalar(
@@ -834,7 +833,8 @@ void NativeThemeBase::PaintSliderThumb(CdlCanvas* canvas,
   }
 }
 
-void NativeThemeBase::PaintInnerSpinButton(CdlCanvas* canvas,
+void NativeThemeBase::PaintInnerSpinButton(
+    CdlCanvas* canvas,
     State state,
     const gfx::Rect& rect,
     const InnerSpinButtonExtraParams& spin_button) const {

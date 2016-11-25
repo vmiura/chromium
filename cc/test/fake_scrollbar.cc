@@ -73,8 +73,8 @@ bool FakeScrollbar::NeedsPaintPart(ScrollbarPart part) const {
 }
 
 void FakeScrollbar::PaintPart(CdlCanvas* canvas,
-                             ScrollbarPart part,
-                             const gfx::Rect& content_rect) {
+                              ScrollbarPart part,
+                              const gfx::Rect& content_rect) {
   if (!paint_)
     return;
 

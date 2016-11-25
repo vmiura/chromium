@@ -164,7 +164,8 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   ImageDecodeCache* image_decode_cache_;
 
  private:
-  void RasterCommon(CdlCanvas* canvas, SkPicture::AbortCallback* callback) const;
+  void RasterCommon(CdlCanvas* canvas,
+                    SkPicture::AbortCallback* callback) const;
 
   void PrepareForPlaybackToCanvas(CdlCanvas* canvas) const;
 

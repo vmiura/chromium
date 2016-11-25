@@ -138,8 +138,8 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setFilterQuality(kLow_SkFilterQuality);
   web_media_player_->paint(
-      CdlCanvas::Make(canvas).get(), blink::WebRect(0, 0, resolution.width, resolution.height),
-      paint);
+      CdlCanvas::Make(canvas).get(),
+      blink::WebRect(0, 0, resolution.width, resolution.height), paint);
   DCHECK_NE(kUnknown_SkColorType, canvas->imageInfo().colorType());
   DCHECK_EQ(canvas->imageInfo().width(), resolution.width);
   DCHECK_EQ(canvas->imageInfo().height(), resolution.height);

@@ -52,9 +52,7 @@ class PLATFORM_EXPORT AcceleratedImageBufferSurface
                                 SkColorType = kN32_SkColorType);
   ~AcceleratedImageBufferSurface() override {}
 
-  CdlCanvas* canvas() override {
-    return m_canvas.get();
-  }
+  CdlCanvas* canvas() override { return m_canvas.get(); }
   bool isValid() const override;
   bool isAccelerated() const override { return true; }
   sk_sp<SkImage> newImageSnapshot(AccelerationHint, SnapshotReason) override;

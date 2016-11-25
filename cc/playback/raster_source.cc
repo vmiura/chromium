@@ -113,9 +113,7 @@ void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
 
   } else
   */
-  {
-    RasterCommon(raster_canvas, nullptr);
-  }
+  { RasterCommon(raster_canvas, nullptr); }
 }
 
 void RasterSource::PrepareForPlaybackToCanvas(CdlCanvas* canvas) const {

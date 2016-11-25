@@ -95,9 +95,8 @@ void CompositingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   details->set_lcd_text_requires_opaque_layer(lcd_text_requires_opaque_layer_);
 }
 
-void CompositingDisplayItem::Raster(
-    CdlCanvas* canvas,
-    SkPicture::AbortCallback* callback) const {
+void CompositingDisplayItem::Raster(CdlCanvas* canvas,
+                                    SkPicture::AbortCallback* callback) const {
   SkPaint paint;
   paint.setBlendMode(xfermode_);
   paint.setAlpha(alpha_);

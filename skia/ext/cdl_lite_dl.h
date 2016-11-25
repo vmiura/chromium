@@ -138,10 +138,8 @@ class CdlLiteDL : public SkDrawable {
 
   void setBounds(const SkRect& bounds);
 
-
   // Cdl
-  struct DrawContext {
-  };
+  struct DrawContext {};
 
  private:
   SkRect onGetBounds() override;

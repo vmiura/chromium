@@ -271,10 +271,9 @@ UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
   float scale_y =
       content_rect.height() / static_cast<float>(layer_rect.height());
 
-  canvas->scale(SkFloatToScalar(scale_x),
-                 SkFloatToScalar(scale_y));
+  canvas->scale(SkFloatToScalar(scale_x), SkFloatToScalar(scale_y));
   canvas->translate(SkFloatToScalar(-layer_rect.x()),
-                     SkFloatToScalar(-layer_rect.y()));
+                    SkFloatToScalar(-layer_rect.y()));
 
   SkRect layer_skrect = RectToSkRect(layer_rect);
   SkPaint paint;

@@ -323,7 +323,9 @@ class PLATFORM_EXPORT GraphicsContext {
                        Edges clippedEdges = NoEdge);
 
   const CdlPaint& fillPaint() const { return immutableState()->fillPaint(); }
-  const CdlPaint& strokePaint() const { return immutableState()->strokePaint(); }
+  const CdlPaint& strokePaint() const {
+    return immutableState()->strokePaint();
+  }
 
   // ---------- Transformation methods -----------------
   void concatCTM(const AffineTransform&);
