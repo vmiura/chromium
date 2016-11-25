@@ -17,7 +17,6 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
 
-
 class CdlPaint {
  public:
   CdlPaint();
@@ -47,8 +46,12 @@ class CdlPaint {
 
   void setDither(bool dither) { sk_paint.setDither(dither); }
 
-  void setFilterQuality(SkFilterQuality quality) { sk_paint.setFilterQuality(quality); }
-  SkFilterQuality getFilterQuality() const { return sk_paint.getFilterQuality(); }
+  void setFilterQuality(SkFilterQuality quality) {
+    sk_paint.setFilterQuality(quality);
+  }
+  SkFilterQuality getFilterQuality() const {
+    return sk_paint.getFilterQuality();
+  }
 
   void setStrokeWidth(SkScalar width) { sk_paint.setStrokeWidth(width); }
   SkScalar getStrokeWidth() const { return sk_paint.getStrokeWidth(); }
@@ -62,10 +65,14 @@ class CdlPaint {
   void setStrokeJoin(SkPaint::Join join) { sk_paint.setStrokeJoin(join); }
   SkPaint::Join getStrokeJoin() const { return sk_paint.getStrokeJoin(); }
 
-  void setColorFilter(sk_sp<SkColorFilter> filter) { sk_paint.setColorFilter(filter); }
+  void setColorFilter(sk_sp<SkColorFilter> filter) {
+    sk_paint.setColorFilter(filter);
+  }
   void setLooper(sk_sp<SkDrawLooper> looper) { sk_paint.setLooper(looper); }
 
-  void setMaskFilter(sk_sp<SkMaskFilter> mask) { sk_paint.setMaskFilter(mask); };
+  void setMaskFilter(sk_sp<SkMaskFilter> mask) {
+    sk_paint.setMaskFilter(mask);
+  };
   SkMaskFilter* getMaskFilter() const { return sk_paint.getMaskFilter(); }
 
   void setShader(sk_sp<SkShader> shader) { sk_paint.setShader(shader); }
@@ -78,16 +85,24 @@ class CdlPaint {
 
   CdlShader* getCdlShader() const { return shader_.get(); }
 
-  void setPathEffect(sk_sp<SkPathEffect> effect) { sk_paint.setPathEffect(effect); }
+  void setPathEffect(sk_sp<SkPathEffect> effect) {
+    sk_paint.setPathEffect(effect);
+  }
   SkPathEffect* getPathEffect() const { return sk_paint.getPathEffect(); }
 
-  bool getFillPath(const SkPath& src, SkPath* dst, const SkRect* cullRect,
-                     SkScalar resScale = 1) { return sk_paint.getFillPath(src, dst, cullRect, resScale); };
+  bool getFillPath(const SkPath& src,
+                   SkPath* dst,
+                   const SkRect* cullRect,
+                   SkScalar resScale = 1) {
+    return sk_paint.getFillPath(src, dst, cullRect, resScale);
+  };
 
   SkColorFilter* getColorFilter() const { return sk_paint.getColorFilter(); }
 
   SkImageFilter* getImageFilter() const { return sk_paint.getImageFilter(); }
-  void setImageFilter(sk_sp<SkImageFilter> filter) { sk_paint.setImageFilter(filter); }
+  void setImageFilter(sk_sp<SkImageFilter> filter) {
+    sk_paint.setImageFilter(filter);
+  }
 
   SkDrawLooper* getDrawLooper() const { return sk_paint.getDrawLooper(); }
   SkDrawLooper* getLooper() const { return sk_paint.getLooper(); }
@@ -96,7 +111,6 @@ class CdlPaint {
   mutable SkPaint sk_paint;
   mutable bool is_dirty_;
   sk_sp<CdlShader> shader_;
-
 };
 
 #endif  // SKIA_EXT_CDL_LITE_RECORDER_H_

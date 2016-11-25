@@ -26,13 +26,13 @@ class CdlPictureRecorder : SkNoncopyable {
   ~CdlPictureRecorder();
 
   CdlCanvas* beginRecording(const SkRect& bounds,
-                           SkBBHFactory* bbhFactory = NULL,
-                           uint32_t recordFlags = 0);
+                            SkBBHFactory* bbhFactory = NULL,
+                            uint32_t recordFlags = 0);
 
   CdlCanvas* beginRecording(SkScalar width,
-                           SkScalar height,
-                           SkBBHFactory* bbhFactory = NULL,
-                           uint32_t recordFlags = 0) {
+                            SkScalar height,
+                            SkBBHFactory* bbhFactory = NULL,
+                            uint32_t recordFlags = 0) {
     return this->beginRecording(SkRect::MakeWH(width, height), bbhFactory,
                                 recordFlags);
   }

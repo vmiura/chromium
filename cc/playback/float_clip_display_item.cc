@@ -74,9 +74,8 @@ void EndFloatClipDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
   proto->set_type(proto::DisplayItem::Type_EndFloatClip);
 }
 
-void EndFloatClipDisplayItem::Raster(
-    CdlCanvas* canvas,
-    SkPicture::AbortCallback* callback) const {
+void EndFloatClipDisplayItem::Raster(CdlCanvas* canvas,
+                                     SkPicture::AbortCallback* callback) const {
   canvas->restore();
 }
 

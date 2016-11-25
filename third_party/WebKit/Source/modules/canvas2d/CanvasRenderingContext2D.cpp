@@ -302,7 +302,8 @@ void CanvasRenderingContext2D::reset() {
   validateStateStack();
 }
 
-void CanvasRenderingContext2D::restoreCanvasMatrixClipStack(CdlCanvas* c) const {
+void CanvasRenderingContext2D::restoreCanvasMatrixClipStack(
+    CdlCanvas* c) const {
   restoreMatrixClipStack(c);
 }
 

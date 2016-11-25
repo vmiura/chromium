@@ -224,14 +224,13 @@ void Image::drawTiled(GraphicsContext& ctxt,
 namespace {
 
 sk_sp<CdlShader> createPatternShader(const SkImage* image,
-                                    const SkMatrix& shaderMatrix,
-                                    const CdlPaint& paint,
-                                    const FloatSize& spacing) {
+                                     const SkMatrix& shaderMatrix,
+                                     const CdlPaint& paint,
+                                     const FloatSize& spacing) {
   if (spacing.isZero())
-    return CdlShader::MakeImageShader(sk_ref_sp(const_cast<SkImage*>(image)),
-                                      SkShader::kRepeat_TileMode,
-                                      SkShader::kRepeat_TileMode,
-                                      &shaderMatrix);
+    return CdlShader::MakeImageShader(
+        sk_ref_sp(const_cast<SkImage*>(image)), SkShader::kRepeat_TileMode,
+        SkShader::kRepeat_TileMode, &shaderMatrix);
 
   // Arbitrary tiling is currently only supported for SkPictureShader, so we use
   // that instead of a plain bitmap shader to implement spacing.
@@ -243,9 +242,8 @@ sk_sp<CdlShader> createPatternShader(const SkImage* image,
   canvas->drawImage(image, 0, 0, paint);
 
   return CdlShader::MakePictureShader(
-      recorder.finishRecordingAsPicture(),
-      SkShader::kRepeat_TileMode, SkShader::kRepeat_TileMode, &shaderMatrix,
-      nullptr);
+      recorder.finishRecordingAsPicture(), SkShader::kRepeat_TileMode,
+      SkShader::kRepeat_TileMode, &shaderMatrix, nullptr);
 }
 
 }  // anonymous namespace
@@ -326,11 +324,9 @@ bool Image::applyShader(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!image)
     return false;
 
-  paint.setCdlShader(CdlShader::MakeImageShader(
-                                    image,
-                                    SkShader::kRepeat_TileMode,
-                                    SkShader::kRepeat_TileMode,
-                                    &localMatrix));
+  paint.setCdlShader(
+      CdlShader::MakeImageShader(image, SkShader::kRepeat_TileMode,
+                                 SkShader::kRepeat_TileMode, &localMatrix));
 
   // Animation is normally refreshed in draw() impls, which we don't call when
   // painting via shaders.

@@ -32,7 +32,8 @@ class CdlLiteRecorder final : public CdlCanvas {
 #endif
 
   void willSave() override;
-  SaveLayerStrategy getSaveLayerStrategy(const SkCanvas::SaveLayerRec&) override;
+  SaveLayerStrategy getSaveLayerStrategy(
+      const SkCanvas::SaveLayerRec&) override;
   void willRestore() override;
 
   void didConcat(const SkMatrix&) override;
@@ -115,7 +116,10 @@ class CdlLiteRecorder final : public CdlCanvas {
                         SkCanvas::SrcRectConstraint) override;
   */
   void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
-  void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&) override;
+  void onDrawImage(const SkImage*,
+                   SkScalar,
+                   SkScalar,
+                   const CdlPaint&) override;
   /*
   void onDrawImageLattice(const SkImage*,
                           const SkCanvas::Lattice&,
@@ -148,25 +152,25 @@ class CdlLiteRecorder final : public CdlCanvas {
                     size_t count,
                     const SkPoint pts[],
                     const SkPaint&) override;
-  /*
-  void onDrawVertices(SkCanvas::VertexMode,
-                      int,
-                      const SkPoint[],
-                      const SkPoint[],
-                      const SkColor[],
-                      SkBlendMode,
-                      const uint16_t[],
-                      int,
-                      const SkPaint&) override;
-  void onDrawAtlas(const SkImage*,
-                   const SkRSXform[],
-                   const SkRect[],
-                   const SkColor[],
-                   int,
-                   SkBlendMode,
-                   const SkRect*,
-                   const SkPaint*) override;
-                   */
+/*
+void onDrawVertices(SkCanvas::VertexMode,
+                    int,
+                    const SkPoint[],
+                    const SkPoint[],
+                    const SkColor[],
+                    SkBlendMode,
+                    const uint16_t[],
+                    int,
+                    const SkPaint&) override;
+void onDrawAtlas(const SkImage*,
+                 const SkRSXform[],
+                 const SkRect[],
+                 const SkColor[],
+                 int,
+                 SkBlendMode,
+                 const SkRect*,
+                 const SkPaint*) override;
+                 */
 
 #ifdef SK_EXPERIMENTAL_SHADOWING
   void didTranslateZ(SkScalar) override;

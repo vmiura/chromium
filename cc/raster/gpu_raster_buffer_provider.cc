@@ -73,8 +73,9 @@ static sk_sp<SkPicture> PlaybackToPicture(
   // later picture rasterization.
   RasterSource::PlaybackSettings settings = playback_settings;
   settings.use_image_hijack_canvas = false;
-  raster_source->PlaybackToCanvas(CdlCanvas::Make(canvas.get()).get(), raster_full_rect, playback_rect,
-                                  scales, settings);
+  raster_source->PlaybackToCanvas(CdlCanvas::Make(canvas.get()).get(),
+                                  raster_full_rect, playback_rect, scales,
+                                  settings);
   canvas->restore();
   return recorder.finishRecordingAsPicture();
 }

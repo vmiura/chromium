@@ -16,8 +16,8 @@ CdlPictureRecorder::CdlPictureRecorder() {
 CdlPictureRecorder::~CdlPictureRecorder() {}
 
 CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
-                                             SkBBHFactory* bbhFactory,
-                                             uint32_t recordFlags) {
+                                              SkBBHFactory* bbhFactory,
+                                              uint32_t recordFlags) {
   // return picture_recorder_.beginRecording(bounds, bbhFactory, recordFlags);
 
   fCullRect = bounds;

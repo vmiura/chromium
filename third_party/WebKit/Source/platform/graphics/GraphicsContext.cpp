@@ -1074,7 +1074,8 @@ void GraphicsContext::fillDRRect(const FloatRoundedRect& outer,
 
   if (!isSimpleDRRect(outer, inner)) {
     if (color == fillColor()) {
-      m_canvas->drawDRRect(outer, inner, immutableState()->fillPaint().toSkPaint());
+      m_canvas->drawDRRect(outer, inner,
+                           immutableState()->fillPaint().toSkPaint());
     } else {
       CdlPaint paint(immutableState()->fillPaint());
       paint.setColor(color.rgb());
@@ -1243,7 +1244,7 @@ void GraphicsContext::setURLForRect(const KURL& link, const IntRect& destRect) {
 
   sk_sp<SkData> url(SkData::MakeWithCString(link.getString().utf8().data()));
   // TODO(cdl): annotate
-  //SkAnnotateRectWithURL(m_canvas, destRect, url.get());
+  // SkAnnotateRectWithURL(m_canvas, destRect, url.get());
 }
 
 void GraphicsContext::setURLFragmentForRect(const String& destName,
@@ -1254,7 +1255,7 @@ void GraphicsContext::setURLFragmentForRect(const String& destName,
 
   sk_sp<SkData> skDestName(SkData::MakeWithCString(destName.utf8().data()));
   // TODO(cdl): annotate
-  //SkAnnotateLinkToDestination(m_canvas, rect, skDestName.get());
+  // SkAnnotateLinkToDestination(m_canvas, rect, skDestName.get());
 }
 
 void GraphicsContext::setURLDestinationLocation(const String& name,
@@ -1265,7 +1266,7 @@ void GraphicsContext::setURLDestinationLocation(const String& name,
 
   sk_sp<SkData> skName(SkData::MakeWithCString(name.utf8().data()));
   // TODO(cdl): annotate
-  //SkAnnotateNamedDestination(
+  // SkAnnotateNamedDestination(
   //    m_canvas, SkPoint::Make(location.x(), location.y()), skName.get());
 }
 
@@ -1282,7 +1283,8 @@ void GraphicsContext::fillRectWithRoundedHole(
 
   CdlPaint paint(immutableState()->fillPaint());
   paint.setColor(color.rgb());
-  m_canvas->drawDRRect(SkRRect::MakeRect(rect), roundedHoleRect, paint.toSkPaint());
+  m_canvas->drawDRRect(SkRRect::MakeRect(rect), roundedHoleRect,
+                       paint.toSkPaint());
 }
 
 void GraphicsContext::adjustLineToPixelBoundaries(FloatPoint& p1,
