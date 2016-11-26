@@ -17,9 +17,11 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/private/SkTDArray.h"
 
+class CdlCanvas;
 class CdlPaint;
+class CdlPicture;
 
-class CdlLiteDL : public SkDrawable {
+class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
  public:
   CdlLiteDL(SkRect bounds);
   ~CdlLiteDL() override;
@@ -29,12 +31,16 @@ class CdlLiteDL : public SkDrawable {
   void makeThreadsafe();
   bool empty() const { return fUsed == 0; }
 
+  void playback(CdlCanvas*);
+
+  SkRect getBounds();
+
   // Draws as if...
   //   SkRect bounds = this->getBounds();
   //   canvas->saveLayer(&bounds, paint);
   //       this->draw(canvas, matrix);
   //   canvas->restore();
-  void drawAsLayer(SkCanvas*, const SkMatrix*, const SkPaint*);
+  void drawAsLayer(CdlCanvas*, const SkMatrix*, const SkPaint*);
 
   void save();
   void saveLayer(const SkRect*,
@@ -57,7 +63,7 @@ class CdlLiteDL : public SkDrawable {
   void drawPath(const SkPath&, const SkPaint&);
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
-  void drawRegion(const SkRegion&, const SkPaint&);
+  //void drawRegion(const SkRegion&, const SkPaint&);
   void drawOval(const SkRect&, const SkPaint&);
   void drawArc(const SkRect&, SkScalar, SkScalar, bool, const SkPaint&);
   void drawRRect(const SkRRect&, const SkPaint&);
@@ -65,7 +71,7 @@ class CdlLiteDL : public SkDrawable {
 
   void drawAnnotation(const SkRect&, const char*, SkData*);
   void drawDrawable(SkDrawable*, const SkMatrix*);
-  void drawPicture(const SkPicture*, const SkMatrix*, const SkPaint*);
+  void drawPicture(const CdlPicture*, const SkMatrix*, const SkPaint*);
   void drawShadowedPicture(const SkPicture*,
                            const SkMatrix*,
                            const SkPaint*,
@@ -142,8 +148,8 @@ class CdlLiteDL : public SkDrawable {
   struct DrawContext {};
 
  private:
-  SkRect onGetBounds() override;
-  void onDraw(SkCanvas*) override;
+  //SkRect onGetBounds() override;
+  //void onDraw(SkCanvas*) override;
 
   template <typename T, typename... Args>
   void* push(size_t, Args&&...);

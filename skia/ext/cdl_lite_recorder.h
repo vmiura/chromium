@@ -41,7 +41,7 @@ class CdlLiteRecorder final : public CdlCanvas {
   void onDrawPath(const SkPath&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const CdlPaint&) override;
-  void onDrawRegion(const SkRegion&, const SkPaint&) override;
+  //void onDrawRegion(const SkRegion&, const SkPaint&) override;
   void onDrawOval(const SkRect&, const SkPaint&) override;
   void onDrawArc(const SkRect&,
                  SkScalar,
@@ -57,6 +57,10 @@ class CdlLiteRecorder final : public CdlCanvas {
                      const SkMatrix*,
                      const SkPaint*) override;
                      */
+  void onDrawPicture(const CdlPicture* picture,
+                     const SkMatrix* matrix,
+                     const SkPaint* paint) override;
+
   void onDrawAnnotation(const SkRect&, const char[], SkData*) override;
 
   void onDrawText(const void*,

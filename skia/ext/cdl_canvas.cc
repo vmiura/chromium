@@ -7,9 +7,12 @@
 
 #include "cdl_canvas.h"
 #include "cdl_paint.h"
+#include "cdl_picture.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
+
+#define RETURN_ON_NULL(ptr)     do { if (nullptr == (ptr)) return; } while (0)
 
 sk_sp<CdlCanvas> CdlCanvas::Make(SkCanvas* canvas) {
   return sk_sp<CdlCanvas>(new CdlCanvas(canvas));
@@ -318,16 +321,14 @@ void CdlCanvas::drawImage(const SkImage* image,
                           SkScalar x,
                           SkScalar y,
                           const SkPaint* paint) {
-  if (!image)
-    return;
+  RETURN_ON_NULL(image);
   this->onDrawImage(image, x, y, paint);
 }
 void CdlCanvas::drawImage(const SkImage* image,
                           SkScalar x,
                           SkScalar y,
                           const CdlPaint& paint) {
-  if (!image)
-    return;
+  RETURN_ON_NULL(image);
   this->onDrawImage(image, x, y, paint);
 }
 
@@ -336,8 +337,7 @@ void CdlCanvas::drawImageRect(const SkImage* image,
                               const SkRect& dst,
                               const SkPaint* paint,
                               SkCanvas::SrcRectConstraint constraint) {
-  if (!image)
-    return;
+  RETURN_ON_NULL(image);
   if (dst.isEmpty() || src.isEmpty()) {
     return;
   }
@@ -348,8 +348,7 @@ void CdlCanvas::drawImageRect(const SkImage* image,
                               const SkRect& dst,
                               const CdlPaint& paint,
                               SkCanvas::SrcRectConstraint constraint) {
-  if (!image)
-    return;
+  RETURN_ON_NULL(image);
   if (dst.isEmpty() || src.isEmpty()) {
     return;
   }
@@ -365,18 +364,24 @@ void CdlCanvas::drawPosText(const void* text,
   }
 }
 
+void CdlCanvas::drawText(const void* text,
+                         size_t byteLength,
+                         SkScalar x,
+                         SkScalar y,
+                         const SkPaint& paint) {
+  this->onDrawText(text, byteLength, x, y, paint);
+}
+
 void CdlCanvas::drawTextBlob(const SkTextBlob* blob,
                              SkScalar x,
                              SkScalar y,
                              const SkPaint& paint) {
-  if (!blob)
-    return;
+  RETURN_ON_NULL(blob);
   this->onDrawTextBlob(blob, x, y, paint);
 }
 
 void CdlCanvas::drawDrawable(SkDrawable* dr, SkScalar x, SkScalar y) {
-  if (!dr)
-    return;
+  RETURN_ON_NULL(dr);
   if (x || y) {
     SkMatrix matrix = SkMatrix::MakeTrans(x, y);
     this->onDrawDrawable(dr, &matrix);
@@ -386,8 +391,7 @@ void CdlCanvas::drawDrawable(SkDrawable* dr, SkScalar x, SkScalar y) {
 }
 
 void CdlCanvas::drawDrawable(SkDrawable* dr, const SkMatrix* matrix) {
-  if (!dr)
-    return;
+  RETURN_ON_NULL(dr);
   if (matrix && matrix->isIdentity()) {
     matrix = nullptr;
   }
@@ -480,8 +484,68 @@ void CdlCanvas::onDrawDRRect(const SkRRect& outer,
 void CdlCanvas::onDrawDrawable(SkDrawable* d, SkMatrix const* m) {
   canvas_->drawDrawable(d, m);
 }
-// void CdlCanvas::onDrawPicture(SkPicture const* p, SkMatrix const* m, SkPaint
-// const* paint) { canvas_->drawPicture(p, m, paint); }
+void CdlCanvas::drawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint) {
+    RETURN_ON_NULL(picture);
+
+    if (matrix && matrix->isIdentity()) {
+        matrix = nullptr;
+    }
+
+    this->onDrawPicture(picture, matrix, paint);
+}
+
+class CdlAutoCanvasMatrixPaint
+{
+ public:
+  CdlAutoCanvasMatrixPaint(CdlCanvas* canvas, const SkMatrix* matrix,
+                           const SkPaint* paint, const SkRect& bounds)
+   : fCanvas(canvas),
+     fSaveCount(canvas->getSaveCount()) {
+
+    if (paint) {
+        SkRect newBounds = bounds;
+        if (matrix) {
+            matrix->mapRect(&newBounds);
+        }
+        canvas->saveLayer(&newBounds, paint);
+    } else if (matrix) {
+        canvas->save();
+    }
+
+    if (matrix) {
+        canvas->concat(*matrix);
+    }
+  }
+
+  ~CdlAutoCanvasMatrixPaint() {
+      fCanvas->restoreToCount(fSaveCount);
+  }
+ private:
+  CdlCanvas* fCanvas;
+  int fSaveCount;
+};
+
+void CdlCanvas::onDrawPicture(const CdlPicture* picture, const SkMatrix* matrix,
+                              const SkPaint* paint) {
+  // TODO(CDL): CdlPaint::computeFastBounds
+  if (!paint || /*paint->canComputeFastBounds()*/ false) {
+      SkRect bounds = picture->cullRect();
+
+      //if (paint) {
+      //    paint->computeFastBounds(bounds, &bounds);
+      //}
+      if (matrix) {
+          matrix->mapRect(&bounds);
+      }
+      if (this->quickReject(bounds)) {
+          return;
+      }
+  }
+
+  CdlAutoCanvasMatrixPaint acmp(this, matrix, paint, picture->cullRect());
+  picture->playback(this);
+}
+
 void CdlCanvas::onDrawAnnotation(SkRect const& r, char const* c, SkData* d) {
   canvas_->drawAnnotation(r, c, d);
 }

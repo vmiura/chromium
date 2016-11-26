@@ -80,10 +80,12 @@ void CdlLiteRecorder::onDrawRect(const SkRect& rect, const SkPaint& paint) {
 void CdlLiteRecorder::onDrawRect(const SkRect& r, const CdlPaint& paint) {
   fDL->drawRect(r, paint);
 }
+/*
 void CdlLiteRecorder::onDrawRegion(const SkRegion& region,
                                    const SkPaint& paint) {
   fDL->drawRegion(region, paint);
 }
+*/
 void CdlLiteRecorder::onDrawOval(const SkRect& oval, const SkPaint& paint) {
   fDL->drawOval(oval, paint);
 }
@@ -107,13 +109,13 @@ void CdlLiteRecorder::onDrawDrawable(SkDrawable* drawable,
                                      const SkMatrix* matrix) {
   fDL->drawDrawable(drawable, matrix);
 }
-/*
-void CdlLiteRecorder::onDrawPicture(const SkPicture* picture,
+
+void CdlLiteRecorder::onDrawPicture(const CdlPicture* picture,
                                     const SkMatrix* matrix,
                                     const SkPaint* paint) {
   fDL->drawPicture(picture, matrix, paint);
 }
-*/
+
 void CdlLiteRecorder::onDrawAnnotation(const SkRect& rect,
                                        const char key[],
                                        SkData* val) {
