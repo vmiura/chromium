@@ -23,6 +23,7 @@ class CdlLiteDL;
 class CdlLiteRecorder final : public CdlCanvas {
  public:
   CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
+  void reset(CdlLiteDL*, const SkRect& bounds);
 
   int  onSave() override;
   int  onSaveLayer(const SkCanvas::SaveLayerRec&) override;

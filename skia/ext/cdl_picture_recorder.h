@@ -51,13 +51,10 @@ class CdlPictureRecorder : SkNoncopyable {
   uint32_t fFlags;
   SkRect fCullRect;
 
-#ifdef SK_SUPPORT_LEGACY_CANVAS_IS_REFCNT
-  sk_sp<CdlLiteRecorder> fRecorder;
-#else
-  std::unique_ptr<CdlLiteRecorder> fRecorder;
-#endif
-
+  std::shared_ptr<CdlLiteRecorder> fRecorder;
   sk_sp<CdlLiteDL> fRecord;
+
+  static std::shared_ptr<CdlLiteRecorder> free_recorder;
 
   // SkPictureRecorder picture_recorder_;
 };
