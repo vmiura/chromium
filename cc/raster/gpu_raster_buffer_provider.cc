@@ -18,6 +18,8 @@
 #include "cc/raster/scoped_gpu_raster.h"
 #include "cc/resources/resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkMultiPictureDraw.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -26,7 +28,7 @@
 namespace cc {
 namespace {
 
-static sk_sp<SkPicture> PlaybackToPicture(
+static sk_sp<CdlPicture> PlaybackToPicture(
     const RasterSource* raster_source,
     bool resource_has_previous_content,
     const gfx::Size& resource_size,
@@ -59,8 +61,8 @@ static sk_sp<SkPicture> PlaybackToPicture(
   }
 
   // Play back raster_source into temp SkPicture.
-  SkPictureRecorder recorder;
-  sk_sp<SkCanvas> canvas = sk_ref_sp(
+  CdlPictureRecorder recorder;
+  sk_sp<CdlCanvas> canvas = sk_ref_sp(
       recorder.beginRecording(resource_size.width(), resource_size.height()));
   canvas->save();
 
@@ -73,14 +75,14 @@ static sk_sp<SkPicture> PlaybackToPicture(
   // later picture rasterization.
   RasterSource::PlaybackSettings settings = playback_settings;
   settings.use_image_hijack_canvas = false;
-  raster_source->PlaybackToCanvas(CdlCanvas::Make(canvas.get()).get(),
+  raster_source->PlaybackToCanvas(canvas.get(),
                                   raster_full_rect, playback_rect, scales,
                                   settings);
   canvas->restore();
   return recorder.finishRecordingAsPicture();
 }
 
-static void RasterizePicture(SkPicture* picture,
+static void RasterizePicture(CdlPicture* picture,
                              ContextProvider* context_provider,
                              ResourceProvider::ScopedWriteLockGL* resource_lock,
                              bool async_worker_context_enabled,
@@ -119,9 +121,7 @@ static void RasterizePicture(SkPicture* picture,
     canvas = hijack_canvas.get();
   }
 
-  SkMultiPictureDraw multi_picture_draw;
-  multi_picture_draw.add(canvas, picture);
-  multi_picture_draw.draw(false);
+  picture->playback(CdlCanvas::Make(canvas).get());
 }
 
 }  // namespace
@@ -260,7 +260,7 @@ void GpuRasterBufferProvider::PlaybackOnWorkerThread(
     gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
-  sk_sp<SkPicture> picture = PlaybackToPicture(
+  sk_sp<CdlPicture> picture = PlaybackToPicture(
       raster_source, resource_has_previous_content, resource_lock->size(),
       raster_full_rect, raster_dirty_rect, scales, playback_settings);
 

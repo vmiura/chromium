@@ -19,6 +19,7 @@
 class CdlPaint;
 class CdlCanvas;
 class CdlLiteDL;
+class CdlPicture;
 
 class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
  public:
@@ -235,6 +236,8 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
     this->drawTextBlob(blob.get(), x, y, paint);
   }
 
+  void drawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint);
+
   void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
   void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
 
@@ -294,6 +297,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                      const SkMatrix*,
                      const SkPaint*);
                      */
+  virtual void onDrawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint);
   virtual void onDrawAnnotation(const SkRect&, const char[], SkData*);
 
   virtual void onDrawText(const void*,
