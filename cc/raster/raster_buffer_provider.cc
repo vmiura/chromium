@@ -80,7 +80,7 @@ void RasterBufferProvider::PlaybackToMemory(
       sk_sp<SkSurface> surface =
           SkSurface::MakeRasterDirect(info, memory, stride, &surface_props);
       raster_source->PlaybackToCanvas(
-          CdlCanvas::Make(surface->getCanvas()).get(), canvas_bitmap_rect,
+          surface->getCanvas(), canvas_bitmap_rect,
           canvas_playback_rect, scales, playback_settings);
       return;
     }
@@ -90,7 +90,7 @@ void RasterBufferProvider::PlaybackToMemory(
       // TODO(reveman): Improve partial raster support by reducing the size of
       // playback rect passed to PlaybackToCanvas. crbug.com/519070
       raster_source->PlaybackToCanvas(
-          CdlCanvas::Make(surface->getCanvas()).get(), canvas_bitmap_rect,
+          surface->getCanvas(), canvas_bitmap_rect,
           canvas_bitmap_rect, scales, playback_settings);
 
       if (format == ETC1) {
