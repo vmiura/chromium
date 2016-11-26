@@ -58,18 +58,17 @@ class ScopedDecodedImageLock {
 }  // namespace
 
 ImageHijackCanvas::ImageHijackCanvas(
-    int width,
-    int height,
+    SkCanvas* canvas,
     ImageDecodeController* image_decode_controller)
-    : SkNWayCanvas(width, height),
+    : CdlCanvas(canvas),
       image_decode_controller_(image_decode_controller) {}
 
-void ImageHijackCanvas::onDrawPicture(const SkPicture* picture,
+void ImageHijackCanvas::onDrawPicture(const CdlPicture* picture,
                                       const SkMatrix* matrix,
                                       const SkPaint* paint) {
   // Ensure that pictures are unpacked by this canvas, instead of being
   // forwarded to the raster canvas.
-  SkCanvas::onDrawPicture(picture, matrix, paint);
+  CdlCanvas::onDrawPicture(picture, matrix, paint);
 }
 
 void ImageHijackCanvas::onDrawImage(const SkImage* image,
@@ -77,7 +76,7 @@ void ImageHijackCanvas::onDrawImage(const SkImage* image,
                                     SkScalar y,
                                     const SkPaint* paint) {
   if (!image->isLazyGenerated()) {
-    SkNWayCanvas::onDrawImage(image, x, y, paint);
+    CdlCanvas::onDrawImage(image, x, y, paint);
     return;
   }
 
@@ -96,22 +95,22 @@ void ImageHijackCanvas::onDrawImage(const SkImage* image,
 
   bool need_scale = !decoded_image.is_scale_adjustment_identity();
   if (need_scale) {
-    SkNWayCanvas::save();
-    SkNWayCanvas::scale(1.f / (decoded_image.scale_adjustment().width()),
+    CdlCanvas::save();
+    CdlCanvas::scale(1.f / (decoded_image.scale_adjustment().width()),
                         1.f / (decoded_image.scale_adjustment().height()));
   }
-  SkNWayCanvas::onDrawImage(decoded_image.image().get(), x, y, decoded_paint);
+  CdlCanvas::onDrawImage(decoded_image.image().get(), x, y, decoded_paint);
   if (need_scale)
-    SkNWayCanvas::restore();
+    CdlCanvas::restore();
 }
 
 void ImageHijackCanvas::onDrawImageRect(const SkImage* image,
                                         const SkRect* src,
                                         const SkRect& dst,
                                         const SkPaint* paint,
-                                        SrcRectConstraint constraint) {
+                                        SkCanvas::SrcRectConstraint constraint) {
   if (!image->isLazyGenerated()) {
-    SkNWayCanvas::onDrawImageRect(image, src, dst, paint, constraint);
+    CdlCanvas::onDrawImageRect(image, src, dst, paint, constraint);
     return;
   }
 
@@ -142,10 +141,11 @@ void ImageHijackCanvas::onDrawImageRect(const SkImage* image,
         adjusted_src.x() * x_scale, adjusted_src.y() * y_scale,
         adjusted_src.width() * x_scale, adjusted_src.height() * y_scale);
   }
-  SkNWayCanvas::onDrawImageRect(decoded_image.image().get(), &adjusted_src, dst,
+  CdlCanvas::onDrawImageRect(decoded_image.image().get(), &adjusted_src, dst,
                                 decoded_paint, constraint);
 }
 
+/*
 void ImageHijackCanvas::onDrawImageNine(const SkImage* image,
                                         const SkIRect& center,
                                         const SkRect& dst,
@@ -153,5 +153,6 @@ void ImageHijackCanvas::onDrawImageNine(const SkImage* image,
   // No cc embedder issues image nine calls.
   NOTREACHED();
 }
+*/
 
 }  // namespace cc

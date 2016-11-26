@@ -64,7 +64,7 @@ RasterSource::RasterSource(const RasterSource* other, bool can_use_lcd_text)
 RasterSource::~RasterSource() {
 }
 
-void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
+void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
                                     const gfx::Rect& canvas_bitmap_rect,
                                     const gfx::Rect& canvas_playback_rect,
                                     const gfx::SizeF& raster_scales,
@@ -84,10 +84,22 @@ void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
   raster_canvas->restore();
 }
 
-void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
+void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
                                     const PlaybackSettings& settings) const {
+  sk_sp<CdlCanvas> playback_canvas;
+
+  // TODO(cdl): SkipImageCanvas
+
+  if (settings.use_image_hijack_canvas) {
+    playback_canvas.reset(new ImageHijackCanvas(raster_canvas, image_decode_controller_));
+  } else {
+    playback_canvas = CdlCanvas::Make(raster_canvas);
+  }
+
   if (!settings.playback_to_shared_canvas)
-    PrepareForPlaybackToCanvas(raster_canvas);
+    PrepareForPlaybackToCanvas(playback_canvas.get());
+
+  RasterCommon(playback_canvas.get(), nullptr);
 
   // TODO(cdl) custom canvas stuff
   /*
@@ -96,7 +108,8 @@ void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
     //SkipImageCanvas canvas(raster_canvas);
     //RasterCommon(&canvas, nullptr);
     RasterCommon(raster_canvas, nullptr);
-  } else if (settings.use_image_hijack_canvas) {
+  } else
+  if (settings.use_image_hijack_canvas) {
     const SkImageInfo& info = raster_canvas->imageInfo();
 
     ImageHijackCanvas canvas(info.width(), info.height(),
@@ -112,10 +125,10 @@ void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
     canvas.addCanvas(raster_canvas);
 
     RasterCommon(&canvas, nullptr);
-
-  } else
+  } else {
+    RasterCommon(raster_canvas, nullptr);
+  }
   */
-  { RasterCommon(raster_canvas, nullptr); }
 }
 
 void RasterSource::PrepareForPlaybackToCanvas(CdlCanvas* canvas) const {

@@ -6,22 +6,22 @@
 #define CC_PLAYBACK_IMAGE_HIJACK_CANVAS_H_
 
 #include "base/macros.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
 namespace cc {
 
 class ImageDecodeController;
 
-class ImageHijackCanvas : public SkNWayCanvas {
+class ImageHijackCanvas : public CdlCanvas {
  public:
-  ImageHijackCanvas(int width,
-                    int height,
+  ImageHijackCanvas(SkCanvas* canvas,
                     ImageDecodeController* image_decode_controller);
 
  private:
   // Ensure that pictures are unpacked by this canvas, instead of being
   // forwarded to the raster canvas.
-  void onDrawPicture(const SkPicture* picture,
+  void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override;
 
@@ -33,11 +33,11 @@ class ImageHijackCanvas : public SkNWayCanvas {
                        const SkRect* src,
                        const SkRect& dst,
                        const SkPaint* paint,
-                       SrcRectConstraint constraint) override;
-  void onDrawImageNine(const SkImage* image,
-                       const SkIRect& center,
-                       const SkRect& dst,
-                       const SkPaint* paint) override;
+                       SkCanvas::SrcRectConstraint constraint) override;
+  //void onDrawImageNine(const SkImage* image,
+  //                     const SkIRect& center,
+  //                     const SkRect& dst,
+  //                     const SkPaint* paint) override;
 
   ImageDecodeController* image_decode_controller_;
 
