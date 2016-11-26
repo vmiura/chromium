@@ -10,16 +10,20 @@
 #include "skia/ext/cdl_picture_recorder.h"
 #include "skia/ext/cdl_picture.h"
 
+// TODO(cdl): Make recorder thread save.
+std::shared_ptr<CdlLiteRecorder> CdlPictureRecorder::free_recorder;
+
 CdlPictureRecorder::CdlPictureRecorder() {
   fActivelyRecording = false;
 }
-CdlPictureRecorder::~CdlPictureRecorder() {}
+CdlPictureRecorder::~CdlPictureRecorder() {
+  if (fRecorder.get())
+    std::atomic_exchange(&free_recorder, fRecorder);
+}
 
 CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
                                               SkBBHFactory* bbhFactory,
                                               uint32_t recordFlags) {
-  // return picture_recorder_.beginRecording(bounds, bbhFactory, recordFlags);
-
   fCullRect = bounds;
   fFlags = recordFlags;
 
@@ -31,19 +35,31 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   */
 
   fRecord.reset(new CdlLiteDL(bounds));
+
+#if 1
+  if (!fRecorder.get())
+    fRecorder = std::atomic_exchange(&free_recorder, fRecorder);
+
+  if (fRecorder.get()) {
+    fRecorder->reset(fRecord.get(), bounds);
+  } else {
+    fRecorder.reset(new CdlLiteRecorder(fRecord.get(), bounds));
+  }
+#else
   fRecorder.reset(new CdlLiteRecorder(fRecord.get(), bounds));
+#endif
 
   fActivelyRecording = true;
   return this->getRecordingCanvas();
 }
 
 CdlCanvas* CdlPictureRecorder::getRecordingCanvas() {
-  // return picture_recorder_.getRecordingCanvas();
-  return fRecorder.get();
+  return fActivelyRecording ? fRecorder.get() : nullptr;
 }
 
 sk_sp<CdlPicture> CdlPictureRecorder::finishRecordingAsPicture(
     uint32_t endFlags) {
+  fActivelyRecording = false;
   sk_sp<CdlPicture> pic = sk_make_sp<CdlPicture>(fRecord);
   return pic;
 }

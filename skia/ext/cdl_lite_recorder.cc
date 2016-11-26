@@ -12,7 +12,12 @@
 #define INHERITED(method, ...) this->CdlCanvas::method(__VA_ARGS__)
 
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
-    : CdlCanvas(bounds.width(), bounds.height()), fDL(dl) {}
+    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()), fDL(dl) {}
+
+void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
+  fDL = dl;
+  canvas_->resetForNextPicture(bounds.roundOut());
+}
 
 int CdlLiteRecorder::onSave() {
   fDL->save();
