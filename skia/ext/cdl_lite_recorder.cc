@@ -5,14 +5,20 @@
  * found in the LICENSE file.
  */
 
-#include "cdl_lite_dl.h"
 #include "cdl_lite_recorder.h"
+
+#include "base/trace_event/trace_event.h"
+#include "skia/ext/cdl_lite_dl.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 #define INHERITED(method, ...) this->CdlCanvas::method(__VA_ARGS__)
 
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
-    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()), fDL(dl) {}
+    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()), fDL(dl) {
+}
+
+CdlLiteRecorder::~CdlLiteRecorder() {
+}
 
 void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
   fDL = dl;

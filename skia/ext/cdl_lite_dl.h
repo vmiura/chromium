@@ -26,12 +26,17 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   CdlLiteDL(SkRect bounds);
   ~CdlLiteDL() override;
 
+  // Prepares to append new picture to same record.
+  void resetForNextPicture(SkRect bounds);
+
+  // Discards full contents.
   void reset(SkRect);
 
   void makeThreadsafe();
   bool empty() const { return fUsed == 0; }
+  int getRecordOffset() { return fUsed; }
 
-  void playback(CdlCanvas*);
+  void playback(CdlCanvas*, int start_offset, int end_offset);
 
   SkRect getBounds();
 
@@ -155,7 +160,7 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   void* push(size_t, Args&&...);
 
   template <typename Fn, typename... Args>
-  void map(const Fn[], Args...);
+  void map(const Fn[], int start_offset, int end_offset, Args...);
 
   SkAutoTMalloc<uint8_t> fBytes;
   size_t fUsed;

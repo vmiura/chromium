@@ -11,8 +11,11 @@
 #include "skia/ext/cdl_picture.h"
 #include "skia/ext/cdl_lite_dl.h"
 
-CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture)
- : picture_(picture) {}
+CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture, SkRect cull_bounds, int start_offset, int end_offset)
+ : picture_(picture),
+   cull_bounds_(cull_bounds),
+   start_offset_(start_offset),
+   end_offset_(end_offset) {}
 
 CdlPicture::~CdlPicture() {}
 
@@ -25,7 +28,7 @@ sk_sp<SkPicture> CdlPicture::toSkPicture() const {
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(cullRect());
   //canvas->drawDrawable(picture_.get());
-  picture_->playback(CdlCanvas::Make(canvas).get());
+  picture_->playback(CdlCanvas::Make(canvas).get(), start_offset_, end_offset_);
   return recorder.finishRecordingAsPicture();
 }
 
@@ -39,12 +42,8 @@ void CdlPicture::playback(CdlCanvas* canvas,
   //canvas->drawDrawable(picture_.get());
   int save_count = canvas->getSaveCount();
   canvas->save();
-  picture_->playback(canvas);
+  picture_->playback(canvas, start_offset_, end_offset_);
   canvas->restoreToCount(save_count);
-}
-
-SkRect CdlPicture::cullRect() const {
-  return picture_->getBounds();
 }
 
 uint32_t CdlPicture::uniqueID() const {

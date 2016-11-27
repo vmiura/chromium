@@ -48,6 +48,7 @@ class CdlPictureRecorder : SkNoncopyable {
   void reset();
 
   bool fActivelyRecording;
+  int start_offset_;
   uint32_t fFlags;
   SkRect fCullRect;
 

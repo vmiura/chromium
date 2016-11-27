@@ -5,8 +5,10 @@
  * found in the LICENSE file.
  */
 
-#include "cdl_canvas.h"
 #include "cdl_lite_dl.h"
+
+#include "base/trace_event/trace_event.h"
+#include "cdl_canvas.h"
 #include "cdl_lite_recorder.h"
 #include "cdl_paint.h"
 #include "cdl_picture.h"
@@ -791,9 +793,10 @@ void* CdlLiteDL::push(size_t pod, Args&&... args) {
 }
 
 template <typename Fn, typename... Args>
-inline void CdlLiteDL::map(const Fn fns[], Args... args) {
-  auto end = fBytes.get() + fUsed;
-  for (uint8_t* ptr = fBytes.get(); ptr < end;) {
+inline void CdlLiteDL::map(const Fn fns[], int start_offset, int end_offset, Args... args) {
+  auto start = fBytes.get() + start_offset;
+  auto end = fBytes.get() + end_offset;
+  for (uint8_t* ptr = start; ptr < end;) {
     auto op = (Op*)ptr;
     auto type = op->type;
     auto skip = op->skip;
@@ -933,6 +936,7 @@ void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
                               const SkRect& dst,
                               const SkPaint* paint,
                               SkCanvas::SrcRectConstraint constraint) {
+  //TRACE_EVENT0("cc", "CdlLiteDL::drawImageRect");
   this->push<DrawImageRect>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
@@ -940,6 +944,7 @@ void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
                               const SkRect& dst,
                               const CdlPaint& paint,
                               SkCanvas::SrcRectConstraint constraint) {
+  //TRACE_EVENT0("cc", "CdlLiteDL::drawImageRectX");
   this->push<DrawImageRectX>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlLiteDL::drawImageLattice(sk_sp<const SkImage> image,
@@ -1098,9 +1103,9 @@ using can_skip_destructor = std::is_trivially_destructible<T>;
 static const void_fn dtor_fns[] = {TYPES(M)};
 #undef M
 
-void CdlLiteDL::playback(CdlCanvas* canvas) {
+void CdlLiteDL::playback(CdlCanvas* canvas, int start_offset, int end_offset) {
   DrawContext dc;
-  this->map(draw_fns, canvas, canvas->getTotalMatrix(), dc);
+  this->map(draw_fns, start_offset, end_offset, canvas, canvas->getTotalMatrix(), dc);
 }
 
 /*
@@ -1111,22 +1116,28 @@ void CdlLiteDL::onDraw(CdlCanvas* canvas) {
 */
 
 void CdlLiteDL::makeThreadsafe() {
-  this->map(make_threadsafe_fns);
+  this->map(make_threadsafe_fns, 0, fUsed);
 }
 
 SkRect CdlLiteDL::getBounds() {
   return fBounds;
 }
 
-CdlLiteDL::CdlLiteDL(SkRect bounds) : fUsed(0), fReserved(0), fBounds(bounds) {}
+CdlLiteDL::CdlLiteDL(SkRect bounds) : fUsed(0), fReserved(0), fBounds(bounds) {
+  //TRACE_EVENT0("cc", "CdlLiteDL::CdlLiteDL");
+}
 
 CdlLiteDL::~CdlLiteDL() {
   this->reset(SkRect::MakeEmpty());
 }
 
+void CdlLiteDL::resetForNextPicture(SkRect bounds) {
+  fBounds = bounds;
+}
+
 void CdlLiteDL::reset(SkRect bounds) {
   SkASSERT(this->unique());
-  this->map(dtor_fns);
+  this->map(dtor_fns, 0, fUsed);
 
   // Leave fBytes and fReserved alone.
   fUsed = 0;
