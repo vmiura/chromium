@@ -18,7 +18,7 @@ class CdlLiteDL;
 
 class CdlPicture : public SkRefCnt {
  public:
-  CdlPicture(sk_sp<CdlLiteDL> picture);
+  CdlPicture(sk_sp<CdlLiteDL> picture, SkRect cull_bounds, int start_offset, int end_offset);
   ~CdlPicture() override;
 
   void draw(CdlCanvas* canvas) const;
@@ -27,11 +27,14 @@ class CdlPicture : public SkRefCnt {
   //sk_sp<SkDrawable> toSkDrawable() const;
   int approximateOpCount() const { return 1; }
   void playback(CdlCanvas*, SkPicture::AbortCallback* = NULL) const;
-  SkRect cullRect() const;
+  SkRect cullRect() const { return cull_bounds_; }
   uint32_t uniqueID() const;
 
  private:
   sk_sp<CdlLiteDL> picture_;
+  SkRect cull_bounds_;
+  int start_offset_;
+  int end_offset_;
 };
 
 #endif  // SKIA_EXT_CDL_PICTURE_H_
