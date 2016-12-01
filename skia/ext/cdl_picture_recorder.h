@@ -11,6 +11,7 @@
 #include "skia/ext/cdl_lite_recorder.h"
 
 #include "base/compiler_specific.h"
+#include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkBBHFactory.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -55,6 +56,7 @@ class CdlPictureRecorder : SkNoncopyable {
   std::shared_ptr<CdlLiteRecorder> fRecorder;
   sk_sp<CdlLiteDL> fRecord;
 
+  static base::Lock lock;
   static std::shared_ptr<CdlLiteRecorder> free_recorder;
 
   // SkPictureRecorder picture_recorder_;

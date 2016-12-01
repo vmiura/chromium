@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,7 +13,7 @@
 
 #include "skia/ext/cdl_picture.h"
 
-// TODO(cdl): Make recorder thread save.
+base::Lock CdlPictureRecorder::lock;
 std::shared_ptr<CdlLiteRecorder> CdlPictureRecorder::free_recorder;
 
 CdlPictureRecorder::CdlPictureRecorder() {
@@ -23,8 +22,10 @@ CdlPictureRecorder::CdlPictureRecorder() {
   fFlags = 0;
 }
 CdlPictureRecorder::~CdlPictureRecorder() {
-  if (fRecorder.get())
-    std::atomic_exchange(&free_recorder, fRecorder);
+  if (fRecorder.get()) {
+    base::AutoLock hold(lock);
+    fRecorder.swap(free_recorder);
+  }
 }
 
 CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
@@ -50,8 +51,12 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
 
   start_offset_ = fRecord->getRecordOffset();
 
-  if (!fRecorder.get())
-    fRecorder = std::atomic_exchange(&free_recorder, fRecorder);
+  if (!fRecorder.get()) {
+    if (fRecorder.get()) {
+      base::AutoLock hold(lock);
+      fRecorder.swap(free_recorder);
+    }
+  }
 
   if (fRecorder.get()) {
     fRecorder->reset(fRecord.get(), bounds);
