@@ -22,7 +22,11 @@ CdlLiteRecorder::~CdlLiteRecorder() {
 
 void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
   fDL = dl;
+  #ifdef CDL_FRIEND_OF_SKPICTURE
   canvas_->resetForNextPicture(bounds.roundOut());
+  #else
+  canvas_->reset(new SkNWayCanvas(bounds.roundOut().width(), bounds.roundOut().height()));
+  #endif
 }
 
 int CdlLiteRecorder::onSave() {
