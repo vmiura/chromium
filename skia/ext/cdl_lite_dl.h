@@ -8,7 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <unordered_map>
+
 #include "base/compiler_specific.h"
+#include "base/synchronization/lock.h"
 
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -20,6 +23,21 @@
 class CdlCanvas;
 class CdlPaint;
 class CdlPicture;
+
+class CdlNamespace {
+ public:
+  CdlNamespace();
+  ~CdlNamespace();
+  uint32_t RefImage(sk_sp<const SkImage>&& image);
+  void UnrefImage(uint32_t image_id);
+  const SkImage* GetImage(uint32_t image_id);
+
+ protected:
+  base::Lock lock_;
+  std::unordered_map<uint32_t, std::pair<int32_t, sk_sp<const SkImage>>> image_map;
+
+  DISALLOW_COPY_AND_ASSIGN(CdlNamespace);
+};
 
 class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
  public:
@@ -166,6 +184,8 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   size_t fUsed;
   size_t fReserved;
   SkRect fBounds;
+
+  CdlNamespace cdl_namespace;
 };
 
 #endif  // SKIA_EXT_CDL_LITE_DL_H_
