@@ -18,7 +18,7 @@ class CdlLiteDL;
 
 class CdlPicture : public SkRefCnt {
  public:
-  CdlPicture(sk_sp<CdlLiteDL> picture, SkRect cull_bounds, int start_offset, int end_offset);
+  CdlPicture(sk_sp<CdlLiteDL> dl, SkRect cull_bounds, int start_offset, int end_offset);
   ~CdlPicture() override;
 
   void draw(CdlCanvas* canvas) const;

@@ -13,7 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
 #include "cc/playback/display_item_list.h"
-#include "third_party/skia/include/utils/SkNWayCanvas.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 
@@ -56,24 +59,24 @@ namespace {
 
 // We're using an NWay canvas with no added canvases, so in effect
 // non-overridden functions are no-ops.
-class DiscardableImagesMetadataCanvas : public SkNWayCanvas {
+class DiscardableImagesMetadataCanvas : public CdlCanvas {
  public:
   DiscardableImagesMetadataCanvas(
       int width,
       int height,
       std::vector<std::pair<DrawImage, gfx::Rect>>* image_set)
-      : SkNWayCanvas(width, height),
+      : CdlCanvas(width, height),
         image_set_(image_set),
         canvas_bounds_(SkRect::MakeIWH(width, height)),
         canvas_size_(width, height) {}
 
  protected:
-  // we need to "undo" the behavior of SkNWayCanvas, which will try to forward
+  // we need to "undo" the behavior of CdlCanvas, which will try to forward
   // it.
-  void onDrawPicture(const SkPicture* picture,
+  void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override {
-    SkCanvas::onDrawPicture(picture, matrix, paint);
+    CdlCanvas::onDrawPicture(picture, matrix, paint);
   }
 
   // TODO(cdl): Add onDrawDrwable.
@@ -89,11 +92,23 @@ class DiscardableImagesMetadataCanvas : public SkNWayCanvas {
         ctm, paint);
   }
 
+  void onDrawImage(const SkImage* image,
+                   SkScalar x,
+                   SkScalar y,
+                   const CdlPaint& paint) override {
+    const SkMatrix& ctm = getTotalMatrix();
+    SkPaint pt = paint.toSkPaint();
+    AddImage(
+        sk_ref_sp(image), SkRect::MakeIWH(image->width(), image->height()),
+        MapRect(ctm, SkRect::MakeXYWH(x, y, image->width(), image->height())),
+        ctm, &pt);
+  }
+
   void onDrawImageRect(const SkImage* image,
                        const SkRect* src,
                        const SkRect& dst,
                        const SkPaint* paint,
-                       SrcRectConstraint) override {
+                       SkCanvas::SrcRectConstraint) override {
     const SkMatrix& ctm = getTotalMatrix();
     SkRect src_storage;
     if (!src) {
@@ -106,28 +121,38 @@ class DiscardableImagesMetadataCanvas : public SkNWayCanvas {
     AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, paint);
   }
 
-  void onDrawImageNine(const SkImage* image,
-                       const SkIRect& center,
+  void onDrawImageRect(const SkImage* image,
+                       const SkRect* src,
                        const SkRect& dst,
-                       const SkPaint* paint) override {
-    // No cc embedder issues image nine calls.
-    NOTREACHED();
+                       const CdlPaint& paint,
+                       SkCanvas::SrcRectConstraint) override {
+    const SkMatrix& ctm = getTotalMatrix();
+    SkRect src_storage;
+    if (!src) {
+      src_storage = SkRect::MakeIWH(image->width(), image->height());
+      src = &src_storage;
+    }
+    SkMatrix matrix;
+    matrix.setRectToRect(*src, dst, SkMatrix::kFill_ScaleToFit);
+    matrix.postConcat(ctm);
+    SkPaint pt = paint.toSkPaint();
+    AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, &pt);
   }
 
-  SaveLayerStrategy getSaveLayerStrategy(const SaveLayerRec& rec) override {
+  int  onSaveLayer(const SkCanvas::SaveLayerRec& rec) override {
     saved_paints_.push_back(*rec.fPaint);
-    return SkNWayCanvas::getSaveLayerStrategy(rec);
+    return CdlCanvas::onSaveLayer(rec);
   }
 
-  void willSave() override {
+  int onSave() override {
     saved_paints_.push_back(SkPaint());
-    return SkNWayCanvas::willSave();
+    return CdlCanvas::onSave();
   }
 
-  void willRestore() override {
+  void onRestore() override {
     DCHECK_GT(saved_paints_.size(), 0u);
     saved_paints_.pop_back();
-    SkNWayCanvas::willRestore();
+    CdlCanvas::onRestore();
   }
 
  private:
@@ -192,10 +217,11 @@ DiscardableImageMap::DiscardableImageMap() {}
 
 DiscardableImageMap::~DiscardableImageMap() {}
 
-std::unique_ptr<SkCanvas> DiscardableImageMap::BeginGeneratingMetadata(
+sk_sp<CdlCanvas> DiscardableImageMap::BeginGeneratingMetadata(
     const gfx::Size& bounds) {
   DCHECK(all_images_.empty());
-  return base::MakeUnique<DiscardableImagesMetadataCanvas>(
+  // TODO(cdl): switch to using std::unique_ptrs?
+  return sk_make_sp<DiscardableImagesMetadataCanvas>(
       bounds.width(), bounds.height(), &all_images_);
 }
 
