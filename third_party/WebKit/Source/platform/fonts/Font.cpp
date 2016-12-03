@@ -393,7 +393,7 @@ void Font::drawGlyphBuffer(CdlCanvas* canvas,
 
 static int getInterceptsFromBloberizer(const GlyphBuffer& glyphBuffer,
                                        const Font* font,
-                                       const SkPaint& paint,
+                                       const CdlPaint& paint,
                                        float deviceScaleFactor,
                                        const std::tuple<float, float>& bounds,
                                        SkScalar* interceptsBuffer) {
@@ -424,7 +424,7 @@ static int getInterceptsFromBloberizer(const GlyphBuffer& glyphBuffer,
 
 void Font::getTextIntercepts(const TextRunPaintInfo& runInfo,
                              float deviceScaleFactor,
-                             const SkPaint& paint,
+                             const CdlPaint& paint,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {
   if (shouldSkipDrawing())

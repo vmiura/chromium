@@ -107,6 +107,11 @@ class CdlPaint {
   SkDrawLooper* getDrawLooper() const { return sk_paint.getDrawLooper(); }
   SkDrawLooper* getLooper() const { return sk_paint.getLooper(); }
 
+  int getTextBlobIntercepts(const SkTextBlob* blob, const SkScalar bounds[2],
+                              SkScalar* intervals) const {
+    return sk_paint.getTextBlobIntercepts(blob, bounds, intervals);
+  }
+
  protected:
   mutable SkPaint sk_paint;
   mutable bool is_dirty_;

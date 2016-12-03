@@ -53,9 +53,7 @@ class CC_EXPORT DiscardableImageMap {
   friend class ScopedMetadataGenerator;
   friend class DiscardableImageMapTest;
 
-  sk_sp<SkCanvas> BeginGeneratingMetadata(const gfx::Size& bounds);
   sk_sp<CdlCanvas> BeginGeneratingMetadata(const gfx::Size& bounds);
-  std::unique_ptr<SkCanvas> BeginGeneratingMetadata(const gfx::Size& bounds);
   void EndGeneratingMetadata();
 
   std::vector<std::pair<DrawImage, gfx::Rect>> all_images_;

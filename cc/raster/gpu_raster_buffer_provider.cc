@@ -75,7 +75,7 @@ static void RasterizeSource(
         100.0f * fraction_saved);
   }
 
-  raster_source->PlaybackToCanvas(CdlCanvas::Make(sk_surface->getCanvas()).get(), raster_full_rect,
+  raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
                                   playback_rect, scales, playback_settings);
 }
 

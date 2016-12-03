@@ -110,7 +110,7 @@ class PLATFORM_EXPORT Font {
   // upright in vertical.
   void getTextIntercepts(const TextRunPaintInfo&,
                          float deviceScaleFactor,
-                         const SkPaint&,
+                         const CdlPaint&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
 

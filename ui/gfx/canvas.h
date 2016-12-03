@@ -94,7 +94,7 @@ class GFX_EXPORT Canvas {
   // Note: the caller must ensure that sk_canvas outlives this object, or until
   // RecreateBackingCanvas is called.
   // TODO(cdl): Update CdlCanvas to non ref-counted.
-  Canvas(sk_sp<CdlCanvas> sk_canvas, float image_scale);
+  Canvas(CdlCanvas* sk_canvas, float image_scale);
 
   virtual ~Canvas();
 

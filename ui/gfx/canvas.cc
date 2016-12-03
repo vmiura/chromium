@@ -50,8 +50,8 @@ Canvas::Canvas()
       canvas_owner_(skia::CreatePlatformCanvas(0, 0, false)),
       canvas_(CdlCanvas::Make(canvas_owner_.get())) {}
 
-Canvas::Canvas(sk_sp<CdlCanvas> canvas, float image_scale)
-    : image_scale_(image_scale), canvas_(std::move(canvas)) {
+Canvas::Canvas(CdlCanvas* canvas, float image_scale)
+    : image_scale_(image_scale), canvas_(sk_ref_sp(canvas)) {
   DCHECK(canvas_);
 }
 
