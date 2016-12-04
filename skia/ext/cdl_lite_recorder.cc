@@ -11,12 +11,14 @@
 #include "skia/ext/cdl_lite_dl.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
+#include "third_party/skia/include/utils/SkNWayCanvas.h"
 
-#define INHERITED(method, ...) this->CdlCanvas::method(__VA_ARGS__)
+#define INHERITED(method, ...) this->CdlNoDrawCanvas::method(__VA_ARGS__)
 
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
-    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()),
-      fDL(dl) {}
+    : CdlNoDrawCanvas(bounds.roundOut().width(), bounds.roundOut().height()),
+      fDL(dl),
+      fComputeClips(false) {}
 
 CdlLiteRecorder::~CdlLiteRecorder() {}
 
@@ -25,7 +27,7 @@ void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
 #ifdef CDL_FRIEND_OF_SKPICTURE
   canvas_->resetForNextPicture(bounds.roundOut());
 #else
-  owned_canvas_.reset(new SkNoDrawCanvas(bounds.roundOut().width(),
+  owned_canvas_.reset(new SkNWayCanvas(bounds.roundOut().width(),
                                          bounds.roundOut().height()));
   canvas_ = owned_canvas_.get();
 #endif
@@ -33,56 +35,60 @@ void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
 
 int CdlLiteRecorder::onSave() {
   fDL->save();
-  return CdlCanvas::onSave();
+  return INHERITED::onSave();
 }
 
 int CdlLiteRecorder::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
   fDL->saveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
-  return CdlCanvas::onSaveLayer(rec);
+  return INHERITED::onSaveLayer(rec);
 }
 
 void CdlLiteRecorder::onRestore() {
   fDL->restore();
-  CdlCanvas::onRestore();
+  INHERITED::onRestore();
 }
 
 void CdlLiteRecorder::onConcat(const SkMatrix& matrix) {
   fDL->concat(matrix);
-  CdlCanvas::onConcat(matrix);
+  INHERITED::onConcat(matrix);
 }
 
 void CdlLiteRecorder::onSetMatrix(const SkMatrix& matrix) {
   fDL->setMatrix(matrix);
-  CdlCanvas::onSetMatrix(matrix);
+  INHERITED::onSetMatrix(matrix);
 }
 
 void CdlLiteRecorder::onTranslate(SkScalar dx, SkScalar dy) {
   fDL->translate(dx, dy);
-  CdlCanvas::onTranslate(dx, dy);
+  INHERITED::onTranslate(dx, dy);
 }
 
 void CdlLiteRecorder::onClipRect(const SkRect& rect,
                                  SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
-  INHERITED(onClipRect, rect, op, style);
   fDL->clipRect(rect, op, style == kSoft_ClipEdgeStyle);
+  if (fComputeClips)
+    CdlCanvas::onClipRect(rect, op, style);
 }
 void CdlLiteRecorder::onClipRRect(const SkRRect& rrect,
                                   SkCanvas::ClipOp op,
                                   ClipEdgeStyle style) {
-  INHERITED(onClipRRect, rrect, op, style);
   fDL->clipRRect(rrect, op, style == kSoft_ClipEdgeStyle);
+  if (fComputeClips)
+    CdlCanvas::onClipRRect(rrect, op, style);
 }
 void CdlLiteRecorder::onClipPath(const SkPath& path,
                                  SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
-  INHERITED(onClipPath, path, op, style);
   fDL->clipPath(path, op, style == kSoft_ClipEdgeStyle);
+  if (fComputeClips)
+    CdlCanvas::onClipPath(path, op, style);
 }
 void CdlLiteRecorder::onClipRegion(const SkRegion& region,
                                    SkCanvas::ClipOp op) {
-  INHERITED(onClipRegion, region, op);
   fDL->clipRegion(region, op);
+  if (fComputeClips)
+    CdlCanvas::onClipRegion(region, op);
 }
 
 void CdlLiteRecorder::onDrawPaint(const SkPaint& paint) {

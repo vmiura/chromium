@@ -14,13 +14,13 @@
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
-#include "cdl_canvas.h"
+#include "cdl_no_draw_canvas.h"
 
 class CdlPaint;
 class CdlCanvas;
 class CdlLiteDL;
 
-class CdlLiteRecorder final : public CdlCanvas {
+class CdlLiteRecorder final : public CdlNoDrawCanvas {
  public:
   CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
   ~CdlLiteRecorder() override;
@@ -186,7 +186,10 @@ void onDrawAtlas(const SkImage*,
 #endif
 
  private:
+  typedef CdlNoDrawCanvas INHERITED;
+
   CdlLiteDL* fDL;
+  bool       fComputeClips;
 };
 
 #endif  // SKIA_EXT_CDL_LITE_RECORDER_H_

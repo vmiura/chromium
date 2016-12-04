@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
 #include "cc/playback/display_item_list.h"
-#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_no_draw_canvas.h"
 #include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -59,27 +59,25 @@ namespace {
 
 // We're using an NWay canvas with no added canvases, so in effect
 // non-overridden functions are no-ops.
-class DiscardableImagesMetadataCanvas : public CdlCanvas {
+class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
  public:
   DiscardableImagesMetadataCanvas(
       int width,
       int height,
       std::vector<std::pair<DrawImage, gfx::Rect>>* image_set)
-      : CdlCanvas(width, height),
+      : CdlNoDrawCanvas(width, height),
         image_set_(image_set),
         canvas_bounds_(SkRect::MakeIWH(width, height)),
         canvas_size_(width, height) {}
 
  protected:
-  // we need to "undo" the behavior of CdlCanvas, which will try to forward
-  // it.
+  // we need to "undo" the behavior of CdlNoDrawCanvas, which will ignore
+  // onDrawPicture().
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override {
     CdlCanvas::onDrawPicture(picture, matrix, paint);
   }
-
-  // TODO(cdl): Add onDrawDrwable.
 
   void onDrawImage(const SkImage* image,
                    SkScalar x,
@@ -141,18 +139,18 @@ class DiscardableImagesMetadataCanvas : public CdlCanvas {
 
   int onSaveLayer(const SkCanvas::SaveLayerRec& rec) override {
     saved_paints_.push_back(*rec.fPaint);
-    return CdlCanvas::onSaveLayer(rec);
+    return CdlNoDrawCanvas::onSaveLayer(rec);
   }
 
   int onSave() override {
     saved_paints_.push_back(SkPaint());
-    return CdlCanvas::onSave();
+    return CdlNoDrawCanvas::onSave();
   }
 
   void onRestore() override {
     DCHECK_GT(saved_paints_.size(), 0u);
     saved_paints_.pop_back();
-    CdlCanvas::onRestore();
+    CdlNoDrawCanvas::onRestore();
   }
 
  private:
