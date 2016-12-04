@@ -10,7 +10,7 @@
 #include "cdl_picture.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/utils/SkNWayCanvas.h"
+#include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 #define RETURN_ON_NULL(ptr)     do { if (nullptr == (ptr)) return; } while (0)
 
@@ -21,7 +21,7 @@ sk_sp<CdlCanvas> CdlCanvas::Make(SkCanvas* canvas) {
 CdlCanvas::CdlCanvas(SkCanvas* canvas) : canvas_(canvas) {}
 
 CdlCanvas::CdlCanvas(int width, int height)
-    : canvas_(new SkNWayCanvas(width, height)) {}
+    : canvas_(new SkNoDrawCanvas(width, height)) {}
 
 CdlCanvas::~CdlCanvas() {}
 
