@@ -89,11 +89,12 @@ void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
 
   if (settings.skip_images) {
     // TODO(cdl): SkipImageCanvas
-    //SkipImageCanvas canvas(raster_canvas);
-    //RasterCommon(&canvas, nullptr);
+    // SkipImageCanvas canvas(raster_canvas);
+    // RasterCommon(&canvas, nullptr);
     playback_canvas = CdlCanvas::Make(raster_canvas);
   } else if (settings.use_image_hijack_canvas) {
-    playback_canvas.reset(new ImageHijackCanvas(raster_canvas, image_decode_cache_));
+    playback_canvas.reset(
+        new ImageHijackCanvas(raster_canvas, image_decode_cache_));
   } else {
     playback_canvas = CdlCanvas::Make(raster_canvas);
   }

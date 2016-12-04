@@ -41,7 +41,7 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   }
   */
 
-  //TRACE_EVENT_ASYNC_BEGIN0("cc", "CdlPictureRecorder::beginRecording", this);
+  // TRACE_EVENT_ASYNC_BEGIN0("cc", "CdlPictureRecorder::beginRecording", this);
 
   // Create new recorder only if it's above a threshold in size.
   if (!fRecord.get() || fRecord->getRecordOffset() >= 4096 - 256)
@@ -74,9 +74,10 @@ CdlCanvas* CdlPictureRecorder::getRecordingCanvas() {
 
 sk_sp<CdlPicture> CdlPictureRecorder::finishRecordingAsPicture(
     uint32_t endFlags) {
-  //TRACE_EVENT_ASYNC_END0("cc", "CdlPictureRecorder::beginRecording", this);
+  // TRACE_EVENT_ASYNC_END0("cc", "CdlPictureRecorder::beginRecording", this);
 
   fActivelyRecording = false;
-  sk_sp<CdlPicture> pic = sk_make_sp<CdlPicture>(fRecord, fCullRect, start_offset_, fRecord->getRecordOffset());
+  sk_sp<CdlPicture> pic = sk_make_sp<CdlPicture>(
+      fRecord, fCullRect, start_offset_, fRecord->getRecordOffset());
   return pic;
 }

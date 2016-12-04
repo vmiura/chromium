@@ -15,8 +15,7 @@ class ImageDecodeCache;
 
 class ImageHijackCanvas : public CdlCanvas {
  public:
-  ImageHijackCanvas(SkCanvas* canvas,
-                    ImageDecodeCache* image_decode_cache);
+  ImageHijackCanvas(SkCanvas* canvas, ImageDecodeCache* image_decode_cache);
 
  private:
   // Ensure that pictures are unpacked by this canvas, instead of being
@@ -34,7 +33,7 @@ class ImageHijackCanvas : public CdlCanvas {
                        const SkRect& dst,
                        const SkPaint* paint,
                        SkCanvas::SrcRectConstraint constraint) override;
-  //void onDrawImageNine(const SkImage* image,
+  // void onDrawImageNine(const SkImage* image,
   //                     const SkIRect& center,
   //                     const SkRect& dst,
   //                     const SkPaint* paint) override;

@@ -24,11 +24,11 @@ class CdlLiteRecorder final : public CdlCanvas {
  public:
   CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
   ~CdlLiteRecorder() override;
-  
+
   void reset(CdlLiteDL*, const SkRect& bounds);
 
-  int  onSave() override;
-  int  onSaveLayer(const SkCanvas::SaveLayerRec&) override;
+  int onSave() override;
+  int onSaveLayer(const SkCanvas::SaveLayerRec&) override;
   void onRestore() override;
 
   void onConcat(const SkMatrix&) override;
@@ -44,7 +44,7 @@ class CdlLiteRecorder final : public CdlCanvas {
   void onDrawPath(const SkPath&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const CdlPaint&) override;
-  //void onDrawRegion(const SkRegion&, const SkPaint&) override;
+  // void onDrawRegion(const SkRegion&, const SkPaint&) override;
   void onDrawOval(const SkRect&, const SkPaint&) override;
   void onDrawArc(const SkRect&,
                  SkScalar,

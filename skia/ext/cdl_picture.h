@@ -18,13 +18,16 @@ class CdlLiteDL;
 
 class CdlPicture : public SkRefCnt {
  public:
-  CdlPicture(sk_sp<CdlLiteDL> dl, SkRect cull_bounds, int start_offset, int end_offset);
+  CdlPicture(sk_sp<CdlLiteDL> dl,
+             SkRect cull_bounds,
+             int start_offset,
+             int end_offset);
   ~CdlPicture() override;
 
   void draw(CdlCanvas* canvas) const;
 
   sk_sp<SkPicture> toSkPicture() const;
-  //sk_sp<SkDrawable> toSkDrawable() const;
+  // sk_sp<SkDrawable> toSkDrawable() const;
   int approximateOpCount() const { return 1; }
   void playback(CdlCanvas*, SkPicture::AbortCallback* = NULL) const;
   SkRect cullRect() const { return cull_bounds_; }

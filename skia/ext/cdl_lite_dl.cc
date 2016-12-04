@@ -68,9 +68,10 @@ namespace {
   M(SetDrawFilter)                                                            \
   M(Save)                                                                     \
   M(Restore)                                                                  \
-  M(SaveLayer) M(Concat) M(SetMatrix) M(Translate) M(TranslateZ) M(ClipPath)  \
-      M(ClipRect) M(ClipRRect) M(ClipRegion) M(DrawPaint) M(DrawPath)         \
-          M(DrawRect) /*M(DrawRegion)*/ M(DrawOval) M(DrawArc) M(DrawRRect)       \
+  M(SaveLayer)                                                                \
+  M(Concat) M(SetMatrix) M(Translate) M(TranslateZ) M(ClipPath) M(ClipRect)   \
+      M(ClipRRect) M(ClipRegion) M(DrawPaint) M(DrawPath)                     \
+          M(DrawRect) /*M(DrawRegion)*/ M(DrawOval) M(DrawArc) M(DrawRRect)   \
               M(DrawDRRect) M(DrawAnnotation) M(DrawDrawable) M(DrawPicture)  \
                   M(DrawShadowedPicture) M(DrawImage) M(DrawImageNine)        \
                       M(DrawImageRect) M(DrawImageLattice) M(DrawText)        \
@@ -305,7 +306,7 @@ struct DrawArc final : Op {
   SkPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
     // TODO(cdl)
-    //c->drawArc(oval, startAngle, sweepAngle, useCenter, paint);
+    // c->drawArc(oval, startAngle, sweepAngle, useCenter, paint);
   }
 };
 struct DrawRRect final : Op {
@@ -337,7 +338,7 @@ struct DrawAnnotation final : Op {
   sk_sp<SkData> value;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
     // TODO(cdl)
-    //c->drawAnnotation(rect, pod<char>(this), value.get());
+    // c->drawAnnotation(rect, pod<char>(this), value.get());
   }
 };
 struct DrawDrawable final : Op {
@@ -463,8 +464,8 @@ struct DrawImageNine final : Op {
   SkRect dst;
   SkPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
-    //TODO(cdl)
-    //c->drawImageNine(image.get(), center, dst, &paint);
+    // TODO(cdl)
+    // c->drawImageNine(image.get(), center, dst, &paint);
   }
 };
 struct DrawImageRect final : Op {
@@ -575,7 +576,7 @@ struct DrawPosTextH final : Op {
   SkPaint paint;
   int n;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
-    //TODO(cdl)
+    // TODO(cdl)
     /*
     auto xs = pod<SkScalar>(this);
     auto text = pod<void>(this, n * sizeof(SkScalar));
@@ -600,7 +601,7 @@ struct DrawTextOnPath final : Op {
   SkPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
     // TODO(cdl)
-    //c->drawTextOnPath(pod<void>(this), bytes, path, &matrix, paint);
+    // c->drawTextOnPath(pod<void>(this), bytes, path, &matrix, paint);
   }
   void makeThreadsafe() { make_threadsafe(&path, &matrix); }
 };
@@ -617,7 +618,7 @@ struct DrawTextRSXform final : Op {
   SkPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
     // TODO(cdl)
-    //c->drawTextRSXform(pod<void>(this), bytes, pod<SkRSXform>(this, bytes),
+    // c->drawTextRSXform(pod<void>(this), bytes, pod<SkRSXform>(this, bytes),
     //                   maybe_unset(cull), paint);
   }
 };
@@ -663,7 +664,7 @@ struct DrawPatch final : Op {
   bool has_texs = false;
   void draw(CdlCanvas* c, const SkMatrix&, CdlLiteDL::DrawContext&) {
     // TODO(cdl)
-    //c->drawPatch(cubics, has_colors ? colors : nullptr,
+    // c->drawPatch(cubics, has_colors ? colors : nullptr,
     //             has_texs ? texs : nullptr, xfermode, paint);
   }
 };
@@ -793,7 +794,10 @@ void* CdlLiteDL::push(size_t pod, Args&&... args) {
 }
 
 template <typename Fn, typename... Args>
-inline void CdlLiteDL::map(const Fn fns[], int start_offset, int end_offset, Args... args) {
+inline void CdlLiteDL::map(const Fn fns[],
+                           int start_offset,
+                           int end_offset,
+                           Args... args) {
   auto start = fBytes.get() + start_offset;
   auto end = fBytes.get() + end_offset;
   for (uint8_t* ptr = start; ptr < end;) {
@@ -936,7 +940,7 @@ void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
                               const SkRect& dst,
                               const SkPaint* paint,
                               SkCanvas::SrcRectConstraint constraint) {
-  //TRACE_EVENT0("cc", "CdlLiteDL::drawImageRect");
+  // TRACE_EVENT0("cc", "CdlLiteDL::drawImageRect");
   this->push<DrawImageRect>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
@@ -944,7 +948,7 @@ void CdlLiteDL::drawImageRect(sk_sp<const SkImage> image,
                               const SkRect& dst,
                               const CdlPaint& paint,
                               SkCanvas::SrcRectConstraint constraint) {
-  //TRACE_EVENT0("cc", "CdlLiteDL::drawImageRectX");
+  // TRACE_EVENT0("cc", "CdlLiteDL::drawImageRectX");
   this->push<DrawImageRectX>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlLiteDL::drawImageLattice(sk_sp<const SkImage> image,
@@ -1077,7 +1081,7 @@ typedef void (*draw_fn)(void*,
 typedef void (*void_fn)(void*);
 
 // All ops implement draw().
-#define M(T)                                          \
+#define M(T)                                           \
   [](void* op, CdlCanvas* c, const SkMatrix& original, \
      CdlLiteDL::DrawContext& dc) { ((T*)op)->draw(c, original, dc); },
 static const draw_fn draw_fns[] = {TYPES(M)};
@@ -1105,7 +1109,8 @@ static const void_fn dtor_fns[] = {TYPES(M)};
 
 void CdlLiteDL::playback(CdlCanvas* canvas, int start_offset, int end_offset) {
   DrawContext dc;
-  this->map(draw_fns, start_offset, end_offset, canvas, canvas->getTotalMatrix(), dc);
+  this->map(draw_fns, start_offset, end_offset, canvas,
+            canvas->getTotalMatrix(), dc);
 }
 
 /*
@@ -1124,7 +1129,7 @@ SkRect CdlLiteDL::getBounds() {
 }
 
 CdlLiteDL::CdlLiteDL(SkRect bounds) : fUsed(0), fReserved(0), fBounds(bounds) {
-  //TRACE_EVENT0("cc", "CdlLiteDL::CdlLiteDL");
+  // TRACE_EVENT0("cc", "CdlLiteDL::CdlLiteDL");
 }
 
 CdlLiteDL::~CdlLiteDL() {

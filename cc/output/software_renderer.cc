@@ -356,14 +356,12 @@ void SoftwareRenderer::DrawPictureQuad(const DrawingFrame* frame,
                                               quad->shared_quad_state->opacity,
                                               disable_image_filtering);
     quad->raster_source->PlaybackToCanvas(
-        &filtered_canvas, quad->content_rect,
-        quad->content_rect,
+        &filtered_canvas, quad->content_rect, quad->content_rect,
         gfx::SizeF(quad->contents_scale, quad->contents_scale),
         playback_settings);
   } else {
     quad->raster_source->PlaybackToCanvas(
-        current_canvas_, quad->content_rect,
-        quad->content_rect,
+        current_canvas_, quad->content_rect, quad->content_rect,
         gfx::SizeF(quad->contents_scale, quad->contents_scale),
         playback_settings);
   }

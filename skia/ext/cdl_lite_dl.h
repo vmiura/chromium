@@ -68,7 +68,7 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   void drawPath(const SkPath&, const SkPaint&);
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
-  //void drawRegion(const SkRegion&, const SkPaint&);
+  // void drawRegion(const SkRegion&, const SkPaint&);
   void drawOval(const SkRect&, const SkPaint&);
   void drawArc(const SkRect&, SkScalar, SkScalar, bool, const SkPaint&);
   void drawRRect(const SkRRect&, const SkPaint&);
@@ -153,8 +153,8 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   struct DrawContext {};
 
  private:
-  //SkRect onGetBounds() override;
-  //void onDraw(SkCanvas*) override;
+  // SkRect onGetBounds() override;
+  // void onDraw(SkCanvas*) override;
 
   template <typename T, typename... Args>
   void* push(size_t, Args&&...);

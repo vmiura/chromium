@@ -10,23 +10,25 @@
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/cdl_lite_dl.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 #define INHERITED(method, ...) this->CdlCanvas::method(__VA_ARGS__)
 
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
-    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()), fDL(dl) {
-}
+    : CdlCanvas(bounds.roundOut().width(), bounds.roundOut().height()),
+      fDL(dl) {}
 
-CdlLiteRecorder::~CdlLiteRecorder() {
-}
+CdlLiteRecorder::~CdlLiteRecorder() {}
 
 void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
   fDL = dl;
-  #ifdef CDL_FRIEND_OF_SKPICTURE
+#ifdef CDL_FRIEND_OF_SKPICTURE
   canvas_->resetForNextPicture(bounds.roundOut());
-  #else
-  canvas_->reset(new SkNWayCanvas(bounds.roundOut().width(), bounds.roundOut().height()));
-  #endif
+#else
+  owned_canvas_.reset(new SkNoDrawCanvas(bounds.roundOut().width(),
+                                         bounds.roundOut().height()));
+  canvas_ = owned_canvas_.get();
+#endif
 }
 
 int CdlLiteRecorder::onSave() {

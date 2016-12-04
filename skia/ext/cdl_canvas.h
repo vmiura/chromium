@@ -43,7 +43,7 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   int saveLayer(const SkCanvas::SaveLayerRec& origRec);
   int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
   int saveLayerPreserveLCDTextRequests(const SkRect* bounds,
-                                     const SkPaint* paint);
+                                       const SkPaint* paint);
 
   int getSaveCount() const;
   void restoreToCount(int saveCount);
@@ -104,19 +104,19 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                   size_t count,
                   const SkPoint pts[],
                   const SkPaint& paint);
-  
+
   void drawLine(SkScalar x0,
                 SkScalar y0,
                 SkScalar x1,
                 SkScalar y1,
                 const SkPaint& paint);
-  
+
   void drawCircle(SkScalar cx,
                   SkScalar cy,
                   SkScalar radius,
                   const SkPaint& paint);
   void drawOval(const SkRect& oval, const SkPaint&);
-  
+
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
   void drawRoundRect(const SkRect& rect,
@@ -236,7 +236,9 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
     this->drawTextBlob(blob.get(), x, y, paint);
   }
 
-  void drawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint);
+  void drawPicture(const CdlPicture* picture,
+                   const SkMatrix* matrix,
+                   const SkPaint* paint);
 
   void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
   void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
@@ -254,14 +256,13 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   bool writePixels(const SkBitmap& bitmap, int x, int y);
 
  protected:
-
   enum SaveLayerStrategy {
     kFullLayer_SaveLayerStrategy,
     kNoLayer_SaveLayerStrategy,
   };
 
-  virtual int  onSave();
-  virtual int  onSaveLayer(const SkCanvas::SaveLayerRec&);
+  virtual int onSave();
+  virtual int onSaveLayer(const SkCanvas::SaveLayerRec&);
   virtual void onRestore();
 
   virtual void onConcat(const SkMatrix&);
@@ -297,7 +298,9 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                      const SkMatrix*,
                      const SkPaint*);
                      */
-  virtual void onDrawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint);
+  virtual void onDrawPicture(const CdlPicture* picture,
+                             const SkMatrix* matrix,
+                             const SkPaint* paint);
   virtual void onDrawAnnotation(const SkRect&, const char[], SkData*);
 
   virtual void onDrawText(const void*,
@@ -382,27 +385,26 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                             size_t count,
                             const SkPoint pts[],
                             const SkPaint&);
-/*
-virtual void onDrawVertices(SkCanvas::VertexMode,
-                    int,
-                    const SkPoint[],
-                    const SkPoint[],
-                    const SkColor[],
-                    SkBlendMode,
-                    const uint16_t[],
-                    int,
-                    const SkPaint&);
+  /*
+  virtual void onDrawVertices(SkCanvas::VertexMode,
+                      int,
+                      const SkPoint[],
+                      const SkPoint[],
+                      const SkColor[],
+                      SkBlendMode,
+                      const uint16_t[],
+                      int,
+                      const SkPaint&);
 
-virtual void onDrawAtlas(const SkImage*,
-                 const SkRSXform[],
-                 const SkRect[],
-                 const SkColor[],
-                 int,
-                 SkBlendMode,
-                 const SkRect*,
-                 const SkPaint*);
-                 */
-  
+  virtual void onDrawAtlas(const SkImage*,
+                   const SkRSXform[],
+                   const SkRect[],
+                   const SkColor[],
+                   int,
+                   SkBlendMode,
+                   const SkRect*,
+                   const SkPaint*);
+                   */
 
   std::unique_ptr<SkCanvas> owned_canvas_;
   SkCanvas* canvas_;

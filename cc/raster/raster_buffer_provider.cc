@@ -79,9 +79,9 @@ void RasterBufferProvider::PlaybackToMemory(
     case BGRA_8888: {
       sk_sp<SkSurface> surface =
           SkSurface::MakeRasterDirect(info, memory, stride, &surface_props);
-      raster_source->PlaybackToCanvas(
-          surface->getCanvas(), canvas_bitmap_rect,
-          canvas_playback_rect, scales, playback_settings);
+      raster_source->PlaybackToCanvas(surface->getCanvas(), canvas_bitmap_rect,
+                                      canvas_playback_rect, scales,
+                                      playback_settings);
       return;
     }
     case RGBA_4444:
@@ -89,9 +89,9 @@ void RasterBufferProvider::PlaybackToMemory(
       sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &surface_props);
       // TODO(reveman): Improve partial raster support by reducing the size of
       // playback rect passed to PlaybackToCanvas. crbug.com/519070
-      raster_source->PlaybackToCanvas(
-          surface->getCanvas(), canvas_bitmap_rect,
-          canvas_bitmap_rect, scales, playback_settings);
+      raster_source->PlaybackToCanvas(surface->getCanvas(), canvas_bitmap_rect,
+                                      canvas_bitmap_rect, scales,
+                                      playback_settings);
 
       if (format == ETC1) {
         TRACE_EVENT0("cc",

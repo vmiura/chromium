@@ -139,7 +139,7 @@ class DiscardableImagesMetadataCanvas : public CdlCanvas {
     AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, &pt);
   }
 
-  int  onSaveLayer(const SkCanvas::SaveLayerRec& rec) override {
+  int onSaveLayer(const SkCanvas::SaveLayerRec& rec) override {
     saved_paints_.push_back(*rec.fPaint);
     return CdlCanvas::onSaveLayer(rec);
   }

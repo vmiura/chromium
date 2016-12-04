@@ -11,35 +11,38 @@
 #include "skia/ext/cdl_picture.h"
 #include "skia/ext/cdl_lite_dl.h"
 
-CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture, SkRect cull_bounds, int start_offset, int end_offset)
- : picture_(picture),
-   cull_bounds_(cull_bounds),
-   start_offset_(start_offset),
-   end_offset_(end_offset) {}
+CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture,
+                       SkRect cull_bounds,
+                       int start_offset,
+                       int end_offset)
+    : picture_(picture),
+      cull_bounds_(cull_bounds),
+      start_offset_(start_offset),
+      end_offset_(end_offset) {}
 
 CdlPicture::~CdlPicture() {}
 
 void CdlPicture::draw(CdlCanvas* canvas) const {
-  //canvas->drawDrawable(picture_.get());
+  // canvas->drawDrawable(picture_.get());
   canvas->drawPicture(this, 0, 0);
 }
 
 sk_sp<SkPicture> CdlPicture::toSkPicture() const {
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(cullRect());
-  //canvas->drawDrawable(picture_.get());
+  // canvas->drawDrawable(picture_.get());
   picture_->playback(CdlCanvas::Make(canvas).get(), start_offset_, end_offset_);
   return recorder.finishRecordingAsPicture();
 }
 
-//sk_sp<SkDrawable> CdlPicture::toSkDrawable() const {
+// sk_sp<SkDrawable> CdlPicture::toSkDrawable() const {
 //  return nullptr;
 //}
 
 void CdlPicture::playback(CdlCanvas* canvas,
                           SkPicture::AbortCallback* callback) const {
   // TODO(cdl): SkDrawable doesn't support AbortCallback.
-  //canvas->drawDrawable(picture_.get());
+  // canvas->drawDrawable(picture_.get());
   int save_count = canvas->getSaveCount();
   canvas->save();
   picture_->playback(canvas, start_offset_, end_offset_);
@@ -47,6 +50,6 @@ void CdlPicture::playback(CdlCanvas* canvas,
 }
 
 uint32_t CdlPicture::uniqueID() const {
-  //TODO(cdl): picture_->getGenerationID();
+  // TODO(cdl): picture_->getGenerationID();
   return 0;
 }

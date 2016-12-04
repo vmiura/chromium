@@ -59,8 +59,7 @@ class ScopedDecodedImageLock {
 
 ImageHijackCanvas::ImageHijackCanvas(SkCanvas* canvas,
                                      ImageDecodeCache* image_decode_cache)
-    : CdlCanvas(canvas),
-      image_decode_cache_(image_decode_cache) {}
+    : CdlCanvas(canvas), image_decode_cache_(image_decode_cache) {}
 
 void ImageHijackCanvas::onDrawPicture(const CdlPicture* picture,
                                       const SkMatrix* matrix,
@@ -96,18 +95,19 @@ void ImageHijackCanvas::onDrawImage(const SkImage* image,
   if (need_scale) {
     CdlCanvas::save();
     CdlCanvas::scale(1.f / (decoded_image.scale_adjustment().width()),
-                        1.f / (decoded_image.scale_adjustment().height()));
+                     1.f / (decoded_image.scale_adjustment().height()));
   }
   CdlCanvas::onDrawImage(decoded_image.image().get(), x, y, decoded_paint);
   if (need_scale)
     CdlCanvas::restore();
 }
 
-void ImageHijackCanvas::onDrawImageRect(const SkImage* image,
-                                        const SkRect* src,
-                                        const SkRect& dst,
-                                        const SkPaint* paint,
-                                        SkCanvas::SrcRectConstraint constraint) {
+void ImageHijackCanvas::onDrawImageRect(
+    const SkImage* image,
+    const SkRect* src,
+    const SkRect& dst,
+    const SkPaint* paint,
+    SkCanvas::SrcRectConstraint constraint) {
   if (!image->isLazyGenerated()) {
     CdlCanvas::onDrawImageRect(image, src, dst, paint, constraint);
     return;
@@ -141,7 +141,7 @@ void ImageHijackCanvas::onDrawImageRect(const SkImage* image,
         adjusted_src.width() * x_scale, adjusted_src.height() * y_scale);
   }
   CdlCanvas::onDrawImageRect(decoded_image.image().get(), &adjusted_src, dst,
-                                decoded_paint, constraint);
+                             decoded_paint, constraint);
 }
 
 /*

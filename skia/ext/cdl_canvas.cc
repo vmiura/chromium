@@ -12,7 +12,11 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
-#define RETURN_ON_NULL(ptr)     do { if (nullptr == (ptr)) return; } while (0)
+#define RETURN_ON_NULL(ptr) \
+  do {                      \
+    if (nullptr == (ptr))   \
+      return;               \
+  } while (0)
 
 sk_sp<CdlCanvas> CdlCanvas::Make(SkCanvas* canvas) {
   return sk_sp<CdlCanvas>(new CdlCanvas(canvas));
@@ -162,7 +166,6 @@ bool CdlCanvas::quickReject(const SkRect& src) const {
 }
 
 void CdlCanvas::clipRect(const SkRect& rect, SkCanvas::ClipOp op, bool doAA) {
-  canvas_->clipRect(rect, op, doAA);
   ClipEdgeStyle edgeStyle = doAA ? kSoft_ClipEdgeStyle : kHard_ClipEdgeStyle;
   this->onClipRect(rect, op, edgeStyle);
 }
@@ -170,7 +173,6 @@ void CdlCanvas::clipRect(const SkRect& rect, SkCanvas::ClipOp op, bool doAA) {
 void CdlCanvas::clipRRect(const SkRRect& rrect,
                           SkCanvas::ClipOp op,
                           bool doAA) {
-  canvas_->clipRRect(rrect, op, doAA);
   ClipEdgeStyle edgeStyle = doAA ? kSoft_ClipEdgeStyle : kHard_ClipEdgeStyle;
   if (rrect.isRect()) {
     this->onClipRect(rrect.getBounds(), op, edgeStyle);
@@ -180,13 +182,30 @@ void CdlCanvas::clipRRect(const SkRRect& rrect,
 }
 
 void CdlCanvas::clipPath(const SkPath& path, SkCanvas::ClipOp op, bool doAA) {
-  canvas_->clipPath(path, op, doAA);
   ClipEdgeStyle edgeStyle = doAA ? kSoft_ClipEdgeStyle : kHard_ClipEdgeStyle;
+
+  if (!path.isInverseFillType() && canvas_->getTotalMatrix().rectStaysRect()) {
+    SkRect r;
+    if (path.isRect(&r)) {
+      this->onClipRect(r, op, edgeStyle);
+      return;
+    }
+    SkRRect rrect;
+    if (path.isOval(&r)) {
+      rrect.setOval(r);
+      this->onClipRRect(rrect, op, edgeStyle);
+      return;
+    }
+    if (path.isRRect(&rrect)) {
+      this->onClipRRect(rrect, op, edgeStyle);
+      return;
+    }
+  }
+
   this->onClipPath(path, op, edgeStyle);
 }
 
 void CdlCanvas::clipRegion(const SkRegion& rgn, SkCanvas::ClipOp op) {
-  canvas_->clipRegion(rgn, op);
   this->onClipRegion(rgn, op);
 }
 
@@ -419,11 +438,11 @@ bool CdlCanvas::writePixels(const SkImageInfo& origInfo,
 
 ///////////////////////////////////////////////////////////////////////////////
 // Default pass-through implementation
-void CdlCanvas::onConcat(SkMatrix const&matrix) {
+void CdlCanvas::onConcat(SkMatrix const& matrix) {
   canvas_->concat(matrix);
 }
 
-void CdlCanvas::onSetMatrix(SkMatrix const&matrix) {
+void CdlCanvas::onSetMatrix(SkMatrix const& matrix) {
   canvas_->setMatrix(matrix);
 }
 
@@ -485,62 +504,63 @@ void CdlCanvas::onDrawDRRect(const SkRRect& outer,
 void CdlCanvas::onDrawDrawable(SkDrawable* d, SkMatrix const* m) {
   canvas_->drawDrawable(d, m);
 }
-void CdlCanvas::drawPicture(const CdlPicture* picture, const SkMatrix* matrix, const SkPaint* paint) {
-    RETURN_ON_NULL(picture);
+void CdlCanvas::drawPicture(const CdlPicture* picture,
+                            const SkMatrix* matrix,
+                            const SkPaint* paint) {
+  RETURN_ON_NULL(picture);
 
-    if (matrix && matrix->isIdentity()) {
-        matrix = nullptr;
-    }
+  if (matrix && matrix->isIdentity()) {
+    matrix = nullptr;
+  }
 
-    this->onDrawPicture(picture, matrix, paint);
+  this->onDrawPicture(picture, matrix, paint);
 }
 
-class CdlAutoCanvasMatrixPaint
-{
+class CdlAutoCanvasMatrixPaint {
  public:
-  CdlAutoCanvasMatrixPaint(CdlCanvas* canvas, const SkMatrix* matrix,
-                           const SkPaint* paint, const SkRect& bounds)
-   : fCanvas(canvas),
-     fSaveCount(canvas->getSaveCount()) {
-
+  CdlAutoCanvasMatrixPaint(CdlCanvas* canvas,
+                           const SkMatrix* matrix,
+                           const SkPaint* paint,
+                           const SkRect& bounds)
+      : fCanvas(canvas), fSaveCount(canvas->getSaveCount()) {
     if (paint) {
-        SkRect newBounds = bounds;
-        if (matrix) {
-            matrix->mapRect(&newBounds);
-        }
-        canvas->saveLayer(&newBounds, paint);
+      SkRect newBounds = bounds;
+      if (matrix) {
+        matrix->mapRect(&newBounds);
+      }
+      canvas->saveLayer(&newBounds, paint);
     } else if (matrix) {
-        canvas->save();
+      canvas->save();
     }
 
     if (matrix) {
-        canvas->concat(*matrix);
+      canvas->concat(*matrix);
     }
   }
 
-  ~CdlAutoCanvasMatrixPaint() {
-      fCanvas->restoreToCount(fSaveCount);
-  }
+  ~CdlAutoCanvasMatrixPaint() { fCanvas->restoreToCount(fSaveCount); }
+
  private:
   CdlCanvas* fCanvas;
   int fSaveCount;
 };
 
-void CdlCanvas::onDrawPicture(const CdlPicture* picture, const SkMatrix* matrix,
+void CdlCanvas::onDrawPicture(const CdlPicture* picture,
+                              const SkMatrix* matrix,
                               const SkPaint* paint) {
   // TODO(CDL): CdlPaint::computeFastBounds
   if (!paint || /*paint->canComputeFastBounds()*/ false) {
-      SkRect bounds = picture->cullRect();
+    SkRect bounds = picture->cullRect();
 
-      //if (paint) {
-      //    paint->computeFastBounds(bounds, &bounds);
-      //}
-      if (matrix) {
-          matrix->mapRect(&bounds);
-      }
-      if (this->quickReject(bounds)) {
-          return;
-      }
+    // if (paint) {
+    //    paint->computeFastBounds(bounds, &bounds);
+    //}
+    if (matrix) {
+      matrix->mapRect(&bounds);
+    }
+    if (this->quickReject(bounds)) {
+      return;
+    }
   }
 
   CdlAutoCanvasMatrixPaint acmp(this, matrix, paint, picture->cullRect());
