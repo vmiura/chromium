@@ -404,6 +404,7 @@ virtual void onDrawAtlas(const SkImage*,
                  */
   
 
+  std::unique_ptr<SkCanvas> owned_canvas_;
   SkCanvas* canvas_;
 };
 

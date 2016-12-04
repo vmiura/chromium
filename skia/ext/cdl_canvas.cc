@@ -21,7 +21,8 @@ sk_sp<CdlCanvas> CdlCanvas::Make(SkCanvas* canvas) {
 CdlCanvas::CdlCanvas(SkCanvas* canvas) : canvas_(canvas) {}
 
 CdlCanvas::CdlCanvas(int width, int height)
-    : canvas_(new SkNoDrawCanvas(width, height)) {}
+    : owned_canvas_(new SkNoDrawCanvas(width, height)),
+      canvas_(owned_canvas_.get()) {}
 
 CdlCanvas::~CdlCanvas() {}
 
