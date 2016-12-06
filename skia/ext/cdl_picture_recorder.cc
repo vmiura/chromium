@@ -9,12 +9,13 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBBHFactory.h"
-#include "skia/ext/cdl_lite_dl.h"
+#include "skia/ext/cdl_picture_buffer.h"
 
 #include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recording_canvas.h"
 
 base::Lock CdlPictureRecorder::lock;
-std::shared_ptr<CdlLiteRecorder> CdlPictureRecorder::free_recorder;
+std::shared_ptr<CdlPictureRecordingCanvas> CdlPictureRecorder::free_recorder;
 
 CdlPictureRecorder::CdlPictureRecorder() {
   fActivelyRecording = false;
@@ -45,7 +46,7 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
 
   // Create new recorder only if it's above a threshold in size.
   if (!fRecord.get() || fRecord->getRecordOffset() >= 4096 - 256)
-    fRecord.reset(new CdlLiteDL(bounds));
+    fRecord.reset(new CdlPictureBuffer(bounds));
   else
     fRecord->resetForNextPicture(bounds);
 
@@ -61,7 +62,7 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   if (fRecorder.get()) {
     fRecorder->reset(fRecord.get(), bounds);
   } else {
-    fRecorder.reset(new CdlLiteRecorder(fRecord.get(), bounds));
+    fRecorder.reset(new CdlPictureRecordingCanvas(fRecord.get(), bounds));
   }
 
   fActivelyRecording = true;

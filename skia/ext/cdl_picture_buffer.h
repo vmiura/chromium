@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKIA_EXT_CDL_LITE_DL_H_
-#define SKIA_EXT_CDL_LITE_DL_H_
+#ifndef SKIA_EXT_CDL_PICTURE_BUFFER_H_
+#define SKIA_EXT_CDL_PICTURE_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -21,10 +21,10 @@ class CdlCanvas;
 class CdlPaint;
 class CdlPicture;
 
-class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
+class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
  public:
-  CdlLiteDL(SkRect bounds);
-  ~CdlLiteDL() override;
+  CdlPictureBuffer(SkRect bounds);
+  ~CdlPictureBuffer() override;
 
   // Prepares to append new picture to same record.
   void resetForNextPicture(SkRect bounds);
@@ -168,4 +168,4 @@ class CdlLiteDL : public SkRefCnt /*public SkDrawable*/ {
   SkRect fBounds;
 };
 
-#endif  // SKIA_EXT_CDL_LITE_DL_H_
+#endif  // SKIA_EXT_CDL_PICTURE_BUFFER_H_

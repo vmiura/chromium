@@ -8,18 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "skia/ext/cdl_lite_recorder.h"
-
 #include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkBBHFactory.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 
-class CdlLiteDL;
-class CdlLiteRecorder;
 class CdlCanvas;
+class CdlPictureBuffer;
 class CdlPicture;
+class CdlPictureRecordingCanvas;
 
 class CdlPictureRecorder : SkNoncopyable {
  public:
@@ -53,11 +51,11 @@ class CdlPictureRecorder : SkNoncopyable {
   uint32_t fFlags;
   SkRect fCullRect;
 
-  std::shared_ptr<CdlLiteRecorder> fRecorder;
-  sk_sp<CdlLiteDL> fRecord;
+  std::shared_ptr<CdlPictureRecordingCanvas> fRecorder;
+  sk_sp<CdlPictureBuffer> fRecord;
 
   static base::Lock lock;
-  static std::shared_ptr<CdlLiteRecorder> free_recorder;
+  static std::shared_ptr<CdlPictureRecordingCanvas> free_recorder;
 
   // SkPictureRecorder picture_recorder_;
 };

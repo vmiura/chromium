@@ -5,24 +5,24 @@
  * found in the LICENSE file.
  */
 
-#include "cdl_lite_recorder.h"
+#include "cdl_picture_recording_canvas.h"
 
 #include "base/trace_event/trace_event.h"
-#include "skia/ext/cdl_lite_dl.h"
+#include "skia/ext/cdl_picture_buffer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
 #define INHERITED(method, ...) this->CdlNoDrawCanvas::method(__VA_ARGS__)
 
-CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
+CdlPictureRecordingCanvas::CdlPictureRecordingCanvas(CdlPictureBuffer* dl, const SkRect& bounds)
     : CdlNoDrawCanvas(bounds.roundOut().width(), bounds.roundOut().height()),
       fDL(dl),
       fComputeClips(true) {}
 
-CdlLiteRecorder::~CdlLiteRecorder() {}
+CdlPictureRecordingCanvas::~CdlPictureRecordingCanvas() {}
 
-void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
+void CdlPictureRecordingCanvas::reset(CdlPictureBuffer* dl, const SkRect& bounds) {
   fDL = dl;
 #ifdef CDL_FRIEND_OF_SKPICTURE
   canvas_->resetForNextPicture(bounds.roundOut());
@@ -33,215 +33,215 @@ void CdlLiteRecorder::reset(CdlLiteDL* dl, const SkRect& bounds) {
 #endif
 }
 
-int CdlLiteRecorder::onSave() {
+int CdlPictureRecordingCanvas::onSave() {
   fDL->save();
   return INHERITED::onSave();
 }
 
-int CdlLiteRecorder::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
+int CdlPictureRecordingCanvas::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
   fDL->saveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
   return INHERITED::onSaveLayer(rec);
 }
 
-void CdlLiteRecorder::onRestore() {
+void CdlPictureRecordingCanvas::onRestore() {
   fDL->restore();
   INHERITED::onRestore();
 }
 
-void CdlLiteRecorder::onConcat(const SkMatrix& matrix) {
+void CdlPictureRecordingCanvas::onConcat(const SkMatrix& matrix) {
   fDL->concat(matrix);
   INHERITED::onConcat(matrix);
 }
 
-void CdlLiteRecorder::onSetMatrix(const SkMatrix& matrix) {
+void CdlPictureRecordingCanvas::onSetMatrix(const SkMatrix& matrix) {
   fDL->setMatrix(matrix);
   INHERITED::onSetMatrix(matrix);
 }
 
-void CdlLiteRecorder::onTranslate(SkScalar dx, SkScalar dy) {
+void CdlPictureRecordingCanvas::onTranslate(SkScalar dx, SkScalar dy) {
   fDL->translate(dx, dy);
   INHERITED::onTranslate(dx, dy);
 }
 
-void CdlLiteRecorder::onClipRect(const SkRect& rect,
+void CdlPictureRecordingCanvas::onClipRect(const SkRect& rect,
                                  SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
   fDL->clipRect(rect, op, style == kSoft_ClipEdgeStyle);
   if (fComputeClips)
     CdlCanvas::onClipRect(rect, op, style);
 }
-void CdlLiteRecorder::onClipRRect(const SkRRect& rrect,
+void CdlPictureRecordingCanvas::onClipRRect(const SkRRect& rrect,
                                   SkCanvas::ClipOp op,
                                   ClipEdgeStyle style) {
   fDL->clipRRect(rrect, op, style == kSoft_ClipEdgeStyle);
   if (fComputeClips)
     CdlCanvas::onClipRRect(rrect, op, style);
 }
-void CdlLiteRecorder::onClipPath(const SkPath& path,
+void CdlPictureRecordingCanvas::onClipPath(const SkPath& path,
                                  SkCanvas::ClipOp op,
                                  ClipEdgeStyle style) {
   fDL->clipPath(path, op, style == kSoft_ClipEdgeStyle);
   if (fComputeClips)
     CdlCanvas::onClipPath(path, op, style);
 }
-void CdlLiteRecorder::onClipRegion(const SkRegion& region,
+void CdlPictureRecordingCanvas::onClipRegion(const SkRegion& region,
                                    SkCanvas::ClipOp op) {
   fDL->clipRegion(region, op);
   if (fComputeClips)
     CdlCanvas::onClipRegion(region, op);
 }
 
-void CdlLiteRecorder::onDrawPaint(const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawPaint(const SkPaint& paint) {
   fDL->drawPaint(paint);
 }
-void CdlLiteRecorder::onDrawPath(const SkPath& path, const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
   fDL->drawPath(path, paint);
 }
-void CdlLiteRecorder::onDrawRect(const SkRect& rect, const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawRect(const SkRect& rect, const SkPaint& paint) {
   fDL->drawRect(rect, paint);
 }
-void CdlLiteRecorder::onDrawRect(const SkRect& r, const CdlPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawRect(const SkRect& r, const CdlPaint& paint) {
   fDL->drawRect(r, paint);
 }
 /*
-void CdlLiteRecorder::onDrawRegion(const SkRegion& region,
+void CdlPictureRecordingCanvas::onDrawRegion(const SkRegion& region,
                                    const SkPaint& paint) {
   fDL->drawRegion(region, paint);
 }
 */
-void CdlLiteRecorder::onDrawOval(const SkRect& oval, const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawOval(const SkRect& oval, const SkPaint& paint) {
   fDL->drawOval(oval, paint);
 }
-void CdlLiteRecorder::onDrawArc(const SkRect& oval,
+void CdlPictureRecordingCanvas::onDrawArc(const SkRect& oval,
                                 SkScalar startAngle,
                                 SkScalar sweepAngle,
                                 bool useCenter,
                                 const SkPaint& paint) {
   fDL->drawArc(oval, startAngle, sweepAngle, useCenter, paint);
 }
-void CdlLiteRecorder::onDrawRRect(const SkRRect& rrect, const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawRRect(const SkRRect& rrect, const SkPaint& paint) {
   fDL->drawRRect(rrect, paint);
 }
-void CdlLiteRecorder::onDrawDRRect(const SkRRect& out,
+void CdlPictureRecordingCanvas::onDrawDRRect(const SkRRect& out,
                                    const SkRRect& in,
                                    const SkPaint& paint) {
   fDL->drawDRRect(out, in, paint);
 }
 
-void CdlLiteRecorder::onDrawDrawable(SkDrawable* drawable,
+void CdlPictureRecordingCanvas::onDrawDrawable(SkDrawable* drawable,
                                      const SkMatrix* matrix) {
   fDL->drawDrawable(drawable, matrix);
 }
 
-void CdlLiteRecorder::onDrawPicture(const CdlPicture* picture,
+void CdlPictureRecordingCanvas::onDrawPicture(const CdlPicture* picture,
                                     const SkMatrix* matrix,
                                     const SkPaint* paint) {
   fDL->drawPicture(picture, matrix, paint);
 }
 
-void CdlLiteRecorder::onDrawAnnotation(const SkRect& rect,
+void CdlPictureRecordingCanvas::onDrawAnnotation(const SkRect& rect,
                                        const char key[],
                                        SkData* val) {
   fDL->drawAnnotation(rect, key, val);
 }
 
-void CdlLiteRecorder::onDrawText(const void* text,
+void CdlPictureRecordingCanvas::onDrawText(const void* text,
                                  size_t bytes,
                                  SkScalar x,
                                  SkScalar y,
                                  const SkPaint& paint) {
   fDL->drawText(text, bytes, x, y, paint);
 }
-void CdlLiteRecorder::onDrawPosText(const void* text,
+void CdlPictureRecordingCanvas::onDrawPosText(const void* text,
                                     size_t bytes,
                                     const SkPoint pos[],
                                     const SkPaint& paint) {
   fDL->drawPosText(text, bytes, pos, paint);
 }
-void CdlLiteRecorder::onDrawPosTextH(const void* text,
+void CdlPictureRecordingCanvas::onDrawPosTextH(const void* text,
                                      size_t bytes,
                                      const SkScalar xs[],
                                      SkScalar y,
                                      const SkPaint& paint) {
   fDL->drawPosTextH(text, bytes, xs, y, paint);
 }
-void CdlLiteRecorder::onDrawTextOnPath(const void* text,
+void CdlPictureRecordingCanvas::onDrawTextOnPath(const void* text,
                                        size_t bytes,
                                        const SkPath& path,
                                        const SkMatrix* matrix,
                                        const SkPaint& paint) {
   fDL->drawTextOnPath(text, bytes, path, matrix, paint);
 }
-void CdlLiteRecorder::onDrawTextRSXform(const void* text,
+void CdlPictureRecordingCanvas::onDrawTextRSXform(const void* text,
                                         size_t bytes,
                                         const SkRSXform xform[],
                                         const SkRect* cull,
                                         const SkPaint& paint) {
   fDL->drawTextRSXform(text, bytes, xform, cull, paint);
 }
-void CdlLiteRecorder::onDrawTextBlob(const SkTextBlob* blob,
+void CdlPictureRecordingCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                      SkScalar x,
                                      SkScalar y,
                                      const SkPaint& paint) {
   fDL->drawTextBlob(blob, x, y, paint);
 }
 
-void CdlLiteRecorder::onDrawBitmap(const SkBitmap& bm,
+void CdlPictureRecordingCanvas::onDrawBitmap(const SkBitmap& bm,
                                    SkScalar x,
                                    SkScalar y,
                                    const SkPaint* paint) {
   fDL->drawImage(SkImage::MakeFromBitmap(bm), x, y, paint);
 }
 /*
-void CdlLiteRecorder::onDrawBitmapNine(const SkBitmap& bm,
+void CdlPictureRecordingCanvas::onDrawBitmapNine(const SkBitmap& bm,
                                        const SkIRect& center,
                                        const SkRect& dst,
                                        const SkPaint* paint) {
   fDL->drawImageNine(SkImage::MakeFromBitmap(bm), center, dst, paint);
 }
-void CdlLiteRecorder::onDrawBitmapRect(const SkBitmap& bm,
+void CdlPictureRecordingCanvas::onDrawBitmapRect(const SkBitmap& bm,
                                        const SkRect* src,
                                        const SkRect& dst,
                                        const SkPaint* paint,
                                        SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(SkImage::MakeFromBitmap(bm), src, dst, paint, constraint);
 }
-void CdlLiteRecorder::onDrawBitmapLattice(const SkBitmap& bm,
+void CdlPictureRecordingCanvas::onDrawBitmapLattice(const SkBitmap& bm,
                                           const SkCanvas::Lattice& lattice,
                                           const SkRect& dst,
                                           const SkPaint* paint) {
   fDL->drawImageLattice(SkImage::MakeFromBitmap(bm), lattice, dst, paint);
 }
 */
-void CdlLiteRecorder::onDrawImage(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImage(const SkImage* img,
                                   SkScalar x,
                                   SkScalar y,
                                   const SkPaint* paint) {
   fDL->drawImage(sk_ref_sp(img), x, y, paint);
 }
 
-void CdlLiteRecorder::onDrawImage(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImage(const SkImage* img,
                                   SkScalar x,
                                   SkScalar y,
                                   const CdlPaint& paint) {
   fDL->drawImage(sk_ref_sp(img), x, y, paint);
 }
 /*
-void CdlLiteRecorder::onDrawImageNine(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImageNine(const SkImage* img,
                                       const SkIRect& center,
                                       const SkRect& dst,
                                       const SkPaint* paint) {
   fDL->drawImageNine(sk_ref_sp(img), center, dst, paint);
 }
 */
-void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImageRect(const SkImage* img,
                                       const SkRect* src,
                                       const SkRect& dst,
                                       const SkPaint* paint,
                                       SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
 }
-void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImageRect(const SkImage* img,
                                       const SkRect* src,
                                       const SkRect& dst,
                                       const CdlPaint& paint,
@@ -249,14 +249,14 @@ void CdlLiteRecorder::onDrawImageRect(const SkImage* img,
   fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
 }
 /*
-void CdlLiteRecorder::onDrawImageLattice(const SkImage* img,
+void CdlPictureRecordingCanvas::onDrawImageLattice(const SkImage* img,
                                          const SkCanvas::Lattice& lattice,
                                          const SkRect& dst,
                                          const SkPaint* paint) {
   fDL->drawImageLattice(sk_ref_sp(img), lattice, dst, paint);
 }
 
-void CdlLiteRecorder::onDrawPatch(const SkPoint cubics[12],
+void CdlPictureRecordingCanvas::onDrawPatch(const SkPoint cubics[12],
                                   const SkColor colors[4],
                                   const SkPoint texCoords[4],
                                   SkBlendMode bmode,
@@ -264,14 +264,14 @@ void CdlLiteRecorder::onDrawPatch(const SkPoint cubics[12],
   fDL->drawPatch(cubics, colors, texCoords, bmode, paint);
 }
 */
-void CdlLiteRecorder::onDrawPoints(SkCanvas::PointMode mode,
+void CdlPictureRecordingCanvas::onDrawPoints(SkCanvas::PointMode mode,
                                    size_t count,
                                    const SkPoint pts[],
                                    const SkPaint& paint) {
   fDL->drawPoints(mode, count, pts, paint);
 }
 /*
-void CdlLiteRecorder::onDrawVertices(SkCanvas::VertexMode mode,
+void CdlPictureRecordingCanvas::onDrawVertices(SkCanvas::VertexMode mode,
                                      int count,
                                      const SkPoint vertices[],
                                      const SkPoint texs[],
@@ -283,7 +283,7 @@ void CdlLiteRecorder::onDrawVertices(SkCanvas::VertexMode mode,
   fDL->drawVertices(mode, count, vertices, texs, colors, bmode, indices,
                     indexCount, paint);
 }
-void CdlLiteRecorder::onDrawAtlas(const SkImage* atlas,
+void CdlPictureRecordingCanvas::onDrawAtlas(const SkImage* atlas,
                                   const SkRSXform xforms[],
                                   const SkRect texs[],
                                   const SkColor colors[],
@@ -295,10 +295,10 @@ void CdlLiteRecorder::onDrawAtlas(const SkImage* atlas,
 }
 */
 
-void CdlLiteRecorder::didTranslateZ(SkScalar dz) {
+void CdlPictureRecordingCanvas::didTranslateZ(SkScalar dz) {
   fDL->translateZ(dz);
 }
-void CdlLiteRecorder::onDrawShadowedPicture(const SkPicture* picture,
+void CdlPictureRecordingCanvas::onDrawShadowedPicture(const SkPicture* picture,
                                             const SkMatrix* matrix,
                                             const SkPaint* paint,
                                             const SkShadowParams& params) {

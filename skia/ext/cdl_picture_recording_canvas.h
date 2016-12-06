@@ -5,8 +5,8 @@
  * found in the LICENSE file.
  */
 
-#ifndef SKIA_EXT_CDL_LITE_RECORDER_H_
-#define SKIA_EXT_CDL_LITE_RECORDER_H_
+#ifndef SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_
+#define SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_
 
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -18,14 +18,14 @@
 
 class CdlPaint;
 class CdlCanvas;
-class CdlLiteDL;
+class CdlPictureBuffer;
 
-class CdlLiteRecorder final : public CdlNoDrawCanvas {
+class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
  public:
-  CdlLiteRecorder(CdlLiteDL*, const SkRect& bounds);
-  ~CdlLiteRecorder() override;
+  CdlPictureRecordingCanvas(CdlPictureBuffer*, const SkRect& bounds);
+  ~CdlPictureRecordingCanvas() override;
 
-  void reset(CdlLiteDL*, const SkRect& bounds);
+  void reset(CdlPictureBuffer*, const SkRect& bounds);
 
   int onSave() override;
   int onSaveLayer(const SkCanvas::SaveLayerRec&) override;
@@ -188,8 +188,8 @@ void onDrawAtlas(const SkImage*,
  private:
   typedef CdlNoDrawCanvas INHERITED;
 
-  CdlLiteDL* fDL;
+  CdlPictureBuffer* fDL;
   bool       fComputeClips;
 };
 
-#endif  // SKIA_EXT_CDL_LITE_RECORDER_H_
+#endif  // SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_

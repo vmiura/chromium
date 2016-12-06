@@ -18,7 +18,7 @@
 
 class CdlPaint;
 class CdlCanvas;
-class CdlLiteDL;
+class CdlPictureBuffer;
 class CdlPicture;
 
 class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {

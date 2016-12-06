@@ -14,11 +14,11 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkDrawable.h"
 
-class CdlLiteDL;
+class CdlPictureBuffer;
 
 class CdlPicture : public SkRefCnt {
  public:
-  CdlPicture(sk_sp<CdlLiteDL> dl,
+  CdlPicture(sk_sp<CdlPictureBuffer> dl,
              SkRect cull_bounds,
              int start_offset,
              int end_offset);
@@ -34,7 +34,7 @@ class CdlPicture : public SkRefCnt {
   uint32_t uniqueID() const;
 
  private:
-  sk_sp<CdlLiteDL> picture_;
+  sk_sp<CdlPictureBuffer> picture_;
   SkRect cull_bounds_;
   int start_offset_;
   int end_offset_;

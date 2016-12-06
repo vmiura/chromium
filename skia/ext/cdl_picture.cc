@@ -9,9 +9,9 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "skia/ext/cdl_picture.h"
-#include "skia/ext/cdl_lite_dl.h"
+#include "skia/ext/cdl_picture_buffer.h"
 
-CdlPicture::CdlPicture(sk_sp<CdlLiteDL> picture,
+CdlPicture::CdlPicture(sk_sp<CdlPictureBuffer> picture,
                        SkRect cull_bounds,
                        int start_offset,
                        int end_offset)
