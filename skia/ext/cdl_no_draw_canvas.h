@@ -16,7 +16,6 @@ class CdlNoDrawCanvas : public CdlCanvas {
   ~CdlNoDrawCanvas() override;
 
  protected:
-
   // TODO(cdl): Decide if we should skip computing clips at paint time.
   void onClipRect(const SkRect&, SkCanvas::ClipOp, ClipEdgeStyle) override {}
   void onClipRRect(const SkRRect&, SkCanvas::ClipOp, ClipEdgeStyle) override {}
@@ -31,72 +30,58 @@ class CdlNoDrawCanvas : public CdlCanvas {
   void onDrawRect(const SkRect&, const CdlPaint&) override {}
   void onDrawRegion(const SkRegion&, const SkPaint&) override {}
   void onDrawOval(const SkRect&, const SkPaint&) override {}
-  void onDrawArc(const SkRect&,
-                         SkScalar,
-                         SkScalar,
-                         bool,
-                         const SkPaint&) override {}
+
   void onDrawRRect(const SkRRect&, const SkPaint&) override {}
   void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override {}
 
-  void onDrawDrawable(SkDrawable*, const SkMatrix*) override {}
-
   void onDrawPicture(const CdlPicture* picture,
-                             const SkMatrix* matrix,
-                             const SkPaint* paint) override {}
+                     const SkMatrix* matrix,
+                     const SkPaint* paint) override {}
   void onDrawAnnotation(const SkRect&, const char[], SkData*) override {}
 
   void onDrawText(const void*,
-                          size_t,
-                          SkScalar x,
-                          SkScalar y,
-                          const SkPaint&) override {}
+                  size_t,
+                  SkScalar x,
+                  SkScalar y,
+                  const SkPaint&) override {}
   void onDrawPosText(const void*,
-                             size_t,
-                             const SkPoint[],
-                             const SkPaint&) override {}
-  void onDrawPosTextH(const void*,
-                              size_t,
-                              const SkScalar[],
-                              SkScalar,
-                              const SkPaint&) override {}
-  void onDrawTextOnPath(const void*,
-                                size_t,
-                                const SkPath&,
-                                const SkMatrix*,
-                                const SkPaint&) override {}
-  void onDrawTextRSXform(const void*,
-                                 size_t,
-                                 const SkRSXform[],
-                                 const SkRect*,
-                                 const SkPaint&) override {}
+                     size_t,
+                     const SkPoint[],
+                     const SkPaint&) override {}
+
   void onDrawTextBlob(const SkTextBlob*,
-                              SkScalar,
-                              SkScalar,
-                              const SkPaint&) override {}
+                      SkScalar,
+                      SkScalar,
+                      const SkPaint&) override {}
 
   void onDrawBitmap(const SkBitmap&,
-                            SkScalar,
-                            SkScalar,
-                            const SkPaint*) override {}
+                    SkScalar,
+                    SkScalar,
+                    const SkPaint*) override {}
 
-  void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override {}
-  void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&) override {}
+  void onDrawImage(const SkImage*,
+                   SkScalar,
+                   SkScalar,
+                   const SkPaint*) override {}
+  void onDrawImage(const SkImage*,
+                   SkScalar,
+                   SkScalar,
+                   const CdlPaint&) override {}
 
   void onDrawImageRect(const SkImage*,
-                               const SkRect*,
-                               const SkRect&,
-                               const SkPaint*,
-                               SkCanvas::SrcRectConstraint) override {}
+                       const SkRect*,
+                       const SkRect&,
+                       const SkPaint*,
+                       SkCanvas::SrcRectConstraint) override {}
   void onDrawImageRect(const SkImage*,
-                               const SkRect*,
-                               const SkRect&,
-                               const CdlPaint&,
-                               SkCanvas::SrcRectConstraint) override {}
+                       const SkRect*,
+                       const SkRect&,
+                       const CdlPaint&,
+                       SkCanvas::SrcRectConstraint) override {}
   void onDrawPoints(SkCanvas::PointMode,
-                            size_t count,
-                            const SkPoint pts[],
-                            const SkPaint&) override {}
+                    size_t count,
+                    const SkPoint pts[],
+                    const SkPaint&) override {}
 
   std::unique_ptr<SkCanvas> owned_canvas_;
 };

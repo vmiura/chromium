@@ -44,22 +44,10 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onDrawPath(const SkPath&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const CdlPaint&) override;
-  // void onDrawRegion(const SkRegion&, const SkPaint&) override;
   void onDrawOval(const SkRect&, const SkPaint&) override;
-  void onDrawArc(const SkRect&,
-                 SkScalar,
-                 SkScalar,
-                 bool,
-                 const SkPaint&) override;
   void onDrawRRect(const SkRRect&, const SkPaint&) override;
   void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override;
 
-  void onDrawDrawable(SkDrawable*, const SkMatrix*) override;
-  /*
-  void onDrawPicture(const SkPicture*,
-                     const SkMatrix*,
-                     const SkPaint*) override;
-                     */
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override;
@@ -75,21 +63,6 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                      size_t,
                      const SkPoint[],
                      const SkPaint&) override;
-  void onDrawPosTextH(const void*,
-                      size_t,
-                      const SkScalar[],
-                      SkScalar,
-                      const SkPaint&) override;
-  void onDrawTextOnPath(const void*,
-                        size_t,
-                        const SkPath&,
-                        const SkMatrix*,
-                        const SkPaint&) override;
-  void onDrawTextRSXform(const void*,
-                         size_t,
-                         const SkRSXform[],
-                         const SkRect*,
-                         const SkPaint&) override;
   void onDrawTextBlob(const SkTextBlob*,
                       SkScalar,
                       SkScalar,
@@ -99,36 +72,11 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                     SkScalar,
                     SkScalar,
                     const SkPaint*) override;
-  /*
-  void onDrawBitmapLattice(const SkBitmap&,
-                           const SkCanvas::Lattice&,
-                           const SkRect&,
-                           const SkPaint*) override;
-  void onDrawBitmapNine(const SkBitmap&,
-                        const SkIRect&,
-                        const SkRect&,
-                        const SkPaint*) override;
-  void onDrawBitmapRect(const SkBitmap&,
-                        const SkRect*,
-                        const SkRect&,
-                        const SkPaint*,
-                        SkCanvas::SrcRectConstraint) override;
-  */
   void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
   void onDrawImage(const SkImage*,
                    SkScalar,
                    SkScalar,
                    const CdlPaint&) override;
-  /*
-  void onDrawImageLattice(const SkImage*,
-                          const SkCanvas::Lattice&,
-                          const SkRect&,
-                          const SkPaint*) override;
-  void onDrawImageNine(const SkImage*,
-                       const SkIRect&,
-                       const SkRect&,
-                       const SkPaint*) override;
-                       */
   void onDrawImageRect(const SkImage*,
                        const SkRect*,
                        const SkRect&,
@@ -139,57 +87,16 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                        const SkRect&,
                        const CdlPaint&,
                        SkCanvas::SrcRectConstraint) override;
-
-  /*
-  void onDrawPatch(const SkPoint[12],
-                   const SkColor[4],
-                   const SkPoint[4],
-                   SkBlendMode,
-                   const SkPaint&) override;
-                   */
   void onDrawPoints(SkCanvas::PointMode,
                     size_t count,
                     const SkPoint pts[],
                     const SkPaint&) override;
-/*
-void onDrawVertices(SkCanvas::VertexMode,
-                    int,
-                    const SkPoint[],
-                    const SkPoint[],
-                    const SkColor[],
-                    SkBlendMode,
-                    const uint16_t[],
-                    int,
-                    const SkPaint&) override;
-void onDrawAtlas(const SkImage*,
-                 const SkRSXform[],
-                 const SkRect[],
-                 const SkColor[],
-                 int,
-                 SkBlendMode,
-                 const SkRect*,
-                 const SkPaint*) override;
-                 */
-
-#ifdef SK_EXPERIMENTAL_SHADOWING
-  void didTranslateZ(SkScalar) override;
-  void onDrawShadowedPicture(const SkPicture*,
-                             const SkMatrix*,
-                             const SkPaint*,
-                             const SkShadowParams& params) override;
-#else
-  void didTranslateZ(SkScalar);
-  void onDrawShadowedPicture(const SkPicture*,
-                             const SkMatrix*,
-                             const SkPaint*,
-                             const SkShadowParams& params);
-#endif
 
  private:
   typedef CdlNoDrawCanvas INHERITED;
 
   CdlPictureBuffer* fDL;
-  bool       fComputeClips;
+  bool fComputeClips;
 };
 
 #endif  // SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_

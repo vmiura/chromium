@@ -23,7 +23,6 @@ CdlPicture::CdlPicture(sk_sp<CdlPictureBuffer> picture,
 CdlPicture::~CdlPicture() {}
 
 void CdlPicture::draw(CdlCanvas* canvas) const {
-  // canvas->drawDrawable(picture_.get());
   canvas->drawPicture(this, 0, 0);
 }
 
@@ -35,14 +34,9 @@ sk_sp<SkPicture> CdlPicture::toSkPicture() const {
   return recorder.finishRecordingAsPicture();
 }
 
-// sk_sp<SkDrawable> CdlPicture::toSkDrawable() const {
-//  return nullptr;
-//}
-
 void CdlPicture::playback(CdlCanvas* canvas,
                           SkPicture::AbortCallback* callback) const {
-  // TODO(cdl): SkDrawable doesn't support AbortCallback.
-  // canvas->drawDrawable(picture_.get());
+  // TODO(cdl): CdlPicture doesn't support AbortCallback.
   int save_count = canvas->getSaveCount();
   canvas->save();
   picture_->playback(canvas, start_offset_, end_offset_);

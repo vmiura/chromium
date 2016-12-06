@@ -24,7 +24,6 @@
       return;               \
   } while (0)
 
-
 CdlNoDrawCanvas::CdlNoDrawCanvas(int width, int height)
     : CdlCanvas(width, height) {}
 CdlNoDrawCanvas::~CdlNoDrawCanvas() {}
@@ -411,24 +410,6 @@ void CdlCanvas::drawTextBlob(const SkTextBlob* blob,
   this->onDrawTextBlob(blob, x, y, paint);
 }
 
-void CdlCanvas::drawDrawable(SkDrawable* dr, SkScalar x, SkScalar y) {
-  RETURN_ON_NULL(dr);
-  if (x || y) {
-    SkMatrix matrix = SkMatrix::MakeTrans(x, y);
-    this->onDrawDrawable(dr, &matrix);
-  } else {
-    this->onDrawDrawable(dr, nullptr);
-  }
-}
-
-void CdlCanvas::drawDrawable(SkDrawable* dr, const SkMatrix* matrix) {
-  RETURN_ON_NULL(dr);
-  if (matrix && matrix->isIdentity()) {
-    matrix = nullptr;
-  }
-  this->onDrawDrawable(dr, matrix);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Misc
 void CdlCanvas::flush() {
@@ -497,13 +478,7 @@ void CdlCanvas::onDrawRegion(SkRegion const& r, SkPaint const& paint) {
 void CdlCanvas::onDrawOval(SkRect const& r, SkPaint const& paint) {
   canvas_->drawOval(r, paint);
 }
-void CdlCanvas::onDrawArc(const SkRect& oval,
-                          SkScalar startAngle,
-                          SkScalar sweepAngle,
-                          bool useCenter,
-                          const SkPaint& paint) {
-  canvas_->drawArc(oval, startAngle, sweepAngle, useCenter, paint);
-}
+
 void CdlCanvas::onDrawRRect(SkRRect const& r, SkPaint const& paint) {
   canvas_->drawRRect(r, paint);
 }
@@ -512,9 +487,7 @@ void CdlCanvas::onDrawDRRect(const SkRRect& outer,
                              const SkPaint& paint) {
   canvas_->drawDRRect(outer, inner, paint);
 }
-void CdlCanvas::onDrawDrawable(SkDrawable* d, SkMatrix const* m) {
-  canvas_->drawDrawable(d, m);
-}
+
 void CdlCanvas::drawPicture(const CdlPicture* picture,
                             const SkMatrix* matrix,
                             const SkPaint* paint) {
@@ -594,27 +567,7 @@ void CdlCanvas::onDrawPosText(const void* text,
                               const SkPaint& paint) {
   canvas_->drawPosText(text, byteLength, pos, paint);
 }
-void CdlCanvas::onDrawPosTextH(const void* text,
-                               size_t byteLength,
-                               const SkScalar xpos[],
-                               SkScalar constY,
-                               const SkPaint& paint) {
-  canvas_->drawPosTextH(text, byteLength, xpos, constY, paint);
-}
-void CdlCanvas::onDrawTextOnPath(const void* text,
-                                 size_t byteLength,
-                                 const SkPath& path,
-                                 const SkMatrix* matrix,
-                                 const SkPaint& paint) {
-  canvas_->drawTextOnPath(text, byteLength, path, matrix, paint);
-}
-void CdlCanvas::onDrawTextRSXform(const void* text,
-                                  size_t byteLength,
-                                  const SkRSXform xform[],
-                                  const SkRect* cullRect,
-                                  const SkPaint& paint) {
-  canvas_->drawTextRSXform(text, byteLength, xform, cullRect, paint);
-}
+
 void CdlCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                SkScalar x,
                                SkScalar y,
@@ -627,12 +580,7 @@ void CdlCanvas::onDrawBitmap(const SkBitmap& bitmap,
                              const SkPaint* paint) {
   canvas_->drawBitmap(bitmap, x, y, paint);
 }
-// void CdlCanvas::onDrawBitmapLattice(SkBitmap const&, SkCanvas::Lattice
-// const&, SkRect const&, SkPaint const*) {}
-// void CdlCanvas::onDrawBitmapNine(SkBitmap const&, SkIRect const&, SkRect
-// const&, SkPaint const*) {}
-// void CdlCanvas::onDrawBitmapRect(SkBitmap const&, SkRect const*, SkRect
-// const&, SkPaint const*, SkCanvas::SrcRectConstraint) {}
+
 void CdlCanvas::onDrawImage(const SkImage* image,
                             SkScalar x,
                             SkScalar y,
@@ -646,10 +594,7 @@ void CdlCanvas::onDrawImage(const SkImage* image,
   SkPaint pt = paint.toSkPaint();
   canvas_->drawImage(image, x, y, &pt);
 }
-// void CdlCanvas::onDrawImageLattice(SkImage const*, SkCanvas::Lattice const&,
-// SkRect const&, SkPaint const*) {}
-// void CdlCanvas::onDrawImageNine(SkImage const*, SkIRect const&, SkRect
-// const&, SkPaint const*) {}
+
 void CdlCanvas::onDrawImageRect(const SkImage* image,
                                 const SkRect* src,
                                 const SkRect& dst,
@@ -665,19 +610,13 @@ void CdlCanvas::onDrawImageRect(const SkImage* image,
   SkPaint pt = paint.toSkPaint();
   canvas_->drawImageRect(image, *src, dst, &pt, constraint);
 }
-// void CdlCanvas::onDrawPatch(SkPoint const*, unsigned int const*, SkPoint
-// const*, SkBlendMode, SkPaint const&) {}
+
 void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,
                              size_t count,
                              const SkPoint pts[],
                              const SkPaint& paint) {
   canvas_->drawPoints(mode, count, pts, paint);
 }
-// void CdlCanvas::onDrawVertices(SkCanvas::VertexMode, int, SkPoint const*,
-// SkPoint const*, unsigned int const*, SkBlendMode, unsigned short const*, int,
-// SkPaint const&) {}
-// void CdlCanvas::onDrawAtlas(SkImage const*, SkRSXform const*, SkRect const*,
-// unsigned int const*, int, SkBlendMode, SkRect const*, SkPaint const*) {}
 
 // Default CdlPaint -> SkPaint implementation.
 void CdlCanvas::onDrawRect(const SkRect& r, const CdlPaint& paint) {

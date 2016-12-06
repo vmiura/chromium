@@ -21,7 +21,7 @@ class CdlCanvas;
 class CdlPictureBuffer;
 class CdlPicture;
 
-class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
+class CdlCanvas : public SkRefCnt {
  public:
   static sk_sp<CdlCanvas> Make(SkCanvas* canvas);
 
@@ -240,9 +240,6 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                    const SkMatrix* matrix,
                    const SkPaint* paint);
 
-  void drawDrawable(SkDrawable* drawable, const SkMatrix* = NULL);
-  void drawDrawable(SkDrawable*, SkScalar x, SkScalar y);
-
   // Misc
   void flush();
   void discard() { this->onDiscard(); }
@@ -284,20 +281,9 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
   virtual void onDrawRect(const SkRect&, const CdlPaint&);
   virtual void onDrawRegion(const SkRegion&, const SkPaint&);
   virtual void onDrawOval(const SkRect&, const SkPaint&);
-  virtual void onDrawArc(const SkRect&,
-                         SkScalar,
-                         SkScalar,
-                         bool,
-                         const SkPaint&);
   virtual void onDrawRRect(const SkRRect&, const SkPaint&);
   virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
-  virtual void onDrawDrawable(SkDrawable*, const SkMatrix*);
-  /*
-  virtual void onDrawPicture(const SkPicture*,
-                     const SkMatrix*,
-                     const SkPaint*);
-                     */
   virtual void onDrawPicture(const CdlPicture* picture,
                              const SkMatrix* matrix,
                              const SkPaint* paint);
@@ -312,21 +298,6 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                              size_t,
                              const SkPoint[],
                              const SkPaint&);
-  virtual void onDrawPosTextH(const void*,
-                              size_t,
-                              const SkScalar[],
-                              SkScalar,
-                              const SkPaint&);
-  virtual void onDrawTextOnPath(const void*,
-                                size_t,
-                                const SkPath&,
-                                const SkMatrix*,
-                                const SkPaint&);
-  virtual void onDrawTextRSXform(const void*,
-                                 size_t,
-                                 const SkRSXform[],
-                                 const SkRect*,
-                                 const SkPaint&);
   virtual void onDrawTextBlob(const SkTextBlob*,
                               SkScalar,
                               SkScalar,
@@ -336,33 +307,9 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                             SkScalar,
                             SkScalar,
                             const SkPaint*);
-  /*
-  virtual void onDrawBitmapLattice(const SkBitmap&,
-                           const SkCanvas::Lattice&,
-                           const SkRect&,
-                           const SkPaint*);
-  virtual void onDrawBitmapNine(const SkBitmap&,
-                        const SkIRect&,
-                        const SkRect&,
-                        const SkPaint*);
-  virtual void onDrawBitmapRect(const SkBitmap&,
-                        const SkRect*,
-                        const SkRect&,
-                        const SkPaint*,
-                        SkCanvas::SrcRectConstraint);
-  */
   virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*);
   virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&);
-  /*
-  virtual void onDrawImageLattice(const SkImage*,
-                          const SkCanvas::Lattice&,
-                          const SkRect&,
-                          const SkPaint*);
-  virtual void onDrawImageNine(const SkImage*,
-                       const SkIRect&,
-                       const SkRect&,
-                       const SkPaint*);
-                    */
+
   virtual void onDrawImageRect(const SkImage*,
                                const SkRect*,
                                const SkRect&,
@@ -374,37 +321,10 @@ class CdlCanvas : public SkRefCnt /*: public SkCanvas*/ {
                                const CdlPaint&,
                                SkCanvas::SrcRectConstraint);
 
-  /*
-  virtual void onDrawPatch(const SkPoint[12],
-                   const SkColor[4],
-                   const SkPoint[4],
-                   SkBlendMode,
-                   const SkPaint&);
-                   */
   virtual void onDrawPoints(SkCanvas::PointMode,
                             size_t count,
                             const SkPoint pts[],
                             const SkPaint&);
-  /*
-  virtual void onDrawVertices(SkCanvas::VertexMode,
-                      int,
-                      const SkPoint[],
-                      const SkPoint[],
-                      const SkColor[],
-                      SkBlendMode,
-                      const uint16_t[],
-                      int,
-                      const SkPaint&);
-
-  virtual void onDrawAtlas(const SkImage*,
-                   const SkRSXform[],
-                   const SkRect[],
-                   const SkColor[],
-                   int,
-                   SkBlendMode,
-                   const SkRect*,
-                   const SkPaint*);
-                   */
 
   std::unique_ptr<SkCanvas> owned_canvas_;
   SkCanvas* canvas_;

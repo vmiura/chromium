@@ -63,22 +63,36 @@ static void make_threadsafe(SkPath* path, SkMatrix* matrix) {
 }
 
 namespace {
-#define TYPES(M)                                                              \
-  M(SetDrawFilter)                                                            \
-  M(Save)                                                                     \
-  M(Restore)                                                                  \
-  M(SaveLayer)                                                                \
-  M(Concat) M(SetMatrix) M(Translate) M(TranslateZ) M(ClipPath) M(ClipRect)   \
-      M(ClipRRect) M(ClipRegion) M(DrawPaint) M(DrawPath)                     \
-          M(DrawRect) /*M(DrawRegion)*/ M(DrawOval) M(DrawArc) M(DrawRRect)   \
-              M(DrawDRRect) M(DrawAnnotation) M(DrawDrawable) M(DrawPicture)  \
-                  M(DrawShadowedPicture) M(DrawImage) M(DrawImageNine)        \
-                      M(DrawImageRect) M(DrawImageLattice) M(DrawText)        \
-                          M(DrawPosText) M(DrawPosTextH) M(DrawTextOnPath)    \
-                              M(DrawTextRSXform) M(DrawTextBlob) M(DrawPatch) \
-                                  M(DrawPoints) M(DrawVertices) M(DrawAtlas)  \
-                                      M(DrawRectX) M(DrawImageX)              \
-                                          M(DrawImageRectX)
+#define TYPES(M)    \
+  M(SetDrawFilter)  \
+  M(Save)           \
+  M(Restore)        \
+  M(SaveLayer)      \
+  M(Concat)         \
+  M(SetMatrix)      \
+  M(Translate)      \
+  M(TranslateZ)     \
+  M(ClipPath)       \
+  M(ClipRect)       \
+  M(ClipRRect)      \
+  M(ClipRegion)     \
+  M(DrawPaint)      \
+  M(DrawPath)       \
+  M(DrawRect)       \
+  M(DrawOval)       \
+  M(DrawRRect)      \
+  M(DrawDRRect)     \
+  M(DrawAnnotation) \
+  M(DrawPicture)    \
+  M(DrawImage)      \
+  M(DrawImageRect)  \
+  M(DrawText)       \
+  M(DrawPosText)    \
+  M(DrawTextBlob)   \
+  M(DrawPoints)     \
+  M(DrawRectX)      \
+  M(DrawImageX)     \
+  M(DrawImageRectX)
 
 #define M(T) T,
 enum class Type : uint8_t { TYPES(M) };
@@ -154,7 +168,9 @@ struct SetMatrix final : Op {
   static const auto kType = Type::SetMatrix;
   SetMatrix(const SkMatrix& matrix) : matrix(matrix) {}
   SkMatrix matrix;
-  void draw(CdlCanvas* c, const SkMatrix& original, CdlPictureBuffer::DrawContext&) {
+  void draw(CdlCanvas* c,
+            const SkMatrix& original,
+            CdlPictureBuffer::DrawContext&) {
     c->setMatrix(SkMatrix::Concat(original, matrix));
   }
   void makeThreadsafe() { make_threadsafe(nullptr, &matrix); }
@@ -264,18 +280,6 @@ struct DrawRectX final : Op {
   }
 };
 
-/*
-struct DrawRegion final : Op {
-  static const auto kType = Type::DrawRegion;
-  DrawRegion(const SkRegion& region, const SkPaint& paint)
-      : region(region), paint(paint) {}
-  SkRegion region;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawRegion(region, paint);
-  }
-};
-*/
 struct DrawOval final : Op {
   static const auto kType = Type::DrawOval;
   DrawOval(const SkRect& oval, const SkPaint& paint)
@@ -286,28 +290,7 @@ struct DrawOval final : Op {
     c->drawOval(oval, paint);
   }
 };
-struct DrawArc final : Op {
-  static const auto kType = Type::DrawArc;
-  DrawArc(const SkRect& oval,
-          SkScalar startAngle,
-          SkScalar sweepAngle,
-          bool useCenter,
-          const SkPaint& paint)
-      : oval(oval),
-        startAngle(startAngle),
-        sweepAngle(sweepAngle),
-        useCenter(useCenter),
-        paint(paint) {}
-  SkRect oval;
-  SkScalar startAngle;
-  SkScalar sweepAngle;
-  bool useCenter;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    // c->drawArc(oval, startAngle, sweepAngle, useCenter, paint);
-  }
-};
+
 struct DrawRRect final : Op {
   static const auto kType = Type::DrawRRect;
   DrawRRect(const SkRRect& rrect, const SkPaint& paint)
@@ -340,29 +323,7 @@ struct DrawAnnotation final : Op {
     // c->drawAnnotation(rect, pod<char>(this), value.get());
   }
 };
-struct DrawDrawable final : Op {
-  static const auto kType = Type::DrawDrawable;
-  DrawDrawable(SkDrawable* drawable, const SkMatrix* matrix)
-      : drawable(sk_ref_sp(drawable)) {
-    if (matrix) {
-      this->matrix = *matrix;
-    }
-  }
-  sk_sp<SkDrawable> drawable;
-  sk_sp<const SkPicture> snapped;
-  SkMatrix matrix = SkMatrix::I();
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    /*
-    snapped ? c->drawPicture(snapped.get(), &matrix, nullptr)
-            : c->drawDrawable(drawable.get(), &matrix);
-    */
-  }
-  void makeThreadsafe() {
-    snapped.reset(drawable->newPictureSnapshot());
-    make_threadsafe(nullptr, &matrix);
-  }
-};
+
 struct DrawPicture final : Op {
   static const auto kType = Type::DrawPicture;
   DrawPicture(const CdlPicture* picture,
@@ -383,32 +344,6 @@ struct DrawPicture final : Op {
   bool has_paint = false;  // TODO: why is a default paint not the same?
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPicture(picture.get(), &matrix, has_paint ? &paint : nullptr);
-  }
-  void makeThreadsafe() { make_threadsafe(nullptr, &matrix); }
-};
-struct DrawShadowedPicture final : Op {
-  static const auto kType = Type::DrawShadowedPicture;
-  DrawShadowedPicture(const SkPicture* picture,
-                      const SkMatrix* matrix,
-                      const SkPaint* paint,
-                      const SkShadowParams& params)
-      : picture(sk_ref_sp(picture)) {
-    if (matrix) {
-      this->matrix = *matrix;
-    }
-    if (paint) {
-      this->paint = *paint;
-    }
-    this->params = params;
-  }
-  sk_sp<const SkPicture> picture;
-  SkMatrix matrix = SkMatrix::I();
-  SkPaint paint;
-  SkShadowParams params;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-#ifdef SK_EXPERIMENTAL_SHADOWING
-    c->drawShadowedPicture(picture.get(), &matrix, &paint, params);
-#endif
   }
   void makeThreadsafe() { make_threadsafe(nullptr, &matrix); }
 };
@@ -447,26 +382,6 @@ struct DrawImageX final : Op {
   }
 };
 
-struct DrawImageNine final : Op {
-  static const auto kType = Type::DrawImageNine;
-  DrawImageNine(sk_sp<const SkImage>&& image,
-                const SkIRect& center,
-                const SkRect& dst,
-                const SkPaint* paint)
-      : image(std::move(image)), center(center), dst(dst) {
-    if (paint) {
-      this->paint = *paint;
-    }
-  }
-  sk_sp<const SkImage> image;
-  SkIRect center;
-  SkRect dst;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    // c->drawImageNine(image.get(), center, dst, &paint);
-  }
-};
 struct DrawImageRect final : Op {
   static const auto kType = Type::DrawImageRect;
   DrawImageRect(sk_sp<const SkImage>&& image,
@@ -511,37 +426,6 @@ struct DrawImageRectX final : Op {
   }
 };
 
-struct DrawImageLattice final : Op {
-  static const auto kType = Type::DrawImageLattice;
-  DrawImageLattice(sk_sp<const SkImage>&& image,
-                   int xs,
-                   int ys,
-                   int fs,
-                   const SkIRect& src,
-                   const SkRect& dst,
-                   const SkPaint* paint)
-      : image(std::move(image)), xs(xs), ys(ys), fs(fs), src(src), dst(dst) {
-    if (paint) {
-      this->paint = *paint;
-    }
-  }
-  sk_sp<const SkImage> image;
-  int xs, ys, fs;
-  SkIRect src;
-  SkRect dst;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    /*
-    auto xdivs = pod<int>(this, 0), ydivs = pod<int>(this, xs * sizeof(int));
-    auto flags = (0 == fs) ? nullptr : pod<SkCanvas::Lattice::Flags>(
-                                           this, (xs + ys) * sizeof(int));
-    c->drawImageLattice(image.get(), {xdivs, ydivs, flags, xs, ys, &src}, dst,
-                        &paint);
-    */
-  }
-};
-
 struct DrawText final : Op {
   static const auto kType = Type::DrawText;
   DrawText(size_t bytes, SkScalar x, SkScalar y, const SkPaint& paint)
@@ -566,61 +450,7 @@ struct DrawPosText final : Op {
     c->drawPosText(text, bytes, points, paint);
   }
 };
-struct DrawPosTextH final : Op {
-  static const auto kType = Type::DrawPosTextH;
-  DrawPosTextH(size_t bytes, SkScalar y, const SkPaint& paint, int n)
-      : bytes(bytes), y(y), paint(paint), n(n) {}
-  size_t bytes;
-  SkScalar y;
-  SkPaint paint;
-  int n;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    /*
-    auto xs = pod<SkScalar>(this);
-    auto text = pod<void>(this, n * sizeof(SkScalar));
-    c->drawPosTextH(text, bytes, xs, y, paint);
-    */
-  }
-};
-struct DrawTextOnPath final : Op {
-  static const auto kType = Type::DrawTextOnPath;
-  DrawTextOnPath(size_t bytes,
-                 const SkPath& path,
-                 const SkMatrix* matrix,
-                 const SkPaint& paint)
-      : bytes(bytes), path(path), paint(paint) {
-    if (matrix) {
-      this->matrix = *matrix;
-    }
-  }
-  size_t bytes;
-  SkPath path;
-  SkMatrix matrix = SkMatrix::I();
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    // c->drawTextOnPath(pod<void>(this), bytes, path, &matrix, paint);
-  }
-  void makeThreadsafe() { make_threadsafe(&path, &matrix); }
-};
-struct DrawTextRSXform final : Op {
-  static const auto kType = Type::DrawTextRSXform;
-  DrawTextRSXform(size_t bytes, const SkRect* cull, const SkPaint& paint)
-      : bytes(bytes), paint(paint) {
-    if (cull) {
-      this->cull = *cull;
-    }
-  }
-  size_t bytes;
-  SkRect cull = kUnset;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    // c->drawTextRSXform(pod<void>(this), bytes, pod<SkRSXform>(this, bytes),
-    //                   maybe_unset(cull), paint);
-  }
-};
+
 struct DrawTextBlob final : Op {
   static const auto kType = Type::DrawTextBlob;
   DrawTextBlob(const SkTextBlob* blob,
@@ -636,37 +466,6 @@ struct DrawTextBlob final : Op {
   }
 };
 
-struct DrawPatch final : Op {
-  static const auto kType = Type::DrawPatch;
-  DrawPatch(const SkPoint cubics[12],
-            const SkColor colors[4],
-            const SkPoint texs[4],
-            SkBlendMode bmode,
-            const SkPaint& paint)
-      : xfermode(bmode), paint(paint) {
-    copy_v(this->cubics, cubics, 12);
-    if (colors) {
-      copy_v(this->colors, colors, 4);
-      has_colors = true;
-    }
-    if (texs) {
-      copy_v(this->texs, texs, 4);
-      has_texs = true;
-    }
-  }
-  SkPoint cubics[12];
-  SkColor colors[4];
-  SkPoint texs[4];
-  SkBlendMode xfermode;
-  SkPaint paint;
-  bool has_colors = false;
-  bool has_texs = false;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    // c->drawPatch(cubics, has_colors ? colors : nullptr,
-    //             has_texs ? texs : nullptr, xfermode, paint);
-  }
-};
 struct DrawPoints final : Op {
   static const auto kType = Type::DrawPoints;
   DrawPoints(SkCanvas::PointMode mode, size_t count, const SkPaint& paint)
@@ -678,99 +477,8 @@ struct DrawPoints final : Op {
     c->drawPoints(mode, count, pod<SkPoint>(this), paint);
   }
 };
-struct DrawVertices final : Op {
-  static const auto kType = Type::DrawVertices;
-  DrawVertices(SkCanvas::VertexMode mode,
-               int count,
-               SkBlendMode bmode,
-               int nindices,
-               const SkPaint& paint,
-               bool has_texs,
-               bool has_colors,
-               bool has_indices)
-      : mode(mode),
-        count(count),
-        xfermode(bmode),
-        nindices(nindices),
-        paint(paint),
-        has_texs(has_texs),
-        has_colors(has_colors),
-        has_indices(has_indices) {}
-  SkCanvas::VertexMode mode;
-  int count;
-  SkBlendMode xfermode;
-  int nindices;
-  SkPaint paint;
-  bool has_texs;
-  bool has_colors;
-  bool has_indices;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    /*
-    SkPoint* vertices = pod<SkPoint>(this, 0);
-    size_t offset = count * sizeof(SkPoint);
 
-    SkPoint* texs = nullptr;
-    if (has_texs) {
-      texs = pod<SkPoint>(this, offset);
-      offset += count * sizeof(SkPoint);
-    }
-
-    SkColor* colors = nullptr;
-    if (has_colors) {
-      colors = pod<SkColor>(this, offset);
-      offset += count * sizeof(SkColor);
-    }
-
-    uint16_t* indices = nullptr;
-    if (has_indices) {
-      indices = pod<uint16_t>(this, offset);
-    }
-    c->drawVertices(mode, count, vertices, texs, colors, xfermode, indices,
-                    nindices, paint);
-    */
-  }
-};
-struct DrawAtlas final : Op {
-  static const auto kType = Type::DrawAtlas;
-  DrawAtlas(const SkImage* atlas,
-            int count,
-            SkBlendMode xfermode,
-            const SkRect* cull,
-            const SkPaint* paint,
-            bool has_colors)
-      : atlas(sk_ref_sp(atlas)),
-        count(count),
-        xfermode(xfermode),
-        has_colors(has_colors) {
-    if (cull) {
-      this->cull = *cull;
-    }
-    if (paint) {
-      this->paint = *paint;
-    }
-  }
-  sk_sp<const SkImage> atlas;
-  int count;
-  SkBlendMode xfermode;
-  SkRect cull = kUnset;
-  SkPaint paint;
-  bool has_colors;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    // TODO(cdl)
-    /*
-    auto xforms = pod<SkRSXform>(this, 0);
-    auto texs = pod<SkRect>(this, count * sizeof(SkRSXform));
-    auto colors =
-        has_colors
-            ? pod<SkColor>(this, count * (sizeof(SkRSXform) + sizeof(SkRect)))
-            : nullptr;
-    c->drawAtlas(atlas.get(), xforms, texs, colors, count, xfermode,
-                 maybe_unset(cull), &paint);
-    */
-  }
-};
-}
+}  // anon namespace
 
 template <typename T, typename... Args>
 void* CdlPictureBuffer::push(size_t pod, Args&&... args) {
@@ -794,9 +502,9 @@ void* CdlPictureBuffer::push(size_t pod, Args&&... args) {
 
 template <typename Fn, typename... Args>
 inline void CdlPictureBuffer::map(const Fn fns[],
-                           int start_offset,
-                           int end_offset,
-                           Args... args) {
+                                  int start_offset,
+                                  int end_offset,
+                                  Args... args) {
   auto start = fBytes.get() + start_offset;
   auto end = fBytes.get() + end_offset;
   for (uint8_t* ptr = start; ptr < end;) {
@@ -823,9 +531,9 @@ void CdlPictureBuffer::restore() {
   this->push<Restore>(0);
 }
 void CdlPictureBuffer::saveLayer(const SkRect* bounds,
-                          const SkPaint* paint,
-                          const SkImageFilter* backdrop,
-                          SkCanvas::SaveLayerFlags flags) {
+                                 const SkPaint* paint,
+                                 const SkImageFilter* backdrop,
+                                 SkCanvas::SaveLayerFlags flags) {
   this->push<SaveLayer>(0, bounds, paint, backdrop, flags);
 }
 
@@ -842,13 +550,19 @@ void CdlPictureBuffer::translateZ(SkScalar dz) {
   this->push<TranslateZ>(0, dz);
 }
 
-void CdlPictureBuffer::clipPath(const SkPath& path, SkCanvas::ClipOp op, bool aa) {
+void CdlPictureBuffer::clipPath(const SkPath& path,
+                                SkCanvas::ClipOp op,
+                                bool aa) {
   this->push<ClipPath>(0, path, op, aa);
 }
-void CdlPictureBuffer::clipRect(const SkRect& rect, SkCanvas::ClipOp op, bool aa) {
+void CdlPictureBuffer::clipRect(const SkRect& rect,
+                                SkCanvas::ClipOp op,
+                                bool aa) {
   this->push<ClipRect>(0, rect, op, aa);
 }
-void CdlPictureBuffer::clipRRect(const SkRRect& rrect, SkCanvas::ClipOp op, bool aa) {
+void CdlPictureBuffer::clipRRect(const SkRRect& rrect,
+                                 SkCanvas::ClipOp op,
+                                 bool aa) {
   this->push<ClipRRect>(0, rrect, op, aa);
 }
 void CdlPictureBuffer::clipRegion(const SkRegion& region, SkCanvas::ClipOp op) {
@@ -868,209 +582,93 @@ void CdlPictureBuffer::drawRect(const SkRect& rect, const CdlPaint& paint) {
   this->push<DrawRectX>(0, rect, paint);
 }
 
-/*
-void CdlPictureBuffer::drawRegion(const SkRegion& region, const SkPaint& paint) {
-  this->push<DrawRegion>(0, region, paint);
-}
-*/
-
 void CdlPictureBuffer::drawOval(const SkRect& oval, const SkPaint& paint) {
   this->push<DrawOval>(0, oval, paint);
 }
-void CdlPictureBuffer::drawArc(const SkRect& oval,
-                        SkScalar startAngle,
-                        SkScalar sweepAngle,
-                        bool useCenter,
-                        const SkPaint& paint) {
-  this->push<DrawArc>(0, oval, startAngle, sweepAngle, useCenter, paint);
-}
+
 void CdlPictureBuffer::drawRRect(const SkRRect& rrect, const SkPaint& paint) {
   this->push<DrawRRect>(0, rrect, paint);
 }
 void CdlPictureBuffer::drawDRRect(const SkRRect& outer,
-                           const SkRRect& inner,
-                           const SkPaint& paint) {
+                                  const SkRRect& inner,
+                                  const SkPaint& paint) {
   this->push<DrawDRRect>(0, outer, inner, paint);
 }
 
 void CdlPictureBuffer::drawAnnotation(const SkRect& rect,
-                               const char* key,
-                               SkData* value) {
+                                      const char* key,
+                                      SkData* value) {
   size_t bytes = strlen(key) + 1;
   void* pod = this->push<DrawAnnotation>(bytes, rect, value);
   copy_v(pod, key, bytes);
 }
-void CdlPictureBuffer::drawDrawable(SkDrawable* drawable, const SkMatrix* matrix) {
-  this->push<DrawDrawable>(0, drawable, matrix);
-}
+
 void CdlPictureBuffer::drawPicture(const CdlPicture* picture,
-                            const SkMatrix* matrix,
-                            const SkPaint* paint) {
+                                   const SkMatrix* matrix,
+                                   const SkPaint* paint) {
   this->push<DrawPicture>(0, picture, matrix, paint);
-}
-void CdlPictureBuffer::drawShadowedPicture(const SkPicture* picture,
-                                    const SkMatrix* matrix,
-                                    const SkPaint* paint,
-                                    const SkShadowParams& params) {
-  push<DrawShadowedPicture>(0, picture, matrix, paint, params);
 }
 
 void CdlPictureBuffer::drawImage(sk_sp<const SkImage> image,
-                          SkScalar x,
-                          SkScalar y,
-                          const SkPaint* paint) {
+                                 SkScalar x,
+                                 SkScalar y,
+                                 const SkPaint* paint) {
   this->push<DrawImage>(0, std::move(image), x, y, paint);
 }
 void CdlPictureBuffer::drawImage(sk_sp<const SkImage> image,
-                          SkScalar x,
-                          SkScalar y,
-                          const CdlPaint& paint) {
+                                 SkScalar x,
+                                 SkScalar y,
+                                 const CdlPaint& paint) {
   this->push<DrawImageX>(0, std::move(image), x, y, paint);
 }
 
-void CdlPictureBuffer::drawImageNine(sk_sp<const SkImage> image,
-                              const SkIRect& center,
-                              const SkRect& dst,
-                              const SkPaint* paint) {
-  this->push<DrawImageNine>(0, std::move(image), center, dst, paint);
-}
 void CdlPictureBuffer::drawImageRect(sk_sp<const SkImage> image,
-                              const SkRect* src,
-                              const SkRect& dst,
-                              const SkPaint* paint,
-                              SkCanvas::SrcRectConstraint constraint) {
-  // TRACE_EVENT0("cc", "CdlPictureBuffer::drawImageRect");
+                                     const SkRect* src,
+                                     const SkRect& dst,
+                                     const SkPaint* paint,
+                                     SkCanvas::SrcRectConstraint constraint) {
   this->push<DrawImageRect>(0, std::move(image), src, dst, paint, constraint);
 }
 void CdlPictureBuffer::drawImageRect(sk_sp<const SkImage> image,
-                              const SkRect* src,
-                              const SkRect& dst,
-                              const CdlPaint& paint,
-                              SkCanvas::SrcRectConstraint constraint) {
-  // TRACE_EVENT0("cc", "CdlPictureBuffer::drawImageRectX");
+                                     const SkRect* src,
+                                     const SkRect& dst,
+                                     const CdlPaint& paint,
+                                     SkCanvas::SrcRectConstraint constraint) {
   this->push<DrawImageRectX>(0, std::move(image), src, dst, paint, constraint);
-}
-void CdlPictureBuffer::drawImageLattice(sk_sp<const SkImage> image,
-                                 const SkCanvas::Lattice& lattice,
-                                 const SkRect& dst,
-                                 const SkPaint* paint) {
-  int xs = lattice.fXCount, ys = lattice.fYCount;
-  int fs = lattice.fFlags ? (xs + 1) * (ys + 1) : 0;
-  size_t bytes =
-      (xs + ys) * sizeof(int) + fs * sizeof(SkCanvas::Lattice::Flags);
-  SkASSERT(lattice.fBounds);
-  void* pod = this->push<DrawImageLattice>(bytes, std::move(image), xs, ys, fs,
-                                           *lattice.fBounds, dst, paint);
-  copy_v(pod, lattice.fXDivs, xs, lattice.fYDivs, ys, lattice.fFlags, fs);
 }
 
 void CdlPictureBuffer::drawText(const void* text,
-                         size_t bytes,
-                         SkScalar x,
-                         SkScalar y,
-                         const SkPaint& paint) {
+                                size_t bytes,
+                                SkScalar x,
+                                SkScalar y,
+                                const SkPaint& paint) {
   void* pod = this->push<DrawText>(bytes, bytes, x, y, paint);
   copy_v(pod, (const char*)text, bytes);
 }
 void CdlPictureBuffer::drawPosText(const void* text,
-                            size_t bytes,
-                            const SkPoint pos[],
-                            const SkPaint& paint) {
+                                   size_t bytes,
+                                   const SkPoint pos[],
+                                   const SkPaint& paint) {
   int n = paint.countText(text, bytes);
   void* pod =
       this->push<DrawPosText>(n * sizeof(SkPoint) + bytes, bytes, paint, n);
   copy_v(pod, pos, n, (const char*)text, bytes);
 }
-void CdlPictureBuffer::drawPosTextH(const void* text,
-                             size_t bytes,
-                             const SkScalar xs[],
-                             SkScalar y,
-                             const SkPaint& paint) {
-  int n = paint.countText(text, bytes);
-  void* pod = this->push<DrawPosTextH>(n * sizeof(SkScalar) + bytes, bytes, y,
-                                       paint, n);
-  copy_v(pod, xs, n, (const char*)text, bytes);
-}
-void CdlPictureBuffer::drawTextOnPath(const void* text,
-                               size_t bytes,
-                               const SkPath& path,
-                               const SkMatrix* matrix,
-                               const SkPaint& paint) {
-  void* pod = this->push<DrawTextOnPath>(bytes, bytes, path, matrix, paint);
-  copy_v(pod, (const char*)text, bytes);
-}
-void CdlPictureBuffer::drawTextRSXform(const void* text,
-                                size_t bytes,
-                                const SkRSXform xforms[],
-                                const SkRect* cull,
-                                const SkPaint& paint) {
-  int n = paint.countText(text, bytes);
-  void* pod = this->push<DrawTextRSXform>(bytes + n * sizeof(SkRSXform), bytes,
-                                          cull, paint);
-  copy_v(pod, (const char*)text, bytes, xforms, n);
-}
+
 void CdlPictureBuffer::drawTextBlob(const SkTextBlob* blob,
-                             SkScalar x,
-                             SkScalar y,
-                             const SkPaint& paint) {
+                                    SkScalar x,
+                                    SkScalar y,
+                                    const SkPaint& paint) {
   this->push<DrawTextBlob>(0, blob, x, y, paint);
 }
 
-void CdlPictureBuffer::drawPatch(const SkPoint points[12],
-                          const SkColor colors[4],
-                          const SkPoint texs[4],
-                          SkBlendMode bmode,
-                          const SkPaint& paint) {
-  this->push<DrawPatch>(0, points, colors, texs, bmode, paint);
-}
 void CdlPictureBuffer::drawPoints(SkCanvas::PointMode mode,
-                           size_t count,
-                           const SkPoint points[],
-                           const SkPaint& paint) {
+                                  size_t count,
+                                  const SkPoint points[],
+                                  const SkPaint& paint) {
   void* pod =
       this->push<DrawPoints>(count * sizeof(SkPoint), mode, count, paint);
   copy_v(pod, points, count);
-}
-void CdlPictureBuffer::drawVertices(SkCanvas::VertexMode mode,
-                             int count,
-                             const SkPoint vertices[],
-                             const SkPoint texs[],
-                             const SkColor colors[],
-                             SkBlendMode xfermode,
-                             const uint16_t indices[],
-                             int nindices,
-                             const SkPaint& paint) {
-  size_t bytes = count * sizeof(SkPoint);
-  if (texs) {
-    bytes += count * sizeof(SkPoint);
-  }
-  if (colors) {
-    bytes += count * sizeof(SkColor);
-  }
-  if (indices) {
-    bytes += nindices * sizeof(uint16_t);
-  }
-  void* pod = this->push<DrawVertices>(bytes, mode, count, xfermode, nindices,
-                                       paint, texs != nullptr,
-                                       colors != nullptr, indices != nullptr);
-  copy_v(pod, vertices, count, texs, texs ? count : 0, colors,
-         colors ? count : 0, indices, indices ? nindices : 0);
-}
-void CdlPictureBuffer::drawAtlas(const SkImage* atlas,
-                          const SkRSXform xforms[],
-                          const SkRect texs[],
-                          const SkColor colors[],
-                          int count,
-                          SkBlendMode xfermode,
-                          const SkRect* cull,
-                          const SkPaint* paint) {
-  size_t bytes = count * (sizeof(SkRSXform) + sizeof(SkRect));
-  if (colors) {
-    bytes += count * sizeof(SkColor);
-  }
-  void* pod = this->push<DrawAtlas>(bytes, atlas, count, xfermode, cull, paint,
-                                    colors != nullptr);
-  copy_v(pod, xforms, count, texs, count, colors, colors ? count : 0);
 }
 
 typedef void (*draw_fn)(void*,
@@ -1106,18 +704,13 @@ using can_skip_destructor = std::is_trivially_destructible<T>;
 static const void_fn dtor_fns[] = {TYPES(M)};
 #undef M
 
-void CdlPictureBuffer::playback(CdlCanvas* canvas, int start_offset, int end_offset) {
+void CdlPictureBuffer::playback(CdlCanvas* canvas,
+                                int start_offset,
+                                int end_offset) {
   DrawContext dc;
   this->map(draw_fns, start_offset, end_offset, canvas,
             canvas->getTotalMatrix(), dc);
 }
-
-/*
-void CdlPictureBuffer::onDraw(CdlCanvas* canvas) {
-  DrawContext dc;
-  this->map(draw_fns, canvas, canvas->getTotalMatrix(), dc);
-}
-*/
 
 void CdlPictureBuffer::makeThreadsafe() {
   this->map(make_threadsafe_fns, 0, fUsed);
@@ -1127,9 +720,8 @@ SkRect CdlPictureBuffer::getBounds() {
   return fBounds;
 }
 
-CdlPictureBuffer::CdlPictureBuffer(SkRect bounds) : fUsed(0), fReserved(0), fBounds(bounds) {
-  // TRACE_EVENT0("cc", "CdlPictureBuffer::CdlPictureBuffer");
-}
+CdlPictureBuffer::CdlPictureBuffer(SkRect bounds)
+    : fUsed(0), fReserved(0), fBounds(bounds) {}
 
 CdlPictureBuffer::~CdlPictureBuffer() {
   this->reset(SkRect::MakeEmpty());
@@ -1149,8 +741,8 @@ void CdlPictureBuffer::reset(SkRect bounds) {
 }
 
 void CdlPictureBuffer::drawAsLayer(CdlCanvas* canvas,
-                            const SkMatrix* matrix,
-                            const SkPaint* paint) {
+                                   const SkMatrix* matrix,
+                                   const SkPaint* paint) {
   // TODO(cdl)
   /*
   auto fallback_plan = [&] {

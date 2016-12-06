@@ -27,7 +27,6 @@ class CdlPicture : public SkRefCnt {
   void draw(CdlCanvas* canvas) const;
 
   sk_sp<SkPicture> toSkPicture() const;
-  // sk_sp<SkDrawable> toSkDrawable() const;
   int approximateOpCount() const { return 1; }
   void playback(CdlCanvas*, SkPicture::AbortCallback* = NULL) const;
   SkRect cullRect() const { return cull_bounds_; }
