@@ -18,7 +18,7 @@
 CdlLiteRecorder::CdlLiteRecorder(CdlLiteDL* dl, const SkRect& bounds)
     : CdlNoDrawCanvas(bounds.roundOut().width(), bounds.roundOut().height()),
       fDL(dl),
-      fComputeClips(false) {}
+      fComputeClips(true) {}
 
 CdlLiteRecorder::~CdlLiteRecorder() {}
 
