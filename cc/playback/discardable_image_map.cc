@@ -16,7 +16,6 @@
 #include "skia/ext/cdl_no_draw_canvas.h"
 #include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 
@@ -82,7 +81,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
   void onDrawImage(const SkImage* image,
                    SkScalar x,
                    SkScalar y,
-                   const SkPaint* paint) override {
+                   const CdlPaint* paint) override {
     const SkMatrix& ctm = getTotalMatrix();
     AddImage(
         sk_ref_sp(image), SkRect::MakeIWH(image->width(), image->height()),
@@ -90,22 +89,10 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
         ctm, paint);
   }
 
-  void onDrawImage(const SkImage* image,
-                   SkScalar x,
-                   SkScalar y,
-                   const CdlPaint& paint) override {
-    const SkMatrix& ctm = getTotalMatrix();
-    SkPaint pt = paint.toSkPaint();
-    AddImage(
-        sk_ref_sp(image), SkRect::MakeIWH(image->width(), image->height()),
-        MapRect(ctm, SkRect::MakeXYWH(x, y, image->width(), image->height())),
-        ctm, &pt);
-  }
-
   void onDrawImageRect(const SkImage* image,
                        const SkRect* src,
                        const SkRect& dst,
-                       const SkPaint* paint,
+                       const CdlPaint* paint,
                        SkCanvas::SrcRectConstraint) override {
     const SkMatrix& ctm = getTotalMatrix();
     SkRect src_storage;
@@ -117,24 +104,6 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
     matrix.setRectToRect(*src, dst, SkMatrix::kFill_ScaleToFit);
     matrix.postConcat(ctm);
     AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, paint);
-  }
-
-  void onDrawImageRect(const SkImage* image,
-                       const SkRect* src,
-                       const SkRect& dst,
-                       const CdlPaint& paint,
-                       SkCanvas::SrcRectConstraint) override {
-    const SkMatrix& ctm = getTotalMatrix();
-    SkRect src_storage;
-    if (!src) {
-      src_storage = SkRect::MakeIWH(image->width(), image->height());
-      src = &src_storage;
-    }
-    SkMatrix matrix;
-    matrix.setRectToRect(*src, dst, SkMatrix::kFill_ScaleToFit);
-    matrix.postConcat(ctm);
-    SkPaint pt = paint.toSkPaint();
-    AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, &pt);
   }
 
   int onSaveLayer(const SaveLayerRec& rec) override {
@@ -155,7 +124,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
 
  private:
   bool ComputePaintBounds(const SkRect& rect,
-                          const SkPaint* current_paint,
+                          const CdlPaint* current_paint,
                           SkRect* paint_bounds) {
     *paint_bounds = rect;
     if (current_paint) {
@@ -177,7 +146,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
                 const SkRect& src_rect,
                 const SkRect& rect,
                 const SkMatrix& matrix,
-                const SkPaint* paint) {
+                const CdlPaint* paint) {
     if (!image->isLazyGenerated())
       return;
 

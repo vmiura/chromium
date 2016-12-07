@@ -349,23 +349,13 @@ void CdlCanvas::drawBitmap(const SkBitmap& bitmap,
   if (bitmap.drawsNothing()) {
     return;
   }
-  SkPaint sk_paint;
-  if (paint)
-    sk_paint = paint->toSkPaint();
-  this->onDrawImage(SkImage::MakeFromBitmap(bitmap).get(), dx, dy, paint ? &sk_paint : nullptr);
+  this->onDrawImage(SkImage::MakeFromBitmap(bitmap).get(), dx, dy, paint);
 }
 
 void CdlCanvas::drawImage(const SkImage* image,
                           SkScalar x,
                           SkScalar y,
-                          const SkPaint* paint) {
-  RETURN_ON_NULL(image);
-  this->onDrawImage(image, x, y, paint);
-}
-void CdlCanvas::drawImage(const SkImage* image,
-                          SkScalar x,
-                          SkScalar y,
-                          const CdlPaint& paint) {
+                          const CdlPaint* paint) {
   RETURN_ON_NULL(image);
   this->onDrawImage(image, x, y, paint);
 }
@@ -373,18 +363,7 @@ void CdlCanvas::drawImage(const SkImage* image,
 void CdlCanvas::drawImageRect(const SkImage* image,
                               const SkRect& src,
                               const SkRect& dst,
-                              const SkPaint* paint,
-                              SkCanvas::SrcRectConstraint constraint) {
-  RETURN_ON_NULL(image);
-  if (dst.isEmpty() || src.isEmpty()) {
-    return;
-  }
-  this->onDrawImageRect(image, &src, dst, paint, constraint);
-}
-void CdlCanvas::drawImageRect(const SkImage* image,
-                              const SkRect& src,
-                              const SkRect& dst,
-                              const CdlPaint& paint,
+                              const CdlPaint* paint,
                               SkCanvas::SrcRectConstraint constraint) {
   RETURN_ON_NULL(image);
   if (dst.isEmpty() || src.isEmpty()) {
@@ -584,31 +563,22 @@ void CdlCanvas::onDrawTextBlob(const SkTextBlob* blob,
 void CdlCanvas::onDrawImage(const SkImage* image,
                             SkScalar x,
                             SkScalar y,
-                            const SkPaint* paint) {
-  canvas_->drawImage(image, x, y, paint);
-}
-void CdlCanvas::onDrawImage(const SkImage* image,
-                            SkScalar x,
-                            SkScalar y,
-                            const CdlPaint& paint) {
-  SkPaint pt = paint.toSkPaint();
-  canvas_->drawImage(image, x, y, &pt);
+                            const CdlPaint* paint) {
+  SkPaint sk_paint;
+  if (paint)
+    sk_paint = paint->toSkPaint();
+  canvas_->drawImage(image, x, y, paint ? &sk_paint : nullptr);
 }
 
 void CdlCanvas::onDrawImageRect(const SkImage* image,
                                 const SkRect* src,
                                 const SkRect& dst,
-                                const SkPaint* paint,
+                                const CdlPaint* paint,
                                 SkCanvas::SrcRectConstraint constraint) {
-  canvas_->drawImageRect(image, *src, dst, paint, constraint);
-}
-void CdlCanvas::onDrawImageRect(const SkImage* image,
-                                const SkRect* src,
-                                const SkRect& dst,
-                                const CdlPaint& paint,
-                                SkCanvas::SrcRectConstraint constraint) {
-  SkPaint pt = paint.toSkPaint();
-  canvas_->drawImageRect(image, *src, dst, &pt, constraint);
+  SkPaint sk_paint;
+  if (paint)
+    sk_paint = paint->toSkPaint();
+  canvas_->drawImageRect(image, *src, dst, paint ? &sk_paint : nullptr, constraint);
 }
 
 void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,

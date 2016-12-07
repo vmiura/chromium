@@ -238,7 +238,7 @@ sk_sp<CdlShader> createPatternShader(const SkImage* image,
 
   CdlPictureRecorder recorder;
   CdlCanvas* canvas = recorder.beginRecording(tileRect);
-  canvas->drawImage(image, 0, 0, paint);
+  canvas->drawImage(image, 0, 0, &paint);
 
   return CdlShader::MakePictureShader(
       recorder.finishRecordingAsPicture(), SkShader::kRepeat_TileMode,

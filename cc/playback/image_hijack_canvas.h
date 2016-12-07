@@ -27,16 +27,12 @@ class ImageHijackCanvas : public CdlCanvas {
   void onDrawImage(const SkImage* image,
                    SkScalar x,
                    SkScalar y,
-                   const SkPaint* paint) override;
+                   const CdlPaint* paint) override;
   void onDrawImageRect(const SkImage* image,
                        const SkRect* src,
                        const SkRect& dst,
-                       const SkPaint* paint,
+                       const CdlPaint* paint,
                        SkCanvas::SrcRectConstraint constraint) override;
-  // void onDrawImageNine(const SkImage* image,
-  //                     const SkIRect& center,
-  //                     const SkRect& dst,
-  //                     const SkPaint* paint) override;
 
   ImageDecodeCache* image_decode_cache_;
 

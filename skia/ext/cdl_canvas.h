@@ -171,56 +171,38 @@ class CdlCanvas : public SkRefCnt {
   void drawImage(const SkImage* image,
                  SkScalar left,
                  SkScalar top,
-                 const SkPaint* paint = NULL);
+                 const CdlPaint* paint = NULL);
   void drawImage(const sk_sp<SkImage>& image,
                  SkScalar left,
                  SkScalar top,
-                 const SkPaint* paint = NULL) {
-    this->drawImage(image.get(), left, top, paint);
-  }
-
-  void drawImage(const SkImage* image,
-                 SkScalar left,
-                 SkScalar top,
-                 const CdlPaint& paint);
-  void drawImage(const sk_sp<SkImage>& image,
-                 SkScalar left,
-                 SkScalar top,
-                 const CdlPaint& paint) {
+                 const CdlPaint* paint = NULL) {
     this->drawImage(image.get(), left, top, paint);
   }
 
   void drawImageRect(const SkImage* image,
                      const SkRect& src,
                      const SkRect& dst,
-                     const SkPaint* paint,
+                     const CdlPaint* paint,
                      SkCanvas::SrcRectConstraint constraint =
                          SkCanvas::kStrict_SrcRectConstraint);
-  void drawImageRect(const SkImage* image,
-                     const SkRect& src,
-                     const SkRect& dst,
-                     const CdlPaint& paint,
-                     SkCanvas::SrcRectConstraint constraint =
-                         SkCanvas::kStrict_SrcRectConstraint);
-
   // variant that takes src SkIRect
   void drawImageRect(
       const SkImage* image,
       const SkIRect& isrc,
       const SkRect& dst,
-      const SkPaint* paint,
+      const CdlPaint* paint,
       SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
   // variant that assumes src == image-bounds
   void drawImageRect(
       const SkImage* image,
       const SkRect& dst,
-      const SkPaint* paint,
+      const CdlPaint* paint,
       SkCanvas::SrcRectConstraint = SkCanvas::kStrict_SrcRectConstraint);
 
   void drawImageRect(const sk_sp<SkImage>& image,
                      const SkRect& src,
                      const SkRect& dst,
-                     const SkPaint* paint,
+                     const CdlPaint* paint,
                      SkCanvas::SrcRectConstraint constraint =
                          SkCanvas::kStrict_SrcRectConstraint) {
     this->drawImageRect(image.get(), src, dst, paint, constraint);
@@ -229,14 +211,14 @@ class CdlCanvas : public SkRefCnt {
       const sk_sp<SkImage>& image,
       const SkIRect& isrc,
       const SkRect& dst,
-      const SkPaint* paint,
+      const CdlPaint* paint,
       SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
     this->drawImageRect(image.get(), isrc, dst, paint, cons);
   }
   void drawImageRect(
       const sk_sp<SkImage>& image,
       const SkRect& dst,
-      const SkPaint* paint,
+      const CdlPaint* paint,
       SkCanvas::SrcRectConstraint cons = SkCanvas::kStrict_SrcRectConstraint) {
     this->drawImageRect(image.get(), dst, paint, cons);
   }
@@ -326,18 +308,12 @@ class CdlCanvas : public SkRefCnt {
                               SkScalar,
                               const CdlPaint&);
 
-  virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*);
-  virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&);
+  virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint*);
 
   virtual void onDrawImageRect(const SkImage*,
                                const SkRect*,
                                const SkRect&,
-                               const SkPaint*,
-                               SkCanvas::SrcRectConstraint);
-  virtual void onDrawImageRect(const SkImage*,
-                               const SkRect*,
-                               const SkRect&,
-                               const CdlPaint&,
+                               const CdlPaint*,
                                SkCanvas::SrcRectConstraint);
 
   virtual void onDrawPoints(SkCanvas::PointMode,

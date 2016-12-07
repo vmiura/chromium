@@ -67,20 +67,14 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                       SkScalar,
                       const CdlPaint&) override;
 
-  void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
   void onDrawImage(const SkImage*,
                    SkScalar,
                    SkScalar,
-                   const CdlPaint&) override;
+                  const CdlPaint*) override;
   void onDrawImageRect(const SkImage*,
                        const SkRect*,
                        const SkRect&,
-                       const SkPaint*,
-                       SkCanvas::SrcRectConstraint) override;
-  void onDrawImageRect(const SkImage*,
-                       const SkRect*,
-                       const SkRect&,
-                       const CdlPaint&,
+                       const CdlPaint*,
                        SkCanvas::SrcRectConstraint) override;
   void onDrawPoints(SkCanvas::PointMode,
                     size_t count,

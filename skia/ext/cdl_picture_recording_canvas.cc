@@ -156,14 +156,7 @@ void CdlPictureRecordingCanvas::onDrawTextBlob(const SkTextBlob* blob,
 void CdlPictureRecordingCanvas::onDrawImage(const SkImage* img,
                                             SkScalar x,
                                             SkScalar y,
-                                            const SkPaint* paint) {
-  fDL->drawImage(sk_ref_sp(img), x, y, paint);
-}
-
-void CdlPictureRecordingCanvas::onDrawImage(const SkImage* img,
-                                            SkScalar x,
-                                            SkScalar y,
-                                            const CdlPaint& paint) {
+                                            const CdlPaint* paint) {
   fDL->drawImage(sk_ref_sp(img), x, y, paint);
 }
 
@@ -171,15 +164,7 @@ void CdlPictureRecordingCanvas::onDrawImageRect(
     const SkImage* img,
     const SkRect* src,
     const SkRect& dst,
-    const SkPaint* paint,
-    SkCanvas::SrcRectConstraint constraint) {
-  fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
-}
-void CdlPictureRecordingCanvas::onDrawImageRect(
-    const SkImage* img,
-    const SkRect* src,
-    const SkRect& dst,
-    const CdlPaint& paint,
+    const CdlPaint* paint,
     SkCanvas::SrcRectConstraint constraint) {
   fDL->drawImageRect(sk_ref_sp(img), src, dst, paint, constraint);
 }

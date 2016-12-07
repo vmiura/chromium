@@ -88,9 +88,7 @@ namespace {
   M(DrawText)       \
   M(DrawPosText)    \
   M(DrawTextBlob)   \
-  M(DrawPoints)     \
-  M(DrawImageX)     \
-  M(DrawImageRectX)
+  M(DrawPoints)
 
 #define M(T) T,
 enum class Type : uint8_t { TYPES(M) };
@@ -332,7 +330,7 @@ struct DrawImage final : Op {
   DrawImage(sk_sp<const SkImage>&& image,
             SkScalar x,
             SkScalar y,
-            const SkPaint* paint)
+            const CdlPaint* paint)
       : image(std::move(image)), x(x), y(y) {
     if (paint) {
       this->paint = *paint;
@@ -340,24 +338,9 @@ struct DrawImage final : Op {
   }
   sk_sp<const SkImage> image;
   SkScalar x, y;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawImage(image.get(), x, y, &paint);
-  }
-};
-struct DrawImageX final : Op {
-  static const auto kType = Type::DrawImage;
-  DrawImageX(sk_sp<const SkImage>&& image,
-             SkScalar x,
-             SkScalar y,
-             const CdlPaint& paint)
-      : image(std::move(image)), x(x), y(y), paint(paint) {}
-  sk_sp<const SkImage> image;
-  SkScalar x, y;
   CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    SkPaint pt = paint.toSkPaint();
-    c->drawImage(image.get(), x, y, &pt);
+    c->drawImage(image.get(), x, y, &paint);
   }
 };
 
@@ -366,7 +349,7 @@ struct DrawImageRect final : Op {
   DrawImageRect(sk_sp<const SkImage>&& image,
                 const SkRect* src,
                 const SkRect& dst,
-                const SkPaint* paint,
+                const CdlPaint* paint,
                 SkCanvas::SrcRectConstraint constraint)
       : image(std::move(image)), dst(dst), constraint(constraint) {
     this->src = src ? *src : SkRect::MakeIWH(image->width(), image->height());
@@ -376,32 +359,10 @@ struct DrawImageRect final : Op {
   }
   sk_sp<const SkImage> image;
   SkRect src, dst;
-  SkPaint paint;
-  SkCanvas::SrcRectConstraint constraint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawImageRect(image.get(), src, dst, &paint, constraint);
-  }
-};
-struct DrawImageRectX final : Op {
-  static const auto kType = Type::DrawImageRect;
-  DrawImageRectX(sk_sp<const SkImage>&& image,
-                 const SkRect* src,
-                 const SkRect& dst,
-                 const CdlPaint& paint,
-                 SkCanvas::SrcRectConstraint constraint)
-      : image(std::move(image)),
-        dst(dst),
-        paint(paint),
-        constraint(constraint) {
-    this->src = src ? *src : SkRect::MakeIWH(image->width(), image->height());
-  }
-  sk_sp<const SkImage> image;
-  SkRect src, dst;
   CdlPaint paint;
   SkCanvas::SrcRectConstraint constraint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    SkPaint pt = paint.toSkPaint();
-    c->drawImageRect(image.get(), src, dst, &pt, constraint);
+    c->drawImageRect(image.get(), src, dst, &paint, constraint);
   }
 };
 
@@ -585,29 +546,16 @@ void CdlPictureBuffer::drawPicture(const CdlPicture* picture,
 void CdlPictureBuffer::drawImage(sk_sp<const SkImage> image,
                                  SkScalar x,
                                  SkScalar y,
-                                 const SkPaint* paint) {
+                                 const CdlPaint* paint) {
   this->push<DrawImage>(0, std::move(image), x, y, paint);
-}
-void CdlPictureBuffer::drawImage(sk_sp<const SkImage> image,
-                                 SkScalar x,
-                                 SkScalar y,
-                                 const CdlPaint& paint) {
-  this->push<DrawImageX>(0, std::move(image), x, y, paint);
 }
 
 void CdlPictureBuffer::drawImageRect(sk_sp<const SkImage> image,
                                      const SkRect* src,
                                      const SkRect& dst,
-                                     const SkPaint* paint,
+                                     const CdlPaint* paint,
                                      SkCanvas::SrcRectConstraint constraint) {
   this->push<DrawImageRect>(0, std::move(image), src, dst, paint, constraint);
-}
-void CdlPictureBuffer::drawImageRect(sk_sp<const SkImage> image,
-                                     const SkRect* src,
-                                     const SkRect& dst,
-                                     const CdlPaint& paint,
-                                     SkCanvas::SrcRectConstraint constraint) {
-  this->push<DrawImageRectX>(0, std::move(image), src, dst, paint, constraint);
 }
 
 void CdlPictureBuffer::drawText(const void* text,

@@ -286,7 +286,7 @@ void BitmapImage::draw(
     }
   }
 
-  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, paint,
+  canvas->drawImageRect(image.get(), adjustedSrcRect, adjustedDstRect, &paint,
                         WebCoreClampingModeToSkiaRectConstraint(clampMode));
 
   if (image->isLazyGenerated())
