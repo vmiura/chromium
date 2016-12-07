@@ -58,7 +58,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                   size_t,
                   SkScalar x,
                   SkScalar y,
-                  const SkPaint&) override;
+                  const CdlPaint&) override;
   void onDrawPosText(const void*,
                      size_t,
                      const SkPoint[],
@@ -66,7 +66,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onDrawTextBlob(const SkTextBlob*,
                       SkScalar,
                       SkScalar,
-                      const SkPaint&) override;
+                      const CdlPaint&) override;
 
   void onDrawBitmap(const SkBitmap&,
                     SkScalar,

@@ -140,7 +140,7 @@ void CdlPictureRecordingCanvas::onDrawText(const void* text,
                                            size_t bytes,
                                            SkScalar x,
                                            SkScalar y,
-                                           const SkPaint& paint) {
+                                           const CdlPaint& paint) {
   fDL->drawText(text, bytes, x, y, paint);
 }
 void CdlPictureRecordingCanvas::onDrawPosText(const void* text,
@@ -153,7 +153,7 @@ void CdlPictureRecordingCanvas::onDrawPosText(const void* text,
 void CdlPictureRecordingCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                                SkScalar x,
                                                SkScalar y,
-                                               const SkPaint& paint) {
+                                               const CdlPaint& paint) {
   fDL->drawTextBlob(blob, x, y, paint);
 }
 

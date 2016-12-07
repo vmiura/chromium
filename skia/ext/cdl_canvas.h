@@ -220,7 +220,7 @@ class CdlCanvas : public SkRefCnt {
                 size_t byteLength,
                 SkScalar x,
                 SkScalar y,
-                const SkPaint& paint);
+                const CdlPaint& paint);
   void drawPosText(const void* text,
                    size_t byteLength,
                    const SkPoint pos[],
@@ -228,11 +228,11 @@ class CdlCanvas : public SkRefCnt {
   void drawTextBlob(const SkTextBlob* blob,
                     SkScalar x,
                     SkScalar y,
-                    const SkPaint& paint);
+                    const CdlPaint& paint);
   void drawTextBlob(const sk_sp<SkTextBlob>& blob,
                     SkScalar x,
                     SkScalar y,
-                    const SkPaint& paint) {
+                    const CdlPaint& paint) {
     this->drawTextBlob(blob.get(), x, y, paint);
   }
 
@@ -292,7 +292,7 @@ class CdlCanvas : public SkRefCnt {
                           size_t,
                           SkScalar x,
                           SkScalar y,
-                          const SkPaint&);
+                          const CdlPaint&);
   virtual void onDrawPosText(const void*,
                              size_t,
                              const SkPoint[],
@@ -300,7 +300,7 @@ class CdlCanvas : public SkRefCnt {
   virtual void onDrawTextBlob(const SkTextBlob*,
                               SkScalar,
                               SkScalar,
-                              const SkPaint&);
+                              const CdlPaint&);
 
   virtual void onDrawBitmap(const SkBitmap&,
                             SkScalar,

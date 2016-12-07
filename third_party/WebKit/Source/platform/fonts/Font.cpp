@@ -135,9 +135,8 @@ bool Font::drawText(CdlCanvas* canvas,
 
   if (runInfo.cachedTextBlob && runInfo.cachedTextBlob->get()) {
     // we have a pre-cached blob -- happy joy!
-    SkPaint pt = paint.toSkPaint();
     canvas->drawTextBlob(runInfo.cachedTextBlob->get(), point.x(), point.y(),
-                         pt);
+                         paint);
     return true;
   }
 
@@ -361,8 +360,6 @@ void Font::drawGlyphBuffer(CdlCanvas* canvas,
   GlyphBufferBloberizer bloberizer(glyphBuffer, this, deviceScaleFactor);
   std::pair<sk_sp<SkTextBlob>, BlobRotation> blob;
 
-  SkPaint pt = paint.toSkPaint();
-
   while (!bloberizer.done()) {
     blob = bloberizer.next();
     ASSERT(blob.first);
@@ -376,7 +373,7 @@ void Font::drawGlyphBuffer(CdlCanvas* canvas,
       canvas->concat(m);
     }
 
-    canvas->drawTextBlob(blob.first, point.x(), point.y(), pt);
+    canvas->drawTextBlob(blob.first, point.x(), point.y(), paint);
   }
 
   // Cache results when

@@ -417,11 +417,11 @@ struct DrawImageRectX final : Op {
 
 struct DrawText final : Op {
   static const auto kType = Type::DrawText;
-  DrawText(size_t bytes, SkScalar x, SkScalar y, const SkPaint& paint)
+  DrawText(size_t bytes, SkScalar x, SkScalar y, const CdlPaint& paint)
       : bytes(bytes), x(x), y(y), paint(paint) {}
   size_t bytes;
   SkScalar x, y;
-  SkPaint paint;
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawText(pod<void>(this), bytes, x, y, paint);
   }
@@ -445,11 +445,11 @@ struct DrawTextBlob final : Op {
   DrawTextBlob(const SkTextBlob* blob,
                SkScalar x,
                SkScalar y,
-               const SkPaint& paint)
+               const CdlPaint& paint)
       : blob(sk_ref_sp(blob)), x(x), y(y), paint(paint) {}
   sk_sp<const SkTextBlob> blob;
   SkScalar x, y;
-  SkPaint paint;
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext& dc) {
     c->drawTextBlob(blob.get(), x, y, paint);
   }
@@ -627,7 +627,7 @@ void CdlPictureBuffer::drawText(const void* text,
                                 size_t bytes,
                                 SkScalar x,
                                 SkScalar y,
-                                const SkPaint& paint) {
+                                const CdlPaint& paint) {
   void* pod = this->push<DrawText>(bytes, bytes, x, y, paint);
   copy_v(pod, (const char*)text, bytes);
 }
@@ -644,7 +644,7 @@ void CdlPictureBuffer::drawPosText(const void* text,
 void CdlPictureBuffer::drawTextBlob(const SkTextBlob* blob,
                                     SkScalar x,
                                     SkScalar y,
-                                    const SkPaint& paint) {
+                                    const CdlPaint& paint) {
   this->push<DrawTextBlob>(0, blob, x, y, paint);
 }
 

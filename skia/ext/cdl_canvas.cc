@@ -385,6 +385,14 @@ void CdlCanvas::drawImageRect(const SkImage* image,
   this->onDrawImageRect(image, &src, dst, paint, constraint);
 }
 
+void CdlCanvas::drawText(const void* text,
+                         size_t byteLength,
+                         SkScalar x,
+                         SkScalar y,
+                         const CdlPaint& paint) {
+  this->onDrawText(text, byteLength, x, y, paint);
+}
+
 void CdlCanvas::drawPosText(const void* text,
                             size_t byteLength,
                             const SkPoint pos[],
@@ -394,18 +402,10 @@ void CdlCanvas::drawPosText(const void* text,
   }
 }
 
-void CdlCanvas::drawText(const void* text,
-                         size_t byteLength,
-                         SkScalar x,
-                         SkScalar y,
-                         const SkPaint& paint) {
-  this->onDrawText(text, byteLength, x, y, paint);
-}
-
 void CdlCanvas::drawTextBlob(const SkTextBlob* blob,
                              SkScalar x,
                              SkScalar y,
-                             const SkPaint& paint) {
+                             const CdlPaint& paint) {
   RETURN_ON_NULL(blob);
   this->onDrawTextBlob(blob, x, y, paint);
 }
@@ -551,13 +551,15 @@ void CdlCanvas::onDrawPicture(const CdlPicture* picture,
 void CdlCanvas::onDrawAnnotation(SkRect const& r, char const* c, SkData* d) {
   canvas_->drawAnnotation(r, c, d);
 }
+
 void CdlCanvas::onDrawText(const void* text,
                            size_t byteLength,
                            SkScalar x,
                            SkScalar y,
-                           const SkPaint& paint) {
-  canvas_->drawText(text, byteLength, x, y, paint);
+                           const CdlPaint& paint) {
+  canvas_->drawText(text, byteLength, x, y, paint.toSkPaint());
 }
+
 void CdlCanvas::onDrawPosText(const void* text,
                               size_t byteLength,
                               const SkPoint pos[],
@@ -568,8 +570,8 @@ void CdlCanvas::onDrawPosText(const void* text,
 void CdlCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                SkScalar x,
                                SkScalar y,
-                               const SkPaint& paint) {
-  canvas_->drawTextBlob(blob, x, y, paint);
+                               const CdlPaint& paint) {
+  canvas_->drawTextBlob(blob, x, y, paint.toSkPaint());
 }
 void CdlCanvas::onDrawBitmap(const SkBitmap& bitmap,
                              SkScalar x,
