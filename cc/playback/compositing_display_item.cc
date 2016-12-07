@@ -12,6 +12,7 @@
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
 #include "cc/proto/skia_conversions.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkFlattenable.h"
@@ -97,7 +98,7 @@ void CompositingDisplayItem::ToProtobuf(proto::DisplayItem* proto) const {
 
 void CompositingDisplayItem::Raster(CdlCanvas* canvas,
                                     SkPicture::AbortCallback* callback) const {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setBlendMode(xfermode_);
   paint.setAlpha(alpha_);
   paint.setColorFilter(color_filter_);

@@ -49,7 +49,7 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
 
   void save();
   void saveLayer(const SkRect*,
-                 const SkPaint*,
+                 const CdlPaint*,
                  const SkImageFilter*,
                  SkCanvas::SaveLayerFlags);
   void restore();

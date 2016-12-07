@@ -40,7 +40,7 @@ int CdlPictureRecordingCanvas::onSave() {
   return INHERITED::onSave();
 }
 
-int CdlPictureRecordingCanvas::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
+int CdlPictureRecordingCanvas::onSaveLayer(const SaveLayerRec& rec) {
   fDL->saveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
   return INHERITED::onSaveLayer(rec);
 }

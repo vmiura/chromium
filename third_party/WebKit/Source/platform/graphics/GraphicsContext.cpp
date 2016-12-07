@@ -146,11 +146,7 @@ void GraphicsContext::saveLayer(const SkRect* bounds, const CdlPaint* paint) {
     return;
 
   ASSERT(m_canvas);
-
-  SkPaint pt;
-  if (paint)
-    pt = paint->toSkPaint();
-  m_canvas->saveLayer(bounds, paint ? &pt : 0);
+  m_canvas->saveLayer(bounds, paint);
 }
 
 void GraphicsContext::restoreLayer() {
@@ -328,8 +324,7 @@ void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,
   picturePaint.setImageFilter(SkPictureImageFilter::MakeForLocalSpace(
       picture->toSkPicture(), sourceBounds,
       static_cast<SkFilterQuality>(imageInterpolationQuality())));
-  SkPaint pt = picturePaint.toSkPaint();
-  m_canvas->saveLayer(&sourceBounds, &pt);
+  m_canvas->saveLayer(&sourceBounds, &picturePaint);
   m_canvas->restore();
   m_canvas->restore();
 }

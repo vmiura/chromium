@@ -54,31 +54,40 @@ int CdlCanvas::onSave() {
   return canvas_->save();
 }
 
-int CdlCanvas::saveLayer(const SkRect* bounds, const SkPaint* paint) {
-  return this->saveLayer(SkCanvas::SaveLayerRec(bounds, paint, 0));
+int CdlCanvas::saveLayer(const SkRect* bounds, const CdlPaint* paint) {
+  return this->saveLayer(SaveLayerRec(bounds, paint, 0));
 }
 
-int CdlCanvas::saveLayer(const SkCanvas::SaveLayerRec& rec) {
+int CdlCanvas::saveLayer(const SaveLayerRec& rec) {
   return this->onSaveLayer(rec);
 }
 
-int CdlCanvas::onSaveLayer(const SkCanvas::SaveLayerRec& rec) {
-  return canvas_->saveLayer(rec);
+int CdlCanvas::onSaveLayer(const SaveLayerRec& rec) {
+  SkPaint sk_paint;
+  if (rec.fPaint)
+    sk_paint = rec.fPaint->toSkPaint();
+
+  SkCanvas::SaveLayerRec sk_rec(
+      rec.fBounds,
+      rec.fPaint ? &sk_paint : nullptr,
+      rec.fBackdrop,
+      rec.fSaveLayerFlags);
+  return canvas_->saveLayer(sk_rec);
 }
 
 int CdlCanvas::saveLayerAlpha(const SkRect* bounds, U8CPU alpha) {
   if (0xFF == alpha) {
     return this->saveLayer(bounds, nullptr);
   } else {
-    SkPaint tmpPaint;
+    CdlPaint tmpPaint;
     tmpPaint.setAlpha(alpha);
     return this->saveLayer(bounds, &tmpPaint);
   }
 }
 
 int CdlCanvas::saveLayerPreserveLCDTextRequests(const SkRect* bounds,
-                                                const SkPaint* paint) {
-  return this->saveLayer(SkCanvas::SaveLayerRec(
+                                                const CdlPaint* paint) {
+  return this->saveLayer(SaveLayerRec(
       bounds, paint, SkCanvas::kPreserveLCDText_SaveLayerFlag));
 }
 
@@ -505,8 +514,7 @@ class CdlAutoCanvasMatrixPaint {
       if (matrix) {
         matrix->mapRect(&newBounds);
       }
-      SkPaint sk_paint = paint->toSkPaint();
-      canvas->saveLayer(&newBounds, &sk_paint);
+      canvas->saveLayer(&newBounds, paint);
     } else if (matrix) {
       canvas->save();
     }
@@ -526,13 +534,12 @@ class CdlAutoCanvasMatrixPaint {
 void CdlCanvas::onDrawPicture(const CdlPicture* picture,
                               const SkMatrix* matrix,
                               const CdlPaint* paint) {
-  // TODO(CDL): CdlPaint::computeFastBounds
-  if (!paint || /*paint->canComputeFastBounds()*/ false) {
+  if (!paint || paint->canComputeFastBounds()) {
     SkRect bounds = picture->cullRect();
 
-    // if (paint) {
-    //    paint->computeFastBounds(bounds, &bounds);
-    //}
+    if (paint) {
+      paint->computeFastBounds(bounds, &bounds);
+    }
     if (matrix) {
       matrix->mapRect(&bounds);
     }

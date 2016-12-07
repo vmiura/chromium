@@ -401,8 +401,7 @@ void SVGImage::drawInternal(CdlCanvas* canvas,
     CdlAutoCanvasRestore ar(canvas, false);
     if (drawNeedsLayer(paint)) {
       SkRect layerRect = dstRect;
-      SkPaint pt = paint.toSkPaint();
-      canvas->saveLayer(&layerRect, &pt);
+      canvas->saveLayer(&layerRect, &paint);
     }
     sk_sp<CdlPicture> recording = imagePicture.endRecording();
     recording->draw(canvas);

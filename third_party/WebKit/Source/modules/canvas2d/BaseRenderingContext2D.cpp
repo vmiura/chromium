@@ -1068,8 +1068,7 @@ void BaseRenderingContext2D::drawImageInternal(CdlCanvas* c,
     layerPaint.setBlendMode(paint->getBlendMode());
     layerPaint.setImageFilter(sk_ref_sp(paint->getImageFilter()));
 
-    SkPaint pt = layerPaint.toSkPaint();
-    c->saveLayer(&bounds, &pt);
+    c->saveLayer(&bounds, &layerPaint);
     c->concat(ctm);
     imagePaint.setBlendMode(SkBlendMode::kSrcOver);
     imagePaint.setImageFilter(nullptr);

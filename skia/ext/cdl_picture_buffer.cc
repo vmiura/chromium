@@ -132,7 +132,7 @@ struct Restore final : Op {
 struct SaveLayer final : Op {
   static const auto kType = Type::SaveLayer;
   SaveLayer(const SkRect* bounds,
-            const SkPaint* paint,
+            const CdlPaint* paint,
             const SkImageFilter* backdrop,
             SkCanvas::SaveLayerFlags flags) {
     if (bounds) {
@@ -140,16 +140,18 @@ struct SaveLayer final : Op {
     }
     if (paint) {
       this->paint = *paint;
+      has_paint = true;
     }
     this->backdrop = sk_ref_sp(backdrop);
     this->flags = flags;
   }
   SkRect bounds = kUnset;
-  SkPaint paint;
+  CdlPaint paint;
+  bool has_paint = false;
   sk_sp<const SkImageFilter> backdrop;
   SkCanvas::SaveLayerFlags flags;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->saveLayer({maybe_unset(bounds), &paint, backdrop.get(), flags});
+    c->saveLayer({maybe_unset(bounds), has_paint ? &paint : nullptr, backdrop.get(), flags});
   }
 };
 
@@ -508,7 +510,7 @@ void CdlPictureBuffer::restore() {
   this->push<Restore>(0);
 }
 void CdlPictureBuffer::saveLayer(const SkRect* bounds,
-                                 const SkPaint* paint,
+                                 const CdlPaint* paint,
                                  const SkImageFilter* backdrop,
                                  SkCanvas::SaveLayerFlags flags) {
   this->push<SaveLayer>(0, bounds, paint, backdrop, flags);

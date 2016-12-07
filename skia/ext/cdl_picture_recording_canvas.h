@@ -28,7 +28,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void reset(CdlPictureBuffer*, const SkRect& bounds);
 
   int onSave() override;
-  int onSaveLayer(const SkCanvas::SaveLayerRec&) override;
+  int onSaveLayer(const SaveLayerRec&) override;
   void onRestore() override;
 
   void onConcat(const SkMatrix&) override;

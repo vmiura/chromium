@@ -11,6 +11,8 @@
 #include "cc/output/render_surface_filters.h"
 #include "cc/proto/display_item.pb.h"
 #include "cc/proto/gfx_conversions.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -66,7 +68,7 @@ void FilterDisplayItem::Raster(CdlCanvas* canvas,
   SkRect boundaries = RectFToSkRect(bounds_);
   boundaries.offset(-origin_.x(), -origin_.y());
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setBlendMode(SkBlendMode::kSrcOver);
   paint.setImageFilter(std::move(image_filter));
   canvas->saveLayer(&boundaries, &paint);

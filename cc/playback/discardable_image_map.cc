@@ -137,13 +137,13 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
     AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, &pt);
   }
 
-  int onSaveLayer(const SkCanvas::SaveLayerRec& rec) override {
+  int onSaveLayer(const SaveLayerRec& rec) override {
     saved_paints_.push_back(*rec.fPaint);
     return CdlNoDrawCanvas::onSaveLayer(rec);
   }
 
   int onSave() override {
-    saved_paints_.push_back(SkPaint());
+    saved_paints_.push_back(CdlPaint());
     return CdlNoDrawCanvas::onSave();
   }
 
@@ -206,7 +206,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
   std::vector<std::pair<DrawImage, gfx::Rect>>* image_set_;
   const SkRect canvas_bounds_;
   const gfx::Size canvas_size_;
-  std::vector<SkPaint> saved_paints_;
+  std::vector<CdlPaint> saved_paints_;
 };
 
 }  // namespace

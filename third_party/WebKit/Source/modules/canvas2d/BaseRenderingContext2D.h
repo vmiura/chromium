@@ -452,8 +452,7 @@ void BaseRenderingContext2D::compositedDraw(
       drawFunc(c, &foregroundPaint);
     } else {
       ASSERT(isFullCanvasCompositeMode(state().globalComposite()));
-      SkPaint pt = compositePaint.toSkPaint();
-      c->saveLayer(nullptr, &pt);
+      c->saveLayer(nullptr, &compositePaint);
       shadowPaint.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
       drawFunc(c, &shadowPaint);
@@ -462,8 +461,7 @@ void BaseRenderingContext2D::compositedDraw(
   }
 
   compositePaint.setImageFilter(std::move(filter));
-  SkPaint pt = compositePaint.toSkPaint();
-  c->saveLayer(nullptr, &pt);
+  c->saveLayer(nullptr, &compositePaint);
   CdlPaint foregroundPaint =
       *state().getPaint(paintType, DrawForegroundOnly, imageType);
   foregroundPaint.setBlendMode(SkBlendMode::kSrcOver);

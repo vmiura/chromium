@@ -52,7 +52,7 @@ void CrossfadeGeneratedImage::drawCrossfade(CdlCanvas* canvas,
   // applied here instead of inside the layer.  This probably faulty behavior
   // was maintained in order to preserve pre-existing behavior while refactoring
   // this code.  This should be investigated further. crbug.com/472634
-  SkPaint layerPaint;
+  CdlPaint layerPaint;
   layerPaint.setBlendMode(paint.getBlendMode());
   CdlAutoCanvasRestore ar(canvas, false);
   canvas->saveLayer(nullptr, &layerPaint);

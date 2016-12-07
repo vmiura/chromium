@@ -36,14 +36,40 @@ class CdlCanvas : public SkRefCnt {
   int save();
   void restore();
 
-  int saveLayer(const SkRect* bounds, const SkPaint* paint);
-  int saveLayer(const SkRect& bounds, const SkPaint* paint) {
+  typedef uint32_t SaveLayerFlags;
+
+  struct SaveLayerRec {
+    SaveLayerRec()
+      : fBounds(nullptr), fPaint(nullptr), fBackdrop(nullptr), fSaveLayerFlags(0)
+    {}
+    SaveLayerRec(const SkRect* bounds, const CdlPaint* paint, SaveLayerFlags saveLayerFlags = 0)
+      : fBounds(bounds)
+      , fPaint(paint)
+      , fBackdrop(nullptr)
+      , fSaveLayerFlags(saveLayerFlags)
+    {}
+    SaveLayerRec(const SkRect* bounds, const CdlPaint* paint, const SkImageFilter* backdrop,
+                 SaveLayerFlags saveLayerFlags)
+      : fBounds(bounds)
+      , fPaint(paint)
+      , fBackdrop(backdrop)
+      , fSaveLayerFlags(saveLayerFlags)
+    {}
+
+    const SkRect*           fBounds;    // optional
+    const CdlPaint*         fPaint;     // optional
+    const SkImageFilter*    fBackdrop;  // optional
+    SaveLayerFlags          fSaveLayerFlags;
+  };
+
+  int saveLayer(const SkRect* bounds, const CdlPaint* paint);
+  int saveLayer(const SkRect& bounds, const CdlPaint* paint) {
     return this->saveLayer(&bounds, paint);
   }
-  int saveLayer(const SkCanvas::SaveLayerRec& origRec);
+  int saveLayer(const SaveLayerRec& origRec);
   int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
   int saveLayerPreserveLCDTextRequests(const SkRect* bounds,
-                                       const SkPaint* paint);
+                                       const CdlPaint* paint);
 
   int getSaveCount() const;
   void restoreToCount(int saveCount);
@@ -258,7 +284,7 @@ class CdlCanvas : public SkRefCnt {
   };
 
   virtual int onSave();
-  virtual int onSaveLayer(const SkCanvas::SaveLayerRec&);
+  virtual int onSaveLayer(const SaveLayerRec&);
   virtual void onRestore();
 
   virtual void onConcat(const SkMatrix&);

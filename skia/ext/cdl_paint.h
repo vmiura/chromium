@@ -121,6 +121,11 @@ class CdlPaint {
   SkDrawLooper* getLooper() const { return paint_.getLooper(); }
   void setLooper(sk_sp<SkDrawLooper> looper) { paint_.setLooper(looper); }
 
+  bool canComputeFastBounds() const { return paint_.canComputeFastBounds(); }
+  const SkRect& computeFastBounds(const SkRect& orig, SkRect* storage) const {
+    return paint_.computeFastBounds(orig, storage);
+  }
+
  protected:
   SkPaint paint_;
   sk_sp<CdlShader> shader_;
