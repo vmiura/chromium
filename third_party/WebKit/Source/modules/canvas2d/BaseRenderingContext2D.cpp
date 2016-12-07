@@ -1762,7 +1762,7 @@ void BaseRenderingContext2D::checkOverdraw(
     alpha = paint->getAlpha();
 
     if (isSourceOver && imageType == CanvasRenderingContext2DState::NoImage) {
-      SkShader* shader = paint->getShader();
+      CdlShader* shader = paint->getShader();
       if (shader) {
         if (shader->isOpaque() && alpha == 0xFF)
           imageBuffer()->willOverwriteCanvas();

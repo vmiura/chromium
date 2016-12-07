@@ -11,28 +11,15 @@
 #include "base/logging.h"
 #include "cdl_shader.h"
 
-CdlPaint::CdlPaint() : is_dirty_(true) {}
+CdlPaint::CdlPaint() {}
 CdlPaint::~CdlPaint() {}
 
 CdlPaint::CdlPaint(const CdlPaint& paint)
-    : sk_paint(paint.sk_paint),
-      is_dirty_(paint.is_dirty_),
-      shader_(paint.shader_) {}
-
-CdlPaint::CdlPaint(const SkPaint& paint) : sk_paint(paint), is_dirty_(false) {}
+    : paint_(paint.paint_), shader_(paint.shader_) {}
 
 SkPaint CdlPaint::toSkPaint() const {
-  // TODO(cdl): This is not thread safe!
-  if (is_dirty_) {
-    is_dirty_ = false;
-    if (shader_.get()) {
-      sk_paint.setShader(shader_->createSkShader());
-    }
-
-    // Change to rainbow colors to show invalidations.
-    // sk_paint.setColor((sk_paint.getColor() & 0xff777777) + rand() %
-    // 0x777777);
-  }
-
-  return sk_paint;
+  SkPaint paint = paint_;
+  if (shader_.get())
+    paint.setShader(shader_->createSkShader());
+  return paint;
 }

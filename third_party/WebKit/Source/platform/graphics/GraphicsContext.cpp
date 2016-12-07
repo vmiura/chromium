@@ -632,7 +632,7 @@ void GraphicsContext::drawLineForDocumentMarker(const FloatPoint& pt,
   localMatrix.setTranslate(originX, originY);
 
   CdlPaint paint;
-  paint.setCdlShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(
+  paint.setShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(
       *misspellBitmap[index], SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &localMatrix)));
 

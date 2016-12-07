@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/atomicops.h"
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -44,6 +45,6 @@ void CdlPicture::playback(CdlCanvas* canvas,
 }
 
 uint32_t CdlPicture::uniqueID() const {
-  // TODO(cdl): picture_->getGenerationID();
-  return 0;
+  static base::subtle::Atomic32 g_next_id = 1;
+  return base::subtle::Barrier_AtomicIncrement(&g_next_id, 1);
 }

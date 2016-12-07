@@ -82,8 +82,6 @@ class CdlNoDrawCanvas : public CdlCanvas {
                     size_t count,
                     const SkPoint pts[],
                     const SkPaint&) override {}
-
-  std::unique_ptr<SkCanvas> owned_canvas_;
 };
 
 #endif  // SKIA_EXT_CDL_NO_DRAW_CANVAS_H_

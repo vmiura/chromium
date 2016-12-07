@@ -25,6 +25,10 @@ CdlShader::CdlShader(const SkMatrix* local_matrix) {
 
 CdlShader::~CdlShader() {}
 
+bool CdlShader::isOpaque() const {
+  return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 class CdlWrapSkShader : public CdlShader {
@@ -32,6 +36,8 @@ class CdlWrapSkShader : public CdlShader {
   CdlWrapSkShader(sk_sp<SkShader> shader) : shader_(shader) {}
 
   sk_sp<SkShader> createSkShader() override { return shader_; }
+
+  bool isOpaque() const override { return shader_->isOpaque(); }
 
  private:
   sk_sp<SkShader> shader_;
@@ -61,6 +67,8 @@ class CdlImageShader : public CdlShader {
 
     return shader_ = image_->makeShader(tmx_, tmy_, &getLocalMatrix());
   }
+
+  bool isOpaque() const override { return image_->isOpaque(); }
 
  private:
   sk_sp<SkImage> image_;

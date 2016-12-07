@@ -22,100 +22,71 @@ class CdlPaint {
   CdlPaint();
   ~CdlPaint();
   CdlPaint(const CdlPaint& paint);
-  explicit CdlPaint(const SkPaint& paint);
+
   SkPaint toSkPaint() const;
 
-  void setStyle(SkPaint::Style style) { sk_paint.setStyle(style); }
-  SkPaint::Style getStyle() const { return sk_paint.getStyle(); }
+  SkPaint::Style getStyle() const { return paint_.getStyle(); }
+  void setStyle(SkPaint::Style style) { paint_.setStyle(style); }
 
-  void setColor(SkColor color) {
-    sk_paint.setColor(color);
-    is_dirty_ = true;
-  }
-  SkColor getColor() const { return sk_paint.getColor(); }
+  SkColor getColor() const { return paint_.getColor(); }
+  void setColor(SkColor color) { paint_.setColor(color); }
 
-  void setAlpha(U8CPU a) { sk_paint.setAlpha(a); }
-  uint8_t getAlpha() const { return sk_paint.getAlpha(); }
+  uint8_t getAlpha() const { return paint_.getAlpha(); }
+  void setAlpha(U8CPU a) { paint_.setAlpha(a); }
 
-  void setBlendMode(SkBlendMode mode) { sk_paint.setBlendMode(mode); }
-  SkBlendMode getBlendMode() const { return sk_paint.getBlendMode(); }
-  bool isSrcOver() const { return sk_paint.isSrcOver(); }
+  void setBlendMode(SkBlendMode mode) { paint_.setBlendMode(mode); }
+  SkBlendMode getBlendMode() const { return paint_.getBlendMode(); }
+  bool isSrcOver() const { return paint_.isSrcOver(); }
 
-  bool isAntiAlias() const { return sk_paint.isAntiAlias(); }
-  void setAntiAlias(bool aa) { sk_paint.setAntiAlias(aa); }
+  bool isAntiAlias() const { return paint_.isAntiAlias(); }
+  void setAntiAlias(bool aa) { paint_.setAntiAlias(aa); }
 
-  void setDither(bool dither) { sk_paint.setDither(dither); }
+  void setDither(bool dither) { paint_.setDither(dither); }
 
   void setFilterQuality(SkFilterQuality quality) {
-    sk_paint.setFilterQuality(quality);
+    paint_.setFilterQuality(quality);
   }
-  SkFilterQuality getFilterQuality() const {
-    return sk_paint.getFilterQuality();
-  }
+  SkFilterQuality getFilterQuality() const { return paint_.getFilterQuality(); }
 
-  void setStrokeWidth(SkScalar width) { sk_paint.setStrokeWidth(width); }
-  SkScalar getStrokeWidth() const { return sk_paint.getStrokeWidth(); }
+  SkScalar getStrokeWidth() const { return paint_.getStrokeWidth(); }
+  void setStrokeWidth(SkScalar width) { paint_.setStrokeWidth(width); }
 
-  void setStrokeMiter(SkScalar miter) { sk_paint.setStrokeMiter(miter); }
-  SkScalar getStrokeMiter() const { return sk_paint.getStrokeMiter(); }
+  SkScalar getStrokeMiter() const { return paint_.getStrokeMiter(); }
+  void setStrokeMiter(SkScalar miter) { paint_.setStrokeMiter(miter); }
 
-  void setStrokeCap(SkPaint::Cap cap) { sk_paint.setStrokeCap(cap); }
-  SkPaint::Cap getStrokeCap() const { return sk_paint.getStrokeCap(); }
+  SkPaint::Cap getStrokeCap() const { return paint_.getStrokeCap(); }
+  void setStrokeCap(SkPaint::Cap cap) { paint_.setStrokeCap(cap); }
 
-  void setStrokeJoin(SkPaint::Join join) { sk_paint.setStrokeJoin(join); }
-  SkPaint::Join getStrokeJoin() const { return sk_paint.getStrokeJoin(); }
+  SkPaint::Join getStrokeJoin() const { return paint_.getStrokeJoin(); }
+  void setStrokeJoin(SkPaint::Join join) { paint_.setStrokeJoin(join); }
 
+  SkColorFilter* getColorFilter() const { return paint_.getColorFilter(); }
   void setColorFilter(sk_sp<SkColorFilter> filter) {
-    sk_paint.setColorFilter(filter);
-  }
-  void setLooper(sk_sp<SkDrawLooper> looper) { sk_paint.setLooper(looper); }
-
-  void setMaskFilter(sk_sp<SkMaskFilter> mask) {
-    sk_paint.setMaskFilter(mask);
-  };
-  SkMaskFilter* getMaskFilter() const { return sk_paint.getMaskFilter(); }
-
-  void setShader(sk_sp<SkShader> shader) { sk_paint.setShader(shader); }
-  SkShader* getShader() const { return sk_paint.getShader(); }
-
-  void setCdlShader(sk_sp<CdlShader> shader) {
-    shader_ = shader;
-    is_dirty_ = true;
+    paint_.setColorFilter(filter);
   }
 
-  CdlShader* getCdlShader() const { return shader_.get(); }
+  SkMaskFilter* getMaskFilter() const { return paint_.getMaskFilter(); }
+  void setMaskFilter(sk_sp<SkMaskFilter> mask) { paint_.setMaskFilter(mask); };
 
+  CdlShader* getShader() const { return shader_.get(); }
+  void setShader(sk_sp<CdlShader> shader) { shader_ = shader; }
+
+  SkPathEffect* getPathEffect() const { return paint_.getPathEffect(); }
   void setPathEffect(sk_sp<SkPathEffect> effect) {
-    sk_paint.setPathEffect(effect);
+    paint_.setPathEffect(effect);
   }
-  SkPathEffect* getPathEffect() const { return sk_paint.getPathEffect(); }
 
-  bool getFillPath(const SkPath& src,
-                   SkPath* dst,
-                   const SkRect* cullRect,
-                   SkScalar resScale = 1) {
-    return sk_paint.getFillPath(src, dst, cullRect, resScale);
-  };
-
-  SkColorFilter* getColorFilter() const { return sk_paint.getColorFilter(); }
-
-  SkImageFilter* getImageFilter() const { return sk_paint.getImageFilter(); }
+  SkImageFilter* getImageFilter() const { return paint_.getImageFilter(); }
   void setImageFilter(sk_sp<SkImageFilter> filter) {
-    sk_paint.setImageFilter(filter);
+    paint_.setImageFilter(filter);
   }
 
-  SkDrawLooper* getDrawLooper() const { return sk_paint.getDrawLooper(); }
-  SkDrawLooper* getLooper() const { return sk_paint.getLooper(); }
-
-  int getTextBlobIntercepts(const SkTextBlob* blob,
-                            const SkScalar bounds[2],
-                            SkScalar* intervals) const {
-    return sk_paint.getTextBlobIntercepts(blob, bounds, intervals);
-  }
+  SkDrawLooper* getDrawLooper() const { return paint_.getDrawLooper(); }
+  SkDrawLooper* getLooper() const { return paint_.getLooper(); }
+  void setLooper(sk_sp<SkDrawLooper> looper) { paint_.setLooper(looper); }
 
  protected:
-  mutable SkPaint sk_paint;
-  mutable bool is_dirty_;
+  SkPaint paint_;
   sk_sp<CdlShader> shader_;
 };
 

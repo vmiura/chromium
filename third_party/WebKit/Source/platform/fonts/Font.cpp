@@ -401,6 +401,7 @@ static int getInterceptsFromBloberizer(const GlyphBuffer& glyphBuffer,
   GlyphBufferBloberizer bloberizer(glyphBuffer, font, deviceScaleFactor);
   std::pair<sk_sp<SkTextBlob>, BlobRotation> blob;
 
+  SkPaint skPaint = paint.toSkPaint();
   int numIntervals = 0;
   while (!bloberizer.done()) {
     blob = bloberizer.next();
@@ -416,8 +417,8 @@ static int getInterceptsFromBloberizer(const GlyphBuffer& glyphBuffer,
     SkScalar* offsetInterceptsBuffer = nullptr;
     if (interceptsBuffer)
       offsetInterceptsBuffer = &interceptsBuffer[numIntervals];
-    numIntervals += paint.getTextBlobIntercepts(blob.first.get(), boundsArray,
-                                                offsetInterceptsBuffer);
+    numIntervals += skPaint.getTextBlobIntercepts(blob.first.get(), boundsArray,
+                                                  offsetInterceptsBuffer);
   }
   return numIntervals;
 }
@@ -430,16 +431,18 @@ void Font::getTextIntercepts(const TextRunPaintInfo& runInfo,
   if (shouldSkipDrawing())
     return;
 
+  SkPaint skPaint = paint.toSkPaint();
   if (runInfo.cachedTextBlob && runInfo.cachedTextBlob->get()) {
     SkScalar boundsArray[2] = {std::get<0>(bounds), std::get<1>(bounds)};
-    int numIntervals = paint.getTextBlobIntercepts(
+    int numIntervals = skPaint.getTextBlobIntercepts(
         runInfo.cachedTextBlob->get(), boundsArray, nullptr);
     if (!numIntervals)
       return;
     DCHECK_EQ(numIntervals % 2, 0);
     intercepts.resize(numIntervals / 2);
-    paint.getTextBlobIntercepts(runInfo.cachedTextBlob->get(), boundsArray,
-                                reinterpret_cast<SkScalar*>(intercepts.data()));
+    skPaint.getTextBlobIntercepts(
+        runInfo.cachedTextBlob->get(), boundsArray,
+        reinterpret_cast<SkScalar*>(intercepts.data()));
     return;
   }
 

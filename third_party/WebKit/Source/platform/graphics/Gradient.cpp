@@ -253,7 +253,7 @@ void Gradient::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!m_cachedShader || localMatrix != m_cachedShader->getLocalMatrix())
     m_cachedShader = createShader(localMatrix);
 
-  paint.setCdlShader(m_cachedShader);
+  paint.setShader(m_cachedShader);
 
   // Legacy behavior: gradients are always dithered.
   paint.setDither(true);

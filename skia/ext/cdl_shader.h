@@ -35,6 +35,7 @@ class CdlShader : public SkRefCnt {
   const SkMatrix& getLocalMatrix() const { return local_matrix_; }
 
   virtual sk_sp<SkShader> createSkShader() = 0;
+  virtual bool isOpaque() const;
 
  private:
   SkMatrix local_matrix_;

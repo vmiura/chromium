@@ -294,7 +294,7 @@ void Image::drawPattern(GraphicsContext& context,
     paint.setFilterQuality(
         context.computeFilterQuality(this, destRect, normSrcRect));
     paint.setAntiAlias(context.shouldAntialias());
-    paint.setCdlShader(createPatternShader(
+    paint.setShader(createPatternShader(
         image.get(), localMatrix, paint,
         FloatSize(repeatSpacing.width() / scale.width(),
                   repeatSpacing.height() / scale.height())));
@@ -323,9 +323,9 @@ bool Image::applyShader(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!image)
     return false;
 
-  paint.setCdlShader(
-      CdlShader::MakeImageShader(image, SkShader::kRepeat_TileMode,
-                                 SkShader::kRepeat_TileMode, &localMatrix));
+  paint.setShader(CdlShader::MakeImageShader(image, SkShader::kRepeat_TileMode,
+                                             SkShader::kRepeat_TileMode,
+                                             &localMatrix));
 
   // Animation is normally refreshed in draw() impls, which we don't call when
   // painting via shaders.
