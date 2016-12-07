@@ -382,11 +382,10 @@ void Canvas::DrawImageInt(const ImageSkia& image,
   ScopedCanvas scoper(this);
   canvas_->scale(SkFloatToScalar(1.0f / bitmap_scale),
                  SkFloatToScalar(1.0f / bitmap_scale));
-  SkPaint sk_paint = paint.toSkPaint();
   canvas_->drawBitmap(bitmap,
                       SkFloatToScalar(x * bitmap_scale),
                       SkFloatToScalar(y * bitmap_scale),
-                      &sk_paint);
+                      &paint);
 }
 
 void Canvas::DrawImageInt(const ImageSkia& image,

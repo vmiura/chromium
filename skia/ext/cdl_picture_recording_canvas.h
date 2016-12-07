@@ -67,10 +67,6 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
                       SkScalar,
                       const CdlPaint&) override;
 
-  void onDrawBitmap(const SkBitmap&,
-                    SkScalar,
-                    SkScalar,
-                    const SkPaint*) override;
   void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*) override;
   void onDrawImage(const SkImage*,
                    SkScalar,

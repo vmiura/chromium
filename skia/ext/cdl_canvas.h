@@ -166,7 +166,7 @@ class CdlCanvas : public SkRefCnt {
   void drawBitmap(const SkBitmap& bitmap,
                   SkScalar left,
                   SkScalar top,
-                  const SkPaint* paint = NULL);
+                  const CdlPaint* paint = NULL);
 
   void drawImage(const SkImage* image,
                  SkScalar left,
@@ -326,10 +326,6 @@ class CdlCanvas : public SkRefCnt {
                               SkScalar,
                               const CdlPaint&);
 
-  virtual void onDrawBitmap(const SkBitmap&,
-                            SkScalar,
-                            SkScalar,
-                            const SkPaint*);
   virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const SkPaint*);
   virtual void onDrawImage(const SkImage*, SkScalar, SkScalar, const CdlPaint&);
 

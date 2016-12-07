@@ -354,7 +354,7 @@ void PepperGraphics2DHost::Paint(blink::WebCanvas* canvas,
     canvas->drawRect(sk_invalidate_rect, paint);
   }
 
-  SkPaint paint;
+  CdlPaint paint;
   if (is_always_opaque_) {
     // When we know the device is opaque, we can disable blending for slightly
     // more optimized painting.

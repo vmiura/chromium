@@ -345,11 +345,14 @@ void CdlCanvas::drawPath(const SkPath& path, const CdlPaint& paint) {
 void CdlCanvas::drawBitmap(const SkBitmap& bitmap,
                            SkScalar dx,
                            SkScalar dy,
-                           const SkPaint* paint) {
+                           const CdlPaint* paint) {
   if (bitmap.drawsNothing()) {
     return;
   }
-  this->onDrawBitmap(bitmap, dx, dy, paint);
+  SkPaint sk_paint;
+  if (paint)
+    sk_paint = paint->toSkPaint();
+  this->onDrawImage(SkImage::MakeFromBitmap(bitmap).get(), dx, dy, paint ? &sk_paint : nullptr);
 }
 
 void CdlCanvas::drawImage(const SkImage* image,
@@ -576,12 +579,6 @@ void CdlCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                SkScalar y,
                                const CdlPaint& paint) {
   canvas_->drawTextBlob(blob, x, y, paint.toSkPaint());
-}
-void CdlCanvas::onDrawBitmap(const SkBitmap& bitmap,
-                             SkScalar x,
-                             SkScalar y,
-                             const SkPaint* paint) {
-  canvas_->drawBitmap(bitmap, x, y, paint);
 }
 
 void CdlCanvas::onDrawImage(const SkImage* image,

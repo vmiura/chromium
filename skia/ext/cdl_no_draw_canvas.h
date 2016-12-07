@@ -51,11 +51,6 @@ class CdlNoDrawCanvas : public CdlCanvas {
                       SkScalar,
                       const CdlPaint&) override {}
 
-  void onDrawBitmap(const SkBitmap&,
-                    SkScalar,
-                    SkScalar,
-                    const SkPaint*) override {}
-
   void onDrawImage(const SkImage*,
                    SkScalar,
                    SkScalar,

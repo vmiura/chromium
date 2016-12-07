@@ -153,13 +153,6 @@ void CdlPictureRecordingCanvas::onDrawTextBlob(const SkTextBlob* blob,
   fDL->drawTextBlob(blob, x, y, paint);
 }
 
-void CdlPictureRecordingCanvas::onDrawBitmap(const SkBitmap& bm,
-                                             SkScalar x,
-                                             SkScalar y,
-                                             const SkPaint* paint) {
-  fDL->drawImage(SkImage::MakeFromBitmap(bm), x, y, paint);
-}
-
 void CdlPictureRecordingCanvas::onDrawImage(const SkImage* img,
                                             SkScalar x,
                                             SkScalar y,
