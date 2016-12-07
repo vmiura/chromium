@@ -609,7 +609,7 @@ class LayerTreeHostContextTestLostContextSucceedsWithContent
     root_->SetIsDrawable(true);
 
     // Paint non-solid color.
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(SkColorSetARGB(100, 80, 200, 200));
     client_.add_draw_rect(gfx::Rect(5, 5), paint);
 
@@ -688,7 +688,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
 
   void SetupTree() override {
     // Paint non-solid color.
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(SkColorSetARGB(100, 80, 200, 200));
     client_.add_draw_rect(gfx::Rect(5, 5), paint);
 
@@ -1602,7 +1602,7 @@ class LayerTreeHostContextTestLoseWorkerContextDuringPrepareTiles
     : public LayerTreeTest {
  protected:
   void SetupTree() override {
-    SkPaint paint;
+    CdlPaint paint;
     client_.set_fill_with_nonsolid_color(true);
     client_.add_draw_rect(gfx::Rect(5, 5), paint);
 

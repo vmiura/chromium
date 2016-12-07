@@ -11,6 +11,7 @@
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/skia_common.h"
 #include "cc/tiles/software_image_decode_cache.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -27,13 +28,13 @@ TEST(RasterSourceTest, AnalyzeIsSolidUnscaled) {
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
 
-  SkPaint solid_paint;
+  CdlPaint solid_paint;
   SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
   solid_paint.setColor(solid_color);
 
   SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
   SkColor color = SK_ColorTRANSPARENT;
-  SkPaint non_solid_paint;
+  CdlPaint non_solid_paint;
   bool is_solid_color = false;
   non_solid_paint.setColor(non_solid_color);
 
@@ -101,12 +102,12 @@ TEST(RasterSourceTest, AnalyzeIsSolidScaled) {
 
   SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
   SkColor color = SK_ColorTRANSPARENT;
-  SkPaint solid_paint;
+  CdlPaint solid_paint;
   bool is_solid_color = false;
   solid_paint.setColor(solid_color);
 
   SkColor non_solid_color = SkColorSetARGB(128, 45, 56, 67);
-  SkPaint non_solid_paint;
+  CdlPaint non_solid_paint;
   non_solid_paint.setColor(non_solid_color);
 
   recording_source->add_draw_rect_with_paint(gfx::Rect(0, 0, 400, 400),
@@ -257,7 +258,7 @@ TEST(RasterSourceTest, RasterFullContents) {
 
   // Because the caller sets content opaque, it also promises that it
   // has at least filled in layer_bounds opaquely.
-  SkPaint white_paint;
+  CdlPaint white_paint;
   white_paint.setColor(SK_ColorWHITE);
   recording_source->add_draw_rect_with_paint(gfx::Rect(layer_bounds),
                                              white_paint);
@@ -322,7 +323,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
   recording_source->SetClearCanvasWithDebugColor(false);
 
   // First record everything as white.
-  SkPaint white_paint;
+  CdlPaint white_paint;
   white_paint.setColor(SK_ColorWHITE);
   recording_source->add_draw_rect_with_paint(gfx::Rect(layer_bounds),
                                              white_paint);
@@ -361,7 +362,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
   }
 
   // Re-record everything as black.
-  SkPaint black_paint;
+  CdlPaint black_paint;
   black_paint.setColor(SK_ColorBLACK);
   recording_source->add_draw_rect_with_paint(gfx::Rect(layer_bounds),
                                              black_paint);
@@ -418,7 +419,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
 
   // First record everything as white.
   const unsigned alpha_dark = 10u;
-  SkPaint white_paint;
+  CdlPaint white_paint;
   white_paint.setColor(SK_ColorWHITE);
   white_paint.setAlpha(alpha_dark);
   recording_source->add_draw_rect_with_paint(gfx::Rect(layer_bounds),
@@ -561,7 +562,7 @@ TEST(RasterSourceTest, ImageHijackCanvasRespectsSharedCanvasTransform) {
                                    gfx::Point(0, 0));
 
   // 2. Cover everything in red.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(SK_ColorRED);
   recording_source->add_draw_rect_with_paint(gfx::Rect(size), paint);
 

@@ -13,6 +13,7 @@
 #include "cc/test/fake_image_serialization_processor.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/skia_common.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -189,7 +190,7 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
   std::unique_ptr<FakeRecordingSource> recording_source =
       CreateRecordingSource(recorded_viewport);
 
-  SkPaint simple_paint;
+  CdlPaint simple_paint;
   simple_paint.setColor(SkColorSetARGB(255, 12, 23, 34));
 
   SkBitmap non_discardable_bitmap;

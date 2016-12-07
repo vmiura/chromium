@@ -8,8 +8,8 @@
 
 #include "cc/playback/display_item_list_settings.h"
 #include "cc/playback/drawing_display_item.h"
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -26,12 +26,12 @@ SolidColorContentLayerClient::PaintContentsToDisplayList(
     PaintingControlSetting painting_control) {
   CdlPictureRecorder recorder;
   gfx::Rect clip(PaintableRegion());
-  SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(clip));
+  CdlCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(clip));
 
   canvas->clear(SK_ColorTRANSPARENT);
 
   if (border_size_ != 0) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(border_color_);
     canvas->drawRect(
@@ -39,7 +39,7 @@ SolidColorContentLayerClient::PaintContentsToDisplayList(
         paint);
   }
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(color_);
   canvas->drawRect(

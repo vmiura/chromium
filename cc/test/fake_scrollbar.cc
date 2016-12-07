@@ -4,8 +4,9 @@
 
 #include "cc/test/fake_scrollbar.h"
 
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -80,7 +81,7 @@ void FakeScrollbar::PaintPart(CdlCanvas* canvas,
 
   // Fill the scrollbar with a different color each time.
   fill_color_++;
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(false);
   paint.setColor(paint_fill_color());
   paint.setStyle(SkPaint::kFill_Style);

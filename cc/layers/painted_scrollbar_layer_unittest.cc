@@ -22,7 +22,7 @@ class MockScrollbar : public FakeScrollbar {
  public:
   MockScrollbar() : FakeScrollbar(true, true, true) {}
   MOCK_METHOD3(PaintPart,
-               void(SkCanvas* canvas,
+               void(CdlCanvas* canvas,
                     ScrollbarPart part,
                     const gfx::Rect& content_rect));
 };

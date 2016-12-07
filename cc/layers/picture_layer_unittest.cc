@@ -29,6 +29,7 @@
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/single_thread_proxy.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -170,7 +171,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   FakeContentLayerClient client;
   client.set_bounds(layer_size);
   client.add_draw_image(CreateDiscardableImage(layer_size), gfx::Point(),
-                        SkPaint());
+                        CdlPaint());
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(10, 10));
 

@@ -12,6 +12,8 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 
 #if !defined(OS_ANDROID)
 
@@ -49,10 +51,10 @@ class PaintedScrollbar : public Scrollbar {
   gfx::Rect TrackRect() const override { return rect_; }
   float ThumbOpacity() const override { return 1.f; }
   bool NeedsPaintPart(ScrollbarPart part) const override { return true; }
-  void PaintPart(SkCanvas* canvas,
+  void PaintPart(CdlCanvas* canvas,
                  ScrollbarPart part,
                  const gfx::Rect& content_rect) override {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(paint_scale_));
     paint.setColor(color_);

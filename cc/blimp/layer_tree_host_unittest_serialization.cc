@@ -24,6 +24,7 @@
 #include "cc/trees/layer_tree.h"
 #include "cc/trees/layer_tree_host_common.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -366,7 +367,7 @@ TEST_F(LayerTreeHostSerializationTest, PictureLayerSerialization) {
   FakeContentLayerClient content_client;
   gfx::Size bounds(256, 256);
   content_client.set_bounds(bounds);
-  SkPaint simple_paint;
+  CdlPaint simple_paint;
   simple_paint.setColor(SkColorSetARGB(255, 12, 23, 34));
   content_client.add_draw_rect(gfx::Rect(bounds), simple_paint);
   scoped_refptr<FakePictureLayer> picture_layer_src =
@@ -382,7 +383,7 @@ TEST_F(LayerTreeHostSerializationTest, PictureLayerSerialization) {
 
   // Another round.
   picture_layer_src->SetNeedsDisplay();
-  SkPaint new_paint;
+  CdlPaint new_paint;
   new_paint.setColor(SkColorSetARGB(255, 12, 32, 44));
   content_client.add_draw_rect(gfx::Rect(bounds), new_paint);
   VerifySerializationAndDeserialization();

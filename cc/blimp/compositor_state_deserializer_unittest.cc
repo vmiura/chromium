@@ -27,8 +27,9 @@
 #include "cc/test/stub_layer_tree_host_client.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host_common.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
 namespace {
@@ -339,8 +340,8 @@ TEST_F(CompositorStateDeserializerTest, PictureLayer) {
 
   gfx::PointF offset(2.f, 3.f);
   CdlPictureRecorder recorder;
-  SkCanvas* canvas;
-  SkPaint red_paint;
+  CdlCanvas* canvas;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   canvas = recorder.beginRecording(SkRect::MakeXYWH(
       offset.x(), offset.y(), layer_size.width(), layer_size.height()));

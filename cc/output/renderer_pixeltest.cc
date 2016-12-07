@@ -20,6 +20,7 @@
 #include "cc/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "media/base/video_frame.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -969,11 +970,11 @@ TYPED_TEST(IntersectingQuadSoftwareTest, PictureQuads) {
                        this->quad_rect_.width() / 2,
                        this->quad_rect_.height() / 2);
 
-  SkPaint black_paint;
+  CdlPaint black_paint;
   black_paint.setColor(SK_ColorBLACK);
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
-  SkPaint green_paint;
+  CdlPaint green_paint;
   green_paint.setColor(SK_ColorGREEN);
 
   std::unique_ptr<FakeRecordingSource> blue_recording =
@@ -2629,10 +2630,10 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
 
   std::unique_ptr<FakeRecordingSource> blue_recording =
       FakeRecordingSource::CreateFilledRecordingSource(blue_rect.size());
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   blue_recording->add_draw_rect_with_paint(blue_rect, red_paint);
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
   blue_recording->add_draw_rect_with_paint(blue_clip_rect, blue_paint);
   blue_recording->Rerecord();
@@ -2660,7 +2661,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
   // One viewport-filling green quad.
   std::unique_ptr<FakeRecordingSource> green_recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  SkPaint green_paint;
+  CdlPaint green_paint;
   green_paint.setColor(SK_ColorGREEN);
   green_recording->add_draw_rect_with_paint(viewport, green_paint);
   green_recording->Rerecord();
@@ -2701,7 +2702,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
   // One viewport-filling 0.5-opacity green quad.
   std::unique_ptr<FakeRecordingSource> green_recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  SkPaint green_paint;
+  CdlPaint green_paint;
   green_paint.setColor(SK_ColorGREEN);
   green_recording->add_draw_rect_with_paint(viewport, green_paint);
   green_recording->Rerecord();
@@ -2722,7 +2723,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
   // One viewport-filling white quad.
   std::unique_ptr<FakeRecordingSource> white_recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  SkPaint white_paint;
+  CdlPaint white_paint;
   white_paint.setColor(SK_ColorWHITE);
   white_recording->add_draw_rect_with_paint(viewport, white_paint);
   white_recording->Rerecord();
@@ -2790,7 +2791,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadDisableImageFiltering) {
 
   std::unique_ptr<FakeRecordingSource> recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  SkPaint paint;
+  CdlPaint paint;
   paint.setFilterQuality(kLow_SkFilterQuality);
   recording->add_draw_image_with_paint(surface->makeImageSnapshot(),
                                        gfx::Point(), paint);
@@ -2839,7 +2840,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
 
   std::unique_ptr<FakeRecordingSource> recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
-  SkPaint paint;
+  CdlPaint paint;
   paint.setFilterQuality(kLow_SkFilterQuality);
   recording->add_draw_image_with_paint(surface->makeImageSnapshot(),
                                        gfx::Point(), paint);
@@ -3044,10 +3045,10 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   std::unique_ptr<FakeRecordingSource> green_recording =
       FakeRecordingSource::CreateFilledRecordingSource(viewport.size());
 
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   green_recording->add_draw_rect_with_paint(viewport, red_paint);
-  SkPaint green_paint;
+  CdlPaint green_paint;
   green_paint.setColor(SK_ColorGREEN);
   green_recording->add_draw_rect_with_paint(green_rect1, green_paint);
   green_recording->add_draw_rect_with_paint(green_rect2, green_paint);
@@ -3116,7 +3117,7 @@ TYPED_TEST(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
     recording->add_draw_rect_with_paint(iter.rect(), red_paint);
   }
 
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
   recording->add_draw_rectf_with_paint(blue_layer_rect1, blue_paint);
   recording->add_draw_rectf_with_paint(blue_layer_rect2, blue_paint);

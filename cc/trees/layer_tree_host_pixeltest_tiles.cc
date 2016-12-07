@@ -11,8 +11,10 @@
 #include "cc/playback/display_item_list_settings.h"
 #include "cc/playback/drawing_display_item.h"
 #include "cc/test/layer_tree_pixel_test.h"
-#include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+
 
 #if !defined(OS_ANDROID)
 
@@ -115,7 +117,7 @@ class BlueYellowClient : public ContentLayerClient {
         DisplayItemList::Create(settings);
 
     CdlPictureRecorder recorder;
-    SkCanvas* canvas =
+    CdlCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(size_)));
     gfx::Rect top(0, 0, size_.width(), size_.height() / 2);
     gfx::Rect bottom(0, size_.height() / 2, size_.width(), size_.height() / 2);
@@ -123,7 +125,7 @@ class BlueYellowClient : public ContentLayerClient {
     gfx::Rect blue_rect = blue_top_ ? top : bottom;
     gfx::Rect yellow_rect = blue_top_ ? bottom : top;
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
 
     paint.setColor(SK_ColorBLUE);

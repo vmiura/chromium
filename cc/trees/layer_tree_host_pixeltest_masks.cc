@@ -14,8 +14,9 @@
 #include "cc/test/layer_tree_pixel_resource_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
-#include "third_party/skia/include/core/SkImage.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 #if !defined(OS_ANDROID)
@@ -40,10 +41,10 @@ class MaskContentLayerClient : public ContentLayerClient {
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
     CdlPictureRecorder recorder;
-    SkCanvas* canvas =
+    CdlCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(2));
     paint.setColor(SK_ColorWHITE);
@@ -110,7 +111,7 @@ TEST_P(LayerTreeHostMasksPixelTest, ImageMaskOfLayer) {
   scoped_refptr<DisplayItemList> mask_display_list =
       client.PaintContentsToDisplayList(
           ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
-  mask_display_list->Raster(canvas, nullptr);
+  mask_display_list->Raster(CdlCanvas::Make(canvas).get(), nullptr);
   mask->SetImage(surface->makeImageSnapshot());
 
   scoped_refptr<SolidColorLayer> green = CreateSolidColorLayerWithBorder(
@@ -163,10 +164,10 @@ class CheckerContentLayerClient : public ContentLayerClient {
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
     CdlPictureRecorder recorder;
-    SkCanvas* canvas =
+    CdlCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(4));
     paint.setColor(color_);
@@ -207,10 +208,10 @@ class CircleContentLayerClient : public ContentLayerClient {
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting picture_control) override {
     CdlPictureRecorder recorder;
-    SkCanvas* canvas =
+    CdlCanvas* canvas =
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(SK_ColorWHITE);
     canvas->clear(SK_ColorTRANSPARENT);

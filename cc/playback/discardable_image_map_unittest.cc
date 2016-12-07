@@ -14,6 +14,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/skia_common.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -79,7 +80,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
         discardable_image[y][x] = CreateDiscardableImage(gfx::Size(500, 500));
-        SkPaint paint;
+        CdlPaint paint;
         content_layer_client.add_draw_image(
             discardable_image[y][x], gfx::Point(x * 512 + 6, y * 512 + 6),
             paint);
@@ -152,7 +153,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
         discardable_image[y][x] = CreateDiscardableImage(gfx::Size(500, 500));
-        SkPaint paint;
+        CdlPaint paint;
         content_layer_client.add_draw_image(
             discardable_image[y][x],
             gfx::Point(1024 + x * 512 + 6, y * 512 + 6), paint);
@@ -248,7 +249,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
         discardable_image[y][x] = CreateDiscardableImage(gfx::Size(500, 500));
-        SkPaint paint;
+        CdlPaint paint;
         content_layer_client.add_draw_image(
             discardable_image[y][x], gfx::Point(x * 512 + 6, y * 512 + 6),
             paint);
@@ -291,7 +292,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMassiveImage) {
 
   sk_sp<SkImage> discardable_image =
       CreateDiscardableImage(gfx::Size(1 << 25, 1 << 25));
-  SkPaint paint;
+  CdlPaint paint;
   content_layer_client.add_draw_image(discardable_image, gfx::Point(0, 0),
                                       paint);
 
@@ -324,7 +325,7 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
     DiscardableImageMap::ScopedMetadataGenerator generator(&image_map,
                                                            visible_rect.size());
     {
-      std::unique_ptr<SkPaint> paint(new SkPaint());
+      std::unique_ptr<CdlPaint> paint(new CdlPaint());
       generator.canvas()->saveLayer(gfx::RectToSkRect(visible_rect),
                                     paint.get());
     }
@@ -346,7 +347,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
   int dimension = std::numeric_limits<int>::max();
   sk_sp<SkImage> discardable_image =
       CreateDiscardableImage(gfx::Size(dimension, dimension));
-  SkPaint paint;
+  CdlPaint paint;
   content_layer_client.add_draw_image(discardable_image, gfx::Point(42, 42),
                                       paint);
 
@@ -381,7 +382,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImageMaxLayer) {
 
   sk_sp<SkImage> discardable_image =
       CreateDiscardableImage(gfx::Size(dimension, dimension));
-  SkPaint paint;
+  CdlPaint paint;
   content_layer_client.add_draw_image(discardable_image, gfx::Point(0, 0),
                                       paint);
   content_layer_client.add_draw_image(discardable_image, gfx::Point(10000, 0),
@@ -432,7 +433,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesRectInBounds) {
   sk_sp<SkImage> long_discardable_image =
       CreateDiscardableImage(gfx::Size(10000, 100));
 
-  SkPaint paint;
+  CdlPaint paint;
   content_layer_client.add_draw_image(discardable_image, gfx::Point(-10, -11),
                                       paint);
   content_layer_client.add_draw_image(discardable_image, gfx::Point(950, 951),

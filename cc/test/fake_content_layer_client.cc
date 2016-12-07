@@ -10,8 +10,9 @@
 #include "cc/playback/display_item_list_settings.h"
 #include "cc/playback/drawing_display_item.h"
 #include "cc/playback/transform_display_item.h"
-#include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 
@@ -19,12 +20,12 @@ namespace cc {
 
 FakeContentLayerClient::ImageData::ImageData(sk_sp<const SkImage> img,
                                              const gfx::Point& point,
-                                             const SkPaint& paint)
+                                             const CdlPaint& paint)
     : image(std::move(img)), point(point), paint(paint) {}
 
 FakeContentLayerClient::ImageData::ImageData(sk_sp<const SkImage> img,
                                              const gfx::Transform& transform,
-                                             const SkPaint& paint)
+                                             const CdlPaint& paint)
     : image(std::move(img)), transform(transform), paint(paint) {}
 
 FakeContentLayerClient::ImageData::ImageData(const ImageData& other) = default;
@@ -62,7 +63,7 @@ FakeContentLayerClient::PaintContentsToDisplayList(
   for (RectPaintVector::const_iterator it = draw_rects_.begin();
        it != draw_rects_.end(); ++it) {
     const gfx::RectF& draw_rect = it->first;
-    const SkPaint& paint = it->second;
+    const CdlPaint& paint = it->second;
     CdlCanvas* canvas = recorder.beginRecording(gfx::RectFToSkRect(draw_rect));
     canvas->drawRect(gfx::RectFToSkRect(draw_rect), paint);
     display_list->CreateAndAppendDrawingItem<DrawingDisplayItem>(
@@ -75,7 +76,7 @@ FakeContentLayerClient::PaintContentsToDisplayList(
       display_list->CreateAndAppendPairedBeginItem<TransformDisplayItem>(
           it->transform);
     }
-    SkCanvas* canvas =
+    CdlCanvas* canvas =
         recorder.beginRecording(it->image->width(), it->image->height());
     canvas->drawImage(it->image.get(), it->point.x(), it->point.y(),
                       &it->paint);
@@ -90,9 +91,9 @@ FakeContentLayerClient::PaintContentsToDisplayList(
     gfx::Rect draw_rect = PaintableRegion();
     bool red = true;
     while (!draw_rect.IsEmpty()) {
-      SkPaint paint;
+      CdlPaint paint;
       paint.setColor(red ? SK_ColorRED : SK_ColorBLUE);
-      SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(draw_rect));
+      CdlCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(draw_rect));
       canvas->drawIRect(gfx::RectToSkIRect(draw_rect), paint);
       display_list->CreateAndAppendDrawingItem<DrawingDisplayItem>(
           draw_rect, recorder.finishRecordingAsPicture());

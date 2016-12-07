@@ -25,14 +25,14 @@
 #include "cc/test/fake_image_serialization_processor.h"
 #include "cc/test/geometry_test_utils.h"
 #include "cc/test/skia_common.h"
+#include "skia/ext/cdl_paint.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
-
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
 #include "third_party/skia/include/utils/SkPictureUtils.h"
@@ -52,10 +52,10 @@ scoped_refptr<DisplayItemList> CreateDefaultList() {
 
 sk_sp<const CdlPicture> CreateRectPicture(const gfx::Rect& bounds) {
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
+  CdlCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
   canvas->drawRect(
       SkRect::MakeXYWH(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
-      SkPaint());
+      CdlPaint());
   return recorder.finishRecordingAsPicture();
 }
 
@@ -64,7 +64,7 @@ void AppendFirstSerializationTestPicture(scoped_refptr<DisplayItemList> list,
   gfx::PointF offset(2.f, 3.f);
   CdlPictureRecorder recorder;
 
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
 
   CdlCanvas* canvas = recorder.beginRecording(SkRect::MakeXYWH(
@@ -80,7 +80,7 @@ void AppendSecondSerializationTestPicture(scoped_refptr<DisplayItemList> list,
   gfx::PointF offset(2.f, 2.f);
   CdlPictureRecorder recorder;
 
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
 
   CdlCanvas* canvas = recorder.beginRecording(SkRect::MakeXYWH(
@@ -291,9 +291,9 @@ TEST(DisplayItemListTest, SerializeTransformItem) {
 TEST(DisplayItemListTest, SingleDrawingItem) {
   gfx::Rect layer_rect(100, 100);
   CdlPictureRecorder recorder;
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   unsigned char pixels[4 * 100 * 100] = {0};
   DisplayItemListSettings settings;
@@ -321,10 +321,10 @@ TEST(DisplayItemListTest, SingleDrawingItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + offset.x(), 0.f + offset.y(),
                                  60.f + offset.x(), 60.f + offset.y(),
-                                 red_paint);
+                                 red_paint.toSkPaint());
   expected_canvas.drawRectCoords(50.f + offset.x(), 50.f + offset.y(),
                                  75.f + offset.x(), 75.f + offset.y(),
-                                 blue_paint);
+                                 blue_paint.toSkPaint());
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -332,9 +332,9 @@ TEST(DisplayItemListTest, SingleDrawingItem) {
 TEST(DisplayItemListTest, ClipItem) {
   gfx::Rect layer_rect(100, 100);
   CdlPictureRecorder recorder;
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   unsigned char pixels[4 * 100 * 100] = {0};
   DisplayItemListSettings settings;
@@ -377,11 +377,11 @@ TEST(DisplayItemListTest, ClipItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + first_offset.x(), 0.f + first_offset.y(),
                                  60.f + first_offset.x(),
-                                 60.f + first_offset.y(), red_paint);
+                                 60.f + first_offset.y(), red_paint.toSkPaint());
   expected_canvas.clipRect(gfx::RectToSkRect(clip_rect));
   expected_canvas.drawRectCoords(
       50.f + second_offset.x(), 50.f + second_offset.y(),
-      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint);
+      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint.toSkPaint());
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -389,9 +389,9 @@ TEST(DisplayItemListTest, ClipItem) {
 TEST(DisplayItemListTest, TransformItem) {
   gfx::Rect layer_rect(100, 100);
   CdlPictureRecorder recorder;
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   unsigned char pixels[4 * 100 * 100] = {0};
   DisplayItemListSettings settings;
@@ -434,11 +434,11 @@ TEST(DisplayItemListTest, TransformItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + first_offset.x(), 0.f + first_offset.y(),
                                  60.f + first_offset.x(),
-                                 60.f + first_offset.y(), red_paint);
+                                 60.f + first_offset.y(), red_paint.toSkPaint());
   expected_canvas.setMatrix(transform.matrix());
   expected_canvas.drawRectCoords(
       50.f + second_offset.x(), 50.f + second_offset.y(),
-      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint);
+      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint.toSkPaint());
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -477,7 +477,7 @@ TEST(DisplayItemListTest, FilterItem) {
   {
     CdlPictureRecorder recorder;
 
-    SkPaint red_paint;
+    CdlPaint red_paint;
     red_paint.setColor(SK_ColorRED);
 
     CdlCanvas* canvas = recorder.beginRecording(
@@ -496,13 +496,13 @@ TEST(DisplayItemListTest, FilterItem) {
 
   SkBitmap expected_bitmap;
   unsigned char expected_pixels[4 * 100 * 100] = {0};
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(SkColorSetRGB(64, 64, 64));
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
   SkCanvas expected_canvas(expected_bitmap);
-  expected_canvas.drawRect(RectFToSkRect(filter_bounds), paint);
+  expected_canvas.drawRect(RectFToSkRect(filter_bounds), paint.toSkPaint());
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -510,9 +510,9 @@ TEST(DisplayItemListTest, FilterItem) {
 TEST(DisplayItemListTest, CompactingItems) {
   gfx::Rect layer_rect(100, 100);
   CdlPictureRecorder recorder;
-  SkPaint blue_paint;
+  CdlPaint blue_paint;
   blue_paint.setColor(SK_ColorBLUE);
-  SkPaint red_paint;
+  CdlPaint red_paint;
   red_paint.setColor(SK_ColorRED);
   unsigned char pixels[4 * 100 * 100] = {0};
 
@@ -557,7 +557,7 @@ TEST(DisplayItemListTest, ApproximateMemoryUsage) {
     // Make an CdlPicture whose size is known.
     gfx::Rect layer_rect(100, 100);
     CdlPictureRecorder recorder;
-    SkPaint blue_paint;
+    CdlPaint blue_paint;
     blue_paint.setColor(SK_ColorBLUE);
     SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(layer_rect));
     for (int i = 0; i < kNumCommandsInTestSkPicture; i++)

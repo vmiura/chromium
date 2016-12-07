@@ -14,11 +14,13 @@ class SkPixelSerializer;
 namespace cc {
 namespace {
 
+/*
 sk_sp<SkPicture> CopySkPicture(const SkPicture* picture) {
   sk_sp<SkData> data = picture->serialize();
   DCHECK_GT(data->size(), 0u);
   return SkPicture::MakeFromData(data.get());
 }
+*/
 
 }  // namespace
 
