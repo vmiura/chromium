@@ -31,6 +31,9 @@ class CdlPaint {
 
   SkColor getColor() const { return paint_.getColor(); }
   void setColor(SkColor color) { paint_.setColor(color); }
+  void setARGB(U8CPU a, U8CPU r, U8CPU g, U8CPU b) {
+    paint_.setARGB(a, r, g, b);
+  }
 
   uint8_t getAlpha() const { return paint_.getAlpha(); }
   void setAlpha(U8CPU a) { paint_.setAlpha(a); }

@@ -112,7 +112,7 @@ TrayBubbleContentMask::~TrayBubbleContentMask() {
 
 void TrayBubbleContentMask::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAlpha(255);
   paint.setStyle(SkPaint::kFill_Style);
   gfx::Rect rect(layer()->bounds().size());

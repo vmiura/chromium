@@ -1164,7 +1164,7 @@ void LocationBarView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
 
   if (show_focus_rect_ && omnibox_view_->HasFocus()) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setAntiAlias(true);
     paint.setColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::NativeTheme::kColorId_FocusedBorderColor));

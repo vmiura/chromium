@@ -157,7 +157,7 @@ void NativeThemeAura::PaintArrowButton(CdlCanvas* canvas,
   }
   DCHECK_NE(arrow_color, gfx::kPlaceholderColor);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(bg_color);
   canvas->drawIRect(gfx::RectToSkIRect(rect), paint);
 
@@ -172,7 +172,7 @@ void NativeThemeAura::PaintScrollbarTrack(
     const gfx::Rect& rect) const {
   // Overlay Scrollbar should never paint a scrollbar track.
   DCHECK(!use_overlay_scrollbars_);
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(kTrackColor);
   canvas->drawIRect(gfx::RectToSkIRect(rect), paint);
 }
@@ -216,7 +216,7 @@ void NativeThemeAura::PaintScrollbarThumb(
 
     // In overlay mode, draw a stroke (border).
     constexpr int kStrokeWidth = kOverlayScrollbarStrokeWidth;
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(
         SkColorSetA(kOverlayScrollbarStrokeColor[theme], thumb_alpha));
     paint.setStyle(SkPaint::kStroke_Style);
@@ -243,7 +243,7 @@ void NativeThemeAura::PaintScrollbarThumb(
     thumb_color = SK_ColorBLACK;
   }
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(SkColorSetA(thumb_color, thumb_alpha));
   canvas->drawIRect(gfx::RectToSkIRect(thumb_rect), paint);
 }
@@ -253,7 +253,7 @@ void NativeThemeAura::PaintScrollbarCorner(CdlCanvas* canvas,
                                            const gfx::Rect& rect) const {
   // Overlay Scrollbar should never paint a scrollbar corner.
   DCHECK(!use_overlay_scrollbars_);
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(SkColorSetRGB(0xDC, 0xDC, 0xDC));
   canvas->drawIRect(RectToSkIRect(rect), paint);
 }

@@ -213,10 +213,10 @@ void DrawHighlight(gfx::Canvas* canvas,
                    SkScalar radius,
                    SkColor color) {
   const SkColor colors[2] = { color, SkColorSetA(color, 0) };
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setShader(SkGradientShader::MakeRadial(p, radius, colors, nullptr, 2,
-                                               SkShader::kClamp_TileMode));
+  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeRadial(p, radius, colors, nullptr, 2,
+                                               SkShader::kClamp_TileMode)));
   canvas->sk_canvas()->drawRect(
       SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
       paint);
@@ -1307,7 +1307,7 @@ void Tab::PaintTabBackgroundUsingFillId(gfx::Canvas* fill_canvas,
             is_active ? toolbar_color
                       : tp->GetColor(ThemeProperties::COLOR_BACKGROUND_TAB));
         fill_canvas->DrawRect(
-            gfx::ScaleToEnclosingRect(GetLocalBounds(), scale), paint.toSkPaint());
+            gfx::ScaleToEnclosingRect(GetLocalBounds(), scale), paint);
       }
 
       if (!is_active && hover_controller_.ShouldDraw()) {
