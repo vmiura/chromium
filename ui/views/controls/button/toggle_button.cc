@@ -196,7 +196,7 @@ void ToggleButton::OnPaint(gfx::Canvas* canvas) {
   gfx::RectF track_rect(GetTrackBounds());
   track_rect.Scale(dsf);
   track_rect = gfx::RectF(gfx::ToEnclosingRect(track_rect));
-  SkPaint track_paint;
+  CdlPaint track_paint;
   track_paint.setAntiAlias(true);
   const double color_ratio = slide_animation_.GetCurrentValue();
   track_paint.setColor(color_utils::AlphaBlend(

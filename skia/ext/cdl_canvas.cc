@@ -288,14 +288,10 @@ void CdlCanvas::drawRect(const SkRect& r, const CdlPaint& paint) {
   onDrawRect(r, paint);
 }
 
-void CdlCanvas::drawRect(SkRect const& r, SkPaint const& paint) {
-  onDrawRect(r, paint);
-}
-
 void CdlCanvas::drawRoundRect(const SkRect& r,
                               SkScalar rx,
                               SkScalar ry,
-                              const SkPaint& paint) {
+                              const CdlPaint& paint) {
   if (rx > 0 && ry > 0) {
     SkRRect rrect;
     rrect.setRectXY(r, rx, ry);
@@ -309,19 +305,19 @@ void CdlCanvas::drawRectCoords(SkScalar left,
                                SkScalar top,
                                SkScalar right,
                                SkScalar bottom,
-                               const SkPaint& paint) {
+                               const CdlPaint& paint) {
   SkRect r;
   r.set(left, top, right, bottom);
   this->drawRect(r, paint);
 }
 
-void CdlCanvas::drawRRect(const SkRRect& rrect, const SkPaint& paint) {
+void CdlCanvas::drawRRect(const SkRRect& rrect, const CdlPaint& paint) {
   this->onDrawRRect(rrect, paint);
 }
 
 void CdlCanvas::drawDRRect(const SkRRect& outer,
                            const SkRRect& inner,
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   if (outer.isEmpty()) {
     return;
   }
@@ -469,20 +465,20 @@ void CdlCanvas::onDrawPaint(CdlPaint const& paint) {
 void CdlCanvas::onDrawPath(SkPath const& p, CdlPaint const& paint) {
   canvas_->drawPath(p, paint.toSkPaint());
 }
-void CdlCanvas::onDrawRect(SkRect const& r, SkPaint const& paint) {
-  canvas_->drawRect(r, paint);
+void CdlCanvas::onDrawRect(SkRect const& r, CdlPaint const& paint) {
+  canvas_->drawRect(r, paint.toSkPaint());
 }
 void CdlCanvas::onDrawOval(SkRect const& r, CdlPaint const& paint) {
   canvas_->drawOval(r, paint.toSkPaint());
 }
 
-void CdlCanvas::onDrawRRect(SkRRect const& r, SkPaint const& paint) {
-  canvas_->drawRRect(r, paint);
+void CdlCanvas::onDrawRRect(SkRRect const& r, CdlPaint const& paint) {
+  canvas_->drawRRect(r, paint.toSkPaint());
 }
 void CdlCanvas::onDrawDRRect(const SkRRect& outer,
                              const SkRRect& inner,
-                             const SkPaint& paint) {
-  canvas_->drawDRRect(outer, inner, paint);
+                             const CdlPaint& paint) {
+  canvas_->drawDRRect(outer, inner, paint.toSkPaint());
 }
 
 void CdlCanvas::drawPicture(const CdlPicture* picture,
@@ -615,9 +611,4 @@ void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,
                              const SkPoint pts[],
                              const CdlPaint& paint) {
   canvas_->drawPoints(mode, count, pts, paint.toSkPaint());
-}
-
-// Default CdlPaint -> SkPaint implementation.
-void CdlCanvas::onDrawRect(const SkRect& r, const CdlPaint& paint) {
-  canvas_->drawRect(r, paint.toSkPaint());
 }

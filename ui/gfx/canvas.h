@@ -263,10 +263,10 @@ class GFX_EXPORT Canvas {
   // Draws the given rectangle with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
   // TODO(funkysidd): Remove this (http://crbug.com/553726)
-  void DrawRect(const Rect& rect, const SkPaint& paint);
+  void DrawRect(const Rect& rect, const CdlPaint& paint);
 
   // Draws the given rectangle with the given |paint| parameters.
-  void DrawRect(const RectF& rect, const SkPaint& paint);
+  void DrawRect(const RectF& rect, const CdlPaint& paint);
 
   // Draw the given point with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
@@ -307,11 +307,11 @@ class GFX_EXPORT Canvas {
   // Draws the given rectangle with rounded corners of |radius| using the
   // given |paint| parameters. DEPRECATED in favor of the RectF version below.
   // TODO(mgiuca): Remove this (http://crbug.com/553726).
-  void DrawRoundRect(const Rect& rect, int radius, const SkPaint& paint);
+  void DrawRoundRect(const Rect& rect, int radius, const CdlPaint& paint);
 
   // Draws the given rectangle with rounded corners of |radius| using the
   // given |paint| parameters.
-  void DrawRoundRect(const RectF& rect, float radius, const SkPaint& paint);
+  void DrawRoundRect(const RectF& rect, float radius, const CdlPaint& paint);
 
   // Draws the given path using the given |paint| parameters.
   void DrawPath(const SkPath& path, const CdlPaint& paint);
@@ -334,7 +334,7 @@ class GFX_EXPORT Canvas {
   void DrawImageInt(const ImageSkia& image,
                     int x,
                     int y,
-                    const SkPaint& paint);
+                    const CdlPaint& paint);
 
   // Draws a portion of an image in the specified location. The src parameters
   // correspond to the region of the bitmap to draw in the region defined
@@ -368,7 +368,7 @@ class GFX_EXPORT Canvas {
                     int dest_w,
                     int dest_h,
                     bool filter,
-                    const SkPaint& paint);
+                    const CdlPaint& paint);
 
   // Same as the DrawImageInt functions above. Difference being this does not
   // do any scaling, i.e. it does not scale the output by the device scale
@@ -381,7 +381,7 @@ class GFX_EXPORT Canvas {
                            int dest_w,
                            int dest_h,
                            bool filter,
-                           const SkPaint& paint);
+                           const CdlPaint& paint);
 
   // Draws an |image| with the top left corner at |x| and |y|, clipped to
   // |path|.
@@ -500,7 +500,7 @@ class GFX_EXPORT Canvas {
                           int dest_w,
                           int dest_h,
                           bool filter,
-                          const SkPaint& paint,
+                          const CdlPaint& paint,
                           bool remove_image_scale);
 
   // The device scale factor at which drawing on this canvas occurs.

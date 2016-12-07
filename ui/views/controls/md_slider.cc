@@ -60,8 +60,8 @@ void MdSlider::OnPaint(gfx::Canvas* canvas) {
   // Extra space used to hide slider ends behind the thumb.
   const int extra_padding = 1;
 
-  SkPaint slider_paint;
-  slider_paint.setFlags(SkPaint::kAntiAlias_Flag);
+  CdlPaint slider_paint;
+  slider_paint.setAntiAlias(true);
   slider_paint.setColor(current_thumb_color);
   canvas->DrawRoundRect(
       gfx::Rect(content.x(), y, full + extra_padding, kLineThickness),

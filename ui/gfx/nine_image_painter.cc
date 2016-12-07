@@ -43,7 +43,7 @@ void Fill(Canvas* c,
           int y,
           int w,
           int h,
-          const SkPaint& paint) {
+          const CdlPaint& paint) {
   if (rep.is_null())
     return;
   c->DrawImageIntInPixel(rep, x, y, w, h, false, paint);
@@ -157,7 +157,7 @@ void NineImagePainter::Paint(Canvas* canvas,
   int i4h =
       std::max(height_in_pixels - i4y - std::min(std::min(i6h, i7h), i8h), 0);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAlpha(alpha);
 
   Fill(canvas, image_reps[4], i4x, i4y, i4w, i4h, paint);

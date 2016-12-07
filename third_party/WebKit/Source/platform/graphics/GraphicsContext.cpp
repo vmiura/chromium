@@ -858,7 +858,7 @@ void GraphicsContext::drawImageRRect(
 
   if (useShader) {
     // Shader-based fast path.
-    m_canvas->drawRRect(dest, imagePaint.toSkPaint());
+    m_canvas->drawRRect(dest, imagePaint);
   } else {
     // Clip-based fallback.
     CdlAutoCanvasRestore autoRestore(m_canvas, true);
@@ -960,7 +960,7 @@ void GraphicsContext::drawRRect(const SkRRect& rrect, const CdlPaint& paint) {
     return;
   ASSERT(m_canvas);
 
-  m_canvas->drawRRect(rrect, paint.toSkPaint());
+  m_canvas->drawRRect(rrect, paint);
 }
 
 void GraphicsContext::fillPath(const Path& pathToFill) {
@@ -1075,11 +1075,11 @@ void GraphicsContext::fillDRRect(const FloatRoundedRect& outer,
   if (!isSimpleDRRect(outer, inner)) {
     if (color == fillColor()) {
       m_canvas->drawDRRect(outer, inner,
-                           immutableState()->fillPaint().toSkPaint());
+                           immutableState()->fillPaint());
     } else {
       CdlPaint paint(immutableState()->fillPaint());
       paint.setColor(color.rgb());
-      m_canvas->drawDRRect(outer, inner, paint.toSkPaint());
+      m_canvas->drawDRRect(outer, inner, paint);
     }
 
     return;
@@ -1095,7 +1095,7 @@ void GraphicsContext::fillDRRect(const FloatRoundedRect& outer,
   strokePaint.setStyle(SkPaint::kStroke_Style);
   strokePaint.setStrokeWidth(strokeWidth);
 
-  m_canvas->drawRRect(strokeRRect, strokePaint.toSkPaint());
+  m_canvas->drawRRect(strokeRRect, strokePaint);
 }
 
 void GraphicsContext::fillEllipse(const FloatRect& ellipse) {
@@ -1284,7 +1284,7 @@ void GraphicsContext::fillRectWithRoundedHole(
   CdlPaint paint(immutableState()->fillPaint());
   paint.setColor(color.rgb());
   m_canvas->drawDRRect(SkRRect::MakeRect(rect), roundedHoleRect,
-                       paint.toSkPaint());
+                       paint);
 }
 
 void GraphicsContext::adjustLineToPixelBoundaries(FloatPoint& p1,

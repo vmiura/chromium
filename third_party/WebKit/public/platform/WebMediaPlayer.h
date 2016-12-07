@@ -38,7 +38,7 @@
 #include "WebSetSinkIdCallbacks.h"
 #include "WebString.h"
 
-class SkPaint;
+class CdlPaint;
 
 namespace gpu {
 namespace gles2 {
@@ -171,7 +171,7 @@ class WebMediaPlayer {
   virtual size_t audioDecodedByteCount() const = 0;
   virtual size_t videoDecodedByteCount() const = 0;
 
-  virtual void paint(WebCanvas*, const WebRect&, SkPaint&) = 0;
+  virtual void paint(WebCanvas*, const WebRect&, CdlPaint&) = 0;
 
   // TODO(dshwang): remove non-|target| version. crbug.com/349871
   virtual bool copyVideoTextureToPlatformTexture(gpu::gles2::GLES2Interface*,

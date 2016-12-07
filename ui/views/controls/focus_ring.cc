@@ -70,7 +70,7 @@ void FocusRing::Layout() {
 }
 
 void FocusRing::OnPaint(gfx::Canvas* canvas) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setColor(
       SkColorSetA(GetNativeTheme()->GetSystemColor(

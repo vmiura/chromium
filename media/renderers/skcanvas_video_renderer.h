@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class CdlCanvas;
+class CdlPaint;
 
 namespace gfx {
 class RectF;
@@ -44,7 +45,7 @@ class MEDIA_EXPORT SkCanvasVideoRenderer {
   void Paint(const scoped_refptr<VideoFrame>& video_frame,
              CdlCanvas* canvas,
              const gfx::RectF& dest_rect,
-             SkPaint& paint,
+             CdlPaint& paint,
              VideoRotation video_rotation,
              const Context3D& context_3d);
 

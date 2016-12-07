@@ -155,9 +155,9 @@ void Canvas::DrawDashedRect(const RectF& rect, SkColor color) {
   }
 
   // Make a shader for the bitmap with an origin of the box we'll draw.
-  SkPaint paint;
-  paint.setShader(SkShader::MakeBitmapShader(*dots, SkShader::kRepeat_TileMode,
-                                             SkShader::kRepeat_TileMode));
+  CdlPaint paint;
+  paint.setShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(*dots, SkShader::kRepeat_TileMode,
+                                             SkShader::kRepeat_TileMode)));
 
   DrawRect(RectF(rect.x(), rect.y(), rect.width(), 1), paint);
   DrawRect(RectF(rect.x(), rect.y() + rect.height() - 1, rect.width(), 1),
@@ -237,7 +237,7 @@ void Canvas::FillRect(const Rect& rect, SkColor color) {
 }
 
 void Canvas::FillRect(const Rect& rect, SkColor color, SkBlendMode mode) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setBlendMode(mode);
@@ -257,7 +257,7 @@ void Canvas::DrawRect(const Rect& rect, SkColor color, SkBlendMode mode) {
 }
 
 void Canvas::DrawRect(const RectF& rect, SkColor color, SkBlendMode mode) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
   paint.setStyle(SkPaint::kStroke_Style);
   // Set a stroke width of 0, which will put us down the stroke rect path.  If
@@ -269,11 +269,11 @@ void Canvas::DrawRect(const RectF& rect, SkColor color, SkBlendMode mode) {
   DrawRect(rect, paint);
 }
 
-void Canvas::DrawRect(const Rect& rect, const SkPaint& paint) {
+void Canvas::DrawRect(const Rect& rect, const CdlPaint& paint) {
   DrawRect(RectF(rect), paint);
 }
 
-void Canvas::DrawRect(const RectF& rect, const SkPaint& paint) {
+void Canvas::DrawRect(const RectF& rect, const CdlPaint& paint) {
   canvas_->drawRect(RectFToSkRect(rect), paint);
 }
 
@@ -323,13 +323,13 @@ void Canvas::DrawCircle(const PointF& center_point,
 
 void Canvas::DrawRoundRect(const Rect& rect,
                            int radius,
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   DrawRoundRect(RectF(rect), radius, paint);
 }
 
 void Canvas::DrawRoundRect(const RectF& rect,
                            float radius,
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   canvas_->drawRoundRect(RectFToSkRect(rect), SkFloatToScalar(radius),
                          SkFloatToScalar(radius), paint);
 }
@@ -349,7 +349,7 @@ void Canvas::DrawFocusRect(const RectF& rect) {
 void Canvas::DrawSolidFocusRect(const RectF& rect,
                                 SkColor color,
                                 float thickness) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
   paint.setStrokeWidth(SkFloatToScalar(thickness));
   paint.setStyle(SkPaint::kStroke_Style);
@@ -359,12 +359,12 @@ void Canvas::DrawSolidFocusRect(const RectF& rect,
 }
 
 void Canvas::DrawImageInt(const ImageSkia& image, int x, int y) {
-  SkPaint paint;
+  CdlPaint paint;
   DrawImageInt(image, x, y, paint);
 }
 
 void Canvas::DrawImageInt(const ImageSkia& image, int x, int y, uint8_t a) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAlpha(a);
   DrawImageInt(image, x, y, paint);
 }
@@ -372,7 +372,7 @@ void Canvas::DrawImageInt(const ImageSkia& image, int x, int y, uint8_t a) {
 void Canvas::DrawImageInt(const ImageSkia& image,
                           int x,
                           int y,
-                          const SkPaint& paint) {
+                          const CdlPaint& paint) {
   const ImageSkiaRep& image_rep = image.GetRepresentation(image_scale_);
   if (image_rep.is_null())
     return;
@@ -382,10 +382,11 @@ void Canvas::DrawImageInt(const ImageSkia& image,
   ScopedCanvas scoper(this);
   canvas_->scale(SkFloatToScalar(1.0f / bitmap_scale),
                  SkFloatToScalar(1.0f / bitmap_scale));
+  SkPaint sk_paint = paint.toSkPaint();
   canvas_->drawBitmap(bitmap,
                       SkFloatToScalar(x * bitmap_scale),
                       SkFloatToScalar(y * bitmap_scale),
-                      &paint);
+                      &sk_paint);
 }
 
 void Canvas::DrawImageInt(const ImageSkia& image,
@@ -398,7 +399,7 @@ void Canvas::DrawImageInt(const ImageSkia& image,
                           int dest_w,
                           int dest_h,
                           bool filter) {
-  SkPaint p;
+  CdlPaint p;
   DrawImageInt(image, src_x, src_y, src_w, src_h, dest_x, dest_y,
                dest_w, dest_h, filter, p);
 }
@@ -413,7 +414,7 @@ void Canvas::DrawImageInt(const ImageSkia& image,
                           int dest_w,
                           int dest_h,
                           bool filter,
-                          const SkPaint& paint) {
+                          const CdlPaint& paint) {
   const ImageSkiaRep& image_rep = image.GetRepresentation(image_scale_);
   if (image_rep.is_null())
     return;
@@ -428,7 +429,7 @@ void Canvas::DrawImageIntInPixel(const ImageSkiaRep& image_rep,
                                  int dest_w,
                                  int dest_h,
                                  bool filter,
-                                 const SkPaint& paint) {
+                                 const CdlPaint& paint) {
   int src_x = 0;
   int src_y = 0;
   int src_w = image_rep.pixel_width();
@@ -512,7 +513,7 @@ void Canvas::TileImageInt(const ImageSkia& image,
   CdlPaint paint;
   if (InitSkPaintForTiling(image, src_x, src_y, tile_scale_x, tile_scale_y,
                            dest_x, dest_y, &paint))
-    canvas_->drawRect(dest_rect, paint.toSkPaint());
+    canvas_->drawRect(dest_rect, paint);
 }
 
 bool Canvas::InitSkPaintForTiling(const ImageSkia& image,
@@ -558,7 +559,7 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
                                 int dest_w,
                                 int dest_h,
                                 bool filter,
-                                const SkPaint& paint,
+                                const CdlPaint& paint,
                                 bool remove_image_scale) {
   DLOG_ASSERT(src_x + src_w < std::numeric_limits<int16_t>::max() &&
               src_y + src_h < std::numeric_limits<int16_t>::max());
@@ -587,11 +588,11 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   shader_scale.preTranslate(SkIntToScalar(-src_x), SkIntToScalar(-src_y));
   shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
 
-  SkPaint p(paint);
+  CdlPaint p(paint);
   p.setFilterQuality(filter ? kLow_SkFilterQuality : kNone_SkFilterQuality);
-  p.setShader(CreateImageRepShaderForScale(
+  p.setShader(CdlShader::WrapSkShader(CreateImageRepShaderForScale(
       image_rep, SkShader::kRepeat_TileMode, shader_scale,
-      remove_image_scale ? image_rep.scale() : 1.f));
+      remove_image_scale ? image_rep.scale() : 1.f)));
 
   // The rect will be filled by the bitmap.
   canvas_->drawRect(dest_rect, p);

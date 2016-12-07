@@ -450,7 +450,7 @@ bool WebMediaPlayerMS::didLoadingProgress() {
 
 void WebMediaPlayerMS::paint(blink::WebCanvas* canvas,
                              const blink::WebRect& rect,
-                             SkPaint& paint) {
+                             CdlPaint& paint) {
   DVLOG(3) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
 

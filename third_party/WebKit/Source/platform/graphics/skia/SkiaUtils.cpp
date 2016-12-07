@@ -323,7 +323,7 @@ void drawFocusRingPrimitive<SkRect>(const SkRect& rect,
   SkRRect rrect;
   rrect.setRectXY(rect, SkFloatToScalar(cornerRadius),
                   SkFloatToScalar(cornerRadius));
-  canvas->drawRRect(rrect, paint.toSkPaint());
+  canvas->drawRRect(rrect, paint);
 }
 
 template <>

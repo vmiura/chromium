@@ -207,7 +207,7 @@ void Checkbox::SetCustomImage(bool checked,
 
 void Checkbox::PaintFocusRing(gfx::Canvas* canvas, const CdlPaint& paint) {
   gfx::RectF focus_rect(image()->bounds());
-  canvas->DrawRoundRect(focus_rect, 2.f, paint.toSkPaint());
+  canvas->DrawRoundRect(focus_rect, 2.f, paint);
 }
 
 gfx::VectorIconId Checkbox::GetVectorIconId() const {

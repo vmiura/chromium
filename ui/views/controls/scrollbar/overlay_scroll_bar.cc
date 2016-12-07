@@ -52,7 +52,7 @@ gfx::Size OverlayScrollBar::Thumb::GetPreferredSize() const {
 }
 
 void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
-  SkPaint fill_paint;
+  CdlPaint fill_paint;
   fill_paint.setStyle(SkPaint::kFill_Style);
   fill_paint.setColor(SK_ColorBLACK);
   gfx::RectF fill_bounds(GetLocalBounds());

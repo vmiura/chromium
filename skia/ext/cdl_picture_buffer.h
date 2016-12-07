@@ -65,11 +65,10 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
 
   void drawPaint(const CdlPaint&);
   void drawPath(const SkPath&, const CdlPaint&);
-  void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
+  void drawRRect(const SkRRect&, const CdlPaint&);
+  void drawDRRect(const SkRRect&, const SkRRect&, const CdlPaint&);
   void drawOval(const SkRect&, const CdlPaint&);
-  void drawRRect(const SkRRect&, const SkPaint&);
-  void drawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
   void drawAnnotation(const SkRect&, const char*, SkData*);
   void drawPicture(const CdlPicture*, const SkMatrix*, const SkPaint*);

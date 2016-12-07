@@ -84,9 +84,9 @@ gfx::Rect RectangleLayerDelegate::GetPaintedBounds() const {
 }
 
 void RectangleLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color());
-  paint.setFlags(SkPaint::kAntiAlias_Flag);
+  paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, size_);
@@ -115,9 +115,9 @@ gfx::Rect RoundedRectangleLayerDelegate::GetPaintedBounds() const {
 
 void RoundedRectangleLayerDelegate::OnPaintLayer(
     const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color());
-  paint.setFlags(SkPaint::kAntiAlias_Flag);
+  paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, size_);
@@ -153,7 +153,7 @@ gfx::Vector2dF BorderShadowLayerDelegate::GetCenteringOffset() const {
 }
 
 void BorderShadowLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
   paint.setAntiAlias(true);
   paint.setColor(fill_color_);

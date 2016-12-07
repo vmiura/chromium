@@ -277,7 +277,7 @@ void NativeThemeBase::PaintArrowButton(CdlCanvas* canvas,
       + rect.height());
   // Paint the background (the area visible behind the rounded corners).
   paint.setColor(backgroundColor);
-  canvas->drawIRect(skrect, paint.toSkPaint());
+  canvas->drawIRect(skrect, paint);
 
   // Paint the button's outline and fill the middle
   SkPath outline;
@@ -396,7 +396,7 @@ void NativeThemeBase::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect) const {
-  SkPaint paint;
+  CdlPaint paint;
   SkIRect skrect;
 
   skrect.set(rect.x(), rect.y(), rect.right(), rect.bottom());
@@ -425,7 +425,7 @@ void NativeThemeBase::PaintScrollbarThumb(CdlCanvas* canvas,
   SkScalar thumb[3];
   SkColorToHSV(hovered ? thumb_active_color_ : thumb_inactive_color_, thumb);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(SaturateAndBrighten(thumb, 0, 0.02f));
 
   SkIRect skrect;
@@ -553,7 +553,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   // to have to worry about '- 1' and '+ 1' calculations below having overflow
   // or underflow.
   if (skrect.width() <= 2) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(kCheckboxTinyColor);
     paint.setStyle(SkPaint::kFill_Style);
     canvas->drawRect(skrect, paint);
@@ -566,7 +566,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
 
   // Draw the drop shadow below the widget.
   if (state != kPressed) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setAntiAlias(true);
     SkRect shadowRect = skrect;
     shadowRect.offset(0, 1);
@@ -595,10 +595,10 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   else /* kNormal */
     startEndColors = kCheckboxGradientColors;
   SkColor colors[3] = {startEndColors[0], startEndColors[0], startEndColors[1]};
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setShader(SkGradientShader::MakeLinear(gradient_bounds, colors, NULL, 3,
-                                               SkShader::kClamp_TileMode));
+  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(gradient_bounds, colors, NULL, 3,
+                                               SkShader::kClamp_TileMode)));
   paint.setStyle(SkPaint::kFill_Style);
   canvas->drawRoundRect(skrect, borderRadius, borderRadius, paint);
   paint.setShader(NULL);
@@ -631,7 +631,7 @@ void NativeThemeBase::PaintRadio(CdlCanvas* canvas,
   SkRect skrect = PaintCheckboxRadioCommon(canvas, state, rect, radius);
   if (!skrect.isEmpty() && button.checked) {
     // Draw the dot.
-    SkPaint paint;
+    CdlPaint paint;
     paint.setAntiAlias(true);
     paint.setStyle(SkPaint::kFill_Style);
     if (state == kDisabled)
@@ -649,7 +649,7 @@ void NativeThemeBase::PaintButton(CdlCanvas* canvas,
                                   State state,
                                   const gfx::Rect& rect,
                                   const ButtonExtraParams& button) const {
-  SkPaint paint;
+  CdlPaint paint;
   SkRect skrect = gfx::RectToSkRect(rect);
   SkColor base_color = button.background_color;
 
@@ -679,8 +679,8 @@ void NativeThemeBase::PaintButton(CdlCanvas* canvas,
   paint.setStyle(SkPaint::kFill_Style);
   paint.setAntiAlias(true);
   paint.setShader(
-      SkGradientShader::MakeLinear(
-          gradient_bounds, colors, NULL, 2, SkShader::kClamp_TileMode));
+      CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
+          gradient_bounds, colors, NULL, 2, SkShader::kClamp_TileMode)));
 
   canvas->drawRoundRect(skrect, SkIntToScalar(1), SkIntToScalar(1), paint);
   paint.setShader(NULL);
@@ -706,14 +706,14 @@ void NativeThemeBase::PaintTextField(CdlCanvas* canvas,
   SkRect bounds;
   bounds.set(rect.x(), rect.y(), rect.right() - 1, rect.bottom() - 1);
 
-  SkPaint fill_paint;
+  CdlPaint fill_paint;
   fill_paint.setStyle(SkPaint::kFill_Style);
   fill_paint.setColor(text.background_color);
   canvas->drawRect(bounds, fill_paint);
 
   // Text INPUT, listbox SELECT, and TEXTAREA have consistent borders.
   // border: 1px solid #a9a9a9
-  SkPaint stroke_paint;
+  CdlPaint stroke_paint;
   stroke_paint.setStyle(SkPaint::kStroke_Style);
   stroke_paint.setColor(kTextBorderColor);
   canvas->drawRect(bounds, stroke_paint);
@@ -778,7 +778,7 @@ void NativeThemeBase::PaintSliderTrack(CdlCanvas* canvas,
   const int kMidX = rect.x() + rect.width() / 2;
   const int kMidY = rect.y() + rect.height() / 2;
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(kSliderTrackBackgroundColor);
 
   SkRect skrect;
@@ -804,7 +804,7 @@ void NativeThemeBase::PaintSliderThumb(CdlCanvas* canvas,
   const int kMidX = rect.x() + rect.width() / 2;
   const int kMidY = rect.y() + rect.height() / 2;
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(hovered ? SK_ColorWHITE : kSliderThumbLightGrey);
 
   SkIRect skrect;
@@ -887,7 +887,7 @@ void NativeThemeBase::PaintProgressBar(
   gfx::Rect progress_rect(progress_bar.value_rect_x, progress_bar.value_rect_y,
                           progress_bar.value_rect_width,
                           progress_bar.value_rect_height);
-  SkPaint progress_paint;
+  CdlPaint progress_paint;
   progress_paint.setColor(kProgressValueColor);
   progress_paint.setStyle(SkPaint::kFill_Style);
   canvas->drawRect(gfx::RectToSkRect(progress_rect), progress_paint);
@@ -929,7 +929,7 @@ void NativeThemeBase::DrawVertLine(CdlCanvas* canvas,
                                    int x,
                                    int y1,
                                    int y2,
-                                   const SkPaint& paint) const {
+                                   const CdlPaint& paint) const {
   SkIRect skrect;
   skrect.set(x, y1, x + 1, y2 + 1);
   canvas->drawIRect(skrect, paint);
@@ -939,7 +939,7 @@ void NativeThemeBase::DrawHorizLine(CdlCanvas* canvas,
                                     int x1,
                                     int x2,
                                     int y,
-                                    const SkPaint& paint) const {
+                                    const CdlPaint& paint) const {
   SkIRect skrect;
   skrect.set(x1, y, x2 + 1, y + 1);
   canvas->drawIRect(skrect, paint);
@@ -947,7 +947,7 @@ void NativeThemeBase::DrawHorizLine(CdlCanvas* canvas,
 
 void NativeThemeBase::DrawBox(CdlCanvas* canvas,
                               const gfx::Rect& rect,
-                              const SkPaint& paint) const {
+                              const CdlPaint& paint) const {
   const int right = rect.x() + rect.width() - 1;
   const int bottom = rect.y() + rect.height() - 1;
   DrawHorizLine(canvas, rect.x(), right, rect.y(), paint);

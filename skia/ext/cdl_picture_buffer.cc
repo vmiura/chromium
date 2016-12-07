@@ -89,7 +89,6 @@ namespace {
   M(DrawPosText)    \
   M(DrawTextBlob)   \
   M(DrawPoints)     \
-  M(DrawRectX)      \
   M(DrawImageX)     \
   M(DrawImageRectX)
 
@@ -249,23 +248,33 @@ struct DrawPath final : Op {
 };
 struct DrawRect final : Op {
   static const auto kType = Type::DrawRect;
-  DrawRect(const SkRect& rect, const SkPaint& paint)
-      : rect(rect), paint(paint) {}
-  SkRect rect;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawRect(rect, paint);
-  }
-};
-
-struct DrawRectX final : Op {
-  static const auto kType = Type::DrawRectX;
-  DrawRectX(const SkRect& rect, const CdlPaint& paint)
+  DrawRect(const SkRect& rect, const CdlPaint& paint)
       : rect(rect), paint(paint) {}
   SkRect rect;
   CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawRect(rect, paint);
+  }
+};
+
+struct DrawRRect final : Op {
+  static const auto kType = Type::DrawRRect;
+  DrawRRect(const SkRRect& rrect, const CdlPaint& paint)
+      : rrect(rrect), paint(paint) {}
+  SkRRect rrect;
+  CdlPaint paint;
+  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
+    c->drawRRect(rrect, paint);
+  }
+};
+struct DrawDRRect final : Op {
+  static const auto kType = Type::DrawDRRect;
+  DrawDRRect(const SkRRect& outer, const SkRRect& inner, const CdlPaint& paint)
+      : outer(outer), inner(inner), paint(paint) {}
+  SkRRect outer, inner;
+  CdlPaint paint;
+  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
+    c->drawDRRect(outer, inner, paint);
   }
 };
 
@@ -277,27 +286,6 @@ struct DrawOval final : Op {
   CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawOval(oval, paint);
-  }
-};
-
-struct DrawRRect final : Op {
-  static const auto kType = Type::DrawRRect;
-  DrawRRect(const SkRRect& rrect, const SkPaint& paint)
-      : rrect(rrect), paint(paint) {}
-  SkRRect rrect;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawRRect(rrect, paint);
-  }
-};
-struct DrawDRRect final : Op {
-  static const auto kType = Type::DrawDRRect;
-  DrawDRRect(const SkRRect& outer, const SkRRect& inner, const SkPaint& paint)
-      : outer(outer), inner(inner), paint(paint) {}
-  SkRRect outer, inner;
-  SkPaint paint;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawDRRect(outer, inner, paint);
   }
 };
 
@@ -561,24 +549,21 @@ void CdlPictureBuffer::drawPaint(const CdlPaint& paint) {
 void CdlPictureBuffer::drawPath(const SkPath& path, const CdlPaint& paint) {
   this->push<DrawPath>(0, path, paint);
 }
-void CdlPictureBuffer::drawRect(const SkRect& rect, const SkPaint& paint) {
+void CdlPictureBuffer::drawRect(const SkRect& rect, const CdlPaint& paint) {
   this->push<DrawRect>(0, rect, paint);
 }
-void CdlPictureBuffer::drawRect(const SkRect& rect, const CdlPaint& paint) {
-  this->push<DrawRectX>(0, rect, paint);
-}
 
-void CdlPictureBuffer::drawOval(const SkRect& oval, const CdlPaint& paint) {
-  this->push<DrawOval>(0, oval, paint);
-}
-
-void CdlPictureBuffer::drawRRect(const SkRRect& rrect, const SkPaint& paint) {
+void CdlPictureBuffer::drawRRect(const SkRRect& rrect, const CdlPaint& paint) {
   this->push<DrawRRect>(0, rrect, paint);
 }
 void CdlPictureBuffer::drawDRRect(const SkRRect& outer,
                                   const SkRRect& inner,
-                                  const SkPaint& paint) {
+                                  const CdlPaint& paint) {
   this->push<DrawDRRect>(0, outer, inner, paint);
+}
+
+void CdlPictureBuffer::drawOval(const SkRect& oval, const CdlPaint& paint) {
+  this->push<DrawOval>(0, oval, paint);
 }
 
 void CdlPictureBuffer::drawAnnotation(const SkRect& rect,

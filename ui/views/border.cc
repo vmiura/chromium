@@ -88,7 +88,7 @@ RoundedRectBorder::RoundedRectBorder(int thickness,
     : thickness_(thickness), corner_radius_(corner_radius), color_(color) {}
 
 void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStrokeWidth(thickness_);
   paint.setColor(color_);
   paint.setStyle(SkPaint::kStroke_Style);

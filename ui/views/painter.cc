@@ -69,7 +69,7 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   gfx::RectF border_rect_f(gfx::ScaleToEnclosingRect(gfx::Rect(size), scale));
   const SkScalar scaled_corner_radius = SkFloatToScalar(radius_ * scale);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(bg_color_);
@@ -204,7 +204,7 @@ gfx::Size GradientPainter::GetMinimumSize() const {
 }
 
 void GradientPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
-  SkPaint paint;
+  CdlPaint paint;
   SkPoint p[2];
   p[0].iset(0, 0);
   if (horizontal_)
@@ -212,8 +212,8 @@ void GradientPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   else
     p[1].iset(0, size.height());
 
-  paint.setShader(SkGradientShader::MakeLinear(
-      p, colors_.get(), pos_.get(), count_, SkShader::kClamp_TileMode));
+  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
+      p, colors_.get(), pos_.get(), count_, SkShader::kClamp_TileMode)));
   paint.setStyle(SkPaint::kFill_Style);
 
   canvas->sk_canvas()->drawRectCoords(SkIntToScalar(0), SkIntToScalar(0),

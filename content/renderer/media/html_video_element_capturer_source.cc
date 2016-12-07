@@ -134,7 +134,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   const blink::WebSize resolution = web_media_player_->naturalSize();
 
   SkCanvas* canvas = surface_->getCanvas();
-  SkPaint paint;
+  CdlPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setFilterQuality(kLow_SkFilterQuality);
   web_media_player_->paint(

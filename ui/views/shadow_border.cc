@@ -35,7 +35,7 @@ ShadowBorder::~ShadowBorder() {
 // TODO(sidharthms): Re-painting a shadow looper on every paint call may yield
 // poor performance. Ideally we should be caching the border to bitmaps.
 void ShadowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  SkPaint paint;
+  CdlPaint paint;
   std::vector<gfx::ShadowValue> shadows;
   shadows.push_back(shadow_value_);
   paint.setLooper(gfx::CreateShadowDrawLooper(shadows));

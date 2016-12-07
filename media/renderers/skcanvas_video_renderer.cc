@@ -14,6 +14,7 @@
 #include "media/base/yuv_convert.h"
 #include "skia/ext/texture_handle.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -334,7 +335,7 @@ SkCanvasVideoRenderer::~SkCanvasVideoRenderer() {
 void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
                                   CdlCanvas* canvas,
                                   const gfx::RectF& dest_rect,
-                                  SkPaint& paint,
+                                  CdlPaint& paint,
                                   VideoRotation video_rotation,
                                   const Context3D& context_3d) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -351,7 +352,7 @@ void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
       !(media::IsYuvPlanar(video_frame->format()) ||
         video_frame->format() == media::PIXEL_FORMAT_Y16 ||
         video_frame->HasTextures())) {
-    SkPaint blackWithAlphaPaint;
+    CdlPaint blackWithAlphaPaint;
     blackWithAlphaPaint.setAlpha(paint.getAlpha());
     canvas->drawRect(dest, blackWithAlphaPaint);
     canvas->flush();
@@ -362,7 +363,7 @@ void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
   if (!UpdateLastImage(video_frame, context_3d))
     return;
 
-  SkPaint videoPaint;
+  CdlPaint videoPaint;
   videoPaint.setAlpha(paint.getAlpha());
   videoPaint.setBlendMode(paint.getBlendMode());
   videoPaint.setFilterQuality(paint.getFilterQuality());
@@ -413,11 +414,13 @@ void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
   // sw image into the SkPicture. The long term solution is for Skia to provide
   // a SkPicture filter that makes a picture safe for multiple CPU raster
   // threads. (skbug.com/4321).
+  SkPaint pt = videoPaint.toSkPaint();
   if (canvas->skCanvas()->imageInfo().colorType() == kUnknown_SkColorType) {
     sk_sp<SkImage> swImage = last_image_->makeNonTextureImage();
-    canvas->drawImage(swImage, 0, 0, &videoPaint);
+
+    canvas->drawImage(swImage, 0, 0, &pt);
   } else {
-    canvas->drawImage(last_image_.get(), 0, 0, &videoPaint);
+    canvas->drawImage(last_image_.get(), 0, 0, &pt);
   }
 
   if (need_transform)
@@ -435,7 +438,7 @@ void SkCanvasVideoRenderer::Paint(const scoped_refptr<VideoFrame>& video_frame,
 void SkCanvasVideoRenderer::Copy(const scoped_refptr<VideoFrame>& video_frame,
                                  CdlCanvas* canvas,
                                  const Context3D& context_3d) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setFilterQuality(kLow_SkFilterQuality);
   Paint(video_frame, canvas, gfx::RectF(video_frame->visible_rect()), paint,

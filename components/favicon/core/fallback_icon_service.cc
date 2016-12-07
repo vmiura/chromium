@@ -58,7 +58,7 @@ void FallbackIconService::DrawFallbackIcon(
     gfx::Canvas* canvas) {
   const int kOffsetX = 0;
   const int kOffsetY = 0;
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
   paint.setAntiAlias(true);
 

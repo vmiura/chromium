@@ -148,7 +148,7 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
                      ? (size().width() - badge_width) / 2
                      : size().width() - badge_width,
                  size().height() - kBadgeHeight, badge_width, kBadgeHeight);
-  SkPaint rect_paint;
+  CdlPaint rect_paint;
   rect_paint.setStyle(SkPaint::kFill_Style);
   rect_paint.setAntiAlias(true);
   rect_paint.setColor(background_color);
@@ -156,7 +156,7 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
   // Clear part of the background icon.
   gfx::Rect cutout_rect(rect);
   cutout_rect.Inset(-1, -1);
-  SkPaint cutout_paint = rect_paint;
+  CdlPaint cutout_paint = rect_paint;
   cutout_paint.setBlendMode(SkBlendMode::kClear);
   canvas->DrawRoundRect(cutout_rect, 2, cutout_paint);
 

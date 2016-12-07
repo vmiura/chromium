@@ -107,8 +107,8 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
 #endif
 
     // Draw a rounded rect of the given |color|.
-    SkPaint background_paint;
-    background_paint.setFlags(SkPaint::kAntiAlias_Flag);
+    CdlPaint background_paint;
+    background_paint.setAntiAlias(true);
     background_paint.setColor(color_);
 
     gfx::Rect icon_rect(icon_inset, icon_inset, icon_size, icon_size);

@@ -814,7 +814,7 @@ bool WebMediaPlayerImpl::didLoadingProgress() {
 
 void WebMediaPlayerImpl::paint(blink::WebCanvas* canvas,
                                const blink::WebRect& rect,
-                               SkPaint& paint) {
+                               CdlPaint& paint) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 

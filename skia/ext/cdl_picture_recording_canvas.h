@@ -42,11 +42,10 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
 
   void onDrawPaint(const CdlPaint&) override;
   void onDrawPath(const SkPath&, const CdlPaint&) override;
-  void onDrawRect(const SkRect&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const CdlPaint&) override;
+  void onDrawRRect(const SkRRect&, const CdlPaint&) override;
+  void onDrawDRRect(const SkRRect&, const SkRRect&, const CdlPaint&) override;
   void onDrawOval(const SkRect&, const CdlPaint&) override;
-  void onDrawRRect(const SkRRect&, const SkPaint&) override;
-  void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override;
 
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,

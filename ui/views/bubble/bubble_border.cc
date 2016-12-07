@@ -525,7 +525,7 @@ void BubbleBorder::PaintMd(const View& view, gfx::Canvas* canvas) {
 
   gfx::ScopedCanvas scoped(canvas);
 
-  SkPaint paint;
+  CdlPaint paint;
   std::vector<gfx::ShadowValue> shadows;
   // gfx::ShadowValue counts blur pixels both inside and outside the shape,
   // whereas these blur values only describe the outside portion, hence they
@@ -565,7 +565,7 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
     canvas->DrawColor(border_->background_color());
 
   // Fill the contents with a round-rect region to match the border images.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(border_->background_color());

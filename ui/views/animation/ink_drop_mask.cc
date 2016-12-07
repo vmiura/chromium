@@ -43,7 +43,7 @@ RoundRectInkDropMask::RoundRectInkDropMask(const gfx::Size& layer_size,
       corner_radius_(corner_radius) {}
 
 void RoundRectInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAlpha(255);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setAntiAlias(true);

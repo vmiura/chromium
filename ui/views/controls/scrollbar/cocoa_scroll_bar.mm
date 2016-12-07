@@ -122,7 +122,7 @@ void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   }
 
   gfx::Rect local_bounds(GetLocalBounds());
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(thumb_color);
@@ -256,14 +256,14 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
     gradient_bounds[0].set(track_rect.x(), track_rect.y());
     gradient_bounds[1].set(track_rect.right(), track_rect.y());
   }
-  SkPaint gradient;
-  gradient.setShader(SkGradientShader::MakeLinear(
+  CdlPaint gradient;
+  gradient.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
       gradient_bounds, kScrollerTrackGradientColors, nullptr,
-      arraysize(kScrollerTrackGradientColors), SkShader::kClamp_TileMode));
+      arraysize(kScrollerTrackGradientColors), SkShader::kClamp_TileMode)));
   canvas->DrawRect(track_rect, gradient);
 
   // Draw the inner border: top if horizontal, left if vertical.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(kScrollerTrackInnerBorderColor);
   gfx::Rect inner_border(track_rect);
   if (IsHorizontal())

@@ -348,7 +348,7 @@ void PepperGraphics2DHost::Paint(blink::WebCanvas* canvas,
         gfx::RectToSkRect(gfx::Rect(plugin_rect.origin(), image_size));
     canvas->clipRect(image_data_rect, SkRegion::kDifference_Op);
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setBlendMode(SkBlendMode::kSrc);
     paint.setColor(SK_ColorWHITE);
     canvas->drawRect(sk_invalidate_rect, paint);

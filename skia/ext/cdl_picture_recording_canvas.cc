@@ -101,27 +101,23 @@ void CdlPictureRecordingCanvas::onDrawPath(const SkPath& path,
   fDL->drawPath(path, paint);
 }
 void CdlPictureRecordingCanvas::onDrawRect(const SkRect& rect,
-                                           const SkPaint& paint) {
+                                           const CdlPaint& paint) {
   fDL->drawRect(rect, paint);
 }
-void CdlPictureRecordingCanvas::onDrawRect(const SkRect& r,
-                                           const CdlPaint& paint) {
-  fDL->drawRect(r, paint);
+
+void CdlPictureRecordingCanvas::onDrawRRect(const SkRRect& rrect,
+                                            const CdlPaint& paint) {
+  fDL->drawRRect(rrect, paint);
+}
+void CdlPictureRecordingCanvas::onDrawDRRect(const SkRRect& out,
+                                             const SkRRect& in,
+                                             const CdlPaint& paint) {
+  fDL->drawDRRect(out, in, paint);
 }
 
 void CdlPictureRecordingCanvas::onDrawOval(const SkRect& oval,
                                            const CdlPaint& paint) {
   fDL->drawOval(oval, paint);
-}
-
-void CdlPictureRecordingCanvas::onDrawRRect(const SkRRect& rrect,
-                                            const SkPaint& paint) {
-  fDL->drawRRect(rrect, paint);
-}
-void CdlPictureRecordingCanvas::onDrawDRRect(const SkRRect& out,
-                                             const SkRRect& in,
-                                             const SkPaint& paint) {
-  fDL->drawDRRect(out, in, paint);
 }
 
 void CdlPictureRecordingCanvas::onDrawPicture(const CdlPicture* picture,

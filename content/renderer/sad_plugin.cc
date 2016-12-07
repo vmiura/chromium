@@ -24,7 +24,7 @@ void PaintSadPlugin(blink::WebCanvas* webcanvas,
   // Add a translation so that it appears at the origin of plugin rect.
   canvas->translate(plugin_rect.x(), plugin_rect.y());
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(SK_ColorBLACK);
   canvas->drawRectCoords(0, 0, SkIntToScalar(width), SkIntToScalar(height),

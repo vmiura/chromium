@@ -117,20 +117,19 @@ class CdlCanvas : public SkRefCnt {
                   const CdlPaint& paint);
   void drawOval(const SkRect& oval, const CdlPaint&);
 
-  void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
   void drawRoundRect(const SkRect& rect,
                      SkScalar rx,
                      SkScalar ry,
-                     const SkPaint& paint);
+                     const CdlPaint& paint);
   void drawRectCoords(SkScalar left,
                       SkScalar top,
                       SkScalar right,
                       SkScalar bottom,
-                      const SkPaint& paint);
-  void drawRRect(const SkRRect& rrect, const SkPaint& paint);
-  void drawDRRect(const SkRRect& outer, const SkRRect& inner, const SkPaint&);
-  void drawIRect(const SkIRect& rect, const SkPaint& paint) {
+                      const CdlPaint& paint);
+  void drawRRect(const SkRRect& rrect, const CdlPaint& paint);
+  void drawDRRect(const SkRRect& outer, const SkRRect& inner, const CdlPaint&);
+  void drawIRect(const SkIRect& rect, const CdlPaint& paint) {
     SkRect r;
     r.set(rect);  // promotes the ints to scalars
     this->drawRect(r, paint);
@@ -277,11 +276,10 @@ class CdlCanvas : public SkRefCnt {
 
   virtual void onDrawPaint(const CdlPaint&);
   virtual void onDrawPath(const SkPath&, const CdlPaint&);
-  virtual void onDrawRect(const SkRect&, const SkPaint&);
   virtual void onDrawRect(const SkRect&, const CdlPaint&);
   virtual void onDrawOval(const SkRect&, const CdlPaint&);
-  virtual void onDrawRRect(const SkRRect&, const SkPaint&);
-  virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
+  virtual void onDrawRRect(const SkRRect&, const CdlPaint&);
+  virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const CdlPaint&);
 
   virtual void onDrawPicture(const CdlPicture* picture,
                              const SkMatrix* matrix,

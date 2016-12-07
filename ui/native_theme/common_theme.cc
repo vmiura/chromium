@@ -324,7 +324,7 @@ void CommonThemePaintMenuItemBackground(
     NativeTheme::State state,
     const gfx::Rect& rect,
     const NativeTheme::MenuItemExtraParams& menu_item) {
-  SkPaint paint;
+  CdlPaint paint;
   switch (state) {
     case NativeTheme::kNormal:
     case NativeTheme::kDisabled:

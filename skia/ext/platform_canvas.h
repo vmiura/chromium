@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "skia/ext/native_drawing_context.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPixelRef.h"

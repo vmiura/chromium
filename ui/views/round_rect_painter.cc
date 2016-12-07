@@ -24,11 +24,11 @@ gfx::Size RoundRectPainter::GetMinimumSize() const {
 }
 
 void RoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(border_color_);
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setStrokeWidth(kBorderWidth);
-  paint.setFlags(SkPaint::kAntiAlias_Flag);
+  paint.setAntiAlias(true);
   gfx::Rect rect(size);
   rect.Inset(0, 0, kBorderWidth, kBorderWidth);
   SkRect skia_rect = gfx::RectToSkRect(rect);

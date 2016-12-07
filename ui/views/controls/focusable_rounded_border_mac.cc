@@ -28,7 +28,7 @@ FocusableRoundedBorder::~FocusableRoundedBorder() {}
 // likely diverge in future.
 // TODO(ellyjones): Diverge it by adding soft focus rings.
 void FocusableRoundedBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setStrokeWidth(kThickness);
   paint.setColor(GetCurrentColor(view));
