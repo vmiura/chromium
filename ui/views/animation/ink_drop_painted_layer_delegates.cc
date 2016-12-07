@@ -5,6 +5,7 @@
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -57,9 +58,9 @@ gfx::Rect CircleLayerDelegate::GetPaintedBounds() const {
 }
 
 void CircleLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color());
-  paint.setFlags(SkPaint::kAntiAlias_Flag);
+  paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, GetPaintedBounds().size());

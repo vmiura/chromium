@@ -13,6 +13,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/render_text.h"
@@ -34,7 +35,7 @@ typedef std::pair<HarfBuzzFace, GlyphCache> FaceCache;
 struct FontData {
   FontData(GlyphCache* glyph_cache) : glyph_cache_(glyph_cache) {}
 
-  SkPaint paint_;
+  CdlPaint paint_;
   GlyphCache* glyph_cache_;
 };
 
@@ -53,7 +54,7 @@ void DeleteArrayByType(void* data) {
 
 // Outputs the |width| and |extents| of the glyph with index |codepoint| in
 // |paint|'s font.
-void GetGlyphWidthAndExtents(SkPaint* paint,
+void GetGlyphWidthAndExtents(CdlPaint* paint,
                              hb_codepoint_t codepoint,
                              hb_position_t* width,
                              hb_glyph_extents_t* extents) {
@@ -64,7 +65,7 @@ void GetGlyphWidthAndExtents(SkPaint* paint,
   SkRect sk_bounds;
   uint16_t glyph = static_cast<uint16_t>(codepoint);
 
-  paint->getTextWidths(&glyph, sizeof(glyph), &sk_width, &sk_bounds);
+  paint->toSkPaint().getTextWidths(&glyph, sizeof(glyph), &sk_width, &sk_bounds);
   if (width)
     *width = SkiaScalarToHarfBuzzUnits(sk_width);
   if (extents) {
@@ -90,9 +91,9 @@ hb_bool_t GetGlyph(hb_font_t* font,
 
   bool exists = cache->count(unicode) != 0;
   if (!exists) {
-    SkPaint* paint = &font_data->paint_;
+    CdlPaint* paint = &font_data->paint_;
     paint->setTextEncoding(SkPaint::kUTF32_TextEncoding);
-    paint->textToGlyphs(&unicode, sizeof(hb_codepoint_t), &(*cache)[unicode]);
+    paint->toSkPaint().textToGlyphs(&unicode, sizeof(hb_codepoint_t), &(*cache)[unicode]);
   }
   *glyph = (*cache)[unicode];
   return !!*glyph;

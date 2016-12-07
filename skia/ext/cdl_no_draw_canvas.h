@@ -24,12 +24,11 @@ class CdlNoDrawCanvas : public CdlCanvas {
 
   void onDiscard() override {}
 
-  void onDrawPaint(const SkPaint&) override {}
+  void onDrawPaint(const CdlPaint&) override {}
   void onDrawPath(const SkPath&, const SkPaint&) override {}
   void onDrawRect(const SkRect&, const SkPaint&) override {}
   void onDrawRect(const SkRect&, const CdlPaint&) override {}
-  void onDrawRegion(const SkRegion&, const SkPaint&) override {}
-  void onDrawOval(const SkRect&, const SkPaint&) override {}
+  void onDrawOval(const SkRect&, const CdlPaint&) override {}
 
   void onDrawRRect(const SkRRect&, const SkPaint&) override {}
   void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override {}
@@ -47,7 +46,7 @@ class CdlNoDrawCanvas : public CdlCanvas {
   void onDrawPosText(const void*,
                      size_t,
                      const SkPoint[],
-                     const SkPaint&) override {}
+                     const CdlPaint&) override {}
 
   void onDrawTextBlob(const SkTextBlob*,
                       SkScalar,
@@ -81,7 +80,7 @@ class CdlNoDrawCanvas : public CdlCanvas {
   void onDrawPoints(SkCanvas::PointMode,
                     size_t count,
                     const SkPoint pts[],
-                    const SkPaint&) override {}
+                    const CdlPaint&) override {}
 };
 
 #endif  // SKIA_EXT_CDL_NO_DRAW_CANVAS_H_

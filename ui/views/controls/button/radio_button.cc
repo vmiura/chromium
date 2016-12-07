@@ -147,7 +147,7 @@ void RadioButton::SetChecked(bool checked) {
   Checkbox::SetChecked(checked);
 }
 
-void RadioButton::PaintFocusRing(gfx::Canvas* canvas, const SkPaint& paint) {
+void RadioButton::PaintFocusRing(gfx::Canvas* canvas, const CdlPaint& paint) {
   canvas->DrawCircle(gfx::RectF(image()->bounds()).CenterPoint(),
                      image()->width() / 2, paint);
 }

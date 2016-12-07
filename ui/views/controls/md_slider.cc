@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/md_slider.h"
 
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -74,17 +75,17 @@ void MdSlider::OnPaint(gfx::Canvas* canvas) {
 
   // Paint the thumb highlight if it exists.
   if (is_active_ && thumb_highlight_radius_ > kThumbRadius) {
-    SkPaint highlight;
+    CdlPaint highlight;
     SkColor kHighlightColor = SkColorSetA(kActiveColor, kHighlightColorAlpha);
     highlight.setColor(kHighlightColor);
-    highlight.setFlags(SkPaint::kAntiAlias_Flag);
+    highlight.setAntiAlias(true);
     canvas->DrawCircle(thumb_center, thumb_highlight_radius_, highlight);
   }
 
   // Paint the thumb of the slider.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(current_thumb_color);
-  paint.setFlags(SkPaint::kAntiAlias_Flag);
+  paint.setAntiAlias(true);
 
   if (!is_active_) {
     paint.setStrokeWidth(kThumbStroke);

@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/ink_drop_mask.h"
 
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -63,7 +64,7 @@ CircleInkDropMask::CircleInkDropMask(const gfx::Size& layer_size,
       mask_radius_(mask_radius) {}
 
 void CircleInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAlpha(255);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setAntiAlias(true);

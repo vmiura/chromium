@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/icu/source/common/unicode/rbbi.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -250,7 +251,7 @@ void SkiaTextRenderer::SetForegroundColor(SkColor foreground) {
 }
 
 void SkiaTextRenderer::SetShader(sk_sp<SkShader> shader) {
-  paint_.setShader(std::move(shader));
+  paint_.setShader(CdlShader::WrapSkShader(std::move(shader)));
 }
 
 void SkiaTextRenderer::SetHaloEffect() {
@@ -298,7 +299,7 @@ void SkiaTextRenderer::DrawUnderline(int x, int y, int width) {
       x_scalar, y + underline_position_, x_scalar + width,
       y + underline_position_ + underline_thickness_);
   if (underline_thickness_ == kUnderlineMetricsNotSet) {
-    const SkScalar text_size = paint_.getTextSize();
+    const SkScalar text_size = paint_.toSkPaint().getTextSize();
     r.fTop = SkScalarMulAdd(text_size, kUnderlineOffset, y);
     r.fBottom = r.fTop + SkScalarMul(text_size, kLineThickness);
   }
@@ -306,7 +307,7 @@ void SkiaTextRenderer::DrawUnderline(int x, int y, int width) {
 }
 
 void SkiaTextRenderer::DrawStrike(int x, int y, int width) const {
-  const SkScalar text_size = paint_.getTextSize();
+  const SkScalar text_size = paint_.toSkPaint().getTextSize();
   const SkScalar height = SkScalarMul(text_size, kLineThickness);
   const SkScalar offset = SkScalarMulAdd(text_size, kStrikeThroughOffset, y);
   SkScalar x_scalar = SkIntToScalar(x);
@@ -317,7 +318,7 @@ void SkiaTextRenderer::DrawStrike(int x, int y, int width) const {
 
 SkiaTextRenderer::DiagonalStrike::DiagonalStrike(Canvas* canvas,
                                                  Point start,
-                                                 const SkPaint& paint)
+                                                 const CdlPaint& paint)
     : canvas_(canvas),
       start_(start),
       paint_(paint),
@@ -411,7 +412,7 @@ Line::~Line() {}
 
 void ApplyRenderParams(const FontRenderParams& params,
                        bool subpixel_rendering_suppressed,
-                       SkPaint* paint) {
+                       CdlPaint* paint) {
   paint->setAntiAlias(params.antialiasing);
   paint->setLCDRenderText(!subpixel_rendering_suppressed &&
       params.subpixel_rendering != FontRenderParams::SUBPIXEL_RENDERING_NONE);

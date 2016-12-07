@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 class CdlPaint {
  public:
@@ -41,7 +42,39 @@ class CdlPaint {
   bool isAntiAlias() const { return paint_.isAntiAlias(); }
   void setAntiAlias(bool aa) { paint_.setAntiAlias(aa); }
 
+  bool isVerticalText() const { return paint_.isVerticalText(); }
+  void setVerticalText(bool vertical) { paint_.setVerticalText(vertical); }
+
+  bool isSubpixelText() const { return paint_.isSubpixelText(); }
+  void setSubpixelText(bool subpixelText) {
+    paint_.setSubpixelText(subpixelText);
+  }
+
+  bool isLCDRenderText() const { return paint_.isLCDRenderText(); }
+  void setLCDRenderText(bool lcdText) { paint_.setLCDRenderText(lcdText); }
+
+  SkPaint::Hinting getHinting() const { return paint_.getHinting(); }
+  void setHinting(SkPaint::Hinting hintingLevel) {
+    paint_.setHinting(hintingLevel);
+  }
+
+  bool isAutohinted() const { return paint_.isAutohinted(); }
+  void setAutohinted(bool useAutohinter) {
+    paint_.setAutohinted(useAutohinter);
+  }
+
+  bool isDither() const { return paint_.isDither(); }
   void setDither(bool dither) { paint_.setDither(dither); }
+
+  SkPaint::TextEncoding getTextEncoding() const {
+    return paint_.getTextEncoding();
+  }
+  void setTextEncoding(SkPaint::TextEncoding encoding) {
+    paint_.setTextEncoding(encoding);
+  }
+
+  SkScalar getTextSize() const { return paint_.getTextSize(); }
+  void setTextSize(SkScalar textSize) { paint_.setTextSize(textSize); }
 
   void setFilterQuality(SkFilterQuality quality) {
     paint_.setFilterQuality(quality);
@@ -59,6 +92,9 @@ class CdlPaint {
 
   SkPaint::Join getStrokeJoin() const { return paint_.getStrokeJoin(); }
   void setStrokeJoin(SkPaint::Join join) { paint_.setStrokeJoin(join); }
+
+  SkTypeface* getTypeface() const { return paint_.getTypeface(); }
+  void setTypeface(sk_sp<SkTypeface> typeface) { paint_.setTypeface(typeface); }
 
   SkColorFilter* getColorFilter() const { return paint_.getColorFilter(); }
   void setColorFilter(sk_sp<SkColorFilter> filter) {

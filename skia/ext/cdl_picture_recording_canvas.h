@@ -40,11 +40,11 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onClipPath(const SkPath&, SkCanvas::ClipOp, ClipEdgeStyle) override;
   void onClipRegion(const SkRegion&, SkCanvas::ClipOp) override;
 
-  void onDrawPaint(const SkPaint&) override;
+  void onDrawPaint(const CdlPaint&) override;
   void onDrawPath(const SkPath&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const SkPaint&) override;
   void onDrawRect(const SkRect&, const CdlPaint&) override;
-  void onDrawOval(const SkRect&, const SkPaint&) override;
+  void onDrawOval(const SkRect&, const CdlPaint&) override;
   void onDrawRRect(const SkRRect&, const SkPaint&) override;
   void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&) override;
 
@@ -62,7 +62,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onDrawPosText(const void*,
                      size_t,
                      const SkPoint[],
-                     const SkPaint&) override;
+                     const CdlPaint&) override;
   void onDrawTextBlob(const SkTextBlob*,
                       SkScalar,
                       SkScalar,
@@ -90,7 +90,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onDrawPoints(SkCanvas::PointMode,
                     size_t count,
                     const SkPoint pts[],
-                    const SkPaint&) override;
+                    const CdlPaint&) override;
 
  private:
   typedef CdlNoDrawCanvas INHERITED;

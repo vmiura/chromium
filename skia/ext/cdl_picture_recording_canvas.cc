@@ -93,7 +93,7 @@ void CdlPictureRecordingCanvas::onClipRegion(const SkRegion& region,
     CdlCanvas::onClipRegion(region, op);
 }
 
-void CdlPictureRecordingCanvas::onDrawPaint(const SkPaint& paint) {
+void CdlPictureRecordingCanvas::onDrawPaint(const CdlPaint& paint) {
   fDL->drawPaint(paint);
 }
 void CdlPictureRecordingCanvas::onDrawPath(const SkPath& path,
@@ -110,7 +110,7 @@ void CdlPictureRecordingCanvas::onDrawRect(const SkRect& r,
 }
 
 void CdlPictureRecordingCanvas::onDrawOval(const SkRect& oval,
-                                           const SkPaint& paint) {
+                                           const CdlPaint& paint) {
   fDL->drawOval(oval, paint);
 }
 
@@ -146,7 +146,7 @@ void CdlPictureRecordingCanvas::onDrawText(const void* text,
 void CdlPictureRecordingCanvas::onDrawPosText(const void* text,
                                               size_t bytes,
                                               const SkPoint pos[],
-                                              const SkPaint& paint) {
+                                              const CdlPaint& paint) {
   fDL->drawPosText(text, bytes, pos, paint);
 }
 
@@ -198,6 +198,6 @@ void CdlPictureRecordingCanvas::onDrawImageRect(
 void CdlPictureRecordingCanvas::onDrawPoints(SkCanvas::PointMode mode,
                                              size_t count,
                                              const SkPoint pts[],
-                                             const SkPaint& paint) {
+                                             const CdlPaint& paint) {
   fDL->drawPoints(mode, count, pts, paint);
 }

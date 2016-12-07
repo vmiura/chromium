@@ -1354,7 +1354,7 @@ void Tab::PaintPinnedTabTitleChangedIndicatorAndIcon(
     gfx::Canvas icon_canvas(gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize),
                             canvas->image_scale(), false);
     icon_canvas.DrawImageInt(favicon_, 0, 0);
-    SkPaint clear_paint;
+    CdlPaint clear_paint;
     clear_paint.setAntiAlias(true);
     clear_paint.setBlendMode(SkBlendMode::kClear);
     const int circle_x = base::i18n::IsRTL() ? 0 : gfx::kFaviconSize;
@@ -1369,7 +1369,7 @@ void Tab::PaintPinnedTabTitleChangedIndicatorAndIcon(
 
   // Draws the actual pinned tab title changed indicator.
   const int kIndicatorRadius = 3;
-  SkPaint indicator_paint;
+  CdlPaint indicator_paint;
   indicator_paint.setColor(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_ProminentButtonColor));
   indicator_paint.setAntiAlias(true);

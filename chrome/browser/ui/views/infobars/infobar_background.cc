@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/infobar_container_delegate.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/infobar.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -68,13 +70,13 @@ void InfoBarBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   fill.setColor(get_color());
   canvas->DrawPath(fill_path, fill);
 
-  SkPaint stroke;
+  CdlPaint stroke;
   stroke.setStyle(SkPaint::kStroke_Style);
   const int kSeparatorThicknessPx = 1;
   stroke.setStrokeWidth(SkIntToScalar(kSeparatorThicknessPx));
   stroke.setColor(separator_color);
   stroke.setAntiAlias(true);
-  canvas->DrawPath(stroke_path, stroke);
+  canvas->DrawPath(stroke_path, stroke.toSkPaint());
 
   // Bottom separator.
   stroke.setAntiAlias(false);

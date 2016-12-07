@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/grit/theme_resources.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -174,7 +175,7 @@ void IconWithBadgeImageSource::PaintPageActionDecoration(gfx::Canvas* canvas) {
   int major_radius = std::ceil(size().width() / 5.0);
   int minor_radius = std::ceil(major_radius / 2.0);
   gfx::Point center_point(major_radius + 1, size().height() - (major_radius)-1);
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(SK_ColorTRANSPARENT);

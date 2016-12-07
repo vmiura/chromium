@@ -61,7 +61,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
                       const gfx::ImageSkia& image);
 
   // Paints a focus indicator for the view.
-  virtual void PaintFocusRing(gfx::Canvas* canvas, const SkPaint& paint);
+  virtual void PaintFocusRing(gfx::Canvas* canvas, const CdlPaint& paint);
 
   // Gets the vector icon id used to draw the icon based on the current state of
   // |checked_|.

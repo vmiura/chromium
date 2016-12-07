@@ -57,18 +57,17 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
   void concat(const SkMatrix&);
   void setMatrix(const SkMatrix&);
   void translate(SkScalar, SkScalar);
-  void translateZ(SkScalar);
 
   void clipPath(const SkPath&, SkCanvas::ClipOp, bool aa);
   void clipRect(const SkRect&, SkCanvas::ClipOp, bool aa);
   void clipRRect(const SkRRect&, SkCanvas::ClipOp, bool aa);
   void clipRegion(const SkRegion&, SkCanvas::ClipOp);
 
-  void drawPaint(const SkPaint&);
+  void drawPaint(const CdlPaint&);
   void drawPath(const SkPath&, const SkPaint&);
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
-  void drawOval(const SkRect&, const SkPaint&);
+  void drawOval(const SkRect&, const CdlPaint&);
   void drawRRect(const SkRRect&, const SkPaint&);
   void drawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
@@ -76,16 +75,11 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
   void drawPicture(const CdlPicture*, const SkMatrix*, const SkPaint*);
 
   void drawText(const void*, size_t, SkScalar, SkScalar, const SkPaint&);
-  void drawPosText(const void*, size_t, const SkPoint[], const SkPaint&);
+  void drawPosText(const void*, size_t, const SkPoint[], const CdlPaint&);
   void drawTextBlob(const SkTextBlob*, SkScalar, SkScalar, const SkPaint&);
 
   void drawImage(sk_sp<const SkImage>, SkScalar, SkScalar, const SkPaint*);
   void drawImage(sk_sp<const SkImage>, SkScalar, SkScalar, const CdlPaint&);
-
-  void drawImageNine(sk_sp<const SkImage>,
-                     const SkIRect&,
-                     const SkRect&,
-                     const SkPaint*);
   void drawImageRect(sk_sp<const SkImage>,
                      const SkRect*,
                      const SkRect&,
@@ -96,35 +90,7 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
                      const SkRect&,
                      const CdlPaint&,
                      SkCanvas::SrcRectConstraint);
-  void drawImageLattice(sk_sp<const SkImage>,
-                        const SkCanvas::Lattice&,
-                        const SkRect&,
-                        const SkPaint*);
-
-  void drawPatch(const SkPoint[12],
-                 const SkColor[4],
-                 const SkPoint[4],
-                 SkBlendMode,
-                 const SkPaint&);
-  void drawPoints(SkCanvas::PointMode, size_t, const SkPoint[], const SkPaint&);
-  void drawVertices(SkCanvas::VertexMode,
-                    int,
-                    const SkPoint[],
-                    const SkPoint[],
-                    const SkColor[],
-                    SkBlendMode,
-                    const uint16_t[],
-                    int,
-                    const SkPaint&);
-  void drawAtlas(const SkImage*,
-                 const SkRSXform[],
-                 const SkRect[],
-                 const SkColor[],
-                 int,
-                 SkBlendMode,
-                 const SkRect*,
-                 const SkPaint*);
-
+  void drawPoints(SkCanvas::PointMode, size_t, const SkPoint[], const CdlPaint&);
   void setBounds(const SkRect& bounds);
 
   // Cdl

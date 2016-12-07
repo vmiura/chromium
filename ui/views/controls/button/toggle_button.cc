@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/button/toggle_button.h"
 
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -76,7 +77,7 @@ class ToggleButton::ThumbView : public InkDropHostView {
                         ui::NativeTheme::kColorId_LabelEnabledColor),
                     0x99));
     shadows.push_back(shadow.Scale(dsf));
-    SkPaint thumb_paint;
+    CdlPaint thumb_paint;
     thumb_paint.setLooper(gfx::CreateShadowDrawLooperCorrectBlur(shadows));
     thumb_paint.setAntiAlias(true);
     const SkColor thumb_on_color = GetNativeTheme()->GetSystemColor(

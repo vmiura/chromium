@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/common/content_client.h"
+#include "skia/ext/cdl_paint.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -89,7 +90,7 @@ class ArrowLayerDelegate : public ui::LayerDelegate {
  private:
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(SkColorSetARGB(0xa0, 0, 0, 0));
     paint.setStyle(SkPaint::kFill_Style);
     paint.setAntiAlias(true);

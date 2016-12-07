@@ -97,25 +97,25 @@ class CdlCanvas : public SkRefCnt {
 
   // Draw
   void drawColor(SkColor color, SkBlendMode mode = SkBlendMode::kSrcOver);
-  void drawPaint(const SkPaint& paint);
-  void drawPoint(SkScalar x, SkScalar y, const SkPaint& paint);
+  void drawPaint(const CdlPaint& paint);
+  void drawPoint(SkScalar x, SkScalar y, const CdlPaint& paint);
   void drawPoint(SkScalar x, SkScalar y, SkColor color);
   void drawPoints(SkCanvas::PointMode mode,
                   size_t count,
                   const SkPoint pts[],
-                  const SkPaint& paint);
+                  const CdlPaint& paint);
 
   void drawLine(SkScalar x0,
                 SkScalar y0,
                 SkScalar x1,
                 SkScalar y1,
-                const SkPaint& paint);
+                const CdlPaint& paint);
 
   void drawCircle(SkScalar cx,
                   SkScalar cy,
                   SkScalar radius,
-                  const SkPaint& paint);
-  void drawOval(const SkRect& oval, const SkPaint&);
+                  const CdlPaint& paint);
+  void drawOval(const SkRect& oval, const CdlPaint&);
 
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
@@ -224,7 +224,7 @@ class CdlCanvas : public SkRefCnt {
   void drawPosText(const void* text,
                    size_t byteLength,
                    const SkPoint pos[],
-                   const SkPaint& paint);
+                   const CdlPaint& paint);
   void drawTextBlob(const SkTextBlob* blob,
                     SkScalar x,
                     SkScalar y,
@@ -275,12 +275,11 @@ class CdlCanvas : public SkRefCnt {
 
   virtual void onDiscard();
 
-  virtual void onDrawPaint(const SkPaint&);
+  virtual void onDrawPaint(const CdlPaint&);
   virtual void onDrawPath(const SkPath&, const SkPaint&);
   virtual void onDrawRect(const SkRect&, const SkPaint&);
   virtual void onDrawRect(const SkRect&, const CdlPaint&);
-  virtual void onDrawRegion(const SkRegion&, const SkPaint&);
-  virtual void onDrawOval(const SkRect&, const SkPaint&);
+  virtual void onDrawOval(const SkRect&, const CdlPaint&);
   virtual void onDrawRRect(const SkRRect&, const SkPaint&);
   virtual void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint&);
 
@@ -297,7 +296,7 @@ class CdlCanvas : public SkRefCnt {
   virtual void onDrawPosText(const void*,
                              size_t,
                              const SkPoint[],
-                             const SkPaint&);
+                             const CdlPaint&);
   virtual void onDrawTextBlob(const SkTextBlob*,
                               SkScalar,
                               SkScalar,
@@ -324,7 +323,7 @@ class CdlCanvas : public SkRefCnt {
   virtual void onDrawPoints(SkCanvas::PointMode,
                             size_t count,
                             const SkPoint pts[],
-                            const SkPaint&);
+                            const CdlPaint&);
 
   std::unique_ptr<SkCanvas> owned_canvas_;
   SkCanvas* canvas_;

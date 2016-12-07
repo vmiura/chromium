@@ -271,10 +271,10 @@ class GFX_EXPORT Canvas {
   // Draw the given point with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
   // TODO(funkysidd): Remove this (http://crbug.com/553726)
-  void DrawPoint(const Point& p, const SkPaint& paint);
+  void DrawPoint(const Point& p, const CdlPaint& paint);
 
   // Draw the given point with the given |paint| parameters.
-  void DrawPoint(const PointF& p, const SkPaint& paint);
+  void DrawPoint(const PointF& p, const CdlPaint& paint);
 
   // Draws a single pixel line with the specified color.
   // DEPRECATED in favor of the RectF version below.
@@ -287,22 +287,22 @@ class GFX_EXPORT Canvas {
   // Draws a line with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
   // TODO(funkysidd): Remove this (http://crbug.com/553726)
-  void DrawLine(const Point& p1, const Point& p2, const SkPaint& paint);
+  void DrawLine(const Point& p1, const Point& p2, const CdlPaint& paint);
 
   // Draws a line with the given |paint| parameters.
-  void DrawLine(const PointF& p1, const PointF& p2, const SkPaint& paint);
+  void DrawLine(const PointF& p1, const PointF& p2, const CdlPaint& paint);
 
   // Draws a circle with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
   // TODO(funkysidd): Remove this (http://crbug.com/553726)
   void DrawCircle(const Point& center_point,
                   int radius,
-                  const SkPaint& paint);
+                  const CdlPaint& paint);
 
   // Draws a circle with the given |paint| parameters.
   void DrawCircle(const PointF& center_point,
                   float radius,
-                  const SkPaint& paint);
+                  const CdlPaint& paint);
 
   // Draws the given rectangle with rounded corners of |radius| using the
   // given |paint| parameters. DEPRECATED in favor of the RectF version below.

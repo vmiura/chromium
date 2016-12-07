@@ -71,7 +71,6 @@ namespace {
   M(Concat)         \
   M(SetMatrix)      \
   M(Translate)      \
-  M(TranslateZ)     \
   M(ClipPath)       \
   M(ClipRect)       \
   M(ClipRRect)      \
@@ -183,16 +182,6 @@ struct Translate final : Op {
     c->translate(dx, dy);
   }
 };
-struct TranslateZ final : Op {
-  static const auto kType = Type::TranslateZ;
-  TranslateZ(SkScalar dz) : dz(dz) {}
-  SkScalar dz;
-  void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-#ifdef SK_EXPERIMENTAL_SHADOWING
-    c->translateZ(dz);
-#endif
-  }
-};
 
 struct ClipPath final : Op {
   static const auto kType = Type::ClipPath;
@@ -241,8 +230,8 @@ struct ClipRegion final : Op {
 
 struct DrawPaint final : Op {
   static const auto kType = Type::DrawPaint;
-  DrawPaint(const SkPaint& paint) : paint(paint) {}
-  SkPaint paint;
+  DrawPaint(const CdlPaint& paint) : paint(paint) {}
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPaint(paint);
   }
@@ -282,10 +271,10 @@ struct DrawRectX final : Op {
 
 struct DrawOval final : Op {
   static const auto kType = Type::DrawOval;
-  DrawOval(const SkRect& oval, const SkPaint& paint)
+  DrawOval(const SkRect& oval, const CdlPaint& paint)
       : oval(oval), paint(paint) {}
   SkRect oval;
-  SkPaint paint;
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawOval(oval, paint);
   }
@@ -439,10 +428,10 @@ struct DrawText final : Op {
 };
 struct DrawPosText final : Op {
   static const auto kType = Type::DrawPosText;
-  DrawPosText(size_t bytes, const SkPaint& paint, int n)
+  DrawPosText(size_t bytes, const CdlPaint& paint, int n)
       : bytes(bytes), paint(paint), n(n) {}
   size_t bytes;
-  SkPaint paint;
+  CdlPaint paint;
   int n;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     auto points = pod<SkPoint>(this);
@@ -468,11 +457,11 @@ struct DrawTextBlob final : Op {
 
 struct DrawPoints final : Op {
   static const auto kType = Type::DrawPoints;
-  DrawPoints(SkCanvas::PointMode mode, size_t count, const SkPaint& paint)
+  DrawPoints(SkCanvas::PointMode mode, size_t count, const CdlPaint& paint)
       : mode(mode), count(count), paint(paint) {}
   SkCanvas::PointMode mode;
   size_t count;
-  SkPaint paint;
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPoints(mode, count, pod<SkPoint>(this), paint);
   }
@@ -546,9 +535,6 @@ void CdlPictureBuffer::setMatrix(const SkMatrix& matrix) {
 void CdlPictureBuffer::translate(SkScalar dx, SkScalar dy) {
   this->push<Translate>(0, dx, dy);
 }
-void CdlPictureBuffer::translateZ(SkScalar dz) {
-  this->push<TranslateZ>(0, dz);
-}
 
 void CdlPictureBuffer::clipPath(const SkPath& path,
                                 SkCanvas::ClipOp op,
@@ -569,7 +555,7 @@ void CdlPictureBuffer::clipRegion(const SkRegion& region, SkCanvas::ClipOp op) {
   this->push<ClipRegion>(0, region, op);
 }
 
-void CdlPictureBuffer::drawPaint(const SkPaint& paint) {
+void CdlPictureBuffer::drawPaint(const CdlPaint& paint) {
   this->push<DrawPaint>(0, paint);
 }
 void CdlPictureBuffer::drawPath(const SkPath& path, const SkPaint& paint) {
@@ -582,7 +568,7 @@ void CdlPictureBuffer::drawRect(const SkRect& rect, const CdlPaint& paint) {
   this->push<DrawRectX>(0, rect, paint);
 }
 
-void CdlPictureBuffer::drawOval(const SkRect& oval, const SkPaint& paint) {
+void CdlPictureBuffer::drawOval(const SkRect& oval, const CdlPaint& paint) {
   this->push<DrawOval>(0, oval, paint);
 }
 
@@ -648,8 +634,8 @@ void CdlPictureBuffer::drawText(const void* text,
 void CdlPictureBuffer::drawPosText(const void* text,
                                    size_t bytes,
                                    const SkPoint pos[],
-                                   const SkPaint& paint) {
-  int n = paint.countText(text, bytes);
+                                   const CdlPaint& paint) {
+  int n = paint.toSkPaint().countText(text, bytes);
   void* pod =
       this->push<DrawPosText>(n * sizeof(SkPoint) + bytes, bytes, paint, n);
   copy_v(pod, pos, n, (const char*)text, bytes);
@@ -665,7 +651,7 @@ void CdlPictureBuffer::drawTextBlob(const SkTextBlob* blob,
 void CdlPictureBuffer::drawPoints(SkCanvas::PointMode mode,
                                   size_t count,
                                   const SkPoint points[],
-                                  const SkPaint& paint) {
+                                  const CdlPaint& paint) {
   void* pod =
       this->push<DrawPoints>(count * sizeof(SkPoint), mode, count, paint);
   copy_v(pod, points, count);

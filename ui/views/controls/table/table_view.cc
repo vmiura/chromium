@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "skia/ext/cdl_paint.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -603,7 +604,7 @@ void TableView::OnPaint(gfx::Canvas* canvas) {
 
   const SkColor grouping_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_TableGroupingIndicatorColor);
-  SkPaint grouping_paint;
+  CdlPaint grouping_paint;
   grouping_paint.setColor(grouping_color);
   grouping_paint.setStyle(SkPaint::kFill_Style);
   grouping_paint.setAntiAlias(true);

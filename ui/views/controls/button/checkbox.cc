@@ -133,7 +133,7 @@ void Checkbox::OnPaint(gfx::Canvas* canvas) {
   if (!UseMd() || !HasFocus())
     return;
 
-  SkPaint focus_paint;
+  CdlPaint focus_paint;
   focus_paint.setAntiAlias(true);
   focus_paint.setColor(
       SkColorSetA(GetNativeTheme()->GetSystemColor(
@@ -205,9 +205,9 @@ void Checkbox::SetCustomImage(bool checked,
   UpdateImage();
 }
 
-void Checkbox::PaintFocusRing(gfx::Canvas* canvas, const SkPaint& paint) {
+void Checkbox::PaintFocusRing(gfx::Canvas* canvas, const CdlPaint& paint) {
   gfx::RectF focus_rect(image()->bounds());
-  canvas->DrawRoundRect(focus_rect, 2.f, paint);
+  canvas->DrawRoundRect(focus_rect, 2.f, paint.toSkPaint());
 }
 
 gfx::VectorIconId Checkbox::GetVectorIconId() const {

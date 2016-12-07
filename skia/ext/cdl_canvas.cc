@@ -222,17 +222,17 @@ void CdlCanvas::clipRegion(const SkRegion& rgn, SkCanvas::ClipOp op) {
 ///////////////////////////////////////////////////////////////////////////////
 // Draw
 void CdlCanvas::drawColor(SkColor color, SkBlendMode mode) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
   paint.setBlendMode(mode);
   this->drawPaint(paint);
 }
 
-void CdlCanvas::drawPaint(const SkPaint& paint) {
+void CdlCanvas::drawPaint(const CdlPaint& paint) {
   this->onDrawPaint(paint);
 }
 
-void CdlCanvas::drawPoint(SkScalar x, SkScalar y, const SkPaint& paint) {
+void CdlCanvas::drawPoint(SkScalar x, SkScalar y, const CdlPaint& paint) {
   SkPoint pt;
 
   pt.set(x, y);
@@ -241,7 +241,7 @@ void CdlCanvas::drawPoint(SkScalar x, SkScalar y, const SkPaint& paint) {
 
 void CdlCanvas::drawPoint(SkScalar x, SkScalar y, SkColor color) {
   SkPoint pt;
-  SkPaint paint;
+  CdlPaint paint;
 
   pt.set(x, y);
   paint.setColor(color);
@@ -251,7 +251,7 @@ void CdlCanvas::drawPoint(SkScalar x, SkScalar y, SkColor color) {
 void CdlCanvas::drawPoints(SkCanvas::PointMode mode,
                            size_t count,
                            const SkPoint pts[],
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   this->onDrawPoints(mode, count, pts, paint);
 }
 
@@ -259,7 +259,7 @@ void CdlCanvas::drawLine(SkScalar x0,
                          SkScalar y0,
                          SkScalar x1,
                          SkScalar y1,
-                         const SkPaint& paint) {
+                         const CdlPaint& paint) {
   SkPoint pts[2];
 
   pts[0].set(x0, y0);
@@ -270,7 +270,7 @@ void CdlCanvas::drawLine(SkScalar x0,
 void CdlCanvas::drawCircle(SkScalar cx,
                            SkScalar cy,
                            SkScalar radius,
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   if (radius < 0) {
     radius = 0;
   }
@@ -280,7 +280,7 @@ void CdlCanvas::drawCircle(SkScalar cx,
   this->drawOval(r, paint);
 }
 
-void CdlCanvas::drawOval(const SkRect& r, const SkPaint& paint) {
+void CdlCanvas::drawOval(const SkRect& r, const CdlPaint& paint) {
   this->onDrawOval(r, paint);
 }
 
@@ -388,7 +388,7 @@ void CdlCanvas::drawImageRect(const SkImage* image,
 void CdlCanvas::drawPosText(const void* text,
                             size_t byteLength,
                             const SkPoint pos[],
-                            const SkPaint& paint) {
+                            const CdlPaint& paint) {
   if (byteLength) {
     this->onDrawPosText(text, byteLength, pos, paint);
   }
@@ -463,8 +463,8 @@ void CdlCanvas::onClipRegion(SkRegion const& r, SkRegion::Op op) {
 void CdlCanvas::onDiscard() {
   canvas_->discard();
 }
-void CdlCanvas::onDrawPaint(SkPaint const& paint) {
-  canvas_->drawPaint(paint);
+void CdlCanvas::onDrawPaint(CdlPaint const& paint) {
+  canvas_->drawPaint(paint.toSkPaint());
 }
 void CdlCanvas::onDrawPath(SkPath const& p, SkPaint const& paint) {
   canvas_->drawPath(p, paint);
@@ -472,11 +472,8 @@ void CdlCanvas::onDrawPath(SkPath const& p, SkPaint const& paint) {
 void CdlCanvas::onDrawRect(SkRect const& r, SkPaint const& paint) {
   canvas_->drawRect(r, paint);
 }
-void CdlCanvas::onDrawRegion(SkRegion const& r, SkPaint const& paint) {
-  canvas_->drawRegion(r, paint);
-}
-void CdlCanvas::onDrawOval(SkRect const& r, SkPaint const& paint) {
-  canvas_->drawOval(r, paint);
+void CdlCanvas::onDrawOval(SkRect const& r, CdlPaint const& paint) {
+  canvas_->drawOval(r, paint.toSkPaint());
 }
 
 void CdlCanvas::onDrawRRect(SkRRect const& r, SkPaint const& paint) {
@@ -564,8 +561,8 @@ void CdlCanvas::onDrawText(const void* text,
 void CdlCanvas::onDrawPosText(const void* text,
                               size_t byteLength,
                               const SkPoint pos[],
-                              const SkPaint& paint) {
-  canvas_->drawPosText(text, byteLength, pos, paint);
+                              const CdlPaint& paint) {
+  canvas_->drawPosText(text, byteLength, pos, paint.toSkPaint());
 }
 
 void CdlCanvas::onDrawTextBlob(const SkTextBlob* blob,
@@ -614,8 +611,8 @@ void CdlCanvas::onDrawImageRect(const SkImage* image,
 void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,
                              size_t count,
                              const SkPoint pts[],
-                             const SkPaint& paint) {
-  canvas_->drawPoints(mode, count, pts, paint);
+                             const CdlPaint& paint) {
+  canvas_->drawPoints(mode, count, pts, paint.toSkPaint());
 }
 
 // Default CdlPaint -> SkPaint implementation.

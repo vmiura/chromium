@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -275,11 +276,11 @@ void Canvas::DrawRect(const RectF& rect, const SkPaint& paint) {
   canvas_->drawRect(RectFToSkRect(rect), paint);
 }
 
-void Canvas::DrawPoint(const Point& p1, const SkPaint& paint) {
+void Canvas::DrawPoint(const Point& p1, const CdlPaint& paint) {
   DrawPoint(PointF(p1), paint);
 }
 
-void Canvas::DrawPoint(const PointF& p1, const SkPaint& paint) {
+void Canvas::DrawPoint(const PointF& p1, const CdlPaint& paint) {
   canvas_->drawPoint(SkFloatToScalar(p1.x()), SkFloatToScalar(p1.y()), paint);
 }
 
@@ -288,32 +289,32 @@ void Canvas::DrawLine(const Point& p1, const Point& p2, SkColor color) {
 }
 
 void Canvas::DrawLine(const PointF& p1, const PointF& p2, SkColor color) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
   paint.setStrokeWidth(SkIntToScalar(1));
   DrawLine(p1, p2, paint);
 }
 
-void Canvas::DrawLine(const Point& p1, const Point& p2, const SkPaint& paint) {
+void Canvas::DrawLine(const Point& p1, const Point& p2, const CdlPaint& paint) {
   DrawLine(PointF(p1), PointF(p2), paint);
 }
 
 void Canvas::DrawLine(const PointF& p1,
                       const PointF& p2,
-                      const SkPaint& paint) {
+                      const CdlPaint& paint) {
   canvas_->drawLine(SkFloatToScalar(p1.x()), SkFloatToScalar(p1.y()),
                     SkFloatToScalar(p2.x()), SkFloatToScalar(p2.y()), paint);
 }
 
 void Canvas::DrawCircle(const Point& center_point,
                         int radius,
-                        const SkPaint& paint) {
+                        const CdlPaint& paint) {
   DrawCircle(PointF(center_point), radius, paint);
 }
 
 void Canvas::DrawCircle(const PointF& center_point,
                         float radius,
-                        const SkPaint& paint) {
+                        const CdlPaint& paint) {
   canvas_->drawCircle(SkFloatToScalar(center_point.x()),
                       SkFloatToScalar(center_point.y()),
                       SkFloatToScalar(radius), paint);

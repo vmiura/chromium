@@ -509,7 +509,7 @@ void GraphicsContext::drawLine(const IntPoint& point1, const IntPoint& point2) {
   }
 
   adjustLineToPixelBoundaries(p1, p2, width, penStyle);
-  m_canvas->drawLine(p1.x(), p1.y(), p2.x(), p2.y(), paint.toSkPaint());
+  m_canvas->drawLine(p1.x(), p1.y(), p2.x(), p2.y(), paint);
 }
 
 void GraphicsContext::drawLineForDocumentMarker(const FloatPoint& pt,
@@ -936,7 +936,7 @@ void GraphicsContext::drawOval(const SkRect& oval, const CdlPaint& paint) {
     return;
   ASSERT(m_canvas);
 
-  m_canvas->drawOval(oval, paint.toSkPaint());
+  m_canvas->drawOval(oval, paint);
 }
 
 void GraphicsContext::drawPath(const SkPath& path, const CdlPaint& paint) {
