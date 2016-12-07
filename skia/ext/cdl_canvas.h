@@ -136,7 +136,7 @@ class CdlCanvas : public SkRefCnt {
     this->drawRect(r, paint);
   }
 
-  void drawPath(const SkPath& path, const SkPaint& paint);
+  void drawPath(const SkPath& path, const CdlPaint& paint);
 
   void drawBitmap(const SkBitmap& bitmap,
                   SkScalar left,
@@ -276,7 +276,7 @@ class CdlCanvas : public SkRefCnt {
   virtual void onDiscard();
 
   virtual void onDrawPaint(const CdlPaint&);
-  virtual void onDrawPath(const SkPath&, const SkPaint&);
+  virtual void onDrawPath(const SkPath&, const CdlPaint&);
   virtual void onDrawRect(const SkRect&, const SkPaint&);
   virtual void onDrawRect(const SkRect&, const CdlPaint&);
   virtual void onDrawOval(const SkRect&, const CdlPaint&);

@@ -18,6 +18,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -455,13 +456,13 @@ void StatusBubbleViews::StatusView::OnPaint(gfx::Canvas* canvas) {
   SkPath path;
   path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setStrokeWidth(1);
   paint.setAntiAlias(true);
 
   SkPath stroke_path;
-  paint.getFillPath(path, &stroke_path);
+  paint.toSkPaint().getFillPath(path, &stroke_path);
 
   // Get the fill path by subtracting the shadow so they align neatly.
   SkPath fill_path;

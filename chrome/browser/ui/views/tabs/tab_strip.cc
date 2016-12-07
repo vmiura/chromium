@@ -36,6 +36,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "content/public/browser/user_metrics.h"
 #include "content/public/common/content_switches.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/effects/SkBlurMaskFilter.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
@@ -401,7 +402,7 @@ void NewTabButton::OnPaint(gfx::Canvas* canvas) {
     canvas->sk_canvas()->clipPath(fill, SkRegion::kDifference_Op, true);
   // Now draw the stroke and shadow; the stroke will always be visible, while
   // the shadow will be affected by the clip we set above.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   const SkColor stroke_color = tab_strip_->GetToolbarTopSeparatorColor();
   const float alpha = SkColorGetA(stroke_color);
@@ -471,7 +472,7 @@ void NewTabButton::PaintFill(bool pressed,
                              gfx::Canvas* canvas) const {
   gfx::ScopedCanvas scoped_canvas(canvas);
   canvas->UndoDeviceScaleFactor();
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
 
   // For unpressed buttons, draw the fill and its shadow.
@@ -509,7 +510,7 @@ void NewTabButton::PaintFill(bool pressed,
     const SkColor stroke_color = tab_strip_->GetToolbarTopSeparatorColor();
     const SkAlpha alpha = static_cast<SkAlpha>(
         std::round(SkColorGetA(stroke_color) * 0.59375f));
-    SkPaint shadow_paint = paint;
+    CdlPaint shadow_paint = paint;
     shadow_paint.setLooper(
         CreateShadowDrawLooper(SkColorSetA(stroke_color, alpha)));
     canvas->DrawPath(fill, shadow_paint);

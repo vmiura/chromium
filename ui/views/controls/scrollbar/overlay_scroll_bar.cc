@@ -5,6 +5,7 @@
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 
 #include "base/macros.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -62,7 +63,7 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
                                  IsHorizontal() ? kThumbStroke : 0));
   canvas->DrawRect(fill_bounds, fill_paint);
 
-  SkPaint stroke_paint;
+  CdlPaint stroke_paint;
   stroke_paint.setStyle(SkPaint::kStroke_Style);
   stroke_paint.setColor(SK_ColorWHITE);
   stroke_paint.setStrokeWidth(kThumbStroke);

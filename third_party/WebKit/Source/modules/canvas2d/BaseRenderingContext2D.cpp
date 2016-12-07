@@ -625,7 +625,7 @@ void BaseRenderingContext2D::drawPathInternal(
     return;
 
   if (draw([&skPath, this](CdlCanvas* c, const CdlPaint* paint)  // draw lambda
-           { c->drawPath(skPath, paint->toSkPaint()); },
+           { c->drawPath(skPath, *paint); },
            [](const SkIRect& rect)  // overdraw test lambda
            { return false; },
            bounds, paintType)) {
@@ -701,7 +701,7 @@ static void strokeRectOnCanvas(const FloatRect& rect,
     path.moveTo(rect.x(), rect.y());
     path.lineTo(rect.maxX(), rect.maxY());
     path.close();
-    canvas->drawPath(path, paint->toSkPaint());
+    canvas->drawPath(path, *paint);
     return;
   }
   canvas->drawRect(rect, *paint);

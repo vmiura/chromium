@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -76,9 +77,9 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   // Draw background.
   SkPath background_path;
   AddPossiblyRoundRectToPath(content_bounds, &background_path);
-  SkPaint background_paint;
+  CdlPaint background_paint;
   background_paint.setStyle(SkPaint::kFill_Style);
-  background_paint.setFlags(SkPaint::kAntiAlias_Flag);
+  background_paint.setAntiAlias(true);
   background_paint.setColor(GetBackgroundColor());
   canvas->DrawPath(background_path, background_paint);
 
@@ -93,9 +94,9 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   slice_bounds.set_width(slice_width);
   AddPossiblyRoundRectToPath(slice_bounds, &slice_path);
 
-  SkPaint slice_paint;
+  CdlPaint slice_paint;
   slice_paint.setStyle(SkPaint::kFill_Style);
-  slice_paint.setFlags(SkPaint::kAntiAlias_Flag);
+  slice_paint.setAntiAlias(true);
   slice_paint.setColor(GetForegroundColor());
   canvas->DrawPath(slice_path, slice_paint);
 }
@@ -151,9 +152,9 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   // Draw background.
   SkPath background_path;
   AddPossiblyRoundRectToPath(content_bounds, &background_path);
-  SkPaint background_paint;
+  CdlPaint background_paint;
   background_paint.setStyle(SkPaint::kFill_Style);
-  background_paint.setFlags(SkPaint::kAntiAlias_Flag);
+  background_paint.setAntiAlias(true);
   background_paint.setColor(GetBackgroundColor());
   canvas->DrawPath(background_path, background_paint);
 
@@ -199,9 +200,9 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   slice_bounds.set_width(bar2_end_x - bar2_start_x);
   AddPossiblyRoundRectToPath(slice_bounds, &slice_path);
 
-  SkPaint slice_paint;
+  CdlPaint slice_paint;
   slice_paint.setStyle(SkPaint::kFill_Style);
-  slice_paint.setFlags(SkPaint::kAntiAlias_Flag);
+  slice_paint.setAntiAlias(true);
   slice_paint.setColor(GetForegroundColor());
   canvas->DrawPath(slice_path, slice_paint);
 }

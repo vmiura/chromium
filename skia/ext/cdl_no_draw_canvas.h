@@ -25,7 +25,7 @@ class CdlNoDrawCanvas : public CdlCanvas {
   void onDiscard() override {}
 
   void onDrawPaint(const CdlPaint&) override {}
-  void onDrawPath(const SkPath&, const SkPaint&) override {}
+  void onDrawPath(const SkPath&, const CdlPaint&) override {}
   void onDrawRect(const SkRect&, const SkPaint&) override {}
   void onDrawRect(const SkRect&, const CdlPaint&) override {}
   void onDrawOval(const SkRect&, const CdlPaint&) override {}

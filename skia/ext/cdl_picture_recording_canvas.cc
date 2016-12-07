@@ -97,7 +97,7 @@ void CdlPictureRecordingCanvas::onDrawPaint(const CdlPaint& paint) {
   fDL->drawPaint(paint);
 }
 void CdlPictureRecordingCanvas::onDrawPath(const SkPath& path,
-                                           const SkPaint& paint) {
+                                           const CdlPaint& paint) {
   fDL->drawPath(path, paint);
 }
 void CdlPictureRecordingCanvas::onDrawRect(const SkRect& rect,

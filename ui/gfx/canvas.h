@@ -314,7 +314,7 @@ class GFX_EXPORT Canvas {
   void DrawRoundRect(const RectF& rect, float radius, const SkPaint& paint);
 
   // Draws the given path using the given |paint| parameters.
-  void DrawPath(const SkPath& path, const SkPaint& paint);
+  void DrawPath(const SkPath& path, const CdlPaint& paint);
 
   // Draws an image with the origin at the specified location. The upper left
   // corner of the bitmap is rendered at the specified location.
@@ -391,7 +391,7 @@ class GFX_EXPORT Canvas {
                        int x,
                        int y,
                        const SkPath& path,
-                       const SkPaint& paint);
+                       const CdlPaint& paint);
 
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the
@@ -468,7 +468,7 @@ class GFX_EXPORT Canvas {
                             float tile_scale_y,
                             int dest_x,
                             int dest_y,
-                            SkPaint* paint);
+                            CdlPaint* paint);
 
   // Apply transformation on the canvas.
   void Transform(const Transform& transform);

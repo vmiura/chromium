@@ -944,7 +944,7 @@ void GraphicsContext::drawPath(const SkPath& path, const CdlPaint& paint) {
     return;
   ASSERT(m_canvas);
 
-  m_canvas->drawPath(path, paint.toSkPaint());
+  m_canvas->drawPath(path, paint);
 }
 
 void GraphicsContext::drawRect(const SkRect& rect, const CdlPaint& paint) {

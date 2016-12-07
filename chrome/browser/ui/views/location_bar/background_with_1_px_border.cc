@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/background_with_1_px_border.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -42,13 +43,13 @@ void BackgroundWith1PxBorder::Paint(gfx::Canvas* canvas,
   path.addRoundRect(gfx::RectFToSkRect(border_rect_f), scaled_corner_radius,
                     scaled_corner_radius);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setStrokeWidth(1);
   paint.setAntiAlias(true);
 
   SkPath stroke_path;
-  paint.getFillPath(path, &stroke_path);
+  paint.toSkPaint().getFillPath(path, &stroke_path);
 
   SkPath fill_path;
   Op(path, stroke_path, kDifference_SkPathOp, &fill_path);

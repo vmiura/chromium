@@ -1282,7 +1282,7 @@ void Tab::PaintTabBackgroundUsingFillId(gfx::Canvas* fill_canvas,
                                         int fill_id,
                                         int y_offset) {
   gfx::Path fill;
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
 
   // Draw the fill.
@@ -1307,7 +1307,7 @@ void Tab::PaintTabBackgroundUsingFillId(gfx::Canvas* fill_canvas,
             is_active ? toolbar_color
                       : tp->GetColor(ThemeProperties::COLOR_BACKGROUND_TAB));
         fill_canvas->DrawRect(
-            gfx::ScaleToEnclosingRect(GetLocalBounds(), scale), paint);
+            gfx::ScaleToEnclosingRect(GetLocalBounds(), scale), paint.toSkPaint());
       }
 
       if (!is_active && hover_controller_.ShouldDraw()) {

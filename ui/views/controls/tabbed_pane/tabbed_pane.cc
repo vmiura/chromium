@@ -353,7 +353,7 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
     path.rLineTo(0, tab_height);
     path.lineTo(line_end, line_y);
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setColor(kTabBorderColor);
     paint.setStrokeWidth(kTabBorderThickness);

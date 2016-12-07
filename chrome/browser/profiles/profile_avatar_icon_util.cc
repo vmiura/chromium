@@ -21,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -188,7 +189,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
                  SkFloatToScalar(x + border_size - 0.5f),   // right
                  SkFloatToScalar(y + border_size - 0.5f));  // bottom
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setColor(border_color);
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(1));
@@ -200,7 +201,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
     SkColor shadow_color = SkColorSetARGB(83, 0, 0, 0);
     SkColor highlight_color = SkColorSetARGB(96, 255, 255, 255);
 
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(1));
 

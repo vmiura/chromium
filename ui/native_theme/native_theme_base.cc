@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -254,7 +255,7 @@ void NativeThemeBase::PaintArrowButton(CdlCanvas* canvas,
                                        const gfx::Rect& rect,
                                        Part direction,
                                        State state) const {
-  SkPaint paint;
+  CdlPaint paint;
 
   // Calculate button color.
   SkScalar trackHSV[3];
@@ -276,7 +277,7 @@ void NativeThemeBase::PaintArrowButton(CdlCanvas* canvas,
       + rect.height());
   // Paint the background (the area visible behind the rounded corners).
   paint.setColor(backgroundColor);
-  canvas->drawIRect(skrect, paint);
+  canvas->drawIRect(skrect, paint.toSkPaint());
 
   // Paint the button's outline and fill the middle
   SkPath outline;
@@ -336,7 +337,7 @@ void NativeThemeBase::PaintArrow(CdlCanvas* gc,
                                  const gfx::Rect& rect,
                                  Part direction,
                                  SkColor color) const {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(color);
 
   SkPath path = PathForArrow(rect, direction);
@@ -503,7 +504,7 @@ void NativeThemeBase::PaintCheckbox(CdlCanvas* canvas,
                                            SkIntToScalar(2));
   if (!skrect.isEmpty()) {
     // Draw the checkmark / dash.
-    SkPaint paint;
+    CdlPaint paint;
     paint.setAntiAlias(true);
     paint.setStyle(SkPaint::kStroke_Style);
     if (state == kDisabled)
@@ -732,7 +733,7 @@ void NativeThemeBase::PaintMenuList(
     PaintButton(canvas, state, rect, button);
   }
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(menu_list.arrow_color);
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kFill_Style);
@@ -876,7 +877,7 @@ void NativeThemeBase::PaintProgressBar(
     path.moveTo(rect.x() + i * tick_spacing, rect.y());
     path.rLineTo(0, rect.height());
   }
-  SkPaint stroke_paint;
+  CdlPaint stroke_paint;
   stroke_paint.setColor(kProgressTickColor);
   stroke_paint.setStyle(SkPaint::kStroke_Style);
   stroke_paint.setStrokeWidth(stroke_width);

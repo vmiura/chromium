@@ -333,7 +333,7 @@ void CdlCanvas::drawDRRect(const SkRRect& outer,
   this->onDrawDRRect(outer, inner, paint);
 }
 
-void CdlCanvas::drawPath(const SkPath& path, const SkPaint& paint) {
+void CdlCanvas::drawPath(const SkPath& path, const CdlPaint& paint) {
   this->onDrawPath(path, paint);
 }
 
@@ -466,8 +466,8 @@ void CdlCanvas::onDiscard() {
 void CdlCanvas::onDrawPaint(CdlPaint const& paint) {
   canvas_->drawPaint(paint.toSkPaint());
 }
-void CdlCanvas::onDrawPath(SkPath const& p, SkPaint const& paint) {
-  canvas_->drawPath(p, paint);
+void CdlCanvas::onDrawPath(SkPath const& p, CdlPaint const& paint) {
+  canvas_->drawPath(p, paint.toSkPaint());
 }
 void CdlCanvas::onDrawRect(SkRect const& r, SkPaint const& paint) {
   canvas_->drawRect(r, paint);

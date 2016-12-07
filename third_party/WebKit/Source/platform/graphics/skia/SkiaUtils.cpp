@@ -31,6 +31,7 @@
 #include "platform/graphics/skia/SkiaUtils.h"
 
 #include "platform/graphics/GraphicsContext.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
 
 class CdlCanvas;
@@ -309,7 +310,7 @@ SkColor scaleAlpha(SkColor color, int alpha) {
 template <typename PrimitiveType>
 void drawFocusRingPrimitive(const PrimitiveType&,
                             CdlCanvas*,
-                            const SkPaint&,
+                            const CdlPaint&,
                             float cornerRadius) {
   ASSERT_NOT_REACHED();  // Missing an explicit specialization?
 }
@@ -317,20 +318,20 @@ void drawFocusRingPrimitive(const PrimitiveType&,
 template <>
 void drawFocusRingPrimitive<SkRect>(const SkRect& rect,
                                     CdlCanvas* canvas,
-                                    const SkPaint& paint,
+                                    const CdlPaint& paint,
                                     float cornerRadius) {
   SkRRect rrect;
   rrect.setRectXY(rect, SkFloatToScalar(cornerRadius),
                   SkFloatToScalar(cornerRadius));
-  canvas->drawRRect(rrect, paint);
+  canvas->drawRRect(rrect, paint.toSkPaint());
 }
 
 template <>
 void drawFocusRingPrimitive<SkPath>(const SkPath& path,
                                     CdlCanvas* canvas,
-                                    const SkPaint& paint,
+                                    const CdlPaint& paint,
                                     float cornerRadius) {
-  SkPaint pathPaint = paint;
+  CdlPaint pathPaint = paint;
   pathPaint.setPathEffect(
       SkCornerPathEffect::Make(SkFloatToScalar(cornerRadius)));
   canvas->drawPath(path, pathPaint);
@@ -341,7 +342,7 @@ void drawPlatformFocusRing(const PrimitiveType& primitive,
                            CdlCanvas* canvas,
                            SkColor color,
                            float width) {
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setColor(color);

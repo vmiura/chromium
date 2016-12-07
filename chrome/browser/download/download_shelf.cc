@@ -28,6 +28,7 @@
 #include "content/public/browser/download_item.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -74,7 +75,7 @@ void DownloadShelf::PaintDownloadProgress(
     const base::TimeDelta& progress_time,
     int percent_done) {
   // Draw background (light blue circle).
-  SkPaint bg_paint;
+  CdlPaint bg_paint;
   bg_paint.setStyle(SkPaint::kFill_Style);
   SkColor indicator_color =
       theme_provider.GetColor(ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
@@ -103,7 +104,7 @@ void DownloadShelf::PaintDownloadProgress(
   progress.addArc(
       SkRect::MakeLTRB(0, 0, kProgressIndicatorSize, kProgressIndicatorSize),
       start_pos, sweep_angle);
-  SkPaint progress_paint;
+  CdlPaint progress_paint;
   progress_paint.setColor(indicator_color);
   progress_paint.setStyle(SkPaint::kStroke_Style);
   progress_paint.setStrokeWidth(1.7f);

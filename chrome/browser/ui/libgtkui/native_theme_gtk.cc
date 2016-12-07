@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/libgtkui/gtk_ui.h"
 #include "chrome/browser/ui/libgtkui/gtk_util.h"
 #include "chrome/browser/ui/libgtkui/skia_utils_gtk.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -175,9 +176,9 @@ void NativeThemeGtk2::PaintMenuPopupBackground(
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background) const {
   if (menu_background.corner_radius > 0) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
-    paint.setFlags(SkPaint::kAntiAlias_Flag);
+    paint.setAntiAlias(true);
     paint.setColor(GetSystemColor(kColorId_MenuBackgroundColor));
 
     gfx::Path path;

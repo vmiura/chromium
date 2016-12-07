@@ -64,7 +64,7 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
   void clipRegion(const SkRegion&, SkCanvas::ClipOp);
 
   void drawPaint(const CdlPaint&);
-  void drawPath(const SkPath&, const SkPaint&);
+  void drawPath(const SkPath&, const CdlPaint&);
   void drawRect(const SkRect&, const SkPaint&);
   void drawRect(const SkRect&, const CdlPaint&);
   void drawOval(const SkRect&, const CdlPaint&);

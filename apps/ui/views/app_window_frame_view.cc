@@ -8,6 +8,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/draggable_region.h"
 #include "grit/theme_resources.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
@@ -305,7 +306,7 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
 
   SetButtonImagesForFrame();
   // TODO(benwells): different look for inactive by default.
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(false);
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(CurrentFrameColor());

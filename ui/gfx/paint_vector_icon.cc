@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
@@ -90,7 +91,7 @@ void PaintPath(Canvas* canvas,
 
   int canvas_size = kReferenceSizeDip;
   std::vector<SkPath> paths;
-  std::vector<SkPaint> paints;
+  std::vector<CdlPaint> paints;
   SkRect clip_rect = SkRect::MakeEmpty();
   bool flips_in_rtl = false;
   CommandType previous_command_type = NEW_PATH;
@@ -100,14 +101,14 @@ void PaintPath(Canvas* canvas,
       paths.push_back(SkPath());
       paths.back().setFillType(SkPath::kEvenOdd_FillType);
 
-      paints.push_back(SkPaint());
+      paints.push_back(CdlPaint());
       paints.back().setColor(color);
       paints.back().setAntiAlias(true);
       paints.back().setStrokeCap(SkPaint::kRound_Cap);
     }
 
     SkPath& path = paths.back();
-    SkPaint& paint = paints.back();
+    CdlPaint& paint = paints.back();
     CommandType command_type = path_elements[i].type;
     switch (command_type) {
       // Handled above.

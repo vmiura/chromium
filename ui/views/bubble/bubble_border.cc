@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -504,7 +505,7 @@ void BubbleBorder::DrawArrow(gfx::Canvas* canvas,
   canvas->DrawImageInt(*GetArrowImage(), arrow_bounds.x(), arrow_bounds.y());
   SkPath path;
   GetArrowPathFromArrowBounds(arrow_bounds, &path);
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
   paint.setColor(background_color_);
 

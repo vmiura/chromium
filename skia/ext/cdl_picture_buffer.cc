@@ -238,10 +238,10 @@ struct DrawPaint final : Op {
 };
 struct DrawPath final : Op {
   static const auto kType = Type::DrawPath;
-  DrawPath(const SkPath& path, const SkPaint& paint)
+  DrawPath(const SkPath& path, const CdlPaint& paint)
       : path(path), paint(paint) {}
   SkPath path;
-  SkPaint paint;
+  CdlPaint paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPath(path, paint);
   }
@@ -558,7 +558,7 @@ void CdlPictureBuffer::clipRegion(const SkRegion& region, SkCanvas::ClipOp op) {
 void CdlPictureBuffer::drawPaint(const CdlPaint& paint) {
   this->push<DrawPaint>(0, paint);
 }
-void CdlPictureBuffer::drawPath(const SkPath& path, const SkPaint& paint) {
+void CdlPictureBuffer::drawPath(const SkPath& path, const CdlPaint& paint) {
   this->push<DrawPath>(0, path, paint);
 }
 void CdlPictureBuffer::drawRect(const SkRect& rect, const SkPaint& paint) {

@@ -65,7 +65,7 @@ void InfoBarBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
     }
   }
   fill_path.addRect(0, arrow_height, infobar_width, scale(infobar->height()));
-  SkPaint fill;
+  CdlPaint fill;
   fill.setStyle(SkPaint::kFill_Style);
   fill.setColor(get_color());
   canvas->DrawPath(fill_path, fill);
@@ -76,7 +76,7 @@ void InfoBarBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   stroke.setStrokeWidth(SkIntToScalar(kSeparatorThicknessPx));
   stroke.setColor(separator_color);
   stroke.setAntiAlias(true);
-  canvas->DrawPath(stroke_path, stroke.toSkPaint());
+  canvas->DrawPath(stroke_path, stroke);
 
   // Bottom separator.
   stroke.setAntiAlias(false);

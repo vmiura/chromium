@@ -39,7 +39,7 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   if (ui::MaterialDesignController::IsSecondaryUiMaterial() && view.HasFocus())
     return;
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setColor(GetCurrentColor(view));
 

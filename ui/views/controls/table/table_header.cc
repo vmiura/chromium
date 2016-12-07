@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -109,7 +110,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
         TableColumnAlignmentToCanvasAlignment(columns[i].column.alignment));
 
     if (paint_sort_indicator) {
-      SkPaint paint;
+      CdlPaint paint;
       paint.setColor(kTextColor);
       paint.setStyle(SkPaint::kFill_Style);
       paint.setAntiAlias(true);

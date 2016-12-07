@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/cdl_paint.h"
 #include "ui/base/layout.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/animation/tween.h"
@@ -103,9 +104,9 @@ void NativeThemeAura::PaintMenuPopupBackground(
     const MenuBackgroundExtraParams& menu_background) const {
   SkColor color = GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor);
   if (menu_background.corner_radius > 0) {
-    SkPaint paint;
+    CdlPaint paint;
     paint.setStyle(SkPaint::kFill_Style);
-    paint.setFlags(SkPaint::kAntiAlias_Flag);
+    paint.setAntiAlias(true);
     paint.setColor(color);
 
     gfx::Path path;

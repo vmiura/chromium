@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "skia/ext/cdl_canvas.h"
 #include "skia/ext/cdl_paint.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -333,7 +334,7 @@ void Canvas::DrawRoundRect(const RectF& rect,
                          SkFloatToScalar(radius), paint);
 }
 
-void Canvas::DrawPath(const SkPath& path, const SkPaint& paint) {
+void Canvas::DrawPath(const SkPath& path, const CdlPaint& paint) {
   canvas_->drawPath(path, paint);
 }
 
@@ -443,17 +444,17 @@ void Canvas::DrawImageInPath(const ImageSkia& image,
                              int x,
                              int y,
                              const SkPath& path,
-                             const SkPaint& paint) {
+                             const CdlPaint& paint) {
   const ImageSkiaRep& image_rep = image.GetRepresentation(image_scale_);
   if (image_rep.is_null())
     return;
 
   SkMatrix matrix;
   matrix.setTranslate(SkIntToScalar(x), SkIntToScalar(y));
-  SkPaint p(paint);
-  p.setShader(CreateImageRepShader(image_rep,
+  CdlPaint p(paint);
+  p.setShader(CdlShader::WrapSkShader(CreateImageRepShader(image_rep,
                                    SkShader::kRepeat_TileMode,
-                                   matrix));
+                                   matrix)));
   canvas_->drawPath(path, p);
 }
 
@@ -508,10 +509,10 @@ void Canvas::TileImageInt(const ImageSkia& image,
   if (!IntersectsClipRect(dest_rect))
     return;
 
-  SkPaint paint;
+  CdlPaint paint;
   if (InitSkPaintForTiling(image, src_x, src_y, tile_scale_x, tile_scale_y,
                            dest_x, dest_y, &paint))
-    canvas_->drawRect(dest_rect, paint);
+    canvas_->drawRect(dest_rect, paint.toSkPaint());
 }
 
 bool Canvas::InitSkPaintForTiling(const ImageSkia& image,
@@ -521,7 +522,7 @@ bool Canvas::InitSkPaintForTiling(const ImageSkia& image,
                                   float tile_scale_y,
                                   int dest_x,
                                   int dest_y,
-                                  SkPaint* paint) {
+                                  CdlPaint* paint) {
   const ImageSkiaRep& image_rep = image.GetRepresentation(image_scale_);
   if (image_rep.is_null())
     return false;
@@ -532,8 +533,8 @@ bool Canvas::InitSkPaintForTiling(const ImageSkia& image,
   shader_scale.preTranslate(SkIntToScalar(-src_x), SkIntToScalar(-src_y));
   shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
 
-  paint->setShader(CreateImageRepShader(image_rep, SkShader::kRepeat_TileMode,
-                                        shader_scale));
+  paint->setShader(CdlShader::WrapSkShader(CreateImageRepShader(image_rep, SkShader::kRepeat_TileMode,
+                                        shader_scale)));
   paint->setBlendMode(SkBlendMode::kSrcOver);
   return true;
 }
