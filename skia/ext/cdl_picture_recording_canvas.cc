@@ -122,7 +122,7 @@ void CdlPictureRecordingCanvas::onDrawOval(const SkRect& oval,
 
 void CdlPictureRecordingCanvas::onDrawPicture(const CdlPicture* picture,
                                               const SkMatrix* matrix,
-                                              const SkPaint* paint) {
+                                              const CdlPaint* paint) {
   fDL->drawPicture(picture, matrix, paint);
 }
 

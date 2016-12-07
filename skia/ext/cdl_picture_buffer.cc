@@ -305,7 +305,7 @@ struct DrawPicture final : Op {
   static const auto kType = Type::DrawPicture;
   DrawPicture(const CdlPicture* picture,
               const SkMatrix* matrix,
-              const SkPaint* paint)
+              const CdlPaint* paint)
       : picture(sk_ref_sp(picture)) {
     if (matrix) {
       this->matrix = *matrix;
@@ -317,7 +317,7 @@ struct DrawPicture final : Op {
   }
   sk_sp<const CdlPicture> picture;
   SkMatrix matrix = SkMatrix::I();
-  SkPaint paint;
+  CdlPaint paint;
   bool has_paint = false;  // TODO: why is a default paint not the same?
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPicture(picture.get(), &matrix, has_paint ? &paint : nullptr);
@@ -576,7 +576,7 @@ void CdlPictureBuffer::drawAnnotation(const SkRect& rect,
 
 void CdlPictureBuffer::drawPicture(const CdlPicture* picture,
                                    const SkMatrix* matrix,
-                                   const SkPaint* paint) {
+                                   const CdlPaint* paint) {
   this->push<DrawPicture>(0, picture, matrix, paint);
 }
 

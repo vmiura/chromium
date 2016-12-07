@@ -483,7 +483,7 @@ void CdlCanvas::onDrawDRRect(const SkRRect& outer,
 
 void CdlCanvas::drawPicture(const CdlPicture* picture,
                             const SkMatrix* matrix,
-                            const SkPaint* paint) {
+                            const CdlPaint* paint) {
   RETURN_ON_NULL(picture);
 
   if (matrix && matrix->isIdentity()) {
@@ -497,7 +497,7 @@ class CdlAutoCanvasMatrixPaint {
  public:
   CdlAutoCanvasMatrixPaint(CdlCanvas* canvas,
                            const SkMatrix* matrix,
-                           const SkPaint* paint,
+                           const CdlPaint* paint,
                            const SkRect& bounds)
       : fCanvas(canvas), fSaveCount(canvas->getSaveCount()) {
     if (paint) {
@@ -505,7 +505,8 @@ class CdlAutoCanvasMatrixPaint {
       if (matrix) {
         matrix->mapRect(&newBounds);
       }
-      canvas->saveLayer(&newBounds, paint);
+      SkPaint sk_paint = paint->toSkPaint();
+      canvas->saveLayer(&newBounds, &sk_paint);
     } else if (matrix) {
       canvas->save();
     }
@@ -524,7 +525,7 @@ class CdlAutoCanvasMatrixPaint {
 
 void CdlCanvas::onDrawPicture(const CdlPicture* picture,
                               const SkMatrix* matrix,
-                              const SkPaint* paint) {
+                              const CdlPaint* paint) {
   // TODO(CDL): CdlPaint::computeFastBounds
   if (!paint || /*paint->canComputeFastBounds()*/ false) {
     SkRect bounds = picture->cullRect();

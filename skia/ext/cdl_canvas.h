@@ -237,7 +237,7 @@ class CdlCanvas : public SkRefCnt {
 
   void drawPicture(const CdlPicture* picture,
                    const SkMatrix* matrix,
-                   const SkPaint* paint);
+                   const CdlPaint* paint);
 
   // Misc
   void flush();
@@ -283,7 +283,7 @@ class CdlCanvas : public SkRefCnt {
 
   virtual void onDrawPicture(const CdlPicture* picture,
                              const SkMatrix* matrix,
-                             const SkPaint* paint);
+                             const CdlPaint* paint);
   virtual void onDrawAnnotation(const SkRect&, const char[], SkData*);
 
   virtual void onDrawText(const void*,

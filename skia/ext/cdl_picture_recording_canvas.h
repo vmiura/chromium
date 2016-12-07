@@ -49,7 +49,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
 
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
-                     const SkPaint* paint) override;
+                     const CdlPaint* paint) override;
 
   void onDrawAnnotation(const SkRect&, const char[], SkData*) override;
 

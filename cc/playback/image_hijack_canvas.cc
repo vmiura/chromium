@@ -63,7 +63,7 @@ ImageHijackCanvas::ImageHijackCanvas(SkCanvas* canvas,
 
 void ImageHijackCanvas::onDrawPicture(const CdlPicture* picture,
                                       const SkMatrix* matrix,
-                                      const SkPaint* paint) {
+                                      const CdlPaint* paint) {
   // Ensure that pictures are unpacked by this canvas, instead of being
   // forwarded to the raster canvas.
   CdlCanvas::onDrawPicture(picture, matrix, paint);

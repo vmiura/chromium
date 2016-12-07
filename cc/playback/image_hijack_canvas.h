@@ -22,7 +22,7 @@ class ImageHijackCanvas : public CdlCanvas {
   // forwarded to the raster canvas.
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
-                     const SkPaint* paint) override;
+                     const CdlPaint* paint) override;
 
   void onDrawImage(const SkImage* image,
                    SkScalar x,

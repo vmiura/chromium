@@ -75,7 +75,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
   // onDrawPicture().
   void onDrawPicture(const CdlPicture* picture,
                      const SkMatrix* matrix,
-                     const SkPaint* paint) override {
+                     const CdlPaint* paint) override {
     CdlCanvas::onDrawPicture(picture, matrix, paint);
   }
 
