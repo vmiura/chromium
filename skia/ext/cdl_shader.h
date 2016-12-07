@@ -16,7 +16,7 @@ class CdlPicture;
 
 class CdlShader : public SkRefCnt {
  public:
-  CdlShader(const SkMatrix* localMatrix = NULL);
+  CdlShader(const SkMatrix* local_matrix = NULL);
   ~CdlShader() override;
 
   static sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader);
@@ -24,20 +24,20 @@ class CdlShader : public SkRefCnt {
   static sk_sp<CdlShader> MakeImageShader(sk_sp<SkImage>,
                                           SkShader::TileMode tx,
                                           SkShader::TileMode ty,
-                                          const SkMatrix* localMatrix);
+                                          const SkMatrix* local_matrix);
 
   static sk_sp<CdlShader> MakePictureShader(sk_sp<CdlPicture> picture,
                                             SkShader::TileMode tmx,
                                             SkShader::TileMode tmy,
-                                            const SkMatrix* localMatrix,
+                                            const SkMatrix* local_matrix,
                                             const SkRect* tile);
 
-  const SkMatrix& getLocalMatrix() const { return fLocalMatrix; }
+  const SkMatrix& getLocalMatrix() const { return local_matrix_; }
 
   virtual sk_sp<SkShader> createSkShader() = 0;
 
  private:
-  SkMatrix fLocalMatrix;
+  SkMatrix local_matrix_;
 };
 
 #endif  // SKIA_EXT_CDL_SHADER_H_

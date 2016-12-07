@@ -22,6 +22,7 @@ CdlPaint::CdlPaint(const CdlPaint& paint)
 CdlPaint::CdlPaint(const SkPaint& paint) : sk_paint(paint), is_dirty_(false) {}
 
 SkPaint CdlPaint::toSkPaint() const {
+  // TODO(cdl): This is not thread safe!
   if (is_dirty_) {
     is_dirty_ = false;
     if (shader_.get()) {
