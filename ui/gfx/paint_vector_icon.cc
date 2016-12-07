@@ -104,7 +104,7 @@ void PaintPath(Canvas* canvas,
       paints.push_back(CdlPaint());
       paints.back().setColor(color);
       paints.back().setAntiAlias(true);
-      paints.back().setStrokeCap(SkPaint::kRound_Cap);
+      paints.back().setStrokeCap(CdlPaint::kRound_Cap);
     }
 
     SkPath& path = paths.back();
@@ -130,14 +130,14 @@ void PaintPath(Canvas* canvas,
       };
 
       case STROKE: {
-        paint.setStyle(SkPaint::kStroke_Style);
+        paint.setStyle(CdlPaint::kStroke_Style);
         SkScalar width = path_elements[++i].arg;
         paint.setStrokeWidth(width);
         break;
       }
 
       case CAP_SQUARE: {
-        paint.setStrokeCap(SkPaint::kSquare_Cap);
+        paint.setStrokeCap(CdlPaint::kSquare_Cap);
         break;
       }
 

@@ -26,8 +26,13 @@ class CdlPaint {
 
   SkPaint toSkPaint() const;
 
-  SkPaint::Style getStyle() const { return paint_.getStyle(); }
-  void setStyle(SkPaint::Style style) { paint_.setStyle(style); }
+  enum Style {
+    kFill_Style          = SkPaint::kFill_Style,
+    kStroke_Style        = SkPaint::kStroke_Style,
+    kStrokeAndFill_Style = SkPaint::kStrokeAndFill_Style,
+  };
+  Style getStyle() const { return (Style)paint_.getStyle(); }
+  void setStyle(Style style) { paint_.setStyle((SkPaint::Style)style); }
 
   SkColor getColor() const { return paint_.getColor(); }
   void setColor(SkColor color) { paint_.setColor(color); }
@@ -56,9 +61,16 @@ class CdlPaint {
   bool isLCDRenderText() const { return paint_.isLCDRenderText(); }
   void setLCDRenderText(bool lcdText) { paint_.setLCDRenderText(lcdText); }
 
-  SkPaint::Hinting getHinting() const { return paint_.getHinting(); }
-  void setHinting(SkPaint::Hinting hintingLevel) {
-    paint_.setHinting(hintingLevel);
+  enum Hinting {
+    kNo_Hinting            = SkPaint::kNo_Hinting,
+    kSlight_Hinting        = SkPaint::kSlight_Hinting,
+    kNormal_Hinting        = SkPaint::kNormal_Hinting, //!< this is the default
+    kFull_Hinting          = SkPaint::kFull_Hinting
+  };
+
+  Hinting getHinting() const { return static_cast<Hinting>(paint_.getHinting()); }
+  void setHinting(Hinting hintingLevel) {
+    paint_.setHinting(static_cast<SkPaint::Hinting>(hintingLevel));
   }
 
   bool isAutohinted() const { return paint_.isAutohinted(); }
@@ -69,11 +81,18 @@ class CdlPaint {
   bool isDither() const { return paint_.isDither(); }
   void setDither(bool dither) { paint_.setDither(dither); }
 
-  SkPaint::TextEncoding getTextEncoding() const {
-    return paint_.getTextEncoding();
+  enum TextEncoding {
+    kUTF8_TextEncoding    = SkPaint::kUTF8_TextEncoding,     //!< the text parameters are UTF8
+    kUTF16_TextEncoding   = SkPaint::kUTF16_TextEncoding,    //!< the text parameters are UTF16
+    kUTF32_TextEncoding   = SkPaint::kUTF32_TextEncoding,    //!< the text parameters are UTF32
+    kGlyphID_TextEncoding = SkPaint::kGlyphID_TextEncoding   //!< the text parameters are glyph indices
+  };
+
+  TextEncoding getTextEncoding() const {
+    return static_cast<TextEncoding>(paint_.getTextEncoding());
   }
-  void setTextEncoding(SkPaint::TextEncoding encoding) {
-    paint_.setTextEncoding(encoding);
+  void setTextEncoding(TextEncoding encoding) {
+    paint_.setTextEncoding(static_cast<SkPaint::TextEncoding>(encoding));
   }
 
   SkScalar getTextSize() const { return paint_.getTextSize(); }
@@ -90,11 +109,27 @@ class CdlPaint {
   SkScalar getStrokeMiter() const { return paint_.getStrokeMiter(); }
   void setStrokeMiter(SkScalar miter) { paint_.setStrokeMiter(miter); }
 
-  SkPaint::Cap getStrokeCap() const { return paint_.getStrokeCap(); }
-  void setStrokeCap(SkPaint::Cap cap) { paint_.setStrokeCap(cap); }
+  enum Cap {
+    kButt_Cap    = SkPaint::kButt_Cap,      //!< begin/end contours with no extension
+    kRound_Cap   = SkPaint::kRound_Cap,     //!< begin/end contours with a semi-circle extension
+    kSquare_Cap  = SkPaint::kSquare_Cap,    //!< begin/end contours with a half square extension
 
-  SkPaint::Join getStrokeJoin() const { return paint_.getStrokeJoin(); }
-  void setStrokeJoin(SkPaint::Join join) { paint_.setStrokeJoin(join); }
+    kLast_Cap    = kSquare_Cap,
+    kDefault_Cap = kButt_Cap
+  };
+  Cap getStrokeCap() const { return static_cast<Cap>(paint_.getStrokeCap()); }
+  void setStrokeCap(Cap cap) { paint_.setStrokeCap(static_cast<SkPaint::Cap>(cap)); }
+
+  enum Join {
+    kMiter_Join = SkPaint::kMiter_Join,    //!< connect path segments with a sharp join
+    kRound_Join = SkPaint::kRound_Join,    //!< connect path segments with a round join
+    kBevel_Join = SkPaint::kBevel_Join,    //!< connect path segments with a flat bevel join
+
+    kLast_Join    = kBevel_Join,
+    kDefault_Join = kMiter_Join
+  };
+  Join getStrokeJoin() const { return static_cast<Join>(paint_.getStrokeJoin()); }
+  void setStrokeJoin(Join join) { paint_.setStrokeJoin(static_cast<SkPaint::Join>(join)); }
 
   SkTypeface* getTypeface() const { return paint_.getTypeface(); }
   void setTypeface(sk_sp<SkTypeface> typeface) { paint_.setTypeface(typeface); }

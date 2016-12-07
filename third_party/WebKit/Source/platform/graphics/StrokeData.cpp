@@ -58,7 +58,7 @@ void StrokeData::setLineDash(const DashArray& dashes, float dashOffset) {
 }
 
 void StrokeData::setupPaint(CdlPaint* paint, int length) const {
-  paint->setStyle(SkPaint::kStroke_Style);
+  paint->setStyle(CdlPaint::kStroke_Style);
   paint->setStrokeWidth(SkFloatToScalar(m_thickness));
   paint->setStrokeCap(m_lineCap);
   paint->setStrokeJoin(m_lineJoin);

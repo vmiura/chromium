@@ -40,7 +40,7 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
     return;
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setColor(GetCurrentColor(view));
 
   if (ui::MaterialDesignController::IsSecondaryUiMaterial()) {

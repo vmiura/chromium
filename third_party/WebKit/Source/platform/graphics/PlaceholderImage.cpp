@@ -60,7 +60,7 @@ void PlaceholderImage::draw(CdlCanvas* canvas,
   }
 
   CdlPaint paint(basePaint);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(kFillColor);
   canvas->drawRect(destRect, paint);
 }

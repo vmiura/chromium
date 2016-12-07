@@ -191,7 +191,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 
     CdlPaint paint;
     paint.setColor(border_color);
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(1));
 
     canvas->DrawPath(path, paint);
@@ -202,7 +202,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
     SkColor highlight_color = SkColorSetARGB(96, 255, 255, 255);
 
     CdlPaint paint;
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(1));
 
     SkPath path;

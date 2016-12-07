@@ -44,7 +44,7 @@ void BackgroundWith1PxBorder::Paint(gfx::Canvas* canvas,
                     scaled_corner_radius);
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(1);
   paint.setAntiAlias(true);
 
@@ -53,7 +53,7 @@ void BackgroundWith1PxBorder::Paint(gfx::Canvas* canvas,
 
   SkPath fill_path;
   Op(path, stroke_path, kDifference_SkPathOp, &fill_path);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(get_color());
   canvas->sk_canvas()->drawPath(fill_path, paint);
 

@@ -34,6 +34,7 @@
 #include "platform/graphics/Gradient.h"
 #include "platform/graphics/GraphicsTypes.h"
 #include "platform/graphics/Pattern.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
 #include "wtf/Allocator.h"
@@ -51,8 +52,8 @@ class PLATFORM_EXPORT StrokeData final {
   StrokeData()
       : m_style(SolidStroke),
         m_thickness(0),
-        m_lineCap(SkPaint::kDefault_Cap),
-        m_lineJoin(SkPaint::kDefault_Join),
+        m_lineCap(CdlPaint::kDefault_Cap),
+        m_lineJoin(CdlPaint::kDefault_Join),
         m_miterLimit(4) {}
 
   StrokeStyle style() const { return m_style; }
@@ -61,9 +62,9 @@ class PLATFORM_EXPORT StrokeData final {
   float thickness() const { return m_thickness; }
   void setThickness(float thickness) { m_thickness = thickness; }
 
-  void setLineCap(LineCap cap) { m_lineCap = (SkPaint::Cap)cap; }
+  void setLineCap(LineCap cap) { m_lineCap = (CdlPaint::Cap)cap; }
 
-  void setLineJoin(LineJoin join) { m_lineJoin = (SkPaint::Join)join; }
+  void setLineJoin(LineJoin join) { m_lineJoin = (CdlPaint::Join)join; }
 
   float miterLimit() const { return m_miterLimit; }
   void setMiterLimit(float miterLimit) { m_miterLimit = miterLimit; }
@@ -84,8 +85,8 @@ class PLATFORM_EXPORT StrokeData final {
  private:
   StrokeStyle m_style;
   float m_thickness;
-  SkPaint::Cap m_lineCap;
-  SkPaint::Join m_lineJoin;
+  CdlPaint::Cap m_lineCap;
+  CdlPaint::Join m_lineJoin;
   float m_miterLimit;
   sk_sp<SkPathEffect> m_dash;
 };

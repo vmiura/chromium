@@ -308,7 +308,7 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
   // TODO(benwells): different look for inactive by default.
   CdlPaint paint;
   paint.setAntiAlias(false);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(CurrentFrameColor());
   gfx::Path path;
   path.moveTo(0, 0);

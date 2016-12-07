@@ -40,7 +40,7 @@ void ShadowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   shadows.push_back(shadow_value_);
   paint.setLooper(gfx::CreateShadowDrawLooper(shadows));
   paint.setColor(SK_ColorTRANSPARENT);
-  paint.setStrokeJoin(SkPaint::kRound_Join);
+  paint.setStrokeJoin(CdlPaint::kRound_Join);
   gfx::Rect bounds(view.size());
   bounds.Inset(-gfx::ShadowValue::GetMargin(shadows));
   canvas->DrawRect(bounds, paint);

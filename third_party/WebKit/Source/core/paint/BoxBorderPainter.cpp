@@ -313,7 +313,7 @@ void drawBleedAdjustedDRRect(GraphicsContext& context,
 
       CdlPaint paint;
       paint.setColor(color.rgb());
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       paint.setAntiAlias(true);
       context.drawPath(path, paint);
 

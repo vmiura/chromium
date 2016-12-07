@@ -66,12 +66,12 @@ void InfoBarBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   }
   fill_path.addRect(0, arrow_height, infobar_width, scale(infobar->height()));
   CdlPaint fill;
-  fill.setStyle(SkPaint::kFill_Style);
+  fill.setStyle(CdlPaint::kFill_Style);
   fill.setColor(get_color());
   canvas->DrawPath(fill_path, fill);
 
   CdlPaint stroke;
-  stroke.setStyle(SkPaint::kStroke_Style);
+  stroke.setStyle(CdlPaint::kStroke_Style);
   const int kSeparatorThicknessPx = 1;
   stroke.setStrokeWidth(SkIntToScalar(kSeparatorThicknessPx));
   stroke.setColor(separator_color);

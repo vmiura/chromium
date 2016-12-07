@@ -124,14 +124,14 @@ class CanvasRenderingContext2DState final
   double lineWidth() const { return m_strokePaint.getStrokeWidth(); }
 
   void setLineCap(LineCap lineCap) {
-    m_strokePaint.setStrokeCap(static_cast<SkPaint::Cap>(lineCap));
+    m_strokePaint.setStrokeCap(static_cast<CdlPaint::Cap>(lineCap));
   }
   LineCap getLineCap() const {
     return static_cast<LineCap>(m_strokePaint.getStrokeCap());
   }
 
   void setLineJoin(LineJoin lineJoin) {
-    m_strokePaint.setStrokeJoin(static_cast<SkPaint::Join>(lineJoin));
+    m_strokePaint.setStrokeJoin(static_cast<CdlPaint::Join>(lineJoin));
   }
   LineJoin getLineJoin() const {
     return static_cast<LineJoin>(m_strokePaint.getStrokeJoin());

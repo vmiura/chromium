@@ -92,7 +92,7 @@ class ArrowLayerDelegate : public ui::LayerDelegate {
   void OnPaintLayer(const ui::PaintContext& context) override {
     CdlPaint paint;
     paint.setColor(SkColorSetARGB(0xa0, 0, 0, 0));
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setAntiAlias(true);
 
     // Set the recording size to be the size of the |arrow_| layer, and draw a

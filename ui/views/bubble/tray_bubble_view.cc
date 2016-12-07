@@ -114,7 +114,7 @@ void TrayBubbleContentMask::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
   CdlPaint paint;
   paint.setAlpha(255);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   gfx::Rect rect(layer()->bounds().size());
   recorder.canvas()->DrawRoundRect(rect, corner_radius_, paint);
 }

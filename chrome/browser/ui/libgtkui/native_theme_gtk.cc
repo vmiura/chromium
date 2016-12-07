@@ -177,7 +177,7 @@ void NativeThemeGtk2::PaintMenuPopupBackground(
     const MenuBackgroundExtraParams& menu_background) const {
   if (menu_background.corner_radius > 0) {
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setAntiAlias(true);
     paint.setColor(GetSystemColor(kColorId_MenuBackgroundColor));
 

@@ -59,7 +59,7 @@ void FallbackIconService::DrawFallbackIcon(
   const int kOffsetX = 0;
   const int kOffsetY = 0;
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
 
   // Draw a filled, colored rounded square.

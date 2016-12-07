@@ -506,7 +506,7 @@ void BubbleBorder::DrawArrow(gfx::Canvas* canvas,
   SkPath path;
   GetArrowPathFromArrowBounds(arrow_bounds, &path);
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(background_color_);
 
   canvas->DrawPath(path, paint);
@@ -567,7 +567,7 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
   // Fill the contents with a round-rect region to match the border images.
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(border_->background_color());
   SkPath path;
   gfx::RectF bounds(view->GetLocalBounds());

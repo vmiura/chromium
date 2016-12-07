@@ -78,7 +78,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
                           ? override_color_id_
                           : ui::NativeTheme::kColorId_FocusedBorderColor),
                   0x66));
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(kFocusHaloThicknessDp);
   gfx::RectF rect(GetLocalBounds());
   rect.Inset(gfx::InsetsF(kFocusHaloThicknessDp / 2.f));

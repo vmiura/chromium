@@ -457,7 +457,7 @@ void StatusBubbleViews::StatusView::OnPaint(gfx::Canvas* canvas) {
   path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(1);
   paint.setAntiAlias(true);
 
@@ -467,7 +467,7 @@ void StatusBubbleViews::StatusView::OnPaint(gfx::Canvas* canvas) {
   // Get the fill path by subtracting the shadow so they align neatly.
   SkPath fill_path;
   Op(path, stroke_path, kDifference_SkPathOp, &fill_path);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   const SkColor bubble_color =
       theme_provider_->GetColor(ThemeProperties::COLOR_TOOLBAR);
   paint.setColor(bubble_color);

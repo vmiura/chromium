@@ -319,12 +319,12 @@ void NativeThemeBase::PaintArrowButton(CdlCanvas* canvas,
   }
   outline.close();
 
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(buttonColor);
   canvas->drawPath(outline, paint);
 
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   SkScalar thumbHSV[3];
   SkColorToHSV(thumb_inactive_color_, thumbHSV);
   paint.setColor(OutlineColor(trackHSV, thumbHSV));
@@ -506,7 +506,7 @@ void NativeThemeBase::PaintCheckbox(CdlCanvas* canvas,
     // Draw the checkmark / dash.
     CdlPaint paint;
     paint.setAntiAlias(true);
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     if (state == kDisabled)
       paint.setColor(kCheckboxStrokeDisabledColor);
     else
@@ -555,7 +555,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   if (skrect.width() <= 2) {
     CdlPaint paint;
     paint.setColor(kCheckboxTinyColor);
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     canvas->drawRect(skrect, paint);
     // Too small to draw anything more.
     return SkRect::MakeEmpty();
@@ -576,7 +576,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
       paint.setColor(kCheckboxShadowHoveredColor);
     else
       paint.setColor(kCheckboxShadowColor);
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     canvas->drawRoundRect(shadowRect, borderRadius, borderRadius, paint);
   }
 
@@ -599,7 +599,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   paint.setAntiAlias(true);
   paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(gradient_bounds, colors, NULL, 3,
                                                SkShader::kClamp_TileMode)));
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   canvas->drawRoundRect(skrect, borderRadius, borderRadius, paint);
   paint.setShader(NULL);
 
@@ -610,7 +610,7 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     paint.setColor(kCheckboxBorderDisabledColor);
   else
     paint.setColor(kCheckboxBorderColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(SkIntToScalar(1));
   skrect.inset(SkFloatToScalar(.5f), SkFloatToScalar(.5f));
   canvas->drawRoundRect(skrect, borderRadius, borderRadius, paint);
@@ -633,7 +633,7 @@ void NativeThemeBase::PaintRadio(CdlCanvas* canvas,
     // Draw the dot.
     CdlPaint paint;
     paint.setAntiAlias(true);
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     if (state == kDisabled)
       paint.setColor(kRadioDotDisabledColor);
     else
@@ -676,7 +676,7 @@ void NativeThemeBase::PaintButton(CdlCanvas* canvas,
     std::swap(gradient_bounds[0], gradient_bounds[1]);
   SkColor colors[2] = { light_color, base_color };
 
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
   paint.setShader(
       CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
@@ -691,7 +691,7 @@ void NativeThemeBase::PaintButton(CdlCanvas* canvas,
       border_alpha = 0xff;
       paint.setColor(GetSystemColor(kColorId_FocusedBorderColor));
     }
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(1));
     paint.setAlpha(border_alpha);
     skrect.inset(SkFloatToScalar(.5f), SkFloatToScalar(.5f));
@@ -707,14 +707,14 @@ void NativeThemeBase::PaintTextField(CdlCanvas* canvas,
   bounds.set(rect.x(), rect.y(), rect.right() - 1, rect.bottom() - 1);
 
   CdlPaint fill_paint;
-  fill_paint.setStyle(SkPaint::kFill_Style);
+  fill_paint.setStyle(CdlPaint::kFill_Style);
   fill_paint.setColor(text.background_color);
   canvas->drawRect(bounds, fill_paint);
 
   // Text INPUT, listbox SELECT, and TEXTAREA have consistent borders.
   // border: 1px solid #a9a9a9
   CdlPaint stroke_paint;
-  stroke_paint.setStyle(SkPaint::kStroke_Style);
+  stroke_paint.setStyle(CdlPaint::kStroke_Style);
   stroke_paint.setColor(kTextBorderColor);
   canvas->drawRect(bounds, stroke_paint);
 }
@@ -736,7 +736,7 @@ void NativeThemeBase::PaintMenuList(
   CdlPaint paint;
   paint.setColor(menu_list.arrow_color);
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   int arrow_size = menu_list.arrow_size;
   gfx::Rect arrow(
@@ -879,7 +879,7 @@ void NativeThemeBase::PaintProgressBar(
   }
   CdlPaint stroke_paint;
   stroke_paint.setColor(kProgressTickColor);
-  stroke_paint.setStyle(SkPaint::kStroke_Style);
+  stroke_paint.setStyle(CdlPaint::kStroke_Style);
   stroke_paint.setStrokeWidth(stroke_width);
   canvas->drawPath(path, stroke_paint);
 
@@ -889,7 +889,7 @@ void NativeThemeBase::PaintProgressBar(
                           progress_bar.value_rect_height);
   CdlPaint progress_paint;
   progress_paint.setColor(kProgressValueColor);
-  progress_paint.setStyle(SkPaint::kFill_Style);
+  progress_paint.setStyle(CdlPaint::kFill_Style);
   canvas->drawRect(gfx::RectToSkRect(progress_rect), progress_paint);
 
   // Draw the border.

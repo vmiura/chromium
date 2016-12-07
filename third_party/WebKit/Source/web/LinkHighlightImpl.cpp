@@ -323,7 +323,7 @@ void LinkHighlightImpl::paintContents(
       recorder.beginRecording(visualRect.width(), visualRect.height());
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
   paint.setColor(m_node->layoutObject()->style()->tapHighlightColor().rgb());
   canvas->drawPath(m_path.getSkPath(), paint);

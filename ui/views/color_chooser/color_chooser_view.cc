@@ -212,7 +212,7 @@ void ColorChooserView::HueView::OnPaint(gfx::Canvas* canvas) {
 
   CdlPaint indicator_paint;
   indicator_paint.setColor(SK_ColorBLACK);
-  indicator_paint.setStyle(SkPaint::kFill_Style);
+  indicator_paint.setStyle(CdlPaint::kFill_Style);
   canvas->DrawPath(left_indicator_path, indicator_paint);
   canvas->DrawPath(right_indicator_path, indicator_paint);
 }

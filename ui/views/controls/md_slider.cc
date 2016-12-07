@@ -89,7 +89,7 @@ void MdSlider::OnPaint(gfx::Canvas* canvas) {
 
   if (!is_active_) {
     paint.setStrokeWidth(kThumbStroke);
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
   }
   canvas->DrawCircle(
       thumb_center,

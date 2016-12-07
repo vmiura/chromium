@@ -1168,7 +1168,7 @@ void LocationBarView::OnPaint(gfx::Canvas* canvas) {
     paint.setAntiAlias(true);
     paint.setColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::NativeTheme::kColorId_FocusedBorderColor));
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(1);
     gfx::RectF focus_rect(GetLocalBounds());
     focus_rect.Inset(gfx::InsetsF(0.5f));

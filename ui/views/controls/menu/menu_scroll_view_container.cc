@@ -102,7 +102,7 @@ class MenuScrollButton : public View {
     path.lineTo(SkIntToScalar(x_right), SkIntToScalar(y_bottom));
     path.lineTo(SkIntToScalar(x), SkIntToScalar(y));
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setAntiAlias(true);
     paint.setColor(config.arrow_color);
     canvas->DrawPath(path, paint);

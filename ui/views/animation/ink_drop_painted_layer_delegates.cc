@@ -61,7 +61,7 @@ void CircleLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
   CdlPaint paint;
   paint.setColor(color());
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, GetPaintedBounds().size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -87,7 +87,7 @@ void RectangleLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
   CdlPaint paint;
   paint.setColor(color());
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, size_);
   gfx::Canvas* canvas = recorder.canvas();
@@ -118,7 +118,7 @@ void RoundedRectangleLayerDelegate::OnPaintLayer(
   CdlPaint paint;
   paint.setColor(color());
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   ui::PaintRecorder recorder(context, size_);
   recorder.canvas()->DrawRoundRect(GetPaintedBounds(), corner_radius_, paint);
@@ -154,7 +154,7 @@ gfx::Vector2dF BorderShadowLayerDelegate::GetCenteringOffset() const {
 
 void BorderShadowLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
   paint.setColor(fill_color_);
 

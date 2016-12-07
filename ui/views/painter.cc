@@ -71,12 +71,12 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(bg_color_);
   canvas->DrawRoundRect(border_rect_f, scaled_corner_radius, paint);
 
   border_rect_f.Inset(gfx::InsetsF(0.5f));
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(1);
   paint.setColor(stroke_color_);
   canvas->DrawRoundRect(border_rect_f, scaled_corner_radius, paint);
@@ -214,7 +214,7 @@ void GradientPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 
   paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
       p, colors_.get(), pos_.get(), count_, SkShader::kClamp_TileMode)));
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   canvas->sk_canvas()->drawRectCoords(SkIntToScalar(0), SkIntToScalar(0),
                                       SkIntToScalar(size.width()),

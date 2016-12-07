@@ -139,7 +139,7 @@ void Checkbox::OnPaint(gfx::Canvas* canvas) {
       SkColorSetA(GetNativeTheme()->GetSystemColor(
                       ui::NativeTheme::kColorId_FocusedBorderColor),
                   0x66));
-  focus_paint.setStyle(SkPaint::kStroke_Style);
+  focus_paint.setStyle(CdlPaint::kStroke_Style);
   focus_paint.setStrokeWidth(2);
   PaintFocusRing(canvas, focus_paint);
 }

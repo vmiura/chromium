@@ -53,15 +53,15 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       m_strokeStyleDirty(true),
       m_lineDashDirty(false),
       m_imageSmoothingQuality(kLow_SkFilterQuality) {
-  m_fillPaint.setStyle(SkPaint::kFill_Style);
+  m_fillPaint.setStyle(CdlPaint::kFill_Style);
   m_fillPaint.setAntiAlias(true);
-  m_imagePaint.setStyle(SkPaint::kFill_Style);
+  m_imagePaint.setStyle(CdlPaint::kFill_Style);
   m_imagePaint.setAntiAlias(true);
-  m_strokePaint.setStyle(SkPaint::kStroke_Style);
+  m_strokePaint.setStyle(CdlPaint::kStroke_Style);
   m_strokePaint.setStrokeWidth(1);
-  m_strokePaint.setStrokeCap(SkPaint::kButt_Cap);
+  m_strokePaint.setStrokeCap(CdlPaint::kButt_Cap);
   m_strokePaint.setStrokeMiter(10);
-  m_strokePaint.setStrokeJoin(SkPaint::kMiter_Join);
+  m_strokePaint.setStrokeJoin(CdlPaint::kMiter_Join);
   m_strokePaint.setAntiAlias(true);
   setImageSmoothingEnabled(true);
 }

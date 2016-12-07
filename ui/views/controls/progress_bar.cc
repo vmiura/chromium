@@ -78,7 +78,7 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   SkPath background_path;
   AddPossiblyRoundRectToPath(content_bounds, &background_path);
   CdlPaint background_paint;
-  background_paint.setStyle(SkPaint::kFill_Style);
+  background_paint.setStyle(CdlPaint::kFill_Style);
   background_paint.setAntiAlias(true);
   background_paint.setColor(GetBackgroundColor());
   canvas->DrawPath(background_path, background_paint);
@@ -95,7 +95,7 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   AddPossiblyRoundRectToPath(slice_bounds, &slice_path);
 
   CdlPaint slice_paint;
-  slice_paint.setStyle(SkPaint::kFill_Style);
+  slice_paint.setStyle(CdlPaint::kFill_Style);
   slice_paint.setAntiAlias(true);
   slice_paint.setColor(GetForegroundColor());
   canvas->DrawPath(slice_path, slice_paint);
@@ -153,7 +153,7 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   SkPath background_path;
   AddPossiblyRoundRectToPath(content_bounds, &background_path);
   CdlPaint background_paint;
-  background_paint.setStyle(SkPaint::kFill_Style);
+  background_paint.setStyle(CdlPaint::kFill_Style);
   background_paint.setAntiAlias(true);
   background_paint.setColor(GetBackgroundColor());
   canvas->DrawPath(background_path, background_paint);
@@ -201,7 +201,7 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   AddPossiblyRoundRectToPath(slice_bounds, &slice_path);
 
   CdlPaint slice_paint;
-  slice_paint.setStyle(SkPaint::kFill_Style);
+  slice_paint.setStyle(CdlPaint::kFill_Style);
   slice_paint.setAntiAlias(true);
   slice_paint.setColor(GetForegroundColor());
   canvas->DrawPath(slice_path, slice_paint);

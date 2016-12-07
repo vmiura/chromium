@@ -59,7 +59,7 @@ void GetGlyphWidthAndExtents(CdlPaint* paint,
                              hb_position_t* width,
                              hb_glyph_extents_t* extents) {
   DCHECK_LE(codepoint, std::numeric_limits<uint16_t>::max());
-  paint->setTextEncoding(SkPaint::kGlyphID_TextEncoding);
+  paint->setTextEncoding(CdlPaint::kGlyphID_TextEncoding);
 
   SkScalar sk_width;
   SkRect sk_bounds;
@@ -92,7 +92,7 @@ hb_bool_t GetGlyph(hb_font_t* font,
   bool exists = cache->count(unicode) != 0;
   if (!exists) {
     CdlPaint* paint = &font_data->paint_;
-    paint->setTextEncoding(SkPaint::kUTF32_TextEncoding);
+    paint->setTextEncoding(CdlPaint::kUTF32_TextEncoding);
     paint->toSkPaint().textToGlyphs(&unicode, sizeof(hb_codepoint_t), &(*cache)[unicode]);
   }
   *glyph = (*cache)[unicode];

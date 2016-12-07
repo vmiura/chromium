@@ -105,7 +105,7 @@ void NativeThemeAura::PaintMenuPopupBackground(
   SkColor color = GetSystemColor(NativeTheme::kColorId_MenuBackgroundColor);
   if (menu_background.corner_radius > 0) {
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setAntiAlias(true);
     paint.setColor(color);
 
@@ -219,7 +219,7 @@ void NativeThemeAura::PaintScrollbarThumb(
     CdlPaint paint;
     paint.setColor(
         SkColorSetA(kOverlayScrollbarStrokeColor[theme], thumb_alpha));
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(kStrokeWidth);
 
     gfx::RectF stroke_rect(thumb_rect);

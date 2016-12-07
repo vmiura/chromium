@@ -703,7 +703,7 @@ void GraphicsContext::drawRect(const IntRect& rect) {
     // Stroke a width: 1 inset border
     CdlPaint paint(immutableState()->fillPaint());
     paint.setColor(strokeColor().rgb());
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(1);
 
     skRect.inset(0.5f, 0.5f);
@@ -1087,7 +1087,7 @@ void GraphicsContext::fillDRRect(const FloatRoundedRect& outer,
 
   CdlPaint strokePaint(immutableState()->fillPaint());
   strokePaint.setColor(color.rgb());
-  strokePaint.setStyle(SkPaint::kStroke_Style);
+  strokePaint.setStyle(CdlPaint::kStroke_Style);
   strokePaint.setStrokeWidth(strokeWidth);
 
   m_canvas->drawRRect(strokeRRect, strokePaint);

@@ -149,7 +149,7 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
                      : size().width() - badge_width,
                  size().height() - kBadgeHeight, badge_width, kBadgeHeight);
   CdlPaint rect_paint;
-  rect_paint.setStyle(SkPaint::kFill_Style);
+  rect_paint.setStyle(CdlPaint::kFill_Style);
   rect_paint.setAntiAlias(true);
   rect_paint.setColor(background_color);
 
@@ -177,7 +177,7 @@ void IconWithBadgeImageSource::PaintPageActionDecoration(gfx::Canvas* canvas) {
   gfx::Point center_point(major_radius + 1, size().height() - (major_radius)-1);
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(SK_ColorTRANSPARENT);
   paint.setBlendMode(SkBlendMode::kSrc);
   canvas->DrawCircle(center_point, major_radius, paint);

@@ -49,9 +49,9 @@ void PaintArc(Canvas* canvas,
 
   CdlPaint paint;
   paint.setColor(color);
-  paint.setStrokeCap(SkPaint::kRound_Cap);
+  paint.setStrokeCap(CdlPaint::kRound_Cap);
   paint.setStrokeWidth(stroke_width);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setAntiAlias(true);
   canvas->DrawPath(path, paint);
 }

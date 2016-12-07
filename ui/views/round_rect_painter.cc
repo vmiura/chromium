@@ -26,7 +26,7 @@ gfx::Size RoundRectPainter::GetMinimumSize() const {
 void RoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   CdlPaint paint;
   paint.setColor(border_color_);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setStrokeWidth(kBorderWidth);
   paint.setAntiAlias(true);
   gfx::Rect rect(size);

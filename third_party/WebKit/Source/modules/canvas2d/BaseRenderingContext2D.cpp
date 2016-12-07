@@ -850,7 +850,7 @@ void BaseRenderingContext2D::clearRect(double x,
 
   CdlPaint clearPaint;
   clearPaint.setBlendMode(SkBlendMode::kClear);
-  clearPaint.setStyle(SkPaint::kFill_Style);
+  clearPaint.setStyle(CdlPaint::kFill_Style);
   FloatRect rect(x, y, width, height);
 
   if (rectContainsTransformedRect(rect, clipBounds)) {

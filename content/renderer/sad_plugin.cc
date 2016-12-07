@@ -25,7 +25,7 @@ void PaintSadPlugin(blink::WebCanvas* webcanvas,
   canvas->translate(plugin_rect.x(), plugin_rect.y());
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(SK_ColorBLACK);
   canvas->drawRectCoords(0, 0, SkIntToScalar(width), SkIntToScalar(height),
                          paint);

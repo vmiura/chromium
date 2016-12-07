@@ -606,7 +606,7 @@ void TableView::OnPaint(gfx::Canvas* canvas) {
       ui::NativeTheme::kColorId_TableGroupingIndicatorColor);
   CdlPaint grouping_paint;
   grouping_paint.setColor(grouping_color);
-  grouping_paint.setStyle(SkPaint::kFill_Style);
+  grouping_paint.setStyle(CdlPaint::kFill_Style);
   grouping_paint.setAntiAlias(true);
   const int group_indicator_x = GetMirroredXInView(GetCellBounds(0, 0).x() +
       kTextHorizontalPadding + kGroupingIndicatorSize / 2);

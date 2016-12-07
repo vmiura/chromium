@@ -76,7 +76,7 @@ void DownloadShelf::PaintDownloadProgress(
     int percent_done) {
   // Draw background (light blue circle).
   CdlPaint bg_paint;
-  bg_paint.setStyle(SkPaint::kFill_Style);
+  bg_paint.setStyle(CdlPaint::kFill_Style);
   SkColor indicator_color =
       theme_provider.GetColor(ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
   bg_paint.setColor(SkColorSetA(indicator_color, 0x33));
@@ -106,7 +106,7 @@ void DownloadShelf::PaintDownloadProgress(
       start_pos, sweep_angle);
   CdlPaint progress_paint;
   progress_paint.setColor(indicator_color);
-  progress_paint.setStyle(SkPaint::kStroke_Style);
+  progress_paint.setStyle(CdlPaint::kStroke_Style);
   progress_paint.setStrokeWidth(1.7f);
   progress_paint.setAntiAlias(true);
   canvas->DrawPath(progress, progress_paint);

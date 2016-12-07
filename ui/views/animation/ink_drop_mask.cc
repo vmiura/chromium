@@ -45,7 +45,7 @@ RoundRectInkDropMask::RoundRectInkDropMask(const gfx::Size& layer_size,
 void RoundRectInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
   CdlPaint paint;
   paint.setAlpha(255);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
 
   ui::PaintRecorder recorder(context, layer()->size());
@@ -66,7 +66,7 @@ CircleInkDropMask::CircleInkDropMask(const gfx::Size& layer_size,
 void CircleInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
   CdlPaint paint;
   paint.setAlpha(255);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
 
   ui::PaintRecorder recorder(context, layer()->size());

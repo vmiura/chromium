@@ -112,7 +112,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
     if (paint_sort_indicator) {
       CdlPaint paint;
       paint.setColor(kTextColor);
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       paint.setAntiAlias(true);
 
       int indicator_x = 0;

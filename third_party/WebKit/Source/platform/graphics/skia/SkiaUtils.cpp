@@ -344,7 +344,7 @@ void drawPlatformFocusRing(const PrimitiveType& primitive,
                            float width) {
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setColor(color);
   paint.setStrokeWidth(width);
 

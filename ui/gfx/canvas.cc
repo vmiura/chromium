@@ -239,7 +239,7 @@ void Canvas::FillRect(const Rect& rect, SkColor color) {
 void Canvas::FillRect(const Rect& rect, SkColor color, SkBlendMode mode) {
   CdlPaint paint;
   paint.setColor(color);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setBlendMode(mode);
   DrawRect(rect, paint);
 }
@@ -259,7 +259,7 @@ void Canvas::DrawRect(const Rect& rect, SkColor color, SkBlendMode mode) {
 void Canvas::DrawRect(const RectF& rect, SkColor color, SkBlendMode mode) {
   CdlPaint paint;
   paint.setColor(color);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   // Set a stroke width of 0, which will put us down the stroke rect path.  If
   // we set a stroke width of 1, for example, this will internally create a
   // path and fill it, which causes problems near the edge of the canvas.
@@ -352,7 +352,7 @@ void Canvas::DrawSolidFocusRect(const RectF& rect,
   CdlPaint paint;
   paint.setColor(color);
   paint.setStrokeWidth(SkFloatToScalar(thickness));
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   gfx::RectF draw_rect = rect;
   draw_rect.Inset(gfx::InsetsF(thickness / 2));
   DrawRect(draw_rect, paint);

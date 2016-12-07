@@ -174,15 +174,15 @@ sk_sp<SkShader> CreateFadeShader(const FontList& font_list,
 
 // Converts a FontRenderParams::Hinting value to the corresponding
 // SkPaint::Hinting value.
-SkPaint::Hinting FontRenderParamsHintingToSkPaintHinting(
+CdlPaint::Hinting FontRenderParamsHintingToSkPaintHinting(
     FontRenderParams::Hinting params_hinting) {
   switch (params_hinting) {
-    case FontRenderParams::HINTING_NONE:   return SkPaint::kNo_Hinting;
-    case FontRenderParams::HINTING_SLIGHT: return SkPaint::kSlight_Hinting;
-    case FontRenderParams::HINTING_MEDIUM: return SkPaint::kNormal_Hinting;
-    case FontRenderParams::HINTING_FULL:   return SkPaint::kFull_Hinting;
+    case FontRenderParams::HINTING_NONE:   return CdlPaint::kNo_Hinting;
+    case FontRenderParams::HINTING_SLIGHT: return CdlPaint::kSlight_Hinting;
+    case FontRenderParams::HINTING_MEDIUM: return CdlPaint::kNormal_Hinting;
+    case FontRenderParams::HINTING_FULL:   return CdlPaint::kFull_Hinting;
   }
-  return SkPaint::kNo_Hinting;
+  return CdlPaint::kNo_Hinting;
 }
 
 // Make sure ranges don't break text graphemes.  If a range in |break_list|
@@ -218,12 +218,12 @@ SkiaTextRenderer::SkiaTextRenderer(Canvas* canvas)
       underline_thickness_(kUnderlineMetricsNotSet),
       underline_position_(0.0f) {
   DCHECK(canvas_skia_);
-  paint_.setTextEncoding(SkPaint::kGlyphID_TextEncoding);
-  paint_.setStyle(SkPaint::kFill_Style);
+  paint_.setTextEncoding(CdlPaint::kGlyphID_TextEncoding);
+  paint_.setStyle(CdlPaint::kFill_Style);
   paint_.setAntiAlias(true);
   paint_.setSubpixelText(true);
   paint_.setLCDRenderText(true);
-  paint_.setHinting(SkPaint::kNormal_Hinting);
+  paint_.setHinting(CdlPaint::kNormal_Hinting);
 }
 
 SkiaTextRenderer::~SkiaTextRenderer() {

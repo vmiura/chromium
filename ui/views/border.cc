@@ -91,7 +91,7 @@ void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
   CdlPaint paint;
   paint.setStrokeWidth(thickness_);
   paint.setColor(color_);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   paint.setAntiAlias(true);
 
   float half_thickness = thickness_ / 2.0f;
