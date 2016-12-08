@@ -31,8 +31,8 @@ void CdlPicture::draw(CdlCanvas* canvas, const SkMatrix* matrix,
 sk_sp<SkPicture> CdlPicture::toSkPicture() const {
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(cullRect());
-  // canvas->drawDrawable(picture_.get());
   picture_->playback(CdlCanvas::Make(canvas).get(), start_offset_, end_offset_);
+  
   return recorder.finishRecordingAsPicture();
 }
 

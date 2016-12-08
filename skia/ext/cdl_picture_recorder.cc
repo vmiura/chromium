@@ -35,6 +35,12 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   fCullRect = bounds;
   fFlags = recordFlags;
 
+  // TODO(cdl): Painting is relying on a funky behavior of SkPictureRecorder;
+  // calling beginRecording multiple times results in appending to the
+  // existing SkRecord, but resetting the SkRecorder which seems wrong.
+  if (fActivelyRecording)
+    return fRecorder.get();
+
   /*
   if (bbhFactory) {
     fBBH.reset((*bbhFactory)(cullRect));
@@ -53,10 +59,8 @@ CdlCanvas* CdlPictureRecorder::beginRecording(const SkRect& bounds,
   start_offset_ = fRecord->getRecordOffset();
 
   if (!fRecorder.get()) {
-    if (fRecorder.get()) {
-      base::AutoLock hold(lock);
-      fRecorder.swap(free_recorder);
-    }
+    base::AutoLock hold(lock);
+    fRecorder.swap(free_recorder);
   }
 
   if (fRecorder.get()) {
@@ -76,8 +80,11 @@ CdlCanvas* CdlPictureRecorder::getRecordingCanvas() {
 sk_sp<CdlPicture> CdlPictureRecorder::finishRecordingAsPicture(
     uint32_t endFlags) {
   // TRACE_EVENT_ASYNC_END0("cc", "CdlPictureRecorder::beginRecording", this);
-
+  //CHECK(fActivelyRecording);
   fActivelyRecording = false;
+
+  fRecorder->restoreToCount(1);  // If we were missing any restores, add them now.
+
   sk_sp<CdlPicture> pic = sk_make_sp<CdlPicture>(
       fRecord, fCullRect, start_offset_, fRecord->getRecordOffset());
   return pic;

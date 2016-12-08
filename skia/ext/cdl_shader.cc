@@ -36,7 +36,6 @@ class CdlWrapSkShader : public CdlShader {
   CdlWrapSkShader(sk_sp<SkShader> shader) : shader_(std::move(shader)) {}
 
   sk_sp<SkShader> createSkShader() override {
-    LOG(ERROR) << "createSkShader" << shader_.get();
     return shader_;
   }
 
