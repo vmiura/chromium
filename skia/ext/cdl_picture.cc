@@ -46,6 +46,9 @@ void CdlPicture::playback(CdlCanvas* canvas,
 }
 
 uint32_t CdlPicture::uniqueID() const {
-  static base::subtle::Atomic32 g_next_id = 1;
-  return base::subtle::Barrier_AtomicIncrement(&g_next_id, 1);
+  if (!unique_id_) {
+    static base::subtle::Atomic32 g_next_id = 1;
+    unique_id_ = base::subtle::Barrier_AtomicIncrement(&g_next_id, 1);
+  }
+  return unique_id_;
 }

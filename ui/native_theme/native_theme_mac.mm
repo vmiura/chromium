@@ -409,7 +409,7 @@ void NativeThemeMac::PaintStyledGradientButton(CdlCanvas* canvas,
     shape.setRect(bounds);
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setAntiAlias(true);
 
   // First draw the darker "outer" border, with its gradient and shadow. Inside

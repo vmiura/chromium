@@ -32,7 +32,7 @@ void PictureCacheModel::AddPicture(const CdlPicture* picture) {
   // sk_sp<CdlPicture> picture_copy = CopySkPicture(picture);
   // TODO(cdl): CopyCdlPicture
   sk_sp<const CdlPicture> picture_copy = sk_ref_sp(picture);
-  pictures_.insert(std::make_pair(picture->uniqueID(), picture_copy));
+  pictures_.insert(std::make_pair(picture_copy->uniqueID(), picture_copy));
 }
 
 sk_sp<const CdlPicture> PictureCacheModel::GetPicture(uint32_t unique_id) {

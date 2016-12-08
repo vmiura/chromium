@@ -55,7 +55,7 @@ class PaintedScrollbar : public Scrollbar {
                  ScrollbarPart part,
                  const gfx::Rect& content_rect) override {
     CdlPaint paint;
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(paint_scale_));
     paint.setColor(color_);
 

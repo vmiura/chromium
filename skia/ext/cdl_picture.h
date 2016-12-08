@@ -38,6 +38,7 @@ class CdlPicture : public SkRefCnt {
   SkRect cull_bounds_;
   int start_offset_;
   int end_offset_;
+  mutable uint32_t unique_id_ = 0;
 };
 
 #endif  // SKIA_EXT_CDL_PICTURE_H_

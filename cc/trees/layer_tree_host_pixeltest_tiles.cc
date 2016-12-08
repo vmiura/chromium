@@ -126,7 +126,7 @@ class BlueYellowClient : public ContentLayerClient {
     gfx::Rect yellow_rect = blue_top_ ? bottom : top;
 
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
 
     paint.setColor(SK_ColorBLUE);
     canvas->drawRect(gfx::RectToSkRect(blue_rect), paint);

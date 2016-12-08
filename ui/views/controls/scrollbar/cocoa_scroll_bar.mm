@@ -124,7 +124,7 @@ void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect local_bounds(GetLocalBounds());
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(thumb_color);
   const SkScalar radius =
       std::min(local_bounds.width(), local_bounds.height());

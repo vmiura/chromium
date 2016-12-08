@@ -45,7 +45,7 @@ class MaskContentLayerClient : public ContentLayerClient {
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
     CdlPaint paint;
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(2));
     paint.setColor(SK_ColorWHITE);
 
@@ -168,7 +168,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
     CdlPaint paint;
-    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setStyle(CdlPaint::kStroke_Style);
     paint.setStrokeWidth(SkIntToScalar(4));
     paint.setColor(color_);
     canvas->clear(SK_ColorTRANSPARENT);
@@ -212,7 +212,7 @@ class CircleContentLayerClient : public ContentLayerClient {
         recorder.beginRecording(gfx::RectToSkRect(gfx::Rect(bounds_)));
 
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setColor(SK_ColorWHITE);
     canvas->clear(SK_ColorTRANSPARENT);
     canvas->drawCircle(bounds_.width() / 2,
