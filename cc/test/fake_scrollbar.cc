@@ -84,7 +84,7 @@ void FakeScrollbar::PaintPart(CdlCanvas* canvas,
   CdlPaint paint;
   paint.setAntiAlias(false);
   paint.setColor(paint_fill_color());
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
 
   // Emulate the how the real scrollbar works by using scrollbar's rect for
   // TRACK and the given content_rect for the THUMB

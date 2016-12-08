@@ -62,10 +62,11 @@ static SkBitmap pictureToBitmap(const CdlPicture* picture) {
   SkBitmap bitmap;
   SkRect rect = picture->cullRect();
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
-  SkCanvas canvas(bitmap);
+  SkCanvas sk_canvas(bitmap);
+  CdlCanvas canvas(&sk_canvas);
   canvas.clear(SK_ColorTRANSPARENT);
   canvas.translate(-rect.x(), -rect.y());
-  picture->draw(CdlCanvas::Make(&canvas).get());
+  canvas.drawPicture(picture);
   return bitmap;
 }
 

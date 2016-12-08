@@ -71,7 +71,8 @@ TEST(GraphicsContextTest, pictureRecording) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseColor(0);
-  SkCanvas canvas(bitmap);
+  SkCanvas sk_canvas(bitmap);
+  CdlCanvas canvas(&sk_canvas);
 
   std::unique_ptr<PaintController> paintController = PaintController::create();
   GraphicsContext context(*paintController);
@@ -82,7 +83,7 @@ TEST(GraphicsContextTest, pictureRecording) {
   context.beginRecording(bounds);
   context.fillRect(FloatRect(0, 0, 50, 50), opaque, SkBlendMode::kSrcOver);
   sk_sp<const CdlPicture> picture = context.endRecording();
-  picture->draw(&canvas);
+  canvas.drawPicture(picture.get());
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 50, 50))
 
   context.beginRecording(bounds);
@@ -92,7 +93,7 @@ TEST(GraphicsContextTest, pictureRecording) {
   // recording.
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 50, 50))
 
-  picture->draw(&canvas);
+  canvas.drawPicture(picture.get());
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(0, 0, 100, 100))
 }
 
@@ -100,7 +101,8 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(400, 400);
   bitmap.eraseColor(0);
-  SkCanvas canvas(bitmap);
+  SkCanvas sk_canvas(bitmap);
+  CdlCanvas canvas(&sk_canvas);
 
   Color opaque(1.0f, 0.0f, 0.0f, 1.0f);
   Color alpha(0.0f, 0.0f, 0.0f, 0.0f);
@@ -125,7 +127,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   // Make the device opaque in 10,10 40x40.
   context.fillRect(FloatRect(10, 10, 40, 40), opaque, SkBlendMode::kSrcOver);
   sk_sp<const CdlPicture> picture = context.endRecording();
-  picture->draw(&canvas);
+  canvas.drawPicture(picture.get());
   EXPECT_OPAQUE_PIXELS_ONLY_IN_RECT(bitmap, IntRect(10, 10, 40, 40));
 
   context.beginRecording(bounds);
@@ -137,13 +139,13 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   Path path;
   path.moveTo(FloatPoint(10, 10));
   path.addLineTo(FloatPoint(40, 40));
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(alpha.rgb());
   paint.setBlendMode(SkBlendMode::kSrcOut);
   context.drawPath(path.getSkPath(), paint);
 
   picture = context.endRecording();
-  picture->draw(&canvas);
+  canvas.drawPicture(picture.get());
   EXPECT_OPAQUE_PIXELS_IN_RECT(bitmap, IntRect(20, 10, 30, 40));
 }
 

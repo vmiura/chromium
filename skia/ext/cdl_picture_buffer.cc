@@ -132,7 +132,7 @@ struct SaveLayer final : Op {
   SaveLayer(const SkRect* bounds,
             const CdlPaint* paint,
             const SkImageFilter* backdrop,
-            SkCanvas::SaveLayerFlags flags) {
+            SkCanvas::SaveLayerFlags flags) : has_paint(false) {
     if (bounds) {
       this->bounds = *bounds;
     }
@@ -145,7 +145,7 @@ struct SaveLayer final : Op {
   }
   SkRect bounds = kUnset;
   CdlPaint paint;
-  bool has_paint = false;
+  bool has_paint;
   sk_sp<const SkImageFilter> backdrop;
   SkCanvas::SaveLayerFlags flags;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
@@ -306,7 +306,7 @@ struct DrawPicture final : Op {
   DrawPicture(const CdlPicture* picture,
               const SkMatrix* matrix,
               const CdlPaint* paint)
-      : picture(sk_ref_sp(picture)) {
+      : picture(sk_ref_sp(picture)), has_paint(false) {
     if (matrix) {
       this->matrix = *matrix;
     }
@@ -318,7 +318,7 @@ struct DrawPicture final : Op {
   sk_sp<const CdlPicture> picture;
   SkMatrix matrix = SkMatrix::I();
   CdlPaint paint;
-  bool has_paint = false;  // TODO: why is a default paint not the same?
+  bool has_paint;  // TODO: why is a default paint not the same?
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
     c->drawPicture(picture.get(), &matrix, has_paint ? &paint : nullptr);
   }
@@ -331,16 +331,18 @@ struct DrawImage final : Op {
             SkScalar x,
             SkScalar y,
             const CdlPaint* paint)
-      : image(std::move(image)), x(x), y(y) {
+      : image(std::move(image)), x(x), y(y), has_paint(false) {
     if (paint) {
       this->paint = *paint;
+      has_paint = true;
     }
   }
   sk_sp<const SkImage> image;
   SkScalar x, y;
   CdlPaint paint;
+  bool has_paint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawImage(image.get(), x, y, &paint);
+    c->drawImage(image.get(), x, y, has_paint ? &paint : nullptr);
   }
 };
 
@@ -351,18 +353,20 @@ struct DrawImageRect final : Op {
                 const SkRect& dst,
                 const CdlPaint* paint,
                 SkCanvas::SrcRectConstraint constraint)
-      : image(std::move(image)), dst(dst), constraint(constraint) {
+      : image(std::move(image)), dst(dst), has_paint(false), constraint(constraint) {
     this->src = src ? *src : SkRect::MakeIWH(image->width(), image->height());
     if (paint) {
       this->paint = *paint;
+      has_paint = true;
     }
   }
   sk_sp<const SkImage> image;
   SkRect src, dst;
   CdlPaint paint;
+  bool has_paint;
   SkCanvas::SrcRectConstraint constraint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawImageRect(image.get(), src, dst, &paint, constraint);
+    c->drawImageRect(image.get(), src, dst, has_paint ? &paint : nullptr, constraint);
   }
 };
 

@@ -146,7 +146,7 @@ class DragImageBuilder {
 
     SkPictureRecorder recorder;
     SkCanvas* canvas = recorder.beginRecording(m_bounds);
-    recording->draw(CdlCanvas::Make(canvas).get());
+    CdlCanvas::Make(canvas)->drawPicture(recording);
 
     sk_sp<SkImage> skImage = SkImage::MakeFromPicture(
         recorder.finishRecordingAsPicture(),

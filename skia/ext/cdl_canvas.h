@@ -243,9 +243,16 @@ class CdlCanvas : public SkRefCnt {
     this->drawTextBlob(blob.get(), x, y, paint);
   }
 
-  void drawPicture(const CdlPicture* picture,
-                   const SkMatrix* matrix,
-                   const CdlPaint* paint);
+  void drawPicture(const CdlPicture* picture) {
+    this->drawPicture(picture, NULL, NULL);
+  }
+  void drawPicture(const sk_sp<CdlPicture>& picture) {
+    this->drawPicture(picture.get());
+  }
+  void drawPicture(const CdlPicture*, const SkMatrix* matrix, const CdlPaint* paint);
+  void drawPicture(const sk_sp<CdlPicture>& picture, const SkMatrix* matrix, const CdlPaint* paint) {
+      this->drawPicture(picture.get(), matrix, paint);
+  }
 
   // Misc
   void flush();

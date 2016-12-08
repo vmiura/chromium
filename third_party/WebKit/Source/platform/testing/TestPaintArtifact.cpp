@@ -11,6 +11,7 @@
 #include "platform/graphics/paint/PaintArtifact.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture.h"
 #include "skia/ext/cdl_picture_recorder.h"
 #include "wtf/Assertions.h"
@@ -36,8 +37,8 @@ class TestPaintArtifact::DummyRectClient : public DisplayItemClient {
 
 sk_sp<CdlPicture> TestPaintArtifact::DummyRectClient::makePicture() const {
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(m_rect);
-  SkPaint paint;
+  CdlCanvas* canvas = recorder.beginRecording(m_rect);
+  CdlPaint paint;
   paint.setColor(m_color.rgb());
   canvas->drawRect(m_rect, paint);
   return recorder.finishRecordingAsPicture();

@@ -1893,7 +1893,7 @@ void drawPath(GraphicsContext& context,
   path.lineTo(100, 100);
   path.lineTo(100, 0);
   path.close();
-  SkPaint paint;
+  CdlPaint paint;
   paint.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)
     context.drawPath(path, paint);

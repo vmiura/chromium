@@ -104,7 +104,7 @@ void CapturePixelsForPrinting(std::unique_ptr<PixelsDumpRequest> dump_request) {
     dump_request->callback.Run(SkBitmap());
     return;
   }
-  web_frame->printPagesWithBoundaries(canvas.get(), page_size_in_pixels);
+  web_frame->printPagesWithBoundaries(CdlCanvas::Make(canvas.get()).get(), page_size_in_pixels);
   web_frame->printEnd();
 
   DrawSelectionRect(*dump_request, canvas.get());

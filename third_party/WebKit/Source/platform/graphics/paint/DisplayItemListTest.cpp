@@ -4,12 +4,13 @@
 
 #include "platform/graphics/paint/DisplayItemList.h"
 
-#include "skia/ext/cdl_picture_recorder.h"
 #include "SkTypes.h"
 #include "platform/graphics/paint/DrawingDisplayItem.h"
 #include "platform/graphics/paint/SubsequenceDisplayItem.h"
 #include "platform/graphics/skia/SkiaUtils.h"
 #include "platform/testing/FakeDisplayItemClient.h"
+#include "skia/ext/cdl_paint.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -36,10 +37,10 @@ class DisplayItemListTest : public ::testing::Test {
 
 static sk_sp<CdlPicture> createRectPicture(const IntRect& bounds) {
   CdlPictureRecorder recorder;
-  SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
+  CdlCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
   canvas->drawRect(
       SkRect::MakeXYWH(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
-      SkPaint());
+      CdlPaint());
   return recorder.finishRecordingAsPicture();
 }
 

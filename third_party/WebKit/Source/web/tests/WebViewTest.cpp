@@ -475,7 +475,7 @@ TEST_P(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
       .paintLayerContents(pictureBuilder.context(), paintingInfo,
                           PaintLayerPaintingCompositingAllPhases);
 
-  pictureBuilder.endRecording()->playback(&canvas);
+  pictureBuilder.endRecording()->playback(CdlCanvas::Make(&canvas).get());
 
   // The result should be a blend of red and green.
   SkColor color = bitmap.getColor(kWidth / 2, kHeight / 2);

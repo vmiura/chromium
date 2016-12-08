@@ -144,7 +144,7 @@ TEST_F(PageOverlayTest, PageOverlay_AcceleratedCompositing) {
   GraphicsContext graphicsContext(paintController);
   graphicsContext.beginRecording(intRect);
   paintController.paintArtifact().replay(graphicsContext);
-  graphicsContext.endRecording()->playback(&canvas);
+  graphicsContext.endRecording()->playback(CdlCanvas::Make(&canvas).get());
 }
 
 TEST_F(PageOverlayTest, PageOverlay_VisualRect) {

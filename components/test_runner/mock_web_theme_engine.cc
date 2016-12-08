@@ -116,26 +116,26 @@ static SkIRect validate(const SkIRect& rect, WebThemeEngine::Part part) {
   }
 }
 
-void box(SkCanvas* canvas, const SkIRect& rect, SkColor fillColor) {
-  SkPaint paint;
+void box(CdlCanvas* canvas, const SkIRect& rect, SkColor fillColor) {
+  CdlPaint paint;
 
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(fillColor);
   canvas->drawIRect(rect, paint);
 
   paint.setColor(edgeColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   canvas->drawIRect(rect, paint);
 }
 
-void line(SkCanvas* canvas, int x0, int y0, int x1, int y1, SkColor color) {
-  SkPaint paint;
+void line(CdlCanvas* canvas, int x0, int y0, int x1, int y1, SkColor color) {
+  CdlPaint paint;
   paint.setColor(color);
   canvas->drawLine(SkIntToScalar(x0), SkIntToScalar(y0), SkIntToScalar(x1),
                    SkIntToScalar(y1), paint);
 }
 
-void triangle(SkCanvas* canvas,
+void triangle(CdlCanvas* canvas,
               int x0,
               int y0,
               int x1,
@@ -144,10 +144,10 @@ void triangle(SkCanvas* canvas,
               int y2,
               SkColor color) {
   SkPath path;
-  SkPaint paint;
+  CdlPaint paint;
 
   paint.setColor(color);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   path.incReserve(4);
   path.moveTo(SkIntToScalar(x0), SkIntToScalar(y0));
   path.lineTo(SkIntToScalar(x1), SkIntToScalar(y1));
@@ -156,40 +156,40 @@ void triangle(SkCanvas* canvas,
   canvas->drawPath(path, paint);
 
   paint.setColor(edgeColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   canvas->drawPath(path, paint);
 }
 
-void roundRect(SkCanvas* canvas, SkIRect irect, SkColor color) {
+void roundRect(CdlCanvas* canvas, SkIRect irect, SkColor color) {
   SkRect rect;
   SkScalar radius = SkIntToScalar(5);
-  SkPaint paint;
+  CdlPaint paint;
 
   rect.set(irect);
   paint.setColor(color);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   canvas->drawRoundRect(rect, radius, radius, paint);
 
   paint.setColor(edgeColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   canvas->drawRoundRect(rect, radius, radius, paint);
 }
 
-void oval(SkCanvas* canvas, SkIRect irect, SkColor color) {
+void oval(CdlCanvas* canvas, SkIRect irect, SkColor color) {
   SkRect rect;
-  SkPaint paint;
+  CdlPaint paint;
 
   rect.set(irect);
   paint.setColor(color);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   canvas->drawOval(rect, paint);
 
   paint.setColor(edgeColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   canvas->drawOval(rect, paint);
 }
 
-void circle(SkCanvas* canvas, SkIRect irect, SkScalar radius, SkColor color) {
+void circle(CdlCanvas* canvas, SkIRect irect, SkScalar radius, SkColor color) {
   int left = irect.fLeft;
   int width = irect.width();
   int height = irect.height();
@@ -197,18 +197,18 @@ void circle(SkCanvas* canvas, SkIRect irect, SkScalar radius, SkColor color) {
 
   SkScalar cy = SkIntToScalar(top + height / 2);
   SkScalar cx = SkIntToScalar(left + width / 2);
-  SkPaint paint;
+  CdlPaint paint;
 
   paint.setColor(color);
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   canvas->drawCircle(cx, cy, radius, paint);
 
   paint.setColor(edgeColor);
-  paint.setStyle(SkPaint::kStroke_Style);
+  paint.setStyle(CdlPaint::kStroke_Style);
   canvas->drawCircle(cx, cy, radius, paint);
 }
 
-void nestedBoxes(SkCanvas* canvas,
+void nestedBoxes(CdlCanvas* canvas,
                  SkIRect irect,
                  int indentLeft,
                  int indentTop,
@@ -223,7 +223,7 @@ void nestedBoxes(SkCanvas* canvas,
   box(canvas, lirect, innerColor);
 }
 
-void insetBox(SkCanvas* canvas,
+void insetBox(CdlCanvas* canvas,
               SkIRect irect,
               int indentLeft,
               int indentTop,
@@ -236,7 +236,7 @@ void insetBox(SkCanvas* canvas,
   box(canvas, lirect, color);
 }
 
-void markState(SkCanvas* canvas, SkIRect irect, WebThemeEngine::State state) {
+void markState(CdlCanvas* canvas, SkIRect irect, WebThemeEngine::State state) {
   int left = irect.fLeft;
   int right = irect.fRight;
   int top = irect.fTop;
@@ -294,7 +294,7 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
                                const blink::WebRect& rect,
                                const WebThemeEngine::ExtraParams* extraParams) {
   SkIRect irect = webRectToSkIRect(rect);
-  SkPaint paint;
+  CdlPaint paint;
 
   // Indent amounts for the check in a checkbox or radio button.
   const int checkIndent = 3;
@@ -421,7 +421,7 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
       SkIRect cornerRect = {rect.x, rect.y, rect.x + rect.width,
                             rect.y + rect.height};
       paint.setColor(SK_ColorWHITE);
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       paint.setBlendMode(SkBlendMode::kSrc);
       paint.setAntiAlias(true);
       canvas->drawIRect(cornerRect, paint);
@@ -461,11 +461,11 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
 
     case WebThemeEngine::PartTextField:
       paint.setColor(extraParams->textField.backgroundColor);
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       canvas->drawIRect(irect, paint);
 
       paint.setColor(edgeColor);
-      paint.setStyle(SkPaint::kStroke_Style);
+      paint.setStyle(CdlPaint::kStroke_Style);
       canvas->drawIRect(irect, paint);
 
       markState(canvas, irect, state);
@@ -475,9 +475,9 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
       if (extraParams->menuList.fillContentArea) {
         box(canvas, irect, extraParams->menuList.backgroundColor);
       } else {
-        SkPaint paint;
+        CdlPaint paint;
         paint.setColor(edgeColor);
-        paint.setStyle(SkPaint::kStroke_Style);
+        paint.setStyle(CdlPaint::kStroke_Style);
         canvas->drawIRect(irect, paint);
       }
 
@@ -561,7 +561,7 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
     }
     case WebThemeEngine::PartProgressBar: {
       paint.setColor(bgColors(state));
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       canvas->drawIRect(irect, paint);
 
       // Emulate clipping
@@ -579,7 +579,7 @@ void MockWebThemeEngine::paint(blink::WebCanvas* canvas,
         tofill.setEmpty();
 
       paint.setColor(edgeColor);
-      paint.setStyle(SkPaint::kFill_Style);
+      paint.setStyle(CdlPaint::kFill_Style);
       canvas->drawIRect(tofill, paint);
 
       markState(canvas, irect, state);

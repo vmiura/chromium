@@ -42,6 +42,7 @@
 #include "public/platform/WebScheduler.h"
 #include "public/platform/WebThread.h"
 #include "public/platform/WebTraceLocation.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/texture_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -210,7 +211,7 @@ class Canvas2DLayerBridgeTest : public Test {
         Canvas2DLayerBridge::ForceAccelerationForTesting, nullptr,
         kN32_SkColorType)));
     EXPECT_TRUE(bridge->checkSurfaceValid());
-    SkPaint paint;
+    CdlPaint paint;
     uint32_t genID = bridge->getOrCreateSurface()->generationID();
     bridge->canvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), paint);
     EXPECT_EQ(genID, bridge->getOrCreateSurface()->generationID());
@@ -307,7 +308,7 @@ class Canvas2DLayerBridgeTest : public Test {
       Canvas2DLayerBridgePtr bridge(adoptRef(new Canvas2DLayerBridge(
           std::move(contextProvider), IntSize(300, 300), 0, NonOpaque,
           Canvas2DLayerBridge::EnableAcceleration, nullptr, kN32_SkColorType)));
-      SkPaint paint;
+      CdlPaint paint;
       bridge->canvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), paint);
       sk_sp<SkImage> image =
           bridge->newImageSnapshot(PreferAcceleration, SnapshotReasonUnitTests);
@@ -322,7 +323,7 @@ class Canvas2DLayerBridgeTest : public Test {
       Canvas2DLayerBridgePtr bridge(adoptRef(new Canvas2DLayerBridge(
           std::move(contextProvider), IntSize(300, 300), 0, NonOpaque,
           Canvas2DLayerBridge::EnableAcceleration, nullptr, kN32_SkColorType)));
-      SkPaint paint;
+      CdlPaint paint;
       bridge->canvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), paint);
       sk_sp<SkImage> image = bridge->newImageSnapshot(PreferNoAcceleration,
                                                       SnapshotReasonUnitTests);
@@ -460,7 +461,7 @@ class MockImageBuffer : public ImageBuffer {
       : ImageBuffer(
             wrapUnique(new UnacceleratedImageBufferSurface(IntSize(1, 1)))) {}
 
-  MOCK_CONST_METHOD1(resetCanvas, void(SkCanvas*));
+  MOCK_CONST_METHOD1(resetCanvas, void(CdlCanvas*));
 
   virtual ~MockImageBuffer() {}
 };

@@ -7,6 +7,7 @@
 #include "platform/testing/FontTestHelpers.h"
 #include "platform/testing/UnitTestHelpers.h"
 #include "platform/text/TextRun.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::testing::createTestFont;
@@ -27,7 +28,7 @@ TEST(FontTest, TextIntercepts) {
                                           0x70, 0xc9, 0x70, 0xc9};
   TextRun ahemAboveBelowBaseline(ahemAboveBelowBaselineString, 9);
   TextRunPaintInfo textRunPaintInfo(ahemAboveBelowBaseline);
-  SkPaint defaultPaint;
+  CdlPaint defaultPaint;
   float deviceScaleFactor = 1;
 
   std::tuple<float, float> belowBaselineBounds = std::make_tuple(2, 4);

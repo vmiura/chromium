@@ -404,7 +404,7 @@ void SVGImage::drawInternal(CdlCanvas* canvas,
       canvas->saveLayer(&layerRect, &paint);
     }
     sk_sp<CdlPicture> recording = imagePicture.endRecording();
-    recording->draw(canvas);
+    canvas->drawPicture(recording.get());
   }
 
   // Start any (SMIL) animations if needed. This will restart or continue

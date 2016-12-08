@@ -32,7 +32,7 @@ SolidColorContentLayerClient::PaintContentsToDisplayList(
 
   if (border_size_ != 0) {
     CdlPaint paint;
-    paint.setStyle(SkPaint::kFill_Style);
+    paint.setStyle(CdlPaint::kFill_Style);
     paint.setColor(border_color_);
     canvas->drawRect(
         SkRect::MakeXYWH(clip.x(), clip.y(), clip.width(), clip.height()),
@@ -40,7 +40,7 @@ SolidColorContentLayerClient::PaintContentsToDisplayList(
   }
 
   CdlPaint paint;
-  paint.setStyle(SkPaint::kFill_Style);
+  paint.setStyle(CdlPaint::kFill_Style);
   paint.setColor(color_);
   canvas->drawRect(
       SkRect::MakeXYWH(clip.x() + border_size_, clip.y() + border_size_,

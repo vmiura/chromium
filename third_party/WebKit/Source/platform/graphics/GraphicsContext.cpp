@@ -80,10 +80,9 @@ GraphicsContext::GraphicsContext(PaintController& paintController,
 
   if (contextDisabled()) {
     // TODO(cdl): Null CdlCanvas.
-    /*
-    DEFINE_STATIC_LOCAL(SkCanvas*, nullCanvas, (SkMakeNullCanvas().release()));
-    m_canvas = nullCanvas;
-    */
+    DEFINE_STATIC_LOCAL(SkCanvas*, nullSkCanvas, (SkMakeNullCanvas().release()));
+    DEFINE_STATIC_LOCAL(CdlCanvas, nullCanvas, (nullSkCanvas));
+    m_canvas = &nullCanvas;
   }
 }
 
@@ -301,7 +300,7 @@ void GraphicsContext::drawPicture(const CdlPicture* picture) {
     return;
 
   ASSERT(m_canvas);
-  picture->draw(m_canvas);
+  m_canvas->drawPicture(picture);
 }
 
 void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,

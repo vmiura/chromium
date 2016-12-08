@@ -42,7 +42,7 @@ class DrawsRectangleMatcher
       const CdlPicture& picture,
       ::testing::MatchResultListener* listener) const override {
     DrawsRectangleCanvas canvas;
-    picture.playback(&canvas);
+    picture.playback(CdlCanvas::Make(&canvas).get());
     const auto& quads = canvas.quads();
 
     if (quads.size() != 1) {

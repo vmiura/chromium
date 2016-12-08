@@ -33,9 +33,12 @@ bool CdlShader::isOpaque() const {
 
 class CdlWrapSkShader : public CdlShader {
  public:
-  CdlWrapSkShader(sk_sp<SkShader> shader) : shader_(shader) {}
+  CdlWrapSkShader(sk_sp<SkShader> shader) : shader_(std::move(shader)) {}
 
-  sk_sp<SkShader> createSkShader() override { return shader_; }
+  sk_sp<SkShader> createSkShader() override {
+    LOG(ERROR) << "createSkShader" << shader_.get();
+    return shader_;
+  }
 
   bool isOpaque() const override { return shader_->isOpaque(); }
 
@@ -44,7 +47,7 @@ class CdlWrapSkShader : public CdlShader {
 };
 
 sk_sp<CdlShader> CdlShader::WrapSkShader(sk_sp<SkShader> shader) {
-  return sk_sp<CdlShader>(new CdlWrapSkShader(shader));
+  return sk_make_sp<CdlWrapSkShader>(std::move(shader));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

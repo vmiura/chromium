@@ -152,12 +152,12 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPicture) {
   EXPECT_EQ(1, image->height());
 
   CdlPictureRecorder recorder;
-  SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
+  CdlCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
   sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
 
-  picture->draw(m_surface->getCanvas());
+  CdlCanvas::Make(m_surface->getCanvas())->drawPicture(picture);
   EXPECT_EQ(0, m_decodeRequestCount);
 
   SkBitmap canvasBitmap;
@@ -176,9 +176,9 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPictureProgressive) {
   sk_sp<SkImage> image = m_lazyDecoder->createFrameAtIndex(0);
   ASSERT_TRUE(image);
   CdlPictureRecorder recorder;
-  SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
+  CdlCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  recorder.finishRecordingAsPicture()->draw(m_surface->getCanvas());
+  CdlCanvas::Make(m_surface->getCanvas())->drawPicture(recorder.finishRecordingAsPicture());
 
   // Fully received the file and draw the CdlPicture again.
   m_lazyDecoder->setData(m_data, true);
@@ -186,7 +186,7 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPictureProgressive) {
   ASSERT_TRUE(image);
   tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
-  recorder.finishRecordingAsPicture()->draw(m_surface->getCanvas());
+  CdlCanvas::Make(m_surface->getCanvas())->drawPicture(recorder.finishRecordingAsPicture());
 
   SkBitmap canvasBitmap;
   canvasBitmap.allocN32Pixels(100, 100);
@@ -195,8 +195,8 @@ TEST_F(DeferredImageDecoderTest, drawIntoSkPictureProgressive) {
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), canvasBitmap.getColor(0, 0));
 }
 
-static void rasterizeMain(SkCanvas* canvas, CdlPicture* picture) {
-  picture->draw(canvas);
+static void rasterizeMain(CdlCanvas* canvas, CdlPicture* picture) {
+  canvas->drawPicture(picture);
 }
 
 TEST_F(DeferredImageDecoderTest, decodeOnOtherThread) {
@@ -207,7 +207,7 @@ TEST_F(DeferredImageDecoderTest, decodeOnOtherThread) {
   EXPECT_EQ(1, image->height());
 
   CdlPictureRecorder recorder;
-  SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
+  CdlCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
   sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
@@ -218,7 +218,7 @@ TEST_F(DeferredImageDecoderTest, decodeOnOtherThread) {
   thread->getWebTaskRunner()->postTask(
       BLINK_FROM_HERE,
       crossThreadBind(&rasterizeMain,
-                      crossThreadUnretained(m_surface->getCanvas()),
+                      crossThreadUnretained(CdlCanvas::Make(m_surface->getCanvas()).get()),
                       crossThreadUnretained(picture.get())));
   thread.reset();
   EXPECT_EQ(0, m_decodeRequestCount);
@@ -307,11 +307,11 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
 
   // The following code should not fail any assert.
   CdlPictureRecorder recorder;
-  SkCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
+  CdlCanvas* tempCanvas = recorder.beginRecording(100, 100, 0, 0);
   tempCanvas->drawImage(image.get(), 0, 0);
   sk_sp<CdlPicture> picture = recorder.finishRecordingAsPicture();
   EXPECT_EQ(0, m_decodeRequestCount);
-  picture->draw(m_surface->getCanvas());
+  CdlCanvas::Make(m_surface->getCanvas())->drawPicture(picture);
   EXPECT_EQ(1, m_decodeRequestCount);
 }
 

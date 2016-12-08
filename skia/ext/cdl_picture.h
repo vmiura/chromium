@@ -24,7 +24,8 @@ class CdlPicture : public SkRefCnt {
              int end_offset);
   ~CdlPicture() override;
 
-  void draw(CdlCanvas* canvas) const;
+  void draw(CdlCanvas* canvas, const SkMatrix* matrix,
+            const CdlPaint* paint) const;
 
   sk_sp<SkPicture> toSkPicture() const;
   int approximateOpCount() const { return 1; }

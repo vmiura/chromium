@@ -23,9 +23,7 @@ void PaintGeneratedImage::draw(CdlCanvas* canvas,
     canvas->scale(destRect.width() / srcRect.width(),
                   destRect.height() / srcRect.height());
   canvas->translate(-srcRect.x(), -srcRect.y());
-  // TODO(cdl): Need SkPaint on drawDrawable?
-  // canvas->drawDrawable(m_picture.get(), nullptr, &paint);
-  m_picture->draw(canvas);
+  canvas->drawPicture(m_picture.get(), nullptr, &paint);
 }
 
 void PaintGeneratedImage::drawTile(GraphicsContext& context,

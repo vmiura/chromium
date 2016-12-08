@@ -101,7 +101,7 @@ class PrintContextTest : public RenderingTest {
                                pageRect);
       printContext().outputLinkedDestinations(context, pageRect);
     }
-    pictureBuilder.endRecording()->playback(&canvas);
+    pictureBuilder.endRecording()->playback(CdlCanvas::Make(&canvas).get());
     printContext().end();
   }
 

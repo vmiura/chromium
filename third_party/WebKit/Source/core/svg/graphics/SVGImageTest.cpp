@@ -9,6 +9,8 @@
 #include "platform/Timer.h"
 #include "platform/geometry/FloatRect.h"
 #include "platform/testing/UnitTestHelpers.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
@@ -28,9 +30,9 @@ class SVGImageTest : public ::testing::Test {
   void pumpFrame() {
     Image* image = m_image.get();
     std::unique_ptr<SkCanvas> nullCanvas = SkMakeNullCanvas();
-    SkPaint paint;
+    CdlPaint paint;
     FloatRect dummyRect(0, 0, 100, 100);
-    image->draw(nullCanvas.get(), paint, dummyRect, dummyRect,
+    image->draw(CdlCanvas::Make(nullCanvas.get()).get(), paint, dummyRect, dummyRect,
                 DoNotRespectImageOrientation,
                 Image::DoNotClampImageToSourceRect);
   }

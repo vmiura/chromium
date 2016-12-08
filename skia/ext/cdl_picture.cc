@@ -23,8 +23,9 @@ CdlPicture::CdlPicture(sk_sp<CdlPictureBuffer> picture,
 
 CdlPicture::~CdlPicture() {}
 
-void CdlPicture::draw(CdlCanvas* canvas) const {
-  canvas->drawPicture(this, 0, 0);
+void CdlPicture::draw(CdlCanvas* canvas, const SkMatrix* matrix,
+                      const CdlPaint* paint) const {
+  canvas->drawPicture(this, matrix, paint);
 }
 
 sk_sp<SkPicture> CdlPicture::toSkPicture() const {

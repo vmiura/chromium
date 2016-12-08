@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/utils/SkPictureUtils.h"
 #include "skia/ext/cdl_picture.h"
@@ -90,7 +91,7 @@ void DrawingDisplayItem::Raster(CdlCanvas* canvas,
   if (callback)
     picture_->playback(canvas, callback);
   else
-    picture_->draw(canvas);
+    canvas->drawPicture(picture_.get());
 }
 
 void DrawingDisplayItem::AsValueInto(
@@ -114,9 +115,9 @@ void DrawingDisplayItem::AsValueInto(
   array->EndArray();
 
   // TODO(cdl): CdlPicture serialize.
-  // std::string b64_picture;
-  // PictureDebugUtil::SerializeAsBase64(picture_.get(), &b64_picture);
-  // array->SetString("skp64", b64_picture);
+  std::string b64_picture;
+  PictureDebugUtil::SerializeAsBase64(picture_->toSkPicture().get(), &b64_picture);
+  array->SetString("skp64", b64_picture);
   array->EndDictionary();
 }
 
