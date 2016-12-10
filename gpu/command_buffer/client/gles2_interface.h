@@ -8,6 +8,18 @@
 #include <GLES2/gl2.h>
 
 #include "base/compiler_specific.h"
+#include "skia/ext/cdl_internals.h"
+
+class SkImage;
+class SkMatrix;
+class SkPaint;
+class SkPath;
+struct SkRect;
+class SkRRect;
+class SkTextBlob;
+class SkTypeface;
+class SkShader;
+class SkImageFilter;
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
 

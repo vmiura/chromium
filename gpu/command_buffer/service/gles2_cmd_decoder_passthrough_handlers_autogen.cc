@@ -4385,5 +4385,31 @@ error::Error GLES2DecoderPassthroughImpl::HandleSetDrawRectangleCHROMIUM(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetMatrixImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasSetMatrixImmediate& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetMatrixImmediate*>(
+          cmd_data);
+  GLboolean concat = static_cast<GLboolean>(c.concat);
+  uint32_t data_size;
+  if (!GLES2Util::ComputeDataSize(1, sizeof(GLfloat), 9, &data_size)) {
+    return error::kOutOfBounds;
+  }
+  if (data_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLfloat* matrix = GetImmediateDataAs<volatile const GLfloat*>(
+      c, data_size, immediate_data_size);
+  if (matrix == nullptr) {
+    return error::kOutOfBounds;
+  }
+  error::Error error = DoCanvasSetMatrix(concat, matrix);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 }  // namespace gles2
 }  // namespace gpu

@@ -330,7 +330,31 @@
   OP(UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate) /* 571 */ \
   OP(OverlayPromotionHintCHROMIUM)                         /* 572 */ \
   OP(SwapBuffersWithBoundsCHROMIUMImmediate)               /* 573 */ \
-  OP(SetDrawRectangleCHROMIUM)                             /* 574 */
+  OP(SetDrawRectangleCHROMIUM)                             /* 574 */ \
+  OP(CanvasBegin)                                          /* 575 */ \
+  OP(CanvasEnd)                                            /* 576 */ \
+  OP(CanvasSave)                                           /* 577 */ \
+  OP(CanvasSaveLayer)                                      /* 578 */ \
+  OP(CanvasRestore)                                        /* 579 */ \
+  OP(CanvasSetMatrixImmediate)                             /* 580 */ \
+  OP(CanvasTranslate)                                      /* 581 */ \
+  OP(CanvasClipRect)                                       /* 582 */ \
+  OP(CanvasClipRRect)                                      /* 583 */ \
+  OP(CanvasClipPath)                                       /* 584 */ \
+  OP(CanvasDrawPaint)                                      /* 585 */ \
+  OP(CanvasDrawRect)                                       /* 586 */ \
+  OP(CanvasDrawOval)                                       /* 587 */ \
+  OP(CanvasDrawRRect)                                      /* 588 */ \
+  OP(CanvasDrawPath)                                       /* 589 */ \
+  OP(CanvasDrawImage)                                      /* 590 */ \
+  OP(CanvasDrawImageRect)                                  /* 591 */ \
+  OP(CanvasDrawTextBlob)                                   /* 592 */ \
+  OP(CanvasNewImage)                                       /* 593 */ \
+  OP(CanvasNewTextBlob)                                    /* 594 */ \
+  OP(CanvasNewPath)                                        /* 595 */ \
+  OP(CanvasNewTypeface)                                    /* 596 */ \
+  OP(CanvasSetGradientShader)                              /* 597 */ \
+  OP(CanvasSetImageShader)                                 /* 598 */
 
 enum CommandId {
   kOneBeforeStartPoint =

@@ -958,3 +958,4 @@ error::Error DoSetDrawRectangleCHROMIUM(GLint x,
                                         GLint y,
                                         GLint width,
                                         GLint height);
+error::Error DoCanvasSetMatrix(bool concat, volatile const GLfloat* matrix);

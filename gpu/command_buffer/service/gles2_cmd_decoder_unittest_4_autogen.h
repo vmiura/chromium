@@ -33,4 +33,17 @@ TEST_P(GLES2DecoderTest4, SetDrawRectangleCHROMIUMValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
+
+TEST_P(GLES2DecoderTest4, CanvasSetMatrixImmediateValidArgs) {
+  cmds::CanvasSetMatrixImmediate& cmd =
+      *GetImmediateAs<cmds::CanvasSetMatrixImmediate>();
+  SpecializedSetup<cmds::CanvasSetMatrixImmediate, 0>(true);
+  GLfloat temp[9] = {
+      0,
+  };
+  cmd.Init(true, &temp[0]);
+  EXPECT_CALL(*gl_, CanvasSetMatrix(true, PointsToArray(temp, 9)));
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_4_AUTOGEN_H_
