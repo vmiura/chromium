@@ -102,7 +102,7 @@ class DeferredImageDecoderTest : public ::testing::Test,
     m_actualDecoder = decoder.get();
     m_actualDecoder->setSize(1, 1);
     m_lazyDecoder = DeferredImageDecoder::createForTesting(std::move(decoder));
-    m_surface = SkSurface::MakeRasterN32Premul(100, 100);
+    m_surface = CdlSurface::MakeRasterN32Premul(100, 100);
     ASSERT_TRUE(m_surface.get());
     m_decodeRequestCount = 0;
     m_repetitionCount = cAnimationNone;

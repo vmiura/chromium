@@ -329,7 +329,7 @@ CGContextRef SkiaBitLocker::cgContext() {
   // Now make clip_bounds be relative to the current layer/device
   if (!bitmapIsDummy_) {
     GetSkCanvas(canvas_)->temporary_internal_describeTopLayer(nullptr,
-                                                             &clip_bounds);
+                                                              &clip_bounds);
   }
 
   SkPixmap devicePixels;

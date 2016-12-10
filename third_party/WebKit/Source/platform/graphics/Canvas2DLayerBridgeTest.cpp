@@ -43,6 +43,7 @@
 #include "public/platform/WebThread.h"
 #include "public/platform/WebTraceLocation.h"
 #include "skia/ext/cdl_paint.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/texture_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

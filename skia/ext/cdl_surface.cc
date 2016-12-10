@@ -26,8 +26,11 @@ sk_sp<CdlSurface> CdlSurface::MakeRasterDirect(const SkImageInfo& info,
                                                void* pixels,
                                                size_t rowBytes,
                                                const SkSurfaceProps* props) {
-  return sk_make_sp<CdlSurface>(
-      SkSurface::MakeRasterDirect(info, pixels, rowBytes, props));
+  sk_sp<SkSurface> surface =
+      SkSurface::MakeRasterDirect(info, pixels, rowBytes, props);
+  if (surface.get())
+    return sk_make_sp<CdlSurface>(surface);
+  return nullptr;
 }
 
 /**
@@ -43,8 +46,11 @@ sk_sp<CdlSurface> CdlSurface::MakeRasterDirectReleaseProc(
     void (*releaseProc)(void* pixels, void* context),
     void* context,
     const SkSurfaceProps* props) {
-  return sk_make_sp<CdlSurface>(SkSurface::MakeRasterDirectReleaseProc(
-      info, pixels, rowBytes, releaseProc, context, props));
+  sk_sp<SkSurface> surface = SkSurface::MakeRasterDirectReleaseProc(
+      info, pixels, rowBytes, releaseProc, context, props);
+  if (surface.get())
+    return sk_make_sp<CdlSurface>(surface);
+  return nullptr;
 }
 
 /**
@@ -63,7 +69,10 @@ sk_sp<CdlSurface> CdlSurface::MakeRasterDirectReleaseProc(
 sk_sp<CdlSurface> CdlSurface::MakeRaster(const SkImageInfo& info,
                                          size_t rowBytes,
                                          const SkSurfaceProps* props) {
-  return sk_make_sp<CdlSurface>(SkSurface::MakeRaster(info, rowBytes, props));
+  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, rowBytes, props);
+  if (surface.get())
+    return sk_make_sp<CdlSurface>(surface);
+  return nullptr;
 }
 
 #if 0
@@ -114,8 +123,11 @@ sk_sp<CdlSurface> CdlSurface::MakeRenderTarget(GrContext* gc,
                                                int sampleCount,
                                                GrSurfaceOrigin origin,
                                                const SkSurfaceProps* props) {
-  return sk_make_sp<CdlSurface>(SkSurface::MakeRenderTarget(
-      gc, budgeted, info, sampleCount, origin, props));
+  sk_sp<SkSurface> surface = SkSurface::MakeRenderTarget(
+      gc, budgeted, info, sampleCount, origin, props);
+  if (surface.get())
+    return sk_make_sp<CdlSurface>(surface);
+  return nullptr;
 }
 
 CdlCanvas* CdlSurface::getCanvas() {

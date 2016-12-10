@@ -95,8 +95,8 @@ class CdlPaint {
     kUTF32_TextEncoding =
         SkPaint::kUTF32_TextEncoding,  //!< the text parameters are UTF32
     kGlyphID_TextEncoding = SkPaint::kGlyphID_TextEncoding  //!< the text
-                                                            //!parameters are
-                                                            //!glyph indices
+                                                            //! parameters are
+    //! glyph indices
   };
 
   TextEncoding getTextEncoding() const {
@@ -123,9 +123,9 @@ class CdlPaint {
   enum Cap {
     kButt_Cap = SkPaint::kButt_Cap,    //!< begin/end contours with no extension
     kRound_Cap = SkPaint::kRound_Cap,  //!< begin/end contours with a
-                                       //!semi-circle extension
+                                       //! semi-circle extension
     kSquare_Cap = SkPaint::kSquare_Cap,  //!< begin/end contours with a half
-                                         //!square extension
+                                         //! square extension
 
     kLast_Cap = kSquare_Cap,
     kDefault_Cap = kButt_Cap

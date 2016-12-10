@@ -36,7 +36,7 @@ class MockPrintContext : public PrintContext {
   }
 };
 
-class MockCanvas : public SkCanvas {
+class MockCanvas : public CdlCanvas {
  public:
   enum OperationType { DrawRect, DrawPoint };
 
@@ -45,7 +45,7 @@ class MockCanvas : public SkCanvas {
     SkRect rect;
   };
 
-  MockCanvas() : SkCanvas(kPageWidth, kPageHeight) {}
+  MockCanvas() : CdlCanvas(kPageWidth, kPageHeight) {}
 
   void onDrawAnnotation(const SkRect& rect,
                         const char key[],

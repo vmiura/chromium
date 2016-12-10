@@ -261,10 +261,10 @@ SkBaseDevice* BitmapPlatformDevice::onCreateDevice(const CreateInfo& cinfo,
 // PlatformCanvas impl
 
 std::unique_ptr<CdlCanvas> CreatePlatformCanvas(CGContextRef ctx,
-                                               int width,
-                                               int height,
-                                               bool is_opaque,
-                                               OnFailureType failureType) {
+                                                int width,
+                                                int height,
+                                                bool is_opaque,
+                                                OnFailureType failureType) {
   const bool do_clear = false;
   sk_sp<SkBaseDevice> dev(
       BitmapPlatformDevice::Create(ctx, width, height, is_opaque, do_clear));
@@ -272,10 +272,10 @@ std::unique_ptr<CdlCanvas> CreatePlatformCanvas(CGContextRef ctx,
 }
 
 std::unique_ptr<CdlCanvas> CreatePlatformCanvas(int width,
-                                               int height,
-                                               bool is_opaque,
-                                               uint8_t* data,
-                                               OnFailureType failureType) {
+                                                int height,
+                                                bool is_opaque,
+                                                uint8_t* data,
+                                                OnFailureType failureType) {
   sk_sp<SkBaseDevice> dev(
       BitmapPlatformDevice::CreateWithData(data, width, height, is_opaque));
   return CreateCanvas(dev, failureType);

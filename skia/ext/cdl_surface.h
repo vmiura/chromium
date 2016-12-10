@@ -204,7 +204,7 @@ class SK_API CdlSurface : public SkRefCnt {
    *  If this surface is empty (i.e. has a zero-dimention), this will return
    *  0.
    */
-  uint32_t generationID();
+  uint32_t generationID() { return surface_->generationID(); }
 
   /**
    *  Call this if the contents are about to change. This will (lazily) force a
@@ -219,11 +219,11 @@ class SK_API CdlSurface : public SkRefCnt {
 
   enum BackendHandleAccess {
     kFlushRead_BackendHandleAccess,     //!< caller may read from the backend
-                                        //!object
+                                        //! object
     kFlushWrite_BackendHandleAccess,    //!< caller may write to the backend
-                                        //!object
+                                        //! object
     kDiscardWrite_BackendHandleAccess,  //!< caller must over-write the entire
-                                        //!backend object
+                                        //! backend object
   };
 
   /*
