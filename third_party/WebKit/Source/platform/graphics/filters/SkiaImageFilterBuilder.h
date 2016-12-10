@@ -28,10 +28,10 @@
 
 #include "platform/PlatformExport.h"
 #include "platform/graphics/ColorSpace.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkImageFilter;
-class CdlPicture;
 
 namespace blink {
 

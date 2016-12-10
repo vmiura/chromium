@@ -43,6 +43,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "skia/ext/cdl_shader.h"
 #include "wtf/StdLibExtras.h"
 
 #include <math.h>
@@ -227,9 +228,9 @@ sk_sp<CdlShader> createPatternShader(const SkImage* image,
                                      const CdlPaint& paint,
                                      const FloatSize& spacing) {
   if (spacing.isZero())
-    return CdlShader::MakeImageShader(
-        sk_ref_sp(const_cast<SkImage*>(image)), SkShader::kRepeat_TileMode,
-        SkShader::kRepeat_TileMode, &shaderMatrix);
+    return MakeCdlImageShader(sk_ref_sp(const_cast<SkImage*>(image)),
+                              SkShader::kRepeat_TileMode,
+                              SkShader::kRepeat_TileMode, &shaderMatrix);
 
   // Arbitrary tiling is currently only supported for SkPictureShader, so we use
   // that instead of a plain bitmap shader to implement spacing.
@@ -323,9 +324,8 @@ bool Image::applyShader(CdlPaint& paint, const SkMatrix& localMatrix) {
   if (!image)
     return false;
 
-  paint.setShader(CdlShader::MakeImageShader(image, SkShader::kRepeat_TileMode,
-                                             SkShader::kRepeat_TileMode,
-                                             &localMatrix));
+  paint.setShader(MakeCdlImageShader(image, SkShader::kRepeat_TileMode,
+                                     SkShader::kRepeat_TileMode, &localMatrix));
 
   // Animation is normally refreshed in draw() impls, which we don't call when
   // painting via shaders.

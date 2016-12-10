@@ -6,6 +6,7 @@
 
 #include "platform/graphics/GraphicsContext.h"
 #include "public/platform/WebDisplayItemList.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -53,8 +54,8 @@ static bool picturesEqual(const CdlPicture* picture1,
   if (picture1->approximateOpCount() != picture2->approximateOpCount())
     return false;
 
-  sk_sp<SkData> data1 = picture1->toSkPicture()->serialize();
-  sk_sp<SkData> data2 = picture2->toSkPicture()->serialize();
+  sk_sp<SkData> data1 = ToSkPicture(picture1)->serialize();
+  sk_sp<SkData> data2 = ToSkPicture(picture2)->serialize();
   return data1->equals(data2.get());
 }
 
@@ -63,7 +64,7 @@ static SkBitmap pictureToBitmap(const CdlPicture* picture) {
   SkRect rect = picture->cullRect();
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   SkCanvas sk_canvas(bitmap);
-  CdlCanvas canvas(&sk_canvas);
+  CdlPassThroughCanvas canvas(&sk_canvas);
   canvas.clear(SK_ColorTRANSPARENT);
   canvas.translate(-rect.x(), -rect.y());
   canvas.drawPicture(picture);

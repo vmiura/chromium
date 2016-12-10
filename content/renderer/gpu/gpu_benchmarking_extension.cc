@@ -35,6 +35,7 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gpu/ipc/common/gpu_messages.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/WebKit/public/web/WebImageCache.h"
 #include "third_party/WebKit/public/web/WebKit.h"
 #include "third_party/WebKit/public/web/WebLocalFrame.h"
@@ -132,7 +133,7 @@ class SkPictureSerializer {
   // in the given directory.
   void Serialize(const cc::Layer* root_layer) {
     for (auto* layer : *root_layer->GetLayerTree()) {
-      sk_sp<SkPicture> picture = layer->GetPicture()->toSkPicture();
+      sk_sp<const SkPicture> picture = ToSkPicture(layer->GetPicture().get());
       if (!picture)
         continue;
 
@@ -465,9 +466,10 @@ static void PrintDocument(blink::WebFrame* frame, SkDocument* doc) {
   params.printerDPI = 300;
   int page_count = frame->printBegin(params);
   for (int i = 0; i < page_count; ++i) {
-    SkCanvas* canvas = doc->beginPage(kPageWidth, kPageHeight);
-    SkAutoCanvasRestore auto_restore(canvas, true);
-    canvas->translate(kMarginLeft, kMarginTop);
+    SkCanvas* sk_canvas = doc->beginPage(kPageWidth, kPageHeight);
+    CdlPassThroughCanvas canvas(sk_canvas);
+    CdlAutoCanvasRestore auto_restore(&canvas, true);
+    canvas.translate(kMarginLeft, kMarginTop);
 
 #if defined(OS_WIN) || defined(OS_MACOSX)
     float page_shrink = frame->getPrintPageShrink(i);
@@ -475,7 +477,7 @@ static void PrintDocument(blink::WebFrame* frame, SkDocument* doc) {
     canvas->scale(page_shrink, page_shrink);
 #endif
 
-    frame->printPage(i, CdlCanvas::Make(canvas).get());
+    frame->printPage(i, &canvas);
   }
   frame->printEnd();
 }

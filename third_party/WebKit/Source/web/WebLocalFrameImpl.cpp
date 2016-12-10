@@ -301,8 +301,7 @@ class ChromePrintContext : public PrintContext {
       return 0;
 
     IntRect pageRect = m_pageRects[pageNumber];
-    SkPictureBuilder pictureBuilder(pageRect,
-                                    &skia::GetMetaData(*canvas->skCanvas()));
+    SkPictureBuilder pictureBuilder(pageRect, &skia::GetMetaData(*canvas));
     pictureBuilder.context().setPrinting(true);
 
     float scale = spoolPage(pictureBuilder, pageNumber);
@@ -329,8 +328,7 @@ class ChromePrintContext : public PrintContext {
     int totalHeight = numPages * (pageSizeInPixels.height() + 1) - 1;
     IntRect allPagesRect(0, 0, pageWidth, totalHeight);
 
-    SkPictureBuilder pictureBuilder(allPagesRect,
-                                    &skia::GetMetaData(*canvas->skCanvas()));
+    SkPictureBuilder pictureBuilder(allPagesRect, &skia::GetMetaData(*canvas));
     pictureBuilder.context().setPrinting(true);
 
     {

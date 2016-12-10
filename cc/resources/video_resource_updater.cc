@@ -539,11 +539,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
         ResourceProvider::ScopedWriteLockSoftware lock(
             resource_provider_, plane_resource.resource_id());
-        SkCanvas canvas(lock.sk_bitmap());
+        CdlCanvas canvas(lock.sk_bitmap());
         // This is software path, so canvas and video_frame are always backed
         // by software.
-        video_renderer_->Copy(video_frame, CdlCanvas::Make(&canvas).get(),
-                              media::Context3D());
+        video_renderer_->Copy(video_frame, &canvas, media::Context3D());
       } else {
         size_t bytes_per_row = ResourceUtil::CheckedWidthInBytes<size_t>(
             video_frame->coded_size().width(), ResourceFormat::RGBA_8888);

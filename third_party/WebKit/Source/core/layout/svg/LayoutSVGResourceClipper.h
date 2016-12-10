@@ -22,9 +22,8 @@
 
 #include "core/layout/svg/LayoutSVGResourceContainer.h"
 #include "core/svg/SVGClipPathElement.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class CdlPicture;
 
 namespace blink {
 

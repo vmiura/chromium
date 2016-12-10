@@ -29,11 +29,9 @@
 
 #include "platform/graphics/Color.h"
 #include "platform/heap/Handle.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Assertions.h"
 #include "wtf/text/WTFString.h"
-
-class SkPaint;
-class CdlPaint;
 
 namespace blink {
 

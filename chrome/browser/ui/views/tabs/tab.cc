@@ -215,8 +215,8 @@ void DrawHighlight(gfx::Canvas* canvas,
   const SkColor colors[2] = { color, SkColorSetA(color, 0) };
   CdlPaint paint;
   paint.setAntiAlias(true);
-  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeRadial(p, radius, colors, nullptr, 2,
-                                               SkShader::kClamp_TileMode)));
+  paint.setShader(WrapSkShader(SkGradientShader::MakeRadial(
+      p, radius, colors, nullptr, 2, SkShader::kClamp_TileMode)));
   canvas->sk_canvas()->drawRect(
       SkRect::MakeXYWH(p.x() - radius, p.y() - radius, radius * 2, radius * 2),
       paint);

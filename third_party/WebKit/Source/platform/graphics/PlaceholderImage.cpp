@@ -41,7 +41,7 @@ sk_sp<SkImage> PlaceholderImage::imageForCurrentFrame() {
   context.fillRect(destRect);
 
   m_imageForCurrentFrame = SkImage::MakeFromPicture(
-      builder.endRecording()->toSkPicture(),
+      ToSkPicture(builder.endRecording().get()),
       SkISize::Make(m_size.width(), m_size.height()), nullptr, nullptr);
 
   return m_imageForCurrentFrame;

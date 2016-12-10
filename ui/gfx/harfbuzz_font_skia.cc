@@ -65,7 +65,7 @@ void GetGlyphWidthAndExtents(CdlPaint* paint,
   SkRect sk_bounds;
   uint16_t glyph = static_cast<uint16_t>(codepoint);
 
-  paint->toSkPaint().getTextWidths(&glyph, sizeof(glyph), &sk_width, &sk_bounds);
+  ToSkPaint(*paint).getTextWidths(&glyph, sizeof(glyph), &sk_width, &sk_bounds);
   if (width)
     *width = SkiaScalarToHarfBuzzUnits(sk_width);
   if (extents) {
@@ -93,7 +93,8 @@ hb_bool_t GetGlyph(hb_font_t* font,
   if (!exists) {
     CdlPaint* paint = &font_data->paint_;
     paint->setTextEncoding(CdlPaint::kUTF32_TextEncoding);
-    paint->toSkPaint().textToGlyphs(&unicode, sizeof(hb_codepoint_t), &(*cache)[unicode]);
+    ToSkPaint(*paint).textToGlyphs(&unicode, sizeof(hb_codepoint_t),
+                                   &(*cache)[unicode]);
   }
   *glyph = (*cache)[unicode];
   return !!*glyph;

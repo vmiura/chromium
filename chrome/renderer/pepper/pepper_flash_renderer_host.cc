@@ -28,6 +28,7 @@
 #include "ppapi/proxy/serialized_structs.h"
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_image_data_api.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -221,7 +222,7 @@ int32_t PepperFlashRendererHost::OnDrawGlyphs(
     return PP_ERROR_FAILED;
 
   PPB_ImageData_API* image = static_cast<PPB_ImageData_API*>(enter.object());
-  SkCanvas* canvas = image->GetCanvas();
+  CdlCanvas* canvas = image->GetCanvas();
   bool needs_unmapping = false;
   if (!canvas) {
     needs_unmapping = true;
@@ -231,7 +232,7 @@ int32_t PepperFlashRendererHost::OnDrawGlyphs(
       return PP_ERROR_FAILED;  // Failure mapping.
   }
 
-  SkAutoCanvasRestore acr(canvas, true);
+  CdlAutoCanvasRestore acr(canvas, true);
 
   // Clip is applied in pixels before the transform.
   SkRect clip_rect = {
@@ -252,11 +253,11 @@ int32_t PepperFlashRendererHost::OnDrawGlyphs(
   matrix.set(SkMatrix::kMPersp2, SkFloatToScalar(params.transformation[2][2]));
   canvas->concat(matrix);
 
-  SkPaint paint;
+  CdlPaint paint;
   paint.setColor(params.color);
-  paint.setTextEncoding(SkPaint::kGlyphID_TextEncoding);
+  paint.setTextEncoding(CdlPaint::kGlyphID_TextEncoding);
   paint.setAntiAlias(true);
-  paint.setHinting(SkPaint::kFull_Hinting);
+  paint.setHinting(CdlPaint::kFull_Hinting);
   paint.setTextSize(SkIntToScalar(params.font_desc.size));
   paint.setTypeface(std::move(typeface));
   if (params.allow_subpixel_aa) {

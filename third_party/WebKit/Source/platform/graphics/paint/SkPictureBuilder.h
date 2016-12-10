@@ -8,12 +8,12 @@
 #include "platform/PlatformExport.h"
 #include "platform/geometry/FloatRect.h"
 #include "platform/graphics/paint/DisplayItemClient.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Noncopyable.h"
 #include <memory>
 
 class SkMetaData;
-class CdlPicture;
 
 namespace blink {
 

@@ -326,7 +326,7 @@ sk_sp<SkImage> SVGImage::imageForCurrentFrameForContainer(
                    containerRect, url);
 
   return SkImage::MakeFromPicture(
-      recorder.finishRecordingAsPicture()->toSkPicture(),
+      ToSkPicture(recorder.finishRecordingAsPicture().get()),
       SkISize::Make(containerSize.width(), containerSize.height()), nullptr,
       nullptr);
 }

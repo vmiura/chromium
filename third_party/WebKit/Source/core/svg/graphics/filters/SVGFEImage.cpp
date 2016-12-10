@@ -185,8 +185,8 @@ sk_sp<SkImageFilter> FEImage::createImageFilterForLayoutObject(
     SVGPaintContext::paintSubtree(filterPicture.context(), &layoutObject);
   }
 
-  return SkPictureImageFilter::Make(filterPicture.endRecording()->toSkPicture(),
-                                    dstRect);
+  return SkPictureImageFilter::Make(
+      ToSkPicture(filterPicture.endRecording().get()), dstRect);
 }
 
 sk_sp<SkImageFilter> FEImage::createImageFilter() {

@@ -462,7 +462,7 @@ void StatusBubbleViews::StatusView::OnPaint(gfx::Canvas* canvas) {
   paint.setAntiAlias(true);
 
   SkPath stroke_path;
-  paint.toSkPaint().getFillPath(path, &stroke_path);
+  ToSkPaint(paint).getFillPath(path, &stroke_path);
 
   // Get the fill path by subtracting the shadow so they align neatly.
   SkPath fill_path;

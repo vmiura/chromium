@@ -7,6 +7,8 @@
 #include "platform/geometry/FloatQuad.h"
 #include "platform/geometry/FloatRect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture.h"
 #include "wtf/Vector.h"
 #include "wtf/text/WTFString.h"
@@ -16,16 +18,16 @@ namespace blink {
 
 namespace {
 
-class DrawsRectangleCanvas : public SkCanvas {
+class DrawsRectangleCanvas : public CdlCanvas {
  public:
-  DrawsRectangleCanvas() : SkCanvas(800, 600) {}
+  DrawsRectangleCanvas() : CdlCanvas(800, 600) {}
   const Vector<std::pair<FloatQuad, Color>>& quads() const { return m_quads; }
-  void onDrawRect(const SkRect& rect, const SkPaint& paint) override {
+  void onDrawRect(const SkRect& rect, const CdlPaint& paint) override {
     SkPoint quad[4];
     getTotalMatrix().mapRectToQuad(quad, rect);
     FloatQuad floatQuad(quad);
     m_quads.append(std::make_pair(floatQuad, Color(paint.getColor())));
-    SkCanvas::onDrawRect(rect, paint);
+    CdlCanvas::onDrawRect(rect, paint);
   }
 
  private:
@@ -42,7 +44,7 @@ class DrawsRectangleMatcher
       const CdlPicture& picture,
       ::testing::MatchResultListener* listener) const override {
     DrawsRectangleCanvas canvas;
-    picture.playback(CdlCanvas::Make(&canvas).get());
+    picture.playback(&canvas);
     const auto& quads = canvas.quads();
 
     if (quads.size() != 1) {

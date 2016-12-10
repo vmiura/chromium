@@ -30,10 +30,8 @@
 #include "platform/graphics/GeneratedImage.h"
 #include "platform/graphics/Image.h"
 #include "platform/graphics/ImageObserver.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/RefPtr.h"
-
-class CdlPaint;
-class CdlCanvas;
 
 namespace blink {
 

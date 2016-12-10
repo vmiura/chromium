@@ -11,8 +11,7 @@
 
 #include "base/macros.h"
 #include "cc/blimp/engine_picture_cache.h"
-
-class CdlPicture;
+#include "skia/ext/cdl_common.h"
 
 namespace cc {
 class DisplayItemList;

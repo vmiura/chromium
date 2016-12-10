@@ -7,6 +7,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/WebKit/public/platform/WebCallbacks.h"
 #include "third_party/WebKit/public/platform/WebMediaStreamSource.h"
@@ -69,7 +70,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
   const SkImageInfo info = SkImageInfo::MakeN32(
       frame->visible_rect().width(), frame->visible_rect().height(), alpha);
 
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+  sk_sp<CdlSurface> surface = CdlSurface::MakeRaster(info);
   DCHECK(surface);
 
   SkPixmap pixmap;

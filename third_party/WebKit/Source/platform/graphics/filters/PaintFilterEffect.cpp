@@ -23,7 +23,7 @@ PaintFilterEffect* PaintFilterEffect::create(Filter* filter,
 }
 
 sk_sp<SkImageFilter> PaintFilterEffect::createImageFilter() {
-  return SkPaintImageFilter::Make(m_paint.toSkPaint(), nullptr);
+  return SkPaintImageFilter::Make(ToSkPaint(m_paint), nullptr);
 }
 
 TextStream& PaintFilterEffect::externalRepresentation(TextStream& ts,

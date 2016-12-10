@@ -44,9 +44,9 @@ void ShadowLayerDelegate::OnPaintLayer(const ui::PaintContext& context) {
   gfx::Rect paint_rect = gfx::Rect(0, 0, kShadowThick,
                                    layer_->bounds().height());
   CdlPaint paint;
-  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(points, kShadowColors, NULL,
-                                               arraysize(points),
-                                               SkShader::kRepeat_TileMode)));
+  paint.setShader(WrapSkShader(SkGradientShader::MakeLinear(
+      points, kShadowColors, NULL, arraysize(points),
+      SkShader::kRepeat_TileMode)));
   ui::PaintRecorder recorder(context, layer_->size());
   recorder.canvas()->DrawRect(paint_rect, paint);
 }

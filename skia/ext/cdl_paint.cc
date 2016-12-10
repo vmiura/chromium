@@ -5,8 +5,11 @@
  * found in the LICENSE file.
  */
 
-#include <cstdlib>
 #include "cdl_paint.h"
+
+#if CDL_ENABLED
+
+#include <cstdlib>
 
 #include "base/logging.h"
 #include "cdl_shader.h"
@@ -23,3 +26,5 @@ SkPaint CdlPaint::toSkPaint() const {
     paint.setShader(shader_->createSkShader());
   return paint;
 }
+
+#endif  // CDL_ENABLED

@@ -19,12 +19,11 @@
 
 #include "platform/PlatformExport.h"
 #include "platform/geometry/IntRect.h"
+#include "skia/ext/cdl_common.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "wtf/Noncopyable.h"
 
 OBJC_CLASS NSGraphicsContext;
-
-class CdlCanvas;
 
 namespace blink {
 

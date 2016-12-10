@@ -14,6 +14,7 @@
 #include "content/renderer/media/webrtc_uma_histograms.h"
 #include "media/base/limits.h"
 #include "media/blink/webmediaplayer_impl.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayer.h"
 #include "third_party/WebKit/public/platform/WebRect.h"
@@ -95,7 +96,7 @@ void HtmlVideoElementCapturerSource::StartCapture(
   }
   const blink::WebSize resolution = web_media_player_->naturalSize();
   surface_ =
-      SkSurface::MakeRasterN32Premul(resolution.width, resolution.height);
+      CdlSurface::MakeRasterN32Premul(resolution.width, resolution.height);
   if (!surface_) {
     running_callback_.Run(false);
     return;
@@ -133,16 +134,15 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   const base::TimeTicks current_time = base::TimeTicks::Now();
   const blink::WebSize resolution = web_media_player_->naturalSize();
 
-  SkCanvas* canvas = surface_->getCanvas();
+  CdlCanvas* canvas = surface_->getCanvas();
   CdlPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setFilterQuality(kLow_SkFilterQuality);
   web_media_player_->paint(
-      CdlCanvas::Make(canvas).get(),
-      blink::WebRect(0, 0, resolution.width, resolution.height), paint);
-  DCHECK_NE(kUnknown_SkColorType, canvas->imageInfo().colorType());
-  DCHECK_EQ(canvas->imageInfo().width(), resolution.width);
-  DCHECK_EQ(canvas->imageInfo().height(), resolution.height);
+      canvas, blink::WebRect(0, 0, resolution.width, resolution.height), paint);
+  DCHECK_NE(kUnknown_SkColorType, GetSkCanvas(canvas)->imageInfo().colorType());
+  DCHECK_EQ(GetSkCanvas(canvas)->imageInfo().width(), resolution.width);
+  DCHECK_EQ(GetSkCanvas(canvas)->imageInfo().height(), resolution.height);
 
   const SkBitmap bitmap = skia::ReadPixels(canvas);
   DCHECK_NE(kUnknown_SkColorType, bitmap.colorType());

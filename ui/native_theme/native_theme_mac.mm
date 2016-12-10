@@ -415,13 +415,15 @@ void NativeThemeMac::PaintStyledGradientButton(CdlCanvas* canvas,
   // First draw the darker "outer" border, with its gradient and shadow. Inside
   // a tab strip, this will draw over the outer border and inner separator.
   paint.setLooper(gfx::CreateShadowDrawLooper(shadows));
-  paint.setShader(CdlShader::WrapSkShader(GetButtonBorderShader(type, shape.height())));
+  paint.setShader(
+      CdlShader::WrapSkShader(GetButtonBorderShader(type, shape.height())));
   canvas->drawRRect(shape, paint);
 
   // Then, inset the rounded rect and draw over that with the inner gradient.
   shape.inset(kBorderThickness, kBorderThickness);
   paint.setLooper(nullptr);
-  paint.setShader(CdlShader::WrapSkShader(GetButtonBackgroundShader(type, shape.height())));
+  paint.setShader(
+      CdlShader::WrapSkShader(GetButtonBackgroundShader(type, shape.height())));
   canvas->drawRRect(shape, paint);
 
   if (!focus)

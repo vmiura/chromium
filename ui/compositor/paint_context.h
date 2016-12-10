@@ -9,14 +9,13 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "skia/ext/cdl_common.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class DisplayItemList;
 }
-
-class CdlPictureRecorder;
 
 namespace ui {
 class ClipRecorder;

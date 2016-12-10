@@ -8,6 +8,10 @@
 #ifndef SKIA_EXT_CDL_NO_DRAW_CANVAS_H_
 #define SKIA_EXT_CDL_NO_DRAW_CANVAS_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
 #include "cdl_canvas.h"
 
 class CdlNoDrawCanvas : public CdlCanvas {
@@ -67,5 +71,11 @@ class CdlNoDrawCanvas : public CdlCanvas {
                     const SkPoint pts[],
                     const CdlPaint&) override {}
 };
+
+#else  // CDL_ENABLED
+
+#include "third_party/skia/include/utils/SkNoDrawCanvas.h"
+
+#endif  // CDL_ENABLED
 
 #endif  // SKIA_EXT_CDL_NO_DRAW_CANVAS_H_

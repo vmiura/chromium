@@ -11,11 +11,10 @@
 #include "cc/base/cc_export.h"
 #include "cc/base/rtree.h"
 #include "cc/playback/draw_image.h"
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-class CdlCanvas;
 
 namespace cc {
 
@@ -38,7 +37,7 @@ class CC_EXPORT DiscardableImageMap {
    private:
     DiscardableImageMap* image_map_;
     // TODO(cdl): switch to unique_ptr.
-    sk_sp<CdlCanvas> metadata_canvas_;
+    std::unique_ptr<CdlCanvas> metadata_canvas_;
   };
 
   DiscardableImageMap();
@@ -53,7 +52,7 @@ class CC_EXPORT DiscardableImageMap {
   friend class ScopedMetadataGenerator;
   friend class DiscardableImageMapTest;
 
-  sk_sp<CdlCanvas> BeginGeneratingMetadata(const gfx::Size& bounds);
+  std::unique_ptr<CdlCanvas> BeginGeneratingMetadata(const gfx::Size& bounds);
   void EndGeneratingMetadata();
 
   std::vector<std::pair<DrawImage, gfx::Rect>> all_images_;

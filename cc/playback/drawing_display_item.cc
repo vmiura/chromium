@@ -116,7 +116,8 @@ void DrawingDisplayItem::AsValueInto(
 
   // TODO(cdl): CdlPicture serialize.
   std::string b64_picture;
-  PictureDebugUtil::SerializeAsBase64(picture_->toSkPicture().get(), &b64_picture);
+  PictureDebugUtil::SerializeAsBase64(ToSkPicture(picture_.get()).get(),
+                                      &b64_picture);
   array->SetString("skp64", b64_picture);
   array->EndDictionary();
 }

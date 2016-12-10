@@ -13,6 +13,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "printing/print_settings.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_picture.h"
+#include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -77,7 +80,7 @@ sk_sp<SkDocument> MakePdfDocument(SkWStream* wStream) {
 namespace printing {
 
 struct Page {
-  Page(SkSize s, sk_sp<SkPicture> c) : size_(s), content_(std::move(c)) {}
+  Page(SkSize s, sk_sp<CdlPicture> c) : size_(s), content_(std::move(c)) {}
   Page(Page&& that) : size_(that.size_), content_(std::move(that.content_)) {}
   Page(const Page&) = default;
   Page& operator=(const Page&) = default;
@@ -87,11 +90,11 @@ struct Page {
     return *this;
   }
   SkSize size_;
-  sk_sp<SkPicture> content_;
+  sk_sp<CdlPicture> content_;
 };
 
 struct PdfMetafileSkiaData {
-  SkPictureRecorder recorder_;  // Current recording
+  CdlPictureRecorder recorder_;  // Current recording
 
   std::vector<Page> pages_;
   std::unique_ptr<SkStreamAsset> pdf_data_;
@@ -135,7 +138,7 @@ void PdfMetafileSkia::StartPage(const gfx::Size& page_size,
   DCHECK(!data_->recorder_.getRecordingCanvas());
 
   float inverse_scale = 1.0 / scale_factor;
-  SkCanvas* canvas = data_->recorder_.beginRecording(
+  CdlCanvas* canvas = data_->recorder_.beginRecording(
       inverse_scale * page_size.width(), inverse_scale * page_size.height());
   // Recording canvas is owned by the data_->recorder_.  No ref() necessary.
   if (content_area != gfx::Rect(page_size)) {
@@ -154,7 +157,7 @@ void PdfMetafileSkia::StartPage(const gfx::Size& page_size,
   // http://crbug.com/469656
 }
 
-SkCanvas* PdfMetafileSkia::GetVectorCanvasForNewPage(
+CdlCanvas* PdfMetafileSkia::GetVectorCanvasForNewPage(
     const gfx::Size& page_size,
     const gfx::Rect& content_area,
     const float& scale_factor) {
@@ -166,10 +169,10 @@ bool PdfMetafileSkia::FinishPage() {
   if (!data_->recorder_.getRecordingCanvas())
     return false;
 
-  sk_sp<SkPicture> pic = data_->recorder_.finishRecordingAsPicture();
+  sk_sp<CdlPicture> pic = data_->recorder_.finishRecordingAsPicture();
   if (data_->scale_factor_ != 1.0f) {
-    SkCanvas* canvas = data_->recorder_.beginRecording(data_->size_.width(),
-                                                       data_->size_.height());
+    CdlCanvas* canvas = data_->recorder_.beginRecording(data_->size_.width(),
+                                                        data_->size_.height());
     canvas->scale(data_->scale_factor_, data_->scale_factor_);
     canvas->drawPicture(pic);
     pic = data_->recorder_.finishRecordingAsPicture();
@@ -198,7 +201,8 @@ bool PdfMetafileSkia::FinishDocument() {
   }
 
   for (const Page& page : data_->pages_) {
-    SkCanvas* canvas = doc->beginPage(page.size_.width(), page.size_.height());
+    std::unique_ptr<CdlCanvas> canvas(new CdlPassThroughCanvas(
+        doc->beginPage(page.size_.width(), page.size_.height())));
     canvas->drawPicture(page.content_);
     doc->endPage();
   }

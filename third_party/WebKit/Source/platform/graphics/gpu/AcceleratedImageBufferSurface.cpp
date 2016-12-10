@@ -62,7 +62,7 @@ AcceleratedImageBufferSurface::AcceleratedImageBufferSurface(
       Opaque == opacityMode ? nullptr : &disableLCDProps);
   if (!m_surface)
     return;
-  m_canvas.reset(new CdlCanvas(m_surface->getCanvas()));
+  m_canvas.reset(new CdlPassThroughCanvas(m_surface->getCanvas()));
   clear();
 
   // Always save an initial frame, to support resetting the top level matrix

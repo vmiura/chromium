@@ -92,6 +92,7 @@
 #include "public/platform/WebFrameScheduler.h"
 #include "public/platform/WebScreenInfo.h"
 #include "public/platform/WebViewScheduler.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "wtf/PtrUtil.h"
@@ -145,8 +146,9 @@ class DragImageBuilder {
         const_cast<CdlPicture*>(m_pictureBuilder->endRecording().release()));
 
     SkPictureRecorder recorder;
-    SkCanvas* canvas = recorder.beginRecording(m_bounds);
-    CdlCanvas::Make(canvas)->drawPicture(recording);
+    SkCanvas* sk_canvas = recorder.beginRecording(m_bounds);
+    CdlPassThroughCanvas canvas(sk_canvas);
+    canvas.drawPicture(recording);
 
     sk_sp<SkImage> skImage = SkImage::MakeFromPicture(
         recorder.finishRecordingAsPicture(),

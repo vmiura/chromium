@@ -8,10 +8,9 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "platform/graphics/Image.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class CdlPaint;
 
 namespace blink {
 

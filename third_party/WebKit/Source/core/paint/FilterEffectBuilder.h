@@ -29,9 +29,8 @@
 #include "core/CoreExport.h"
 #include "platform/geometry/FloatRect.h"
 #include "platform/heap/Handle.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
-
-class CdlPaint;
 
 namespace blink {
 

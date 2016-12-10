@@ -6,9 +6,8 @@
 #define SVGShapePainter_h
 
 #include "third_party/skia/include/core/SkPath.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
-
-class CdlPaint;
 
 namespace blink {
 

@@ -315,7 +315,7 @@ PP_Bool BrowserFontResource_Trusted::DrawTextAt(
 
   PPB_ImageData_API* image = static_cast<PPB_ImageData_API*>(
       enter.object());
-  SkCanvas* canvas = image->GetPlatformCanvas();
+  CdlCanvas* canvas = image->GetPlatformCanvas();
   bool needs_unmapping = false;
   if (!canvas) {
     needs_unmapping = true;
@@ -332,7 +332,7 @@ PP_Bool BrowserFontResource_Trusted::DrawTextAt(
     // we have to handle it here.
     SkImageInfo info;
     size_t row_bytes;
-    void* pixels = canvas->accessTopLayerPixels(&info, &row_bytes);
+    void* pixels = GetSkCanvas(canvas)->accessTopLayerPixels(&info, &row_bytes);
     if (!pixels)
       return result;
 
@@ -341,13 +341,11 @@ PP_Bool BrowserFontResource_Trusted::DrawTextAt(
       return result;
 
     SkSurfaceProps props(0, kUnknown_SkPixelGeometry);
-    SkCanvas temp_canvas(bm, props);
+    CdlCanvas temp_canvas(bm, props);
 
-    DrawTextToCanvas(CdlCanvas::Make(&temp_canvas).get(), *text, position,
-                     color, clip);
+    DrawTextToCanvas(&temp_canvas, *text, position, color, clip);
   } else {
-    DrawTextToCanvas(CdlCanvas::Make(canvas).get(), *text, position, color,
-                     clip);
+    DrawTextToCanvas(canvas, *text, position, color, clip);
   }
 
   if (needs_unmapping)

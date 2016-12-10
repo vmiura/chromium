@@ -7,7 +7,7 @@
 
 #include <vector>
 
-class CdlPicture;
+#include "skia/ext/cdl_common.h"
 
 namespace cc {
 struct PictureData;

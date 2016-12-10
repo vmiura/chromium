@@ -8,11 +8,10 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme_export.h"
-
-class CdlCanvas;
 
 namespace gfx {
 class Rect;

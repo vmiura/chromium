@@ -8,14 +8,11 @@
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/graphics/ImageBufferSurface.h"
 #include "public/platform/WebThread.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Allocator.h"
 #include "wtf/Noncopyable.h"
 #include <memory>
-
-class SkCanvas;
-class CdlPicture;
-class CdlPictureRecorder;
 
 namespace blink {
 

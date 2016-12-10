@@ -38,7 +38,7 @@ namespace {
 
 // Returns true if the given canvas has any part of itself clipped out or
 // any non-identity tranform.
-bool HasClipOrTransform(SkCanvas& canvas) {
+bool HasClipOrTransform(CdlCanvas& canvas) {
   if (!canvas.getTotalMatrix().isIdentity())
     return true;
 
@@ -52,7 +52,7 @@ bool HasClipOrTransform(SkCanvas& canvas) {
 
   SkImageInfo info;
   size_t row_bytes;
-  void* pixels = canvas.accessTopLayerPixels(&info, &row_bytes);
+  void* pixels = GetSkCanvas(&canvas)->accessTopLayerPixels(&info, &row_bytes);
   DCHECK(pixels);
   if (!pixels)
     return true;
@@ -67,7 +67,7 @@ bool HasClipOrTransform(SkCanvas& canvas) {
 
 }  // namespace
 
-void ScrollCanvas(SkCanvas* canvas,
+void ScrollCanvas(CdlCanvas* canvas,
                   const gfx::Rect& in_clip,
                   const gfx::Vector2d& offset) {
   DCHECK(!HasClipOrTransform(*canvas));  // Don't support special stuff.

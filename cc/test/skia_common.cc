@@ -47,9 +47,9 @@ void DrawDisplayList(unsigned char* buffer,
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   SkBitmap bitmap;
   bitmap.installPixels(info, buffer, info.minRowBytes());
-  SkCanvas canvas(bitmap);
+  CdlCanvas canvas(bitmap);
   canvas.clipRect(gfx::RectToSkRect(layer_rect));
-  list->Raster(CdlCanvas::Make(&canvas).get(), NULL, layer_rect, 1.0f);
+  list->Raster(&canvas, NULL, layer_rect, 1.0f);
 }
 
 bool AreDisplayListDrawingResultsSame(const gfx::Rect& layer_rect,

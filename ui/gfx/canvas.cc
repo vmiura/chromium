@@ -34,7 +34,7 @@ Canvas::Canvas(const Size& size, float image_scale, bool is_opaque)
   Size pixel_size = ScaleToCeiledSize(size, image_scale);
   canvas_owner_ = skia::CreatePlatformCanvas(pixel_size.width(),
                                              pixel_size.height(), is_opaque);
-  canvas_ = CdlCanvas::Make(canvas_owner_.get());
+  canvas_ = canvas_owner_.get();
 
 #if !defined(USE_CAIRO)
   // skia::PlatformCanvas instances are initialized to 0 by Cairo, but
@@ -50,10 +50,10 @@ Canvas::Canvas(const Size& size, float image_scale, bool is_opaque)
 Canvas::Canvas()
     : image_scale_(1.f),
       canvas_owner_(skia::CreatePlatformCanvas(0, 0, false)),
-      canvas_(CdlCanvas::Make(canvas_owner_.get())) {}
+      canvas_(canvas_owner_.get()) {}
 
 Canvas::Canvas(CdlCanvas* canvas, float image_scale)
-    : image_scale_(image_scale), canvas_(sk_ref_sp(canvas)) {
+    : image_scale_(image_scale), canvas_(canvas) {
   DCHECK(canvas_);
 }
 
@@ -67,7 +67,7 @@ void Canvas::RecreateBackingCanvas(const Size& size,
   Size pixel_size = ScaleToFlooredSize(size, image_scale);
   canvas_owner_ = skia::CreatePlatformCanvas(pixel_size.width(),
                                              pixel_size.height(), is_opaque);
-  canvas_ = CdlCanvas::Make(canvas_owner_.get());
+  canvas_ = canvas_owner_.get();
 
   SkScalar scale_scalar = SkFloatToScalar(image_scale);
   canvas_->scale(scale_scalar, scale_scalar);
@@ -156,8 +156,8 @@ void Canvas::DrawDashedRect(const RectF& rect, SkColor color) {
 
   // Make a shader for the bitmap with an origin of the box we'll draw.
   CdlPaint paint;
-  paint.setShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(*dots, SkShader::kRepeat_TileMode,
-                                             SkShader::kRepeat_TileMode)));
+  paint.setShader(WrapSkShader(SkShader::MakeBitmapShader(
+      *dots, SkShader::kRepeat_TileMode, SkShader::kRepeat_TileMode)));
 
   DrawRect(RectF(rect.x(), rect.y(), rect.width(), 1), paint);
   DrawRect(RectF(rect.x(), rect.y() + rect.height() - 1, rect.width(), 1),
@@ -452,9 +452,8 @@ void Canvas::DrawImageInPath(const ImageSkia& image,
   SkMatrix matrix;
   matrix.setTranslate(SkIntToScalar(x), SkIntToScalar(y));
   CdlPaint p(paint);
-  p.setShader(CdlShader::WrapSkShader(CreateImageRepShader(image_rep,
-                                   SkShader::kRepeat_TileMode,
-                                   matrix)));
+  p.setShader(WrapSkShader(
+      CreateImageRepShader(image_rep, SkShader::kRepeat_TileMode, matrix)));
   canvas_->drawPath(path, p);
 }
 
@@ -533,8 +532,8 @@ bool Canvas::InitSkPaintForTiling(const ImageSkia& image,
   shader_scale.preTranslate(SkIntToScalar(-src_x), SkIntToScalar(-src_y));
   shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
 
-  paint->setShader(CdlShader::WrapSkShader(CreateImageRepShader(image_rep, SkShader::kRepeat_TileMode,
-                                        shader_scale)));
+  paint->setShader(WrapSkShader(CreateImageRepShader(
+      image_rep, SkShader::kRepeat_TileMode, shader_scale)));
   paint->setBlendMode(SkBlendMode::kSrcOver);
   return true;
 }
@@ -589,7 +588,7 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
 
   CdlPaint p(paint);
   p.setFilterQuality(filter ? kLow_SkFilterQuality : kNone_SkFilterQuality);
-  p.setShader(CdlShader::WrapSkShader(CreateImageRepShaderForScale(
+  p.setShader(WrapSkShader(CreateImageRepShaderForScale(
       image_rep, SkShader::kRepeat_TileMode, shader_scale,
       remove_image_scale ? image_rep.scale() : 1.f)));
 

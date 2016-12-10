@@ -6,9 +6,8 @@
 #define PictureMatchers_h
 
 #include "platform/graphics/Color.h"
+#include "skia/ext/cdl_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-class CdlPicture;
 
 namespace blink {
 

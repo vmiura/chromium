@@ -52,8 +52,6 @@
 
 #define CanvasDefaultInterpolationQuality InterpolationLow
 
-class CdlCanvas;
-
 namespace blink {
 
 class AffineTransform;

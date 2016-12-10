@@ -16,8 +16,7 @@
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/thunk/ppb_browser_font_trusted_api.h"
-
-class CdlCanvas;
+#include "skia/ext/cdl_common.h"
 
 namespace blink {
 class WebFont;

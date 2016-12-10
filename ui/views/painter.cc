@@ -212,7 +212,7 @@ void GradientPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   else
     p[1].iset(0, size.height());
 
-  paint.setShader(CdlShader::WrapSkShader(SkGradientShader::MakeLinear(
+  paint.setShader(WrapSkShader(SkGradientShader::MakeLinear(
       p, colors_.get(), pos_.get(), count_, SkShader::kClamp_TileMode)));
   paint.setStyle(CdlPaint::kFill_Style);
 

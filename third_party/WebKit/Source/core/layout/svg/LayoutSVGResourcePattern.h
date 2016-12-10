@@ -26,10 +26,9 @@
 #include "core/svg/PatternAttributes.h"
 #include "platform/heap/Handle.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/HashMap.h"
 #include <memory>
-
-class CdlPicture;
 
 namespace blink {
 

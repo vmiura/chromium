@@ -276,13 +276,14 @@ bool PepperGraphics2DHost::ReadImageData(PP_Resource image,
     // Convert the image data if the format does not match.
     ConvertImageData(image_data_.get(), src_irect, image_resource, dest_rect);
   } else {
-    SkCanvas* dest_canvas = image_resource->GetCanvas();
+    CdlCanvas* dest_canvas = image_resource->GetCanvas();
 
     // We want to replace the contents of the bitmap rather than blend.
     SkPaint paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    dest_canvas->drawBitmapRect(
-        image_data_->GetMappedBitmap(), src_irect, dest_rect, &paint);
+    GetSkCanvas(dest_canvas)
+        ->drawBitmapRect(image_data_->GetMappedBitmap(), src_irect, dest_rect,
+                         &paint);
   }
   return true;
 }
@@ -735,13 +736,14 @@ void PepperGraphics2DHost::ExecutePaintImageData(PPB_ImageData_Impl* image,
     ConvertImageData(image, src_irect, image_data_.get(), dest_rect);
   } else {
     // We're guaranteed to have a mapped canvas since we mapped it in Init().
-    SkCanvas* backing_canvas = image_data_->GetCanvas();
+    CdlCanvas* backing_canvas = image_data_->GetCanvas();
 
     // We want to replace the contents of the bitmap rather than blend.
     SkPaint paint;
     paint.setBlendMode(SkBlendMode::kSrc);
-    backing_canvas->drawBitmapRect(
-        image->GetMappedBitmap(), src_irect, dest_rect, &paint);
+    GetSkCanvas(backing_canvas)
+        ->drawBitmapRect(image->GetMappedBitmap(), src_irect, dest_rect,
+                         &paint);
   }
 }
 

@@ -6,9 +6,8 @@
 #define PRINTING_METAFILE_SKIA_WRAPPER_H_
 
 #include "printing/printing_export.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class SkCanvas;
 
 namespace printing {
 
@@ -20,10 +19,10 @@ class PdfMetafileSkia;
 // as long as the canvas.
 class PRINTING_EXPORT MetafileSkiaWrapper : public SkRefCnt {
  public:
-  static void SetMetafileOnCanvas(const SkCanvas& canvas,
+  static void SetMetafileOnCanvas(const CdlCanvas& canvas,
                                   PdfMetafileSkia* metafile);
 
-  static PdfMetafileSkia* GetMetafileFromCanvas(const SkCanvas& canvas);
+  static PdfMetafileSkia* GetMetafileFromCanvas(const CdlCanvas& canvas);
 
  private:
   explicit MetafileSkiaWrapper(PdfMetafileSkia* metafile);

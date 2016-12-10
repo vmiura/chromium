@@ -5,6 +5,10 @@
 #ifndef SKIA_EXT_CDL_PICTURE_H_
 #define SKIA_EXT_CDL_PICTURE_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,7 +28,8 @@ class CdlPicture : public SkRefCnt {
              int end_offset);
   ~CdlPicture() override;
 
-  void draw(CdlCanvas* canvas, const SkMatrix* matrix,
+  void draw(CdlCanvas* canvas,
+            const SkMatrix* matrix,
             const CdlPaint* paint) const;
 
   sk_sp<SkPicture> toSkPicture() const;
@@ -40,5 +45,27 @@ class CdlPicture : public SkRefCnt {
   int end_offset_;
   mutable uint32_t unique_id_ = 0;
 };
+
+inline sk_sp<SkPicture> ToSkPicture(CdlPicture* picture) {
+  return picture->toSkPicture();
+}
+
+inline sk_sp<const SkPicture> ToSkPicture(const CdlPicture* picture) {
+  return picture->toSkPicture();
+}
+
+#else
+
+#include "third_party/skia/include/core/SkPicture.h"
+
+inline sk_sp<SkPicture> ToSkPicture(CdlPicture* picture) {
+  return sk_sp<SkPicture>(picture);
+}
+
+inline sk_sp<const SkPicture> ToSkPicture(const CdlPicture* picture) {
+  return sk_sp<const SkPicture>(picture);
+}
+
+#endif  // CDL_ENABLED
 
 #endif  // SKIA_EXT_CDL_PICTURE_H_

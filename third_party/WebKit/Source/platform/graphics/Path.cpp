@@ -94,7 +94,7 @@ SkPath Path::strokePath(const StrokeData& strokeData) const {
   static const SkScalar kResScale = 0.3f;
 
   SkPath strokePath;
-  paint.toSkPaint().getFillPath(m_path, &strokePath, nullptr, kResScale);
+  ToSkPaint(paint).getFillPath(m_path, &strokePath, nullptr, kResScale);
 
   return strokePath;
 }

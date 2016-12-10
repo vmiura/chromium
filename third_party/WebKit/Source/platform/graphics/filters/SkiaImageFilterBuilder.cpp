@@ -32,6 +32,7 @@
 #include "platform/graphics/BoxReflection.h"
 #include "platform/graphics/filters/FilterEffect.h"
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_canvas.h"
 #include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
 #include "third_party/skia/include/effects/SkOffsetImageFilter.h"
@@ -104,7 +105,7 @@ void buildSourceGraphic(FilterEffect* sourceGraphic,
   ASSERT(picture);
   SkRect cullRect = picture->cullRect();
   sk_sp<SkImageFilter> filter =
-      SkPictureImageFilter::Make(picture->toSkPicture(), cullRect);
+      SkPictureImageFilter::Make(ToSkPicture(picture.get()), cullRect);
   populateSourceGraphicImageFilters(sourceGraphic, std::move(filter),
                                     sourceGraphic->operatingColorSpace());
 }
@@ -127,7 +128,7 @@ sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
       bitmap.allocPixels(
           SkImageInfo::MakeN32Premul(cullRect.width(), cullRect.height()));
       SkCanvas sk_canvas(bitmap);
-      CdlCanvas canvas(&sk_canvas);
+      CdlPassThroughCanvas canvas(&sk_canvas);
       canvas.clear(SK_ColorTRANSPARENT);
       canvas.translate(-cullRect.x(), -cullRect.y());
       canvas.drawPicture(maskPicture);
@@ -149,7 +150,7 @@ sk_sp<SkImageFilter> buildBoxReflectFilter(const BoxReflection& reflection,
       SkImageFilter::CropRect cropRect(maskPicture->cullRect());
       maskedInput = SkXfermodeImageFilter::Make(
           SkBlendMode::kSrcOver,
-          SkPictureImageFilter::Make(maskPicture->toSkPicture()), input,
+          SkPictureImageFilter::Make(ToSkPicture(maskPicture)), input,
           &cropRect);
     }
   } else {

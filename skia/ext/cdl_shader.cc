@@ -7,6 +7,8 @@
 
 #include "cdl_shader.h"
 
+#if CDL_ENABLED
+
 #include "base/synchronization/lock.h"
 #include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -35,9 +37,7 @@ class CdlWrapSkShader : public CdlShader {
  public:
   CdlWrapSkShader(sk_sp<SkShader> shader) : shader_(std::move(shader)) {}
 
-  sk_sp<SkShader> createSkShader() override {
-    return shader_;
-  }
+  sk_sp<SkShader> createSkShader() override { return shader_; }
 
   bool isOpaque() const override { return shader_->isOpaque(); }
 
@@ -128,3 +128,5 @@ sk_sp<CdlShader> CdlShader::MakePictureShader(sk_sp<CdlPicture> picture,
   return sk_sp<CdlShader>(
       new CdlPictureShader(picture, tmx, tmy, local_matrix, tile));
 }
+
+#endif  // CDL_ENABLED

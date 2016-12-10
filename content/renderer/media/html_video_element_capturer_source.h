@@ -13,6 +13,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/capture/video_capturer_source.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/WebKit/public/platform/WebSize.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -23,8 +24,6 @@ class SingleThreadTaskRunner;
 namespace blink {
 class WebMediaPlayer;
 }  // namespace blink
-
-class SkSurface;
 
 namespace content {
 
@@ -61,7 +60,7 @@ class CONTENT_EXPORT HtmlVideoElementCapturerSource final
   void sendNewFrame();
 
   media::VideoFramePool frame_pool_;
-  sk_sp<SkSurface> surface_;
+  sk_sp<CdlSurface> surface_;
 
   const base::WeakPtr<blink::WebMediaPlayer> web_media_player_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

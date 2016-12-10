@@ -30,9 +30,10 @@ class SVGImageTest : public ::testing::Test {
   void pumpFrame() {
     Image* image = m_image.get();
     std::unique_ptr<SkCanvas> nullCanvas = SkMakeNullCanvas();
+    CdlPassThroughCanvas canvas(nullCanvas.get());
     CdlPaint paint;
     FloatRect dummyRect(0, 0, 100, 100);
-    image->draw(CdlCanvas::Make(nullCanvas.get()).get(), paint, dummyRect, dummyRect,
+    image->draw(&canvas, paint, dummyRect, dummyRect,
                 DoNotRespectImageOrientation,
                 Image::DoNotClampImageToSourceRect);
   }

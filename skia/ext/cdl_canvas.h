@@ -8,6 +8,11 @@
 #ifndef SKIA_EXT_CDL_CANVAS_H_
 #define SKIA_EXT_CDL_CANVAS_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -17,8 +22,6 @@
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
 class CdlPaint;
-class CdlCanvas;
-class CdlPictureBuffer;
 class CdlPicture;
 
 class CdlCanvas : public SkRefCnt {
@@ -27,10 +30,14 @@ class CdlCanvas : public SkRefCnt {
 
   CdlCanvas();
   explicit CdlCanvas(SkCanvas* canvas);
+  explicit CdlCanvas(const SkBitmap& bitmap);
+  explicit CdlCanvas(SkBaseDevice* device);
   CdlCanvas(int width, int height);
+  CdlCanvas(const SkBitmap& bitmap, const SkSurfaceProps& props);
   ~CdlCanvas() override;
 
-  SkCanvas* skCanvas();
+  SkCanvas* skCanvas() { return canvas_; }
+  const SkCanvas* skCanvas() const { return canvas_; }
 
   // Save / Restore
   int save();
@@ -40,26 +47,30 @@ class CdlCanvas : public SkRefCnt {
 
   struct SaveLayerRec {
     SaveLayerRec()
-      : fBounds(nullptr), fPaint(nullptr), fBackdrop(nullptr), fSaveLayerFlags(0)
-    {}
-    SaveLayerRec(const SkRect* bounds, const CdlPaint* paint, SaveLayerFlags saveLayerFlags = 0)
-      : fBounds(bounds)
-      , fPaint(paint)
-      , fBackdrop(nullptr)
-      , fSaveLayerFlags(saveLayerFlags)
-    {}
-    SaveLayerRec(const SkRect* bounds, const CdlPaint* paint, const SkImageFilter* backdrop,
+        : fBounds(nullptr),
+          fPaint(nullptr),
+          fBackdrop(nullptr),
+          fSaveLayerFlags(0) {}
+    SaveLayerRec(const SkRect* bounds,
+                 const CdlPaint* paint,
+                 SaveLayerFlags saveLayerFlags = 0)
+        : fBounds(bounds),
+          fPaint(paint),
+          fBackdrop(nullptr),
+          fSaveLayerFlags(saveLayerFlags) {}
+    SaveLayerRec(const SkRect* bounds,
+                 const CdlPaint* paint,
+                 const SkImageFilter* backdrop,
                  SaveLayerFlags saveLayerFlags)
-      : fBounds(bounds)
-      , fPaint(paint)
-      , fBackdrop(backdrop)
-      , fSaveLayerFlags(saveLayerFlags)
-    {}
+        : fBounds(bounds),
+          fPaint(paint),
+          fBackdrop(backdrop),
+          fSaveLayerFlags(saveLayerFlags) {}
 
-    const SkRect*           fBounds;    // optional
-    const CdlPaint*         fPaint;     // optional
-    const SkImageFilter*    fBackdrop;  // optional
-    SaveLayerFlags          fSaveLayerFlags;
+    const SkRect* fBounds;           // optional
+    const CdlPaint* fPaint;          // optional
+    const SkImageFilter* fBackdrop;  // optional
+    SaveLayerFlags fSaveLayerFlags;
   };
 
   int saveLayer(const SkRect* bounds, const CdlPaint* paint);
@@ -249,9 +260,13 @@ class CdlCanvas : public SkRefCnt {
   void drawPicture(const sk_sp<CdlPicture>& picture) {
     this->drawPicture(picture.get());
   }
-  void drawPicture(const CdlPicture*, const SkMatrix* matrix, const CdlPaint* paint);
-  void drawPicture(const sk_sp<CdlPicture>& picture, const SkMatrix* matrix, const CdlPaint* paint) {
-      this->drawPicture(picture.get(), matrix, paint);
+  void drawPicture(const CdlPicture*,
+                   const SkMatrix* matrix,
+                   const CdlPaint* paint);
+  void drawPicture(const sk_sp<CdlPicture>& picture,
+                   const SkMatrix* matrix,
+                   const CdlPaint* paint) {
+    this->drawPicture(picture.get(), matrix, paint);
   }
 
   // Misc
@@ -364,5 +379,42 @@ class CdlAutoCanvasRestore : SkNoncopyable {
   CdlCanvas* fCanvas;
   int fSaveCount;
 };
+
+class SK_API CdlPassThroughCanvas : public CdlCanvas {
+ public:
+  CdlPassThroughCanvas(SkCanvas* canvas);
+  ~CdlPassThroughCanvas() override;
+};
+
+inline const SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
+  return canvas->skCanvas();
+}
+inline SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
+  return canvas->skCanvas();
+}
+
+//#define CDL_WRAP_SKCANVAS(x) (CdlCanvas::Make(x).get())
+
+#else
+
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/utils/SkNWayCanvas.h"
+
+class SK_API CdlPassThroughCanvas : public SkNWayCanvas {
+ public:
+  CdlPassThroughCanvas(SkCanvas* canvas);
+  ~CdlPassThroughCanvas() override;
+};
+
+inline const SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
+  return canvas;
+}
+inline SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
+  return canvas;
+}
+
+//#define CDL_WRAP_SKCANVAS(x) (x)
+
+#endif  // CDL_ENABLED
 
 #endif  // SKIA_EXT_CDL_CANVAS_H_

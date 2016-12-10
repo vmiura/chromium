@@ -38,8 +38,6 @@
 #include "WebSetSinkIdCallbacks.h"
 #include "WebString.h"
 
-class CdlPaint;
-
 namespace gpu {
 namespace gles2 {
 class GLES2Interface;

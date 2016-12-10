@@ -13,7 +13,7 @@ namespace cc {
 
 class ImageDecodeCache;
 
-class ImageHijackCanvas : public CdlCanvas {
+class ImageHijackCanvas : public CdlPassThroughCanvas {
  public:
   ImageHijackCanvas(SkCanvas* canvas, ImageDecodeCache* image_decode_cache);
 

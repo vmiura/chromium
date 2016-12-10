@@ -7,6 +7,8 @@
 
 #include "cdl_picture_recorder.h"
 
+#if CDL_ENABLED
+
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBBHFactory.h"
 #include "skia/ext/cdl_picture_buffer.h"
@@ -80,12 +82,15 @@ CdlCanvas* CdlPictureRecorder::getRecordingCanvas() {
 sk_sp<CdlPicture> CdlPictureRecorder::finishRecordingAsPicture(
     uint32_t endFlags) {
   // TRACE_EVENT_ASYNC_END0("cc", "CdlPictureRecorder::beginRecording", this);
-  //CHECK(fActivelyRecording);
+  // CHECK(fActivelyRecording);
   fActivelyRecording = false;
 
-  fRecorder->restoreToCount(1);  // If we were missing any restores, add them now.
+  fRecorder->restoreToCount(
+      1);  // If we were missing any restores, add them now.
 
   sk_sp<CdlPicture> pic = sk_make_sp<CdlPicture>(
       fRecord, fCullRect, start_offset_, fRecord->getRecordOffset());
   return pic;
 }
+
+#endif  // CDL_ENABLED

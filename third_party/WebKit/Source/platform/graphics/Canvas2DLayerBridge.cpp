@@ -44,6 +44,8 @@
 #include "public/platform/WebGraphicsContext3DProvider.h"
 #include "public/platform/WebScheduler.h"
 #include "public/platform/WebTraceLocation.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/texture_handle.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "skia/ext/cdl_picture_recorder.h"
@@ -81,13 +83,13 @@ struct Canvas2DLayerBridge::ImageInfo : public RefCounted<ImageInfo> {
 };
 #endif  // USE_IOSURFACE_FOR_2D_CANVAS
 
-static sk_sp<SkSurface> createSkSurface(GrContext* gr,
-                                        const IntSize& size,
-                                        int msaaSampleCount,
-                                        OpacityMode opacityMode,
-                                        sk_sp<SkColorSpace> colorSpace,
-                                        SkColorType colorType,
-                                        bool* surfaceIsAccelerated) {
+static sk_sp<CdlSurface> createSkSurface(GrContext* gr,
+                                         const IntSize& size,
+                                         int msaaSampleCount,
+                                         OpacityMode opacityMode,
+                                         sk_sp<SkColorSpace> colorSpace,
+                                         SkColorType colorType,
+                                         bool* surfaceIsAccelerated) {
   if (gr)
     gr->resetContext();
 
@@ -96,18 +98,18 @@ static sk_sp<SkSurface> createSkSurface(GrContext* gr,
   SkImageInfo info = SkImageInfo::Make(size.width(), size.height(), colorType,
                                        alphaType, colorSpace);
   SkSurfaceProps disableLCDProps(0, kUnknown_SkPixelGeometry);
-  sk_sp<SkSurface> surface;
+  sk_sp<CdlSurface> surface;
 
   if (gr) {
     *surfaceIsAccelerated = true;
-    surface = SkSurface::MakeRenderTarget(
+    surface = CdlSurface::MakeRenderTarget(
         gr, SkBudgeted::kNo, info, msaaSampleCount,
         Opaque == opacityMode ? 0 : &disableLCDProps);
   }
 
   if (!surface) {
     *surfaceIsAccelerated = false;
-    surface = SkSurface::MakeRaster(
+    surface = CdlSurface::MakeRaster(
         info, Opaque == opacityMode ? 0 : &disableLCDProps);
   }
 
@@ -500,8 +502,8 @@ void Canvas2DLayerBridge::hibernate() {
   }
 
   TRACE_EVENT0("cc", "Canvas2DLayerBridge::hibernate");
-  sk_sp<SkSurface> tempHibernationSurface =
-      SkSurface::MakeRasterN32Premul(m_size.width(), m_size.height());
+  sk_sp<CdlSurface> tempHibernationSurface =
+      CdlSurface::MakeRasterN32Premul(m_size.width(), m_size.height());
   if (!tempHibernationSurface) {
     m_logger->reportHibernationEvent(HibernationAbortedDueToAllocationFailure);
     return;
@@ -515,12 +517,11 @@ void Canvas2DLayerBridge::hibernate() {
   // a surface, and we have an early exit at the top of this function for when
   // 'this' does not already have a surface.
   DCHECK(!m_haveRecordedDrawCommands);
-  SkPaint copyPaint;
+  CdlPaint copyPaint;
   copyPaint.setBlendMode(SkBlendMode::kSrc);
   m_surface->draw(tempHibernationSurface->getCanvas(), 0, 0,
                   &copyPaint);  // GPU readback
   m_hibernationImage = tempHibernationSurface->makeImageSnapshot();
-  m_canvas.reset();
   m_surface.reset();  // destroy the GPU-backed buffer
   m_layer->clearTexture();
 #if USE_IOSURFACE_FOR_2D_CANVAS
@@ -540,7 +541,7 @@ void Canvas2DLayerBridge::reportSurfaceCreationFailure() {
   }
 }
 
-SkSurface* Canvas2DLayerBridge::getOrCreateSurface(AccelerationHint hint) {
+CdlSurface* Canvas2DLayerBridge::getOrCreateSurface(AccelerationHint hint) {
   if (m_surface)
     return m_surface.get();
 
@@ -591,7 +592,7 @@ SkSurface* Canvas2DLayerBridge::getOrCreateSurface(AccelerationHint hint) {
         m_logger->reportHibernationEvent(HibernationEndedWithFallbackToSW);
     }
 
-    SkPaint copyPaint;
+    CdlPaint copyPaint;
     copyPaint.setBlendMode(SkBlendMode::kSrc);
     m_surface->getCanvas()->drawImage(m_hibernationImage.get(), 0, 0,
                                       &copyPaint);
@@ -601,27 +602,16 @@ SkSurface* Canvas2DLayerBridge::getOrCreateSurface(AccelerationHint hint) {
       m_imageBuffer->updateGPUMemoryUsage();
 
     if (m_imageBuffer && !m_isDeferralEnabled)
-      m_imageBuffer->resetCanvas(m_canvas.get());
+      m_imageBuffer->resetCanvas(m_surface->getCanvas());
   }
 
   return m_surface.get();
 }
 
-CdlCanvas* Canvas2DLayerBridge::getOrCreateCanvas(AccelerationHint hint) {
-  if (m_canvas)
-    return m_canvas.get();
-
-  SkSurface* surface = getOrCreateSurface(hint);
-  if (!surface)
-    return nullptr;
-
-  m_canvas = CdlCanvas::Make(surface->getCanvas());
-  return m_canvas.get();
-}
-
 CdlCanvas* Canvas2DLayerBridge::canvas() {
   if (!m_isDeferralEnabled) {
-    return getOrCreateCanvas();
+    CdlSurface* s = getOrCreateSurface();
+    return s ? s->getCanvas() : nullptr;
   }
   return m_recorder->getRecordingCanvas();
 }
@@ -653,9 +643,9 @@ void Canvas2DLayerBridge::disableDeferral(DisableDeferralReason reason) {
   m_isDeferralEnabled = false;
   m_recorder.reset();
   // install the current matrix/clip stack onto the immediate canvas
-  SkSurface* surface = getOrCreateSurface();
+  CdlSurface* surface = getOrCreateSurface();
   if (m_imageBuffer && surface)
-    m_imageBuffer->resetCanvas(getOrCreateCanvas());
+    m_imageBuffer->resetCanvas(surface->getCanvas());
 }
 
 void Canvas2DLayerBridge::setImageBuffer(ImageBuffer* imageBuffer) {
@@ -675,7 +665,6 @@ void Canvas2DLayerBridge::beginDestruction() {
   m_imageBuffer = nullptr;
   m_destructionInProgress = true;
   setIsHidden(true);
-  m_canvas.reset();
   m_surface.reset();
 
   unregisterTaskObserver();
@@ -730,23 +719,20 @@ void Canvas2DLayerBridge::setIsHidden(bool hidden) {
   }
   if (!isHidden() && m_softwareRenderingWhileHidden) {
     flushRecordingOnly();
-    SkPaint copyPaint;
+    CdlPaint copyPaint;
     copyPaint.setBlendMode(SkBlendMode::kSrc);
 
-    sk_sp<SkSurface> oldSurface = std::move(m_surface);
-    m_canvas.reset();
+    sk_sp<CdlSurface> oldSurface = std::move(m_surface);
     m_surface.reset();
 
     m_softwareRenderingWhileHidden = false;
-    SkSurface* newSurface =
+    CdlSurface* newSurface =
         getOrCreateSurface(PreferAccelerationAfterVisibilityChange);
     if (newSurface) {
       if (oldSurface)
         oldSurface->draw(newSurface->getCanvas(), 0, 0, &copyPaint);
       if (m_imageBuffer && !m_isDeferralEnabled) {
-        // TODO(cdl): was nullptr dereference here?
-        m_imageBuffer->resetCanvas(
-            CdlCanvas::Make(m_surface->getCanvas()).get());
+        m_imageBuffer->resetCanvas(m_surface->getCanvas());
       }
     }
   }
@@ -796,7 +782,7 @@ void Canvas2DLayerBridge::flushRecordingOnly() {
   if (m_haveRecordedDrawCommands && getOrCreateSurface()) {
     TRACE_EVENT0("cc", "Canvas2DLayerBridge::flushRecordingOnly");
     m_recorder->finishRecordingAsPicture()->playback(
-        CdlCanvas::Make(getOrCreateSurface()->getCanvas()).get());
+        getOrCreateSurface()->getCanvas());
     if (m_isDeferralEnabled)
       startRecording();
     m_haveRecordedDrawCommands = false;
@@ -844,7 +830,6 @@ bool Canvas2DLayerBridge::checkSurfaceValid() {
     return false;
   if (m_contextProvider->contextGL()->GetGraphicsResetStatusKHR() !=
       GL_NO_ERROR) {
-    m_canvas.reset();
     m_surface.reset();
     for (auto mailboxInfo = m_mailboxes.begin();
          mailboxInfo != m_mailboxes.end(); ++mailboxInfo) {
@@ -875,7 +860,7 @@ bool Canvas2DLayerBridge::restoreSurface() {
   if (sharedGL && sharedGL->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
     GrContext* grCtx = m_contextProvider->grContext();
     bool surfaceIsAccelerated;
-    sk_sp<SkSurface> surface(
+    sk_sp<CdlSurface> surface(
         createSkSurface(grCtx, m_size, m_msaaSampleCount, m_opacityMode,
                         m_colorSpace, m_colorType, &surfaceIsAccelerated));
 

@@ -12,12 +12,12 @@
 
 #include "cc/base/cc_export.h"
 #include "cc/playback/display_item.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/point_f.h"
 
 class SkCanvas;
 class SkPicture;
-class CdlPicture;
 
 namespace cc {
 class ClientPictureCache;

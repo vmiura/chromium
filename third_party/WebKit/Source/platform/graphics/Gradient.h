@@ -33,6 +33,7 @@
 #include "platform/geometry/FloatPoint.h"
 #include "platform/graphics/Color.h"
 #include "platform/graphics/GraphicsTypes.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Noncopyable.h"
 #include "wtf/PassRefPtr.h"
@@ -40,8 +41,6 @@
 #include "wtf/Vector.h"
 
 class SkMatrix;
-class CdlPaint;
-class CdlShader;
 
 namespace blink {
 

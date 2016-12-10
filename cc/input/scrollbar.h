@@ -6,10 +6,9 @@
 #define CC_INPUT_SCROLLBAR_H_
 
 #include "cc/base/cc_export.h"
+#include "skia/ext/cdl_common.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-
-class CdlCanvas;
 
 namespace cc {
 

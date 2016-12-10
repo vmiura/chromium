@@ -5,6 +5,10 @@
 #ifndef SKIA_EXT_CDL_PICTURE_RECORDER_H_
 #define SKIA_EXT_CDL_PICTURE_RECORDER_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -56,8 +60,12 @@ class CdlPictureRecorder : SkNoncopyable {
 
   static base::Lock lock;
   static std::shared_ptr<CdlPictureRecordingCanvas> free_recorder;
-
-  // SkPictureRecorder picture_recorder_;
 };
+
+#else  // CDL_ENABLED
+
+#include "third_party/skia/include/core/SkPictureRecorder.h"
+
+#endif  // CDL_ENABLED
 
 #endif  // SKIA_EXT_CDL_PICTURE_RECORDER_H_

@@ -17,7 +17,7 @@ void SimDisplayItemList::appendDrawingItem(const WebRect&,
                                            sk_sp<const CdlPicture> picture) {
   SkIRect bounds = picture->cullRect().roundOut();
   SimCanvas canvas(bounds.width(), bounds.height());
-  picture->playback(CdlCanvas::Make(&canvas).get());
+  picture->playback(&canvas);
   m_commands.append(canvas.commands().data(), canvas.commands().size());
 }
 

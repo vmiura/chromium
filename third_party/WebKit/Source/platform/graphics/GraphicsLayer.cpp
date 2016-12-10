@@ -53,6 +53,7 @@
 #include "public/platform/WebLayer.h"
 #include "public/platform/WebPoint.h"
 #include "public/platform/WebSize.h"
+#include "skia/ext/cdl_canvas.h"
 #include "wtf/CurrentTime.h"
 #include "wtf/HashMap.h"
 #include "wtf/HashSet.h"
@@ -1252,7 +1253,7 @@ void GraphicsLayer::checkPaintUnderInvalidations(const CdlPicture& newPicture) {
       SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   {
     SkCanvas sk_canvas(oldBitmap);
-    CdlCanvas canvas(&sk_canvas);
+    CdlPassThroughCanvas canvas(&sk_canvas);
     canvas.clear(SK_ColorTRANSPARENT);
     canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(tracking->lastPaintedPicture.get());
@@ -1263,7 +1264,7 @@ void GraphicsLayer::checkPaintUnderInvalidations(const CdlPicture& newPicture) {
       SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
   {
     SkCanvas sk_canvas(newBitmap);
-    CdlCanvas canvas(&sk_canvas);
+    CdlPassThroughCanvas canvas(&sk_canvas);
     canvas.clear(SK_ColorTRANSPARENT);
     canvas.translate(-rect.x(), -rect.y());
     canvas.drawPicture(&newPicture);

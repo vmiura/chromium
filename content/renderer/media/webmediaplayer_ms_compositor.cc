@@ -19,6 +19,7 @@
 #include "media/base/video_util.h"
 #include "media/filters/video_renderer_algorithm.h"
 #include "media/renderers/skcanvas_video_renderer.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/WebKit/public/platform/WebMediaStream.h"
 #include "third_party/WebKit/public/platform/WebMediaStreamSource.h"
@@ -47,7 +48,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
         media::PIXEL_FORMAT_I420, frame->coded_size(), frame->visible_rect(),
         frame->natural_size(), frame->timestamp());
 
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
+    sk_sp<CdlSurface> surface = CdlSurface::MakeRasterN32Premul(
         frame->visible_rect().width(), frame->visible_rect().height());
 
     ContextProviderCommandBuffer* const provider =
@@ -55,7 +56,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     if (surface && provider) {
       DCHECK(provider->ContextGL());
       video_renderer->Copy(
-          frame.get(), CdlCanvas::Make(surface->getCanvas()).get(),
+          frame.get(), surface->getCanvas(),
           media::Context3D(provider->ContextGL(), provider->GrContext()));
     } else {
       // Return a black frame (yuv = {0, 0x80, 0x80}).
@@ -64,7 +65,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     }
 
     SkPixmap pixmap;
-    const bool result = surface->getCanvas()->peekPixels(&pixmap);
+    const bool result = GetSkCanvas(surface->getCanvas())->peekPixels(&pixmap);
     DCHECK(result) << "Error trying to access SkSurface's pixels";
 
     const uint32 source_pixel_format =

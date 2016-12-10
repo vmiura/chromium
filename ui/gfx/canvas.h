@@ -19,8 +19,6 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 
-class CdlCanvas;
-
 namespace gfx {
 
 class Rect;
@@ -295,9 +293,7 @@ class GFX_EXPORT Canvas {
   // Draws a circle with the given |paint| parameters.
   // DEPRECATED in favor of the RectF version below.
   // TODO(funkysidd): Remove this (http://crbug.com/553726)
-  void DrawCircle(const Point& center_point,
-                  int radius,
-                  const CdlPaint& paint);
+  void DrawCircle(const Point& center_point, int radius, const CdlPaint& paint);
 
   // Draws a circle with the given |paint| parameters.
   void DrawCircle(const PointF& center_point,
@@ -480,7 +476,7 @@ class GFX_EXPORT Canvas {
                        const Rect& display_rect,
                        int flags);
 
-  CdlCanvas* sk_canvas() { return canvas_.get(); }
+  CdlCanvas* sk_canvas() { return canvas_; }
   float image_scale() const { return image_scale_; }
 
  private:
@@ -512,9 +508,8 @@ class GFX_EXPORT Canvas {
   // in which case canvas_owner_ will be set. Other times we are just
   // borrowing someone else's canvas, in which case canvas_ will point there
   // but canvas_owner_ will be null.
-  std::unique_ptr<SkCanvas> canvas_owner_;
-  // TODO(cdl) update CdlCanvas ownership.
-  sk_sp<CdlCanvas> canvas_;
+  std::unique_ptr<CdlCanvas> canvas_owner_;
+  CdlCanvas* canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(Canvas);
 };

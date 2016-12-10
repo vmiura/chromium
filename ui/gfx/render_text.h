@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "skia/ext/cdl_common.h"
 #include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -35,7 +36,6 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 
-class CdlCanvas;
 class SkDrawLooper;
 struct SkPoint;
 class SkShader;

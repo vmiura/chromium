@@ -5,6 +5,10 @@
 #ifndef SKIA_EXT_CDL_PICTURE_BUFFER_H_
 #define SKIA_EXT_CDL_PICTURE_BUFFER_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -83,7 +87,10 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
                      const SkRect&,
                      const CdlPaint*,
                      SkCanvas::SrcRectConstraint);
-  void drawPoints(SkCanvas::PointMode, size_t, const SkPoint[], const CdlPaint&);
+  void drawPoints(SkCanvas::PointMode,
+                  size_t,
+                  const SkPoint[],
+                  const CdlPaint&);
   void setBounds(const SkRect& bounds);
 
   // Cdl
@@ -104,5 +111,7 @@ class CdlPictureBuffer : public SkRefCnt /*public SkDrawable*/ {
   size_t fReserved;
   SkRect fBounds;
 };
+
+#endif
 
 #endif  // SKIA_EXT_CDL_PICTURE_BUFFER_H_

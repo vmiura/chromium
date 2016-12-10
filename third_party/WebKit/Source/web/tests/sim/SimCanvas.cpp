@@ -4,6 +4,7 @@
 
 #include "web/tests/sim/SimCanvas.h"
 
+#include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -19,7 +20,7 @@ class DrawScope {
   ~DrawScope() { --s_depth; }
 };
 
-SimCanvas::SimCanvas(int width, int height) : SkCanvas(width, height) {}
+SimCanvas::SimCanvas(int width, int height) : CdlCanvas(width, height) {}
 
 void SimCanvas::addCommand(CommandType type, RGBA32 color) {
   if (s_depth > 1)
@@ -28,95 +29,97 @@ void SimCanvas::addCommand(CommandType type, RGBA32 color) {
   m_commands.append(command);
 }
 
-void SimCanvas::onDrawRect(const SkRect& rect, const SkPaint& paint) {
+void SimCanvas::onDrawRect(const SkRect& rect, const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Rect, paint.getColor());
-  SkCanvas::onDrawRect(rect, paint);
+  CdlCanvas::onDrawRect(rect, paint);
 }
 
-void SimCanvas::onDrawOval(const SkRect& oval, const SkPaint& paint) {
+void SimCanvas::onDrawOval(const SkRect& oval, const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Shape, paint.getColor());
-  SkCanvas::onDrawOval(oval, paint);
+  CdlCanvas::onDrawOval(oval, paint);
 }
 
-void SimCanvas::onDrawRRect(const SkRRect& rrect, const SkPaint& paint) {
+void SimCanvas::onDrawRRect(const SkRRect& rrect, const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Shape, paint.getColor());
-  SkCanvas::onDrawRRect(rrect, paint);
+  CdlCanvas::onDrawRRect(rrect, paint);
 }
 
-void SimCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
+void SimCanvas::onDrawPath(const SkPath& path, const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Shape, paint.getColor());
-  SkCanvas::onDrawPath(path, paint);
+  CdlCanvas::onDrawPath(path, paint);
 }
 
 void SimCanvas::onDrawImage(const SkImage* image,
                             SkScalar left,
                             SkScalar top,
-                            const SkPaint* paint) {
+                            const CdlPaint* paint) {
   DrawScope scope;
   addCommand(CommandType::Image);
-  SkCanvas::onDrawImage(image, left, top, paint);
+  CdlCanvas::onDrawImage(image, left, top, paint);
 }
 
 void SimCanvas::onDrawImageRect(const SkImage* image,
                                 const SkRect* src,
                                 const SkRect& dst,
-                                const SkPaint* paint,
-                                SrcRectConstraint constraint) {
+                                const CdlPaint* paint,
+                                SkCanvas::SrcRectConstraint constraint) {
   DrawScope scope;
   addCommand(CommandType::Image);
-  SkCanvas::onDrawImageRect(image, src, dst, paint, constraint);
+  CdlCanvas::onDrawImageRect(image, src, dst, paint, constraint);
 }
 
 void SimCanvas::onDrawText(const void* text,
                            size_t byteLength,
                            SkScalar x,
                            SkScalar y,
-                           const SkPaint& paint) {
+                           const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Text, paint.getColor());
-  SkCanvas::onDrawText(text, byteLength, x, y, paint);
+  CdlCanvas::onDrawText(text, byteLength, x, y, paint);
 }
 
 void SimCanvas::onDrawPosText(const void* text,
                               size_t byteLength,
                               const SkPoint pos[],
-                              const SkPaint& paint) {
+                              const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Text, paint.getColor());
-  SkCanvas::onDrawPosText(text, byteLength, pos, paint);
+  CdlCanvas::onDrawPosText(text, byteLength, pos, paint);
 }
 
+/*
 void SimCanvas::onDrawPosTextH(const void* text,
                                size_t byteLength,
                                const SkScalar xpos[],
                                SkScalar constY,
-                               const SkPaint& paint) {
+                               const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Text, paint.getColor());
-  SkCanvas::onDrawPosTextH(text, byteLength, xpos, constY, paint);
+  CdlCanvas::onDrawPosTextH(text, byteLength, xpos, constY, paint);
 }
 
 void SimCanvas::onDrawTextOnPath(const void* text,
                                  size_t byteLength,
                                  const SkPath& path,
                                  const SkMatrix* matrix,
-                                 const SkPaint& paint) {
+                                 const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Text, paint.getColor());
-  SkCanvas::onDrawTextOnPath(text, byteLength, path, matrix, paint);
+  CdlCanvas::onDrawTextOnPath(text, byteLength, path, matrix, paint);
 }
+*/
 
 void SimCanvas::onDrawTextBlob(const SkTextBlob* blob,
                                SkScalar x,
                                SkScalar y,
-                               const SkPaint& paint) {
+                               const CdlPaint& paint) {
   DrawScope scope;
   addCommand(CommandType::Text, paint.getColor());
-  SkCanvas::onDrawTextBlob(blob, x, y, paint);
+  CdlCanvas::onDrawTextBlob(blob, x, y, paint);
 }
 
 }  // namespace blink

@@ -7,6 +7,8 @@
 
 #include "cdl_picture_buffer.h"
 
+#if CDL_ENABLED
+
 #include "base/trace_event/trace_event.h"
 #include "cdl_canvas.h"
 #include "cdl_paint.h"
@@ -132,7 +134,8 @@ struct SaveLayer final : Op {
   SaveLayer(const SkRect* bounds,
             const CdlPaint* paint,
             const SkImageFilter* backdrop,
-            SkCanvas::SaveLayerFlags flags) : has_paint(false) {
+            SkCanvas::SaveLayerFlags flags)
+      : has_paint(false) {
     if (bounds) {
       this->bounds = *bounds;
     }
@@ -149,7 +152,8 @@ struct SaveLayer final : Op {
   sk_sp<const SkImageFilter> backdrop;
   SkCanvas::SaveLayerFlags flags;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->saveLayer({maybe_unset(bounds), has_paint ? &paint : nullptr, backdrop.get(), flags});
+    c->saveLayer({maybe_unset(bounds), has_paint ? &paint : nullptr,
+                  backdrop.get(), flags});
   }
 };
 
@@ -353,7 +357,10 @@ struct DrawImageRect final : Op {
                 const SkRect& dst,
                 const CdlPaint* paint,
                 SkCanvas::SrcRectConstraint constraint)
-      : image(std::move(image)), dst(dst), has_paint(false), constraint(constraint) {
+      : image(std::move(image)),
+        dst(dst),
+        has_paint(false),
+        constraint(constraint) {
     this->src = src ? *src : SkRect::MakeIWH(image->width(), image->height());
     if (paint) {
       this->paint = *paint;
@@ -366,7 +373,8 @@ struct DrawImageRect final : Op {
   bool has_paint;
   SkCanvas::SrcRectConstraint constraint;
   void draw(CdlCanvas* c, const SkMatrix&, CdlPictureBuffer::DrawContext&) {
-    c->drawImageRect(image.get(), src, dst, has_paint ? &paint : nullptr, constraint);
+    c->drawImageRect(image.get(), src, dst, has_paint ? &paint : nullptr,
+                     constraint);
   }
 };
 
@@ -686,3 +694,5 @@ void CdlPictureBuffer::drawAsLayer(CdlCanvas* canvas,
 void CdlPictureBuffer::setBounds(const SkRect& bounds) {
   fBounds = bounds;
 }
+
+#endif  // CDL_ENABLED

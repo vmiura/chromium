@@ -17,6 +17,7 @@
 #include "platform/graphics/paint/PaintChunker.h"
 #include "platform/graphics/paint/RasterInvalidationTracking.h"
 #include "platform/graphics/paint/Transform3DDisplayItem.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Alignment.h"
 #include "wtf/Assertions.h"
@@ -26,8 +27,6 @@
 #include "wtf/Vector.h"
 #include <memory>
 #include <utility>
-
-class CdlPicture;
 
 namespace blink {
 

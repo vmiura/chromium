@@ -61,7 +61,7 @@ class PLATFORM_EXPORT AcceleratedImageBufferSurface
  private:
   unsigned m_contextId;
   sk_sp<SkSurface> m_surface;  // Uses m_contextProvider.
-  sk_sp<CdlCanvas> m_canvas;
+  std::unique_ptr<CdlCanvas> m_canvas;
 };
 
 }  // namespace blink

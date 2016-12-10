@@ -7,9 +7,8 @@
 
 #include "core/style/ComputedStyleConstants.h"
 #include "core/layout/svg/LayoutSVGResourcePaintServer.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
-
-class CdlPaint;
 
 namespace blink {
 

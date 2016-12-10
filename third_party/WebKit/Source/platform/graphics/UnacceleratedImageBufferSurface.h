@@ -32,10 +32,10 @@
 #define UnacceleratedImageBufferSurface_h
 
 #include "platform/graphics/ImageBufferSurface.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkSurface;
-class CdlCanvas;
 
 namespace blink {
 
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT UnacceleratedImageBufferSurface
 
  private:
   sk_sp<SkSurface> m_surface;
-  sk_sp<CdlCanvas> m_canvas;
+  std::unique_ptr<CdlCanvas> m_canvas;
 };
 
 }  // namespace blink

@@ -7,9 +7,8 @@
 
 #include <vector>
 
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class CdlPicture;
 
 namespace cc {
 struct PictureData;

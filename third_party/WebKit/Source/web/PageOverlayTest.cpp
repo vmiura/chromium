@@ -108,10 +108,10 @@ class RuntimeFeatureChange {
   bool m_oldValue;
 };
 
-class MockCanvas : public SkCanvas {
+class MockCanvas : public CdlCanvas {
  public:
-  MockCanvas(int width, int height) : SkCanvas(width, height) {}
-  MOCK_METHOD2(onDrawRect, void(const SkRect&, const SkPaint&));
+  MockCanvas(int width, int height) : CdlCanvas(width, height) {}
+  MOCK_METHOD2(onDrawRect, void(const SkRect&, const CdlPaint&));
 };
 
 TEST_F(PageOverlayTest, PageOverlay_AcceleratedCompositing) {
@@ -144,7 +144,7 @@ TEST_F(PageOverlayTest, PageOverlay_AcceleratedCompositing) {
   GraphicsContext graphicsContext(paintController);
   graphicsContext.beginRecording(intRect);
   paintController.paintArtifact().replay(graphicsContext);
-  graphicsContext.endRecording()->playback(CdlCanvas::Make(&canvas).get());
+  graphicsContext.endRecording()->playback(&canvas);
 }
 
 TEST_F(PageOverlayTest, PageOverlay_VisualRect) {

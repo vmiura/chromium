@@ -33,14 +33,12 @@
 #include "platform/fonts/SimpleFontData.h"
 #include "platform/text/TabSize.h"
 #include "platform/text/TextDirection.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
 #include "wtf/HashMap.h"
 #include "wtf/HashSet.h"
 #include "wtf/MathExtras.h"
 #include "wtf/text/CharacterNames.h"
-
-class CdlCanvas;
-class CdlPaint;
 
 namespace blink {
 

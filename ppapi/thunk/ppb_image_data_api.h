@@ -9,8 +9,7 @@
 
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/ppb_image_data.h"
-
-class SkCanvas;
+#include "skia/ext/cdl_common.h"
 
 namespace base {
 class SharedMemory;
@@ -42,13 +41,13 @@ class PPB_ImageData_API {
   // a platform-specific canvas (e.g., for use with platform-specific APIs).
   // Anything that relies on having a PlatformCanvas will not work for ImageDat
   // objects created from NaCl.
-  virtual SkCanvas* GetPlatformCanvas() = 0;
+  virtual CdlCanvas* GetPlatformCanvas() = 0;
 
   // Get the canvas that backs this ImageData, if there is one.
   // The canvas will be NULL:
   //   * If the image is not mapped.
   //   * Within untrusted code (which does not have skia).
-  virtual SkCanvas* GetCanvas() = 0;
+  virtual CdlCanvas* GetCanvas() = 0;
 
   // Signal that this image is a good candidate for reuse. Call this from APIs
   // that receive ImageData resources of a fixed size and where the plugin will

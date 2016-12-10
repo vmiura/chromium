@@ -31,10 +31,8 @@
 #include "core/html/HTMLMediaElement.h"
 #include "core/html/canvas/CanvasImageSource.h"
 #include "core/imagebitmap/ImageBitmapSource.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/khronos/GLES2/gl2.h"
-
-class CdlCanvas;
-class CdlPaint;
 
 namespace gpu {
 namespace gles2 {

@@ -60,7 +60,7 @@ class ScopedDecodedImageLock {
 
 ImageHijackCanvas::ImageHijackCanvas(SkCanvas* canvas,
                                      ImageDecodeCache* image_decode_cache)
-    : CdlCanvas(canvas), image_decode_cache_(image_decode_cache) {}
+    : CdlPassThroughCanvas(canvas), image_decode_cache_(image_decode_cache) {}
 
 void ImageHijackCanvas::onDrawPicture(const CdlPicture* picture,
                                       const SkMatrix* matrix,
@@ -75,7 +75,7 @@ void ImageHijackCanvas::onDrawImage(const SkImage* image,
                                     SkScalar y,
                                     const CdlPaint* paint) {
   if (!image->isLazyGenerated()) {
-    CdlCanvas::onDrawImage(image, x, y, paint);
+    CdlPassThroughCanvas::onDrawImage(image, x, y, paint);
     return;
   }
 
@@ -94,13 +94,15 @@ void ImageHijackCanvas::onDrawImage(const SkImage* image,
 
   bool need_scale = !decoded_image.is_scale_adjustment_identity();
   if (need_scale) {
-    CdlCanvas::save();
-    CdlCanvas::scale(1.f / (decoded_image.scale_adjustment().width()),
-                     1.f / (decoded_image.scale_adjustment().height()));
+    CdlPassThroughCanvas::save();
+    CdlPassThroughCanvas::scale(
+        1.f / (decoded_image.scale_adjustment().width()),
+        1.f / (decoded_image.scale_adjustment().height()));
   }
-  CdlCanvas::onDrawImage(decoded_image.image().get(), x, y, decoded_paint);
+  CdlPassThroughCanvas::onDrawImage(decoded_image.image().get(), x, y,
+                                    decoded_paint);
   if (need_scale)
-    CdlCanvas::restore();
+    CdlPassThroughCanvas::restore();
 }
 
 void ImageHijackCanvas::onDrawImageRect(
@@ -110,7 +112,7 @@ void ImageHijackCanvas::onDrawImageRect(
     const CdlPaint* paint,
     SkCanvas::SrcRectConstraint constraint) {
   if (!image->isLazyGenerated()) {
-    CdlCanvas::onDrawImageRect(image, src, dst, paint, constraint);
+    CdlPassThroughCanvas::onDrawImageRect(image, src, dst, paint, constraint);
     return;
   }
 
@@ -141,8 +143,9 @@ void ImageHijackCanvas::onDrawImageRect(
         adjusted_src.x() * x_scale, adjusted_src.y() * y_scale,
         adjusted_src.width() * x_scale, adjusted_src.height() * y_scale);
   }
-  CdlCanvas::onDrawImageRect(decoded_image.image().get(), &adjusted_src, dst,
-                             decoded_paint, constraint);
+  CdlPassThroughCanvas::onDrawImageRect(decoded_image.image().get(),
+                                        &adjusted_src, dst, decoded_paint,
+                                        constraint);
 }
 
 

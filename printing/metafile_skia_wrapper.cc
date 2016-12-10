@@ -16,7 +16,7 @@ const char kMetafileKey[] = "CrMetafile";
 }  // namespace
 
 // static
-void MetafileSkiaWrapper::SetMetafileOnCanvas(const SkCanvas& canvas,
+void MetafileSkiaWrapper::SetMetafileOnCanvas(const CdlCanvas& canvas,
                                               PdfMetafileSkia* metafile) {
   sk_sp<MetafileSkiaWrapper> wrapper;
   // Can't use sk_make_sp<>() because the constructor is private.
@@ -29,7 +29,7 @@ void MetafileSkiaWrapper::SetMetafileOnCanvas(const SkCanvas& canvas,
 
 // static
 PdfMetafileSkia* MetafileSkiaWrapper::GetMetafileFromCanvas(
-    const SkCanvas& canvas) {
+    const CdlCanvas& canvas) {
   SkMetaData& meta = skia::GetMetaData(canvas);
   SkRefCnt* value;
   if (!meta.findRefCnt(kMetafileKey, &value) || !value)

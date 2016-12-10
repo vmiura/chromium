@@ -49,7 +49,7 @@ void BackgroundWith1PxBorder::Paint(gfx::Canvas* canvas,
   paint.setAntiAlias(true);
 
   SkPath stroke_path;
-  paint.toSkPaint().getFillPath(path, &stroke_path);
+  ToSkPaint(paint).getFillPath(path, &stroke_path);
 
   SkPath fill_path;
   Op(path, stroke_path, kDifference_SkPathOp, &fill_path);

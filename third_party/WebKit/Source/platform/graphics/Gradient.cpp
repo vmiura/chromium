@@ -30,6 +30,7 @@
 #include "platform/geometry/FloatRect.h"
 #include "platform/graphics/GraphicsContext.h"
 #include "platform/graphics/skia/SkiaUtils.h"
+#include "skia/ext/cdl_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkShader.h"
@@ -246,7 +247,7 @@ sk_sp<CdlShader> Gradient::createShader(const SkMatrix& localMatrix) {
     shader = SkShader::MakeColorShader(colors[countUsed - 1]);
   }
 
-  return CdlShader::WrapSkShader(shader);
+  return WrapSkShader(shader);
 }
 
 void Gradient::applyToPaint(CdlPaint& paint, const SkMatrix& localMatrix) {

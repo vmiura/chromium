@@ -17,6 +17,7 @@
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/thunk/thunk.h"
+#include "skia/ext/cdl_canvas.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -113,11 +114,13 @@ int32_t PPB_ImageData_Impl::GetSharedMemory(base::SharedMemory** shm,
   return backend_->GetSharedMemory(shm, byte_count);
 }
 
-SkCanvas* PPB_ImageData_Impl::GetPlatformCanvas() {
+CdlCanvas* PPB_ImageData_Impl::GetPlatformCanvas() {
   return backend_->GetPlatformCanvas();
 }
 
-SkCanvas* PPB_ImageData_Impl::GetCanvas() { return backend_->GetCanvas(); }
+CdlCanvas* PPB_ImageData_Impl::GetCanvas() {
+  return backend_->GetCanvas();
+}
 
 void PPB_ImageData_Impl::SetIsCandidateForReuse() {
   // Nothing to do since we don't support image data re-use in-process.
@@ -198,11 +201,13 @@ int32_t ImageDataPlatformBackend::GetSharedMemory(base::SharedMemory** shm,
   return PP_OK;
 }
 
-SkCanvas* ImageDataPlatformBackend::GetPlatformCanvas() {
+CdlCanvas* ImageDataPlatformBackend::GetPlatformCanvas() {
   return mapped_canvas_.get();
 }
 
-SkCanvas* ImageDataPlatformBackend::GetCanvas() { return mapped_canvas_.get(); }
+CdlCanvas* ImageDataPlatformBackend::GetCanvas() {
+  return mapped_canvas_.get();
+}
 
 SkBitmap ImageDataPlatformBackend::GetMappedBitmap() const {
   SkBitmap bitmap;
@@ -249,7 +254,7 @@ void* ImageDataSimpleBackend::Map() {
     skia_bitmap_.setPixels(shared_memory_->memory());
     // Our platform bitmaps are set to opaque by default, which we don't want.
     skia_bitmap_.setAlphaType(kPremul_SkAlphaType);
-    skia_canvas_ = base::MakeUnique<SkCanvas>(skia_bitmap_);
+    skia_canvas_ = base::MakeUnique<CdlCanvas>(skia_bitmap_);
     return skia_bitmap_.getAddr32(0, 0);
   }
   return shared_memory_->memory();
@@ -267,11 +272,11 @@ int32_t ImageDataSimpleBackend::GetSharedMemory(base::SharedMemory** shm,
   return PP_OK;
 }
 
-SkCanvas* ImageDataSimpleBackend::GetPlatformCanvas() {
+CdlCanvas* ImageDataSimpleBackend::GetPlatformCanvas() {
   return NULL;
 }
 
-SkCanvas* ImageDataSimpleBackend::GetCanvas() {
+CdlCanvas* ImageDataSimpleBackend::GetCanvas() {
   if (!IsMapped())
     return NULL;
   return skia_canvas_.get();

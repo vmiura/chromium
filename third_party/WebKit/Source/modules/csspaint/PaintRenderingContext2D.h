@@ -9,9 +9,8 @@
 #include "modules/ModulesExport.h"
 #include "modules/canvas2d/BaseRenderingContext2D.h"
 #include "platform/graphics/ImageBuffer.h"
+#include "skia/ext/cdl_common.h"
 #include <memory>
-
-class CdlCanvas;
 
 namespace blink {
 

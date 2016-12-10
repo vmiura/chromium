@@ -36,6 +36,7 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
 #include "wtf/Deque.h"
 #include "wtf/RefCounted.h"
@@ -46,7 +47,6 @@
 
 class SkImage;
 struct SkImageInfo;
-class CdlPictureRecorder;
 
 namespace gpu {
 namespace gles2 {
@@ -207,8 +207,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
   void willProcessTask() override;
   void didProcessTask() override;
 
-  SkSurface* getOrCreateSurface(AccelerationHint = PreferAcceleration);
-  CdlCanvas* getOrCreateCanvas(AccelerationHint = PreferAcceleration);
+  CdlSurface* getOrCreateSurface(AccelerationHint = PreferAcceleration);
   bool shouldAccelerate(AccelerationHint) const;
 
   // Returns the GL filter associated with |m_filterQuality|.
@@ -245,8 +244,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge
   void resetSkiaTextureBinding();
 
   std::unique_ptr<CdlPictureRecorder> m_recorder;
-  sk_sp<SkSurface> m_surface;
-  sk_sp<CdlCanvas> m_canvas;
+  sk_sp<CdlSurface> m_surface;
   sk_sp<SkImage> m_hibernationImage;
   int m_initialSurfaceSaveCount;
   std::unique_ptr<WebExternalTextureLayer> m_layer;

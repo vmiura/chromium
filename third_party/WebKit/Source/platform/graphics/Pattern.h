@@ -31,6 +31,7 @@
 
 #include "platform/PlatformExport.h"
 #include "platform/graphics/Image.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 #include "wtf/Noncopyable.h"
@@ -38,9 +39,6 @@
 #include "wtf/RefCounted.h"
 
 class SkMatrix;
-class CdlPaint;
-class CdlPicture;
-class CdlShader;
 
 namespace blink {
 

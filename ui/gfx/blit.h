@@ -5,10 +5,10 @@
 #ifndef UI_GFX_BLIT_H_
 #define UI_GFX_BLIT_H_
 
+#include "skia/ext/cdl_common.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
-class SkCanvas;
 
 namespace gfx {
 
@@ -18,7 +18,7 @@ class Vector2d;
 // Scrolls the given subset of the given canvas by the given offset.
 // The canvas should not have a clip or a transform applied, since platforms
 // may implement those operations differently.
-GFX_EXPORT void ScrollCanvas(SkCanvas* canvas,
+GFX_EXPORT void ScrollCanvas(CdlCanvas* canvas,
                              const Rect& clip,
                              const Vector2d& offset);
 

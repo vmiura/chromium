@@ -18,8 +18,6 @@
 #include <windows.h>
 #endif
 
-class SkCanvas;
-
 namespace printing {
 
 enum SkiaDocumentType {
@@ -77,9 +75,9 @@ class PRINTING_EXPORT PdfMetafileSkia : public Metafile {
   // is returned is owned by this PdfMetafileSkia object and does not
   // need to be ref()ed or unref()ed.  The canvas will remain valid
   // until FinishPage() or FinishDocument() is called.
-  SkCanvas* GetVectorCanvasForNewPage(const gfx::Size& page_size,
-                                      const gfx::Rect& content_area,
-                                      const float& scale_factor);
+  CdlCanvas* GetVectorCanvasForNewPage(const gfx::Size& page_size,
+                                       const gfx::Rect& content_area,
+                                       const float& scale_factor);
 
  private:
   std::unique_ptr<PdfMetafileSkiaData> data_;

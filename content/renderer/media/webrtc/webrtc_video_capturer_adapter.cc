@@ -15,6 +15,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_util.h"
 #include "media/renderers/skcanvas_video_renderer.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
@@ -100,7 +101,7 @@ class WebRtcVideoCapturerAdapter::TextureFrameCopier
            frame->format() == media::PIXEL_FORMAT_UYVY ||
            frame->format() == media::PIXEL_FORMAT_NV12);
     ScopedWaitableEvent event(waiter);
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
+    sk_sp<CdlSurface> surface = CdlSurface::MakeRasterN32Premul(
         frame->visible_rect().width(), frame->visible_rect().height());
 
     if (!surface || !provider_) {
@@ -115,11 +116,11 @@ class WebRtcVideoCapturerAdapter::TextureFrameCopier
         frame->natural_size(), frame->timestamp());
     DCHECK(provider_->ContextGL());
     canvas_video_renderer_->Copy(
-        frame.get(), CdlCanvas::Make(surface->getCanvas()).get(),
+        frame.get(), surface->getCanvas(),
         media::Context3D(provider_->ContextGL(), provider_->GrContext()));
 
     SkPixmap pixmap;
-    const bool result = surface->getCanvas()->peekPixels(&pixmap);
+    const bool result = GetSkCanvas(surface->getCanvas())->peekPixels(&pixmap);
     DCHECK(result) << "Error trying to access SkSurface's pixels";
     const uint32 source_pixel_format =
         (kN32_SkColorType == kRGBA_8888_SkColorType) ? cricket::FOURCC_ABGR

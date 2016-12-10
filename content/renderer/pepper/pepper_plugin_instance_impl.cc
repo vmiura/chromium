@@ -1831,11 +1831,10 @@ void PepperPluginInstanceImpl::PrintPage(int page_number,
   page_range.first_page_number = page_range.last_page_number = page_number;
   // The canvas only has a metafile on it for print preview.
   printing::PdfMetafileSkia* metafile =
-      printing::MetafileSkiaWrapper::GetMetafileFromCanvas(*canvas->skCanvas());
+      printing::MetafileSkiaWrapper::GetMetafileFromCanvas(*canvas);
   bool save_for_later = (metafile != NULL);
 #if defined(OS_MACOSX)
-  save_for_later =
-      save_for_later && skia::IsPreviewMetafile(*canvas->skCanvas());
+  save_for_later = save_for_later && skia::IsPreviewMetafile(*canvas);
 #endif  // defined(OS_MACOSX)
   if (save_for_later) {
     ranges_.push_back(page_range);
@@ -3087,7 +3086,7 @@ PP_Resource PepperPluginInstanceImpl::CreateImage(gfx::ImageSkia* source_image,
   if (!mapper.is_valid())
     return 0;
 
-  SkCanvas* canvas = image_data->GetPlatformCanvas();
+  CdlCanvas* canvas = image_data->GetPlatformCanvas();
   // Note: Do not SkBitmap::copyTo the canvas bitmap directly because it will
   // ignore the allocated pixels in shared memory and re-allocate a new buffer.
   canvas->writePixels(image_skia_rep.sk_bitmap(), 0, 0);

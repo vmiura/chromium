@@ -321,10 +321,10 @@ TEST(DisplayItemListTest, SingleDrawingItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + offset.x(), 0.f + offset.y(),
                                  60.f + offset.x(), 60.f + offset.y(),
-                                 red_paint.toSkPaint());
+                                 ToSkPaint(red_paint));
   expected_canvas.drawRectCoords(50.f + offset.x(), 50.f + offset.y(),
                                  75.f + offset.x(), 75.f + offset.y(),
-                                 blue_paint.toSkPaint());
+                                 ToSkPaint(blue_paint));
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -377,11 +377,12 @@ TEST(DisplayItemListTest, ClipItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + first_offset.x(), 0.f + first_offset.y(),
                                  60.f + first_offset.x(),
-                                 60.f + first_offset.y(), red_paint.toSkPaint());
+                                 60.f + first_offset.y(), ToSkPaint(red_paint));
   expected_canvas.clipRect(gfx::RectToSkRect(clip_rect));
   expected_canvas.drawRectCoords(
       50.f + second_offset.x(), 50.f + second_offset.y(),
-      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint.toSkPaint());
+      75.f + second_offset.x(), 75.f + second_offset.y(),
+      ToSkPaint(blue_paint));
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -434,11 +435,12 @@ TEST(DisplayItemListTest, TransformItem) {
   expected_canvas.clipRect(gfx::RectToSkRect(layer_rect));
   expected_canvas.drawRectCoords(0.f + first_offset.x(), 0.f + first_offset.y(),
                                  60.f + first_offset.x(),
-                                 60.f + first_offset.y(), red_paint.toSkPaint());
+                                 60.f + first_offset.y(), ToSkPaint(red_paint));
   expected_canvas.setMatrix(transform.matrix());
   expected_canvas.drawRectCoords(
       50.f + second_offset.x(), 50.f + second_offset.y(),
-      75.f + second_offset.x(), 75.f + second_offset.y(), blue_paint.toSkPaint());
+      75.f + second_offset.x(), 75.f + second_offset.y(),
+      ToSkPaint(blue_paint));
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }
@@ -502,7 +504,7 @@ TEST(DisplayItemListTest, FilterItem) {
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
   SkCanvas expected_canvas(expected_bitmap);
-  expected_canvas.drawRect(RectFToSkRect(filter_bounds), paint.toSkPaint());
+  expected_canvas.drawRect(RectFToSkRect(filter_bounds), ToSkPaint(paint));
 
   EXPECT_EQ(0, memcmp(pixels, expected_pixels, 4 * 100 * 100));
 }

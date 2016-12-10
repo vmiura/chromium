@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "skia/ext/cdl_picture.h"
+
+#if CDL_ENABLED
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,7 +13,7 @@
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
-#include "skia/ext/cdl_picture.h"
+
 #include "skia/ext/cdl_picture_buffer.h"
 
 CdlPicture::CdlPicture(sk_sp<CdlPictureBuffer> picture,
@@ -23,7 +27,8 @@ CdlPicture::CdlPicture(sk_sp<CdlPictureBuffer> picture,
 
 CdlPicture::~CdlPicture() {}
 
-void CdlPicture::draw(CdlCanvas* canvas, const SkMatrix* matrix,
+void CdlPicture::draw(CdlCanvas* canvas,
+                      const SkMatrix* matrix,
                       const CdlPaint* paint) const {
   canvas->drawPicture(this, matrix, paint);
 }
@@ -32,7 +37,7 @@ sk_sp<SkPicture> CdlPicture::toSkPicture() const {
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(cullRect());
   picture_->playback(CdlCanvas::Make(canvas).get(), start_offset_, end_offset_);
-  
+
   return recorder.finishRecordingAsPicture();
 }
 
@@ -52,3 +57,5 @@ uint32_t CdlPicture::uniqueID() const {
   }
   return unique_id_;
 }
+
+#endif  // CDL_ENABLED

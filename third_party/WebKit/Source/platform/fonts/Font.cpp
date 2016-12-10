@@ -398,7 +398,7 @@ static int getInterceptsFromBloberizer(const GlyphBuffer& glyphBuffer,
   GlyphBufferBloberizer bloberizer(glyphBuffer, font, deviceScaleFactor);
   std::pair<sk_sp<SkTextBlob>, BlobRotation> blob;
 
-  SkPaint skPaint = paint.toSkPaint();
+  SkPaint skPaint = ToSkPaint(paint);
   int numIntervals = 0;
   while (!bloberizer.done()) {
     blob = bloberizer.next();
@@ -428,7 +428,7 @@ void Font::getTextIntercepts(const TextRunPaintInfo& runInfo,
   if (shouldSkipDrawing())
     return;
 
-  SkPaint skPaint = paint.toSkPaint();
+  SkPaint skPaint = ToSkPaint(paint);
   if (runInfo.cachedTextBlob && runInfo.cachedTextBlob->get()) {
     SkScalar boundsArray[2] = {std::get<0>(bounds), std::get<1>(bounds)};
     int numIntervals = skPaint.getTextBlobIntercepts(

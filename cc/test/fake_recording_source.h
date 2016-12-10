@@ -93,7 +93,8 @@ class FakeRecordingSource : public RecordingSource {
     client_.add_draw_rectf(rect, default_paint_);
   }
 
-  void add_draw_rectf_with_paint(const gfx::RectF& rect, const CdlPaint& paint) {
+  void add_draw_rectf_with_paint(const gfx::RectF& rect,
+                                 const CdlPaint& paint) {
     client_.add_draw_rectf(rect, paint);
   }
 

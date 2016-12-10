@@ -34,6 +34,7 @@
 #include "platform/PlatformExport.h"
 #include "platform/geometry/IntSize.h"
 #include "platform/graphics/GraphicsTypes.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -41,11 +42,9 @@
 #include "wtf/Allocator.h"
 #include "wtf/Noncopyable.h"
 
-class CdlCanvas;
 class SkColorSpace;
 class SkImage;
 struct SkImageInfo;
-class CdlPicture;
 
 namespace blink {
 

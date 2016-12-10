@@ -57,7 +57,7 @@ UnacceleratedImageBufferSurface::UnacceleratedImageBufferSurface(
   if (!m_surface)
     return;
 
-  m_canvas.reset(new CdlCanvas(m_surface->getCanvas()));
+  m_canvas.reset(new CdlPassThroughCanvas(m_surface->getCanvas()));
 
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -75,7 +75,7 @@ CdlCanvas* UnacceleratedImageBufferSurface::canvas() {
 }
 
 bool UnacceleratedImageBufferSurface::isValid() const {
-  return m_canvas;
+  return m_canvas.get();
 }
 
 sk_sp<SkImage> UnacceleratedImageBufferSurface::newImageSnapshot(

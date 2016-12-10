@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "skia/ext/cdl_common.h"
 #include "ui/native_theme/native_theme.h"
 
-class CdlCanvas;
 
 namespace ui {
 

@@ -87,7 +87,7 @@ class PrintContextTest : public RenderingTest {
     document().body()->setInnerHTML(bodyContent);
   }
 
-  void printSinglePage(SkCanvas& canvas) {
+  void printSinglePage(CdlCanvas& canvas) {
     IntRect pageRect(0, 0, kPageWidth, kPageHeight);
     printContext().begin(pageRect.width(), pageRect.height());
     document().view()->updateAllLifecyclePhases();
@@ -101,7 +101,7 @@ class PrintContextTest : public RenderingTest {
                                pageRect);
       printContext().outputLinkedDestinations(context, pageRect);
     }
-    pictureBuilder.endRecording()->playback(CdlCanvas::Make(&canvas).get());
+    pictureBuilder.endRecording()->playback(&canvas);
     printContext().end();
   }
 

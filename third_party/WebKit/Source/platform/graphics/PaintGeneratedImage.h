@@ -7,9 +7,8 @@
 
 #include "platform/geometry/IntSize.h"
 #include "platform/graphics/GeneratedImage.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class CdlPicture;
 
 namespace blink {
 

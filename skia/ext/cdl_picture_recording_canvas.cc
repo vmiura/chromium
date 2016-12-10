@@ -7,6 +7,8 @@
 
 #include "cdl_picture_recording_canvas.h"
 
+#if CDL_ENABLED
+
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/cdl_picture_buffer.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -175,3 +177,5 @@ void CdlPictureRecordingCanvas::onDrawPoints(SkCanvas::PointMode mode,
                                              const CdlPaint& paint) {
   fDL->drawPoints(mode, count, pts, paint);
 }
+
+#endif  // CDL_ENABLED

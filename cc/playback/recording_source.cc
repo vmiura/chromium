@@ -156,10 +156,10 @@ void RecordingSource::DetermineIfSolidColor() {
   TRACE_EVENT1("cc", "RecordingSource::DetermineIfSolidColor", "opcount",
                display_list_->ApproximateOpCount());
   gfx::Size layer_size = GetSize();
-  skia::AnalysisCanvas canvas(layer_size.width(), layer_size.height());
-  display_list_->Raster(CdlCanvas::Make(&canvas).get(), nullptr,
-                        gfx::Rect(layer_size), 1.f);
-  is_solid_color_ = canvas.GetColorIfSolid(&solid_color_);
+  skia::AnalysisCanvas sk_canvas(layer_size.width(), layer_size.height());
+  CdlPassThroughCanvas canvas(&sk_canvas);
+  display_list_->Raster(&canvas, nullptr, gfx::Rect(layer_size), 1.f);
+  is_solid_color_ = sk_canvas.GetColorIfSolid(&solid_color_);
 }
 
 }  // namespace cc

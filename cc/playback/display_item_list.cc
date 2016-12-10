@@ -231,10 +231,12 @@ DisplayItemList::AsValue(bool include_items) const {
 
   SkPictureRecorder recorder;
   gfx::Rect bounds = rtree_.GetBounds();
-  SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
-  canvas->translate(-bounds.x(), -bounds.y());
-  canvas->clipRect(gfx::RectToSkRect(bounds));
-  Raster(CdlCanvas::Make(canvas).get(), nullptr, gfx::Rect(), 1.f);
+  SkCanvas* sk_canvas =
+      recorder.beginRecording(bounds.width(), bounds.height());
+  CdlPassThroughCanvas canvas(sk_canvas);
+  canvas.translate(-bounds.x(), -bounds.y());
+  canvas.clipRect(gfx::RectToSkRect(bounds));
+  Raster(&canvas, nullptr, gfx::Rect(), 1.f);
   sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
   std::string b64_picture;

@@ -7,6 +7,9 @@
 
 #include "cdl_canvas.h"
 
+#if CDL_ENABLED
+
+#include "base/memory/ptr_util.h"
 #include "cdl_no_draw_canvas.h"
 #include "cdl_paint.h"
 #include "cdl_picture.h"
@@ -34,15 +37,26 @@ sk_sp<CdlCanvas> CdlCanvas::Make(SkCanvas* canvas) {
 
 CdlCanvas::CdlCanvas(SkCanvas* canvas) : canvas_(canvas) {}
 
+CdlCanvas::CdlCanvas(SkBaseDevice* device) {
+  owned_canvas_ = base::MakeUnique<SkCanvas>(device);
+  canvas_ = owned_canvas_.get();
+}
+
+CdlCanvas::CdlCanvas(const SkBitmap& bitmap) {
+  owned_canvas_ = base::MakeUnique<SkCanvas>(bitmap);
+  canvas_ = owned_canvas_.get();
+}
+
+CdlCanvas::CdlCanvas(const SkBitmap& bitmap, const SkSurfaceProps& props) {
+  owned_canvas_ = base::MakeUnique<SkCanvas>(bitmap, props);
+  canvas_ = owned_canvas_.get();
+}
+
 CdlCanvas::CdlCanvas(int width, int height)
     : owned_canvas_(new SkNoDrawCanvas(width, height)),
       canvas_(owned_canvas_.get()) {}
 
 CdlCanvas::~CdlCanvas() {}
-
-SkCanvas* CdlCanvas::skCanvas() {
-  return canvas_;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Save / Restore
@@ -67,11 +81,8 @@ int CdlCanvas::onSaveLayer(const SaveLayerRec& rec) {
   if (rec.fPaint)
     sk_paint = rec.fPaint->toSkPaint();
 
-  SkCanvas::SaveLayerRec sk_rec(
-      rec.fBounds,
-      rec.fPaint ? &sk_paint : nullptr,
-      rec.fBackdrop,
-      rec.fSaveLayerFlags);
+  SkCanvas::SaveLayerRec sk_rec(rec.fBounds, rec.fPaint ? &sk_paint : nullptr,
+                                rec.fBackdrop, rec.fSaveLayerFlags);
   return canvas_->saveLayer(sk_rec);
 }
 
@@ -87,8 +98,8 @@ int CdlCanvas::saveLayerAlpha(const SkRect* bounds, U8CPU alpha) {
 
 int CdlCanvas::saveLayerPreserveLCDTextRequests(const SkRect* bounds,
                                                 const CdlPaint* paint) {
-  return this->saveLayer(SaveLayerRec(
-      bounds, paint, SkCanvas::kPreserveLCDText_SaveLayerFlag));
+  return this->saveLayer(
+      SaveLayerRec(bounds, paint, SkCanvas::kPreserveLCDText_SaveLayerFlag));
 }
 
 void CdlCanvas::restore() {
@@ -415,6 +426,10 @@ bool CdlCanvas::writePixels(const SkImageInfo& origInfo,
   return canvas_->writePixels(origInfo, pixels, rowBytes, x, y);
 }
 
+bool CdlCanvas::writePixels(const SkBitmap& bitmap, int x, int y) {
+  return canvas_->writePixels(bitmap, x, y);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Default pass-through implementation
 void CdlCanvas::onConcat(SkMatrix const& matrix) {
@@ -578,7 +593,8 @@ void CdlCanvas::onDrawImageRect(const SkImage* image,
   SkPaint sk_paint;
   if (paint)
     sk_paint = paint->toSkPaint();
-  canvas_->drawImageRect(image, *src, dst, paint ? &sk_paint : nullptr, constraint);
+  canvas_->drawImageRect(image, *src, dst, paint ? &sk_paint : nullptr,
+                         constraint);
 }
 
 void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,
@@ -587,3 +603,25 @@ void CdlCanvas::onDrawPoints(SkCanvas::PointMode mode,
                              const CdlPaint& paint) {
   canvas_->drawPoints(mode, count, pts, paint.toSkPaint());
 }
+
+CdlPassThroughCanvas::CdlPassThroughCanvas(SkCanvas* canvas)
+    : CdlCanvas(canvas) {}
+CdlPassThroughCanvas::~CdlPassThroughCanvas() {}
+
+#else  // CDL_ENABLED
+
+#include "third_party/skia/include/utils/SkNWayCanvas.h"
+
+CdlPassThroughCanvas::CdlPassThroughCanvas(SkCanvas* canvas)
+    : SkNWayCanvas(canvas->getBaseLayerSize().width(),
+                   canvas->getBaseLayerSize().height()) {
+  SkIRect raster_bounds;
+  canvas->getClipDeviceBounds(&raster_bounds);
+  this->clipRect(SkRect::MakeFromIRect(raster_bounds));
+  this->setMatrix(canvas->getTotalMatrix());
+  this->addCanvas(canvas);
+}
+
+CdlPassThroughCanvas::~CdlPassThroughCanvas() {}
+
+#endif  // CDL_ENABLED

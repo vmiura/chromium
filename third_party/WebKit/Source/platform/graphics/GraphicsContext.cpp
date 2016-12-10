@@ -80,8 +80,9 @@ GraphicsContext::GraphicsContext(PaintController& paintController,
 
   if (contextDisabled()) {
     // TODO(cdl): Null CdlCanvas.
-    DEFINE_STATIC_LOCAL(SkCanvas*, nullSkCanvas, (SkMakeNullCanvas().release()));
-    DEFINE_STATIC_LOCAL(CdlCanvas, nullCanvas, (nullSkCanvas));
+    DEFINE_STATIC_LOCAL(SkCanvas*, nullSkCanvas,
+                        (SkMakeNullCanvas().release()));
+    DEFINE_STATIC_LOCAL(CdlPassThroughCanvas, nullCanvas, (nullSkCanvas));
     m_canvas = &nullCanvas;
   }
 }
@@ -267,7 +268,7 @@ void GraphicsContext::beginRecording(const FloatRect& bounds) {
 
   m_canvas = m_pictureRecorder.beginRecording(bounds, nullptr);
   if (m_hasMetaData)
-    skia::GetMetaData(*m_canvas->skCanvas()) = m_metaData;
+    skia::GetMetaData(*m_canvas) = m_metaData;
 }
 
 namespace {
@@ -321,7 +322,7 @@ void GraphicsContext::compositePicture(sk_sp<CdlPicture> picture,
                                  SkMatrix::kFill_ScaleToFit);
   m_canvas->concat(pictureTransform);
   picturePaint.setImageFilter(SkPictureImageFilter::MakeForLocalSpace(
-      picture->toSkPicture(), sourceBounds,
+      ToSkPicture(picture.get()), sourceBounds,
       static_cast<SkFilterQuality>(imageInterpolationQuality())));
   m_canvas->saveLayer(&sourceBounds, &picturePaint);
   m_canvas->restore();
@@ -626,7 +627,7 @@ void GraphicsContext::drawLineForDocumentMarker(const FloatPoint& pt,
   localMatrix.setTranslate(originX, originY);
 
   CdlPaint paint;
-  paint.setShader(CdlShader::WrapSkShader(SkShader::MakeBitmapShader(
+  paint.setShader(WrapSkShader(SkShader::MakeBitmapShader(
       *misspellBitmap[index], SkShader::kRepeat_TileMode,
       SkShader::kRepeat_TileMode, &localMatrix)));
 
@@ -1068,8 +1069,7 @@ void GraphicsContext::fillDRRect(const FloatRoundedRect& outer,
 
   if (!isSimpleDRRect(outer, inner)) {
     if (color == fillColor()) {
-      m_canvas->drawDRRect(outer, inner,
-                           immutableState()->fillPaint());
+      m_canvas->drawDRRect(outer, inner, immutableState()->fillPaint());
     } else {
       CdlPaint paint(immutableState()->fillPaint());
       paint.setColor(color.rgb());
@@ -1277,8 +1277,7 @@ void GraphicsContext::fillRectWithRoundedHole(
 
   CdlPaint paint(immutableState()->fillPaint());
   paint.setColor(color.rgb());
-  m_canvas->drawDRRect(SkRRect::MakeRect(rect), roundedHoleRect,
-                       paint);
+  m_canvas->drawDRRect(SkRRect::MakeRect(rect), roundedHoleRect, paint);
 }
 
 void GraphicsContext::adjustLineToPixelBoundaries(FloatPoint& p1,

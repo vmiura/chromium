@@ -24,12 +24,11 @@
 #include "core/style/SVGComputedStyleDefs.h"
 #include "platform/graphics/filters/FilterEffect.h"
 #include "platform/heap/Handle.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/HashMap.h"
 #include "wtf/HashSet.h"
 #include "wtf/text/AtomicString.h"
 #include "wtf/text/AtomicStringHash.h"
-
-class CdlPaint;
 
 namespace blink {
 

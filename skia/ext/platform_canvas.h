@@ -48,7 +48,7 @@ enum OnFailureType {
 #if defined(WIN32)
   // The shared_section parameter is passed to gfx::PlatformDevice::create.
   // See it for details.
-SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
+SK_API std::unique_ptr<CdlCanvas> CreatePlatformCanvas(
     int width,
     int height,
     bool is_opaque,
@@ -59,20 +59,20 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
 // with a SkCanvas with a BitmapPlatformDevice. Will create a temporary
 // HDC to back the canvas if one doesn't already exist, tearing it down
 // before returning. If |src_rect| is null, copies the entire canvas.
-SK_API void DrawToNativeContext(SkCanvas* canvas,
+SK_API void DrawToNativeContext(CdlCanvas* canvas,
                                 HDC hdc,
                                 int x,
                                 int y,
                                 const RECT* src_rect);
 #elif defined(__APPLE__)
-SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
+SK_API std::unique_ptr<CdlCanvas> CreatePlatformCanvas(
     CGContextRef context,
     int width,
     int height,
     bool is_opaque,
     OnFailureType failure_type);
 
-SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
+SK_API std::unique_ptr<CdlCanvas> CreatePlatformCanvas(
     int width,
     int height,
     bool is_opaque,
@@ -84,7 +84,7 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
 
   // Construct a canvas from the given memory region. The memory is not cleared
   // first. @data must be, at least, @height * StrideForWidth(@width) bytes.
-SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
+SK_API std::unique_ptr<CdlCanvas> CreatePlatformCanvas(
     int width,
     int height,
     bool is_opaque,
@@ -92,24 +92,25 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvas(
     OnFailureType failure_type);
 #endif
 
-static inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
-                                                             int height,
-                                                             bool is_opaque) {
-  return CreatePlatformCanvas(width, height, is_opaque, 0, CRASH_ON_FAILURE);
-}
-
-SK_API std::unique_ptr<SkCanvas> CreateCanvas(const sk_sp<SkBaseDevice>& device,
-                                              OnFailureType failure_type);
-
-static inline std::unique_ptr<SkCanvas> CreateBitmapCanvas(int width,
-                                                           int height,
-                                                           bool is_opaque) {
-  return CreatePlatformCanvas(width, height, is_opaque, 0, CRASH_ON_FAILURE);
-}
-
-static inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
+static inline std::unique_ptr<CdlCanvas> CreatePlatformCanvas(int width,
                                                               int height,
                                                               bool is_opaque) {
+  return CreatePlatformCanvas(width, height, is_opaque, 0, CRASH_ON_FAILURE);
+}
+
+SK_API std::unique_ptr<CdlCanvas> CreateCanvas(
+    const sk_sp<SkBaseDevice>& device,
+    OnFailureType failure_type);
+
+static inline std::unique_ptr<CdlCanvas> CreateBitmapCanvas(int width,
+                                                            int height,
+                                                            bool is_opaque) {
+  return CreatePlatformCanvas(width, height, is_opaque, 0, CRASH_ON_FAILURE);
+}
+
+static inline std::unique_ptr<CdlCanvas> TryCreateBitmapCanvas(int width,
+                                                               int height,
+                                                               bool is_opaque) {
   return CreatePlatformCanvas(width, height, is_opaque, 0,
                               RETURN_NULL_ON_FAILURE);
 }
@@ -124,7 +125,7 @@ SK_API size_t PlatformCanvasStrideForWidth(unsigned width);
 //
 // The bitmap will remain empty if we can't allocate enough memory for a copy
 // of the pixels.
-SK_API SkBitmap ReadPixels(SkCanvas* canvas);
+SK_API SkBitmap ReadPixels(CdlCanvas* canvas);
 
 // Gives the pixmap passed in *writable* access to the pixels backing this
 // canvas. All writes to the pixmap should be visible if the canvas is
@@ -133,19 +134,19 @@ SK_API SkBitmap ReadPixels(SkCanvas* canvas);
 // Returns false on failure: if either argument is nullptr, or if the
 // pixels can not be retrieved from the canvas. In the latter case resets
 // the pixmap to empty.
-SK_API bool GetWritablePixels(SkCanvas* canvas, SkPixmap* pixmap);
+SK_API bool GetWritablePixels(CdlCanvas* canvas, SkPixmap* pixmap);
 
 // Returns true if native platform routines can be used to draw on the
 // given canvas. If this function returns false,
 // ScopedPlatformPaint::GetNativeDrawingContext() should return NULL.
-SK_API bool SupportsPlatformPaint(const SkCanvas* canvas);
+SK_API bool SupportsPlatformPaint(const CdlCanvas* canvas);
 
 // This object guards calls to platform drawing routines. The surface
 // returned from GetNativeDrawingContext() can be used with the native platform
 // routines.
 class SK_API ScopedPlatformPaint {
  public:
-  explicit ScopedPlatformPaint(SkCanvas* canvas);
+  explicit ScopedPlatformPaint(CdlCanvas* canvas);
 
   // Returns the NativeDrawingContext to use for native platform drawing calls.
   NativeDrawingContext GetNativeDrawingContext() {
@@ -153,7 +154,7 @@ class SK_API ScopedPlatformPaint {
   }
 
  private:
-  SkCanvas* canvas_;
+  CdlCanvas* canvas_;
   NativeDrawingContext native_drawing_context_;
 
   // Disallow copy and assign
@@ -163,15 +164,15 @@ class SK_API ScopedPlatformPaint {
 
 // Following routines are used in print preview workflow to mark the
 // preview metafile.
-SK_API SkMetaData& GetMetaData(const SkCanvas& canvas);
+SK_API SkMetaData& GetMetaData(const CdlCanvas& canvas);
 
 #if defined(OS_MACOSX)
-SK_API void SetIsPreviewMetafile(const SkCanvas& canvas, bool is_preview);
-SK_API bool IsPreviewMetafile(const SkCanvas& canvas);
+SK_API void SetIsPreviewMetafile(const CdlCanvas& canvas, bool is_preview);
+SK_API bool IsPreviewMetafile(const CdlCanvas& canvas);
 
 // Returns the CGContext that backing the SkCanvas.
 // Returns NULL if none is bound.
-SK_API CGContextRef GetBitmapContext(const SkCanvas& canvas);
+SK_API CGContextRef GetBitmapContext(const CdlCanvas& canvas);
 #endif
 
 }  // namespace skia

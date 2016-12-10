@@ -6,10 +6,10 @@
 #define ClipList_h
 
 #include "platform/graphics/GraphicsTypes.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
 #include "wtf/Vector.h"
 
-class CdlCanvas;
 class SkPath;
 
 namespace blink {

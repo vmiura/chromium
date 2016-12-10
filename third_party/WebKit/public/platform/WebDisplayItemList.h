@@ -12,16 +12,15 @@
 #include "WebSize.h"
 #include "WebVector.h"
 
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 
 class SkColorFilter;
 class SkMatrix44;
-class CdlPicture;
 struct SkRect;
 class SkRRect;
-class CdlPicture;
 
 namespace cc {
 class FilterOperations;

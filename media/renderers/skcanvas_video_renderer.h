@@ -18,11 +18,9 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_rotation.h"
 #include "media/filters/context_3d.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-class CdlCanvas;
-class CdlPaint;
 
 namespace gfx {
 class RectF;

@@ -106,6 +106,7 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
     AddImage(sk_ref_sp(image), *src, MapRect(ctm, dst), matrix, paint);
   }
 
+#if CDL_ENABLED
   int onSaveLayer(const SaveLayerRec& rec) override {
     saved_paints_.push_back(*rec.fPaint);
     return CdlNoDrawCanvas::onSaveLayer(rec);
@@ -121,6 +122,23 @@ class DiscardableImagesMetadataCanvas : public CdlNoDrawCanvas {
     saved_paints_.pop_back();
     CdlNoDrawCanvas::onRestore();
   }
+#else
+  SaveLayerStrategy getSaveLayerStrategy(const SaveLayerRec& rec) override {
+    saved_paints_.push_back(*rec.fPaint);
+    return CdlNoDrawCanvas::getSaveLayerStrategy(rec);
+  }
+
+  void willSave() override {
+    saved_paints_.push_back(SkPaint());
+    return CdlNoDrawCanvas::willSave();
+  }
+
+  void willRestore() override {
+    DCHECK_GT(saved_paints_.size(), 0u);
+    saved_paints_.pop_back();
+    CdlNoDrawCanvas::willRestore();
+  }
+#endif
 
  private:
   bool ComputePaintBounds(const SkRect& rect,
@@ -184,11 +202,11 @@ DiscardableImageMap::DiscardableImageMap() {}
 
 DiscardableImageMap::~DiscardableImageMap() {}
 
-sk_sp<CdlCanvas> DiscardableImageMap::BeginGeneratingMetadata(
+std::unique_ptr<CdlCanvas> DiscardableImageMap::BeginGeneratingMetadata(
     const gfx::Size& bounds) {
   DCHECK(all_images_.empty());
   // TODO(cdl): switch to using std::unique_ptrs?
-  return sk_make_sp<DiscardableImagesMetadataCanvas>(
+  return base::MakeUnique<DiscardableImagesMetadataCanvas>(
       bounds.width(), bounds.height(), &all_images_);
 }
 

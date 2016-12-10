@@ -25,9 +25,8 @@
 #include "platform/graphics/Gradient.h"
 #include "platform/graphics/Pattern.h"
 #include "platform/transforms/AffineTransform.h"
+#include "skia/ext/cdl_common.h"
 #include "wtf/Allocator.h"
-
-class CdlPaint;
 
 namespace blink {
 

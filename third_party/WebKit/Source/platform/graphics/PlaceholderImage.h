@@ -9,12 +9,10 @@
 #include "platform/geometry/IntSize.h"
 #include "platform/graphics/Image.h"
 #include "platform/graphics/ImageOrientation.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/PassRefPtr.h"
-
-class CdlCanvas;
-class CdlPaint;
 
 namespace blink {
 

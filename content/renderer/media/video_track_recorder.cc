@@ -23,6 +23,7 @@
 #include "media/base/video_util.h"
 #include "media/filters/context_3d.h"
 #include "media/renderers/skcanvas_video_renderer.h"
+#include "skia/ext/cdl_surface.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -187,7 +188,7 @@ class VideoTrackRecorder::Encoder : public base::RefCountedThreadSafe<Encoder> {
   // Used to retrieve incoming opaque VideoFrames (i.e. VideoFrames backed by
   // textures). Created on-demand on |main_task_runner_|.
   std::unique_ptr<media::SkCanvasVideoRenderer> video_renderer_;
-  sk_sp<SkSurface> surface_;
+  sk_sp<CdlSurface> surface_;
 
   DISALLOW_COPY_AND_ASSIGN(Encoder);
 };
@@ -260,14 +261,13 @@ void VideoTrackRecorder::Encoder::RetrieveFrameOnMainThread(
     // Create |surface_| if it doesn't exist or incoming resolution has changed.
     if (!surface_ || surface_->width() != info.width() ||
         surface_->height() != info.height()) {
-      surface_ = SkSurface::MakeRaster(info);
+      surface_ = CdlSurface::MakeRaster(info);
     }
     if (!video_renderer_)
       video_renderer_.reset(new media::SkCanvasVideoRenderer);
 
     DCHECK(context_provider->ContextGL());
-    video_renderer_->Copy(video_frame.get(),
-                          CdlCanvas::Make(surface_->getCanvas()).get(),
+    video_renderer_->Copy(video_frame.get(), surface_->getCanvas(),
                           media::Context3D(context_provider->ContextGL(),
                                            context_provider->GrContext()));
 

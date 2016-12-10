@@ -35,6 +35,7 @@
 #include "platform/graphics/ImageAnimationPolicy.h"
 #include "platform/graphics/ImageObserver.h"
 #include "platform/graphics/ImageOrientation.h"
+#include "skia/ext/cdl_common.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "wtf/Assertions.h"
 #include "wtf/Noncopyable.h"
@@ -45,8 +46,6 @@
 
 class SkImage;
 class SkMatrix;
-class CdlCanvas;
-class CdlPaint;
 
 namespace blink {
 

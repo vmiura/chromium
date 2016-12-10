@@ -177,10 +177,14 @@ sk_sp<SkShader> CreateFadeShader(const FontList& font_list,
 CdlPaint::Hinting FontRenderParamsHintingToSkPaintHinting(
     FontRenderParams::Hinting params_hinting) {
   switch (params_hinting) {
-    case FontRenderParams::HINTING_NONE:   return CdlPaint::kNo_Hinting;
-    case FontRenderParams::HINTING_SLIGHT: return CdlPaint::kSlight_Hinting;
-    case FontRenderParams::HINTING_MEDIUM: return CdlPaint::kNormal_Hinting;
-    case FontRenderParams::HINTING_FULL:   return CdlPaint::kFull_Hinting;
+    case FontRenderParams::HINTING_NONE:
+      return CdlPaint::kNo_Hinting;
+    case FontRenderParams::HINTING_SLIGHT:
+      return CdlPaint::kSlight_Hinting;
+    case FontRenderParams::HINTING_MEDIUM:
+      return CdlPaint::kNormal_Hinting;
+    case FontRenderParams::HINTING_FULL:
+      return CdlPaint::kFull_Hinting;
   }
   return CdlPaint::kNo_Hinting;
 }
@@ -251,7 +255,7 @@ void SkiaTextRenderer::SetForegroundColor(SkColor foreground) {
 }
 
 void SkiaTextRenderer::SetShader(sk_sp<SkShader> shader) {
-  paint_.setShader(CdlShader::WrapSkShader(std::move(shader)));
+  paint_.setShader(WrapSkShader(std::move(shader)));
 }
 
 void SkiaTextRenderer::SetHaloEffect() {
@@ -299,7 +303,7 @@ void SkiaTextRenderer::DrawUnderline(int x, int y, int width) {
       x_scalar, y + underline_position_, x_scalar + width,
       y + underline_position_ + underline_thickness_);
   if (underline_thickness_ == kUnderlineMetricsNotSet) {
-    const SkScalar text_size = paint_.toSkPaint().getTextSize();
+    const SkScalar text_size = ToSkPaint(paint_).getTextSize();
     r.fTop = SkScalarMulAdd(text_size, kUnderlineOffset, y);
     r.fBottom = r.fTop + SkScalarMul(text_size, kLineThickness);
   }
@@ -307,7 +311,7 @@ void SkiaTextRenderer::DrawUnderline(int x, int y, int width) {
 }
 
 void SkiaTextRenderer::DrawStrike(int x, int y, int width) const {
-  const SkScalar text_size = paint_.toSkPaint().getTextSize();
+  const SkScalar text_size = ToSkPaint(paint_).getTextSize();
   const SkScalar height = SkScalarMul(text_size, kLineThickness);
   const SkScalar offset = SkScalarMulAdd(text_size, kStrikeThroughOffset, y);
   SkScalar x_scalar = SkIntToScalar(x);
@@ -319,11 +323,7 @@ void SkiaTextRenderer::DrawStrike(int x, int y, int width) const {
 SkiaTextRenderer::DiagonalStrike::DiagonalStrike(Canvas* canvas,
                                                  Point start,
                                                  const CdlPaint& paint)
-    : canvas_(canvas),
-      start_(start),
-      paint_(paint),
-      total_length_(0) {
-}
+    : canvas_(canvas), start_(start), paint_(paint), total_length_(0) {}
 
 SkiaTextRenderer::DiagonalStrike::~DiagonalStrike() {
 }

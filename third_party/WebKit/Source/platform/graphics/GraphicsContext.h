@@ -38,6 +38,7 @@
 #include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkMetaData.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
+#include "skia/ext/cdl_common.h"
 #include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -48,8 +49,6 @@
 
 class SkBitmap;
 class SkPath;
-class CdlPicture;
-class CdlPaint;
 class SkRRect;
 struct SkRect;
 

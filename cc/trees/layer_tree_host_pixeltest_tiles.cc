@@ -15,7 +15,6 @@
 #include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
-
 #if !defined(OS_ANDROID)
 
 namespace cc {

@@ -16,6 +16,7 @@
 #include "cc/test/solid_color_content_layer_client.h"
 #include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture_recorder.h"
+#include "skia/ext/cdl_surface.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -104,14 +105,14 @@ TEST_P(LayerTreeHostMasksPixelTest, ImageMaskOfLayer) {
   mask->SetIsMask(true);
   mask->SetBounds(mask_bounds);
 
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(200, 200);
-  SkCanvas* canvas = surface->getCanvas();
+  sk_sp<CdlSurface> surface = CdlSurface::MakeRasterN32Premul(200, 200);
+  CdlCanvas* canvas = surface->getCanvas();
   canvas->scale(SkIntToScalar(4), SkIntToScalar(4));
   MaskContentLayerClient client(mask_bounds);
   scoped_refptr<DisplayItemList> mask_display_list =
       client.PaintContentsToDisplayList(
           ContentLayerClient::PAINTING_BEHAVIOR_NORMAL);
-  mask_display_list->Raster(CdlCanvas::Make(canvas).get(), nullptr);
+  mask_display_list->Raster(canvas, nullptr);
   mask->SetImage(surface->makeImageSnapshot());
 
   scoped_refptr<SolidColorLayer> green = CreateSolidColorLayerWithBorder(

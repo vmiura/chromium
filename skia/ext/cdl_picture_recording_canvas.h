@@ -8,6 +8,10 @@
 #ifndef SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_
 #define SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_
 
+#include "cdl_common.h"
+
+#if CDL_ENABLED
+
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -16,8 +20,6 @@
 #include "third_party/skia/include/core/SkPathEffect.h"
 #include "cdl_no_draw_canvas.h"
 
-class CdlPaint;
-class CdlCanvas;
 class CdlPictureBuffer;
 
 class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
@@ -70,7 +72,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   void onDrawImage(const SkImage*,
                    SkScalar,
                    SkScalar,
-                  const CdlPaint*) override;
+                   const CdlPaint*) override;
   void onDrawImageRect(const SkImage*,
                        const SkRect*,
                        const SkRect&,
@@ -87,5 +89,7 @@ class CdlPictureRecordingCanvas final : public CdlNoDrawCanvas {
   CdlPictureBuffer* fDL;
   bool fComputeClips;
 };
+
+#endif  // CDL_ENABLED
 
 #endif  // SKIA_EXT_CDL_PICTURE_RECORDING_CANVAS_H_

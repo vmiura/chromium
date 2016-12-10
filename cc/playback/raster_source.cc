@@ -85,18 +85,18 @@ void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
 
 void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
                                     const PlaybackSettings& settings) const {
-  sk_sp<CdlCanvas> playback_canvas;
+  std::unique_ptr<CdlCanvas> playback_canvas;
 
   if (settings.skip_images) {
     // TODO(cdl): SkipImageCanvas
     // SkipImageCanvas canvas(raster_canvas);
     // RasterCommon(&canvas, nullptr);
-    playback_canvas = CdlCanvas::Make(raster_canvas);
+    playback_canvas.reset(new CdlPassThroughCanvas(raster_canvas));
   } else if (settings.use_image_hijack_canvas) {
     playback_canvas.reset(
         new ImageHijackCanvas(raster_canvas, image_decode_cache_));
   } else {
-    playback_canvas = CdlCanvas::Make(raster_canvas);
+    playback_canvas.reset(new CdlPassThroughCanvas(raster_canvas));
   }
 
   if (!settings.playback_to_shared_canvas)
@@ -109,7 +109,7 @@ void RasterSource::PrepareForPlaybackToCanvas(CdlCanvas* canvas) const {
   // TODO(hendrikw): See if we can split this up into separate functions.
 
   if (canvas->getClipStack()->quickContains(
-          SkRect::MakeFromIRect(canvas->skCanvas()->imageInfo().bounds()))) {
+          SkRect::MakeFromIRect(GetSkCanvas(canvas)->imageInfo().bounds()))) {
     canvas->discard();
   }
 
@@ -220,10 +220,11 @@ bool RasterSource::PerformSolidColorAnalysis(const gfx::Rect& content_rect,
       content_rect, 1.f / raster_scales.width(), 1.f / raster_scales.height());
 
   layer_rect.Intersect(gfx::Rect(size_));
-  skia::AnalysisCanvas canvas(layer_rect.width(), layer_rect.height());
+  skia::AnalysisCanvas sk_canvas(layer_rect.width(), layer_rect.height());
+  CdlPassThroughCanvas canvas(&sk_canvas);
   canvas.translate(-layer_rect.x(), -layer_rect.y());
-  RasterCommon(CdlCanvas::Make(&canvas).get(), &canvas);
-  return canvas.GetColorIfSolid(color);
+  RasterCommon(&canvas, &sk_canvas);
+  return sk_canvas.GetColorIfSolid(color);
 }
 
 void RasterSource::GetDiscardableImagesInRect(

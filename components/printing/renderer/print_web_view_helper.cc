@@ -35,6 +35,7 @@
 #include "printing/metafile_skia_wrapper.h"
 #include "printing/pdf_metafile_skia.h"
 #include "printing/units.h"
+#include "skia/ext/cdl_canvas.h"
 #include "third_party/WebKit/public/platform/WebDoubleSize.h"
 #include "third_party/WebKit/public/platform/WebSize.h"
 #include "third_party/WebKit/public/platform/WebURLRequest.h"
@@ -1872,8 +1873,8 @@ void PrintWebViewHelper::PrintPageInternal(
   float scale_factor = css_scale_factor;
 #endif
 
-  SkCanvas* canvas = metafile->GetVectorCanvasForNewPage(
-      page_size, canvas_area, scale_factor);
+  CdlCanvas* canvas =
+      metafile->GetVectorCanvasForNewPage(page_size, canvas_area, scale_factor);
   if (!canvas)
     return;
 
@@ -1889,7 +1890,7 @@ void PrintWebViewHelper::PrintPageInternal(
     const float fudge_factor = kPrintingMinimumShrinkFactor;
 #endif
     // |page_number| is 0-based, so 1 is added.
-    PrintHeaderAndFooter(CdlCanvas::Make(canvas).get(), params.page_number + 1,
+    PrintHeaderAndFooter(canvas, params.page_number + 1,
                          print_preview_context_.total_page_count(), *frame,
                          scale_factor / fudge_factor, page_layout_in_points,
                          params.params);
@@ -1898,7 +1899,7 @@ void PrintWebViewHelper::PrintPageInternal(
 
   float webkit_scale_factor =
       RenderPageContent(frame, params.page_number, canvas_area, content_area,
-                        scale_factor, CdlCanvas::Make(canvas).get());
+                        scale_factor, canvas);
   DCHECK_GT(webkit_scale_factor, 0.0f);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.

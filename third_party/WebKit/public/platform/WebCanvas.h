@@ -31,9 +31,8 @@
 #ifndef WebCanvas_h
 #define WebCanvas_h
 
+#include "skia/ext/cdl_common.h"
 #include "WebCommon.h"
-
-class CdlCanvas;
 
 namespace blink {
 

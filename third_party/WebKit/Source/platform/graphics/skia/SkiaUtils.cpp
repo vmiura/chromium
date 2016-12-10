@@ -31,10 +31,9 @@
 #include "platform/graphics/skia/SkiaUtils.h"
 
 #include "platform/graphics/GraphicsContext.h"
+#include "skia/ext/cdl_common.h"
 #include "skia/ext/cdl_paint.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
-
-class CdlCanvas;
 
 namespace blink {
 

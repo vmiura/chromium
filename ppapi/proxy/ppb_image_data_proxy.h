@@ -27,6 +27,7 @@
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_image_data_api.h"
+#include "skia/ext/cdl_common.h"
 
 #if !defined(OS_NACL)
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -95,8 +96,8 @@ class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
   // PPB_ImageData API.
   void* Map() override;
   void Unmap() override;
-  SkCanvas* GetPlatformCanvas() override;
-  SkCanvas* GetCanvas() override;
+  CdlCanvas* GetPlatformCanvas() override;
+  CdlCanvas* GetCanvas() override;
 
   static ImageHandle NullHandle();
 
@@ -104,7 +105,7 @@ class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
   std::unique_ptr<TransportDIB> transport_dib_;
 
   // Null when the image isn't mapped.
-  std::unique_ptr<SkCanvas> mapped_canvas_;
+  std::unique_ptr<CdlCanvas> mapped_canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformImageData);
 };
@@ -123,8 +124,8 @@ class PPAPI_PROXY_EXPORT SimpleImageData : public ImageData {
   // PPB_ImageData API.
   void* Map() override;
   void Unmap() override;
-  SkCanvas* GetPlatformCanvas() override;
-  SkCanvas* GetCanvas() override;
+  CdlCanvas* GetPlatformCanvas() override;
+  CdlCanvas* GetCanvas() override;
 
  private:
   base::SharedMemory shm_;
