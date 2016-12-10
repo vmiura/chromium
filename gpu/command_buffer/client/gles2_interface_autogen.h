@@ -890,4 +890,57 @@ virtual void SwapBuffersWithDamageCHROMIUM(GLint x,
                                            GLint y,
                                            GLint width,
                                            GLint height) = 0;
+virtual void CanvasBegin(GLenum target,
+                         GLuint texture,
+                         GLint width,
+                         GLint height,
+                         GLint msaa_sample_count,
+                         GLboolean use_dff,
+                         GLboolean can_use_lcd,
+                         GLint pixel_config) = 0;
+virtual void CanvasEnd() = 0;
+virtual void CanvasSave() = 0;
+virtual void CanvasSaveLayer(const SkRect* fBounds,
+                             const SkPaint* fPaint,
+                             const SkImageFilter* fBackdrop,
+                             GLuint fSaveLayerFlags) = 0;
+virtual void CanvasRestore() = 0;
+virtual void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
+virtual void CanvasTranslate(GLfloat tx, GLfloat ty) = 0;
+virtual void CanvasClipRect(const SkRect& r,
+                            GLuint clip_op,
+                            GLboolean antialias) = 0;
+virtual void CanvasClipRRect(const SkRRect& r,
+                             GLuint clip_op,
+                             GLboolean antialias) = 0;
+virtual void CanvasClipPath(const SkPath& p,
+                            GLuint clip_op,
+                            GLboolean antialias) = 0;
+virtual void CanvasDrawPaint(const SkPaint& paint) = 0;
+virtual void CanvasDrawRect(const SkRect& r, const SkPaint& panint) = 0;
+virtual void CanvasDrawOval(const SkRect& r, const SkPaint& panint) = 0;
+virtual void CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) = 0;
+virtual void CanvasDrawPath(const SkPath& path, const SkPaint& paint) = 0;
+virtual void CanvasDrawImage(const SkImage* image,
+                             GLfloat left,
+                             GLfloat top,
+                             const SkPaint* paint) = 0;
+virtual void CanvasDrawImageRect(const SkImage* image,
+                                 const SkRect* src,
+                                 const SkRect& dst,
+                                 const SkPaint* paint,
+                                 GLboolean strict) = 0;
+virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
+                                GLfloat x,
+                                GLfloat y,
+                                const SkPaint& paint) = 0;
+virtual void CanvasNewImage(const SkImage* image) = 0;
+virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
+virtual void CanvasNewPath(const SkPath* path) = 0;
+virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
+virtual void CanvasSetGradientShader(const SkShader* shader) = 0;
+virtual void CanvasSetImageShader(const SkImage* image,
+                                  GLuint tmx,
+                                  GLuint tmy,
+                                  const SkMatrix* local_matrix) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

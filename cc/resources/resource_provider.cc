@@ -1183,6 +1183,66 @@ ResourceProvider::ScopedSkSurfaceProvider::~ScopedSkSurfaceProvider() {
   }
 }
 
+ResourceProvider::ScopedCdlSurfaceProvider::ScopedCdlSurfaceProvider(
+    ContextProvider* context_provider,
+    ScopedWriteLockGL* resource_lock,
+    bool use_mailbox,
+    bool use_distance_field_text,
+    bool can_use_lcd_text,
+    bool ignore_color_space,
+    int msaa_sample_count)
+    : gl_(context_provider->ContextGL()),
+      texture_provider_(gl_, resource_lock, use_mailbox) {
+  gl_->CanvasBegin(
+      resource_lock->target(),                  // target
+      texture_provider_.texture_id(),           // texture
+      resource_lock->size().width(),            // width
+      resource_lock->size().height(),           // height
+      msaa_sample_count,                        // msaa_sample_count
+      use_distance_field_text,                  // GLboolean use_dff
+      can_use_lcd_text,                         // GLboolean can_use_lcd
+      ToGrPixelConfig(resource_lock->format())  // GLint pixel_config
+      );
+
+  /*
+  GrGLTextureInfo texture_info;
+  texture_info.fID = texture_provider_.texture_id();
+  texture_info.fTarget = resource_lock->target();
+  GrBackendTextureDesc desc;
+  desc.fFlags = kRenderTarget_GrBackendTextureFlag;
+  desc.fWidth = resource_lock->size().width();
+  desc.fHeight = resource_lock->size().height();
+  desc.fConfig = ToGrPixelConfig(resource_lock->format());
+  desc.fOrigin = kTopLeft_GrSurfaceOrigin;
+  desc.fTextureHandle = skia::GrGLTextureInfoToGrBackendObject(texture_info);
+  desc.fSampleCnt = msaa_sample_count;
+
+  uint32_t flags =
+      use_distance_field_text ? SkSurfaceProps::kUseDistanceFieldFonts_Flag : 0;
+  // Use unknown pixel geometry to disable LCD text.
+  SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
+  if (can_use_lcd_text) {
+    // LegacyFontHost will get LCD text and skia figures out what type to use.
+    surface_props =
+        SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
+  }
+  sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
+      context_provider->GrContext(), desc,
+      ignore_color_space ? nullptr : resource_lock->sk_color_space(),
+      &surface_props);
+  */
+}
+
+ResourceProvider::ScopedCdlSurfaceProvider::~ScopedCdlSurfaceProvider() {
+  gl_->CanvasEnd();
+  /*
+  if (sk_surface_.get()) {
+    sk_surface_->prepareForExternalIO();
+    sk_surface_.reset();
+  }
+  */
+}
+
 void ResourceProvider::PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
                                                     const Resource* resource) {
   DCHECK_EQ(RGBA_8888, resource->format);

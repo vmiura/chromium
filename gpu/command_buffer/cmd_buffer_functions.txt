@@ -363,3 +363,38 @@ GL_APICALL GLint        GL_APIENTRY glGetFragDataIndexEXT (GLidProgram program, 
 GL_APICALL void         GL_APIENTRY glUniformMatrix4fvStreamTextureMatrixCHROMIUM (GLintUniformLocation location, GLbooleanFalseOnly transpose, const GLfloat* transform);
 
 GL_APICALL void         GL_APIENTRY glSwapBuffersWithDamageCHROMIUM (GLint x, GLint y, GLint width, GLint height);
+
+GL_APICALL void         GL_APIENTRY glCanvasBegin (GLenum target, GLuint texture, GLint width, GLint height, GLint msaa_sample_count, GLboolean use_dff, GLboolean can_use_lcd, GLint pixel_config);
+GL_APICALL void         GL_APIENTRY glCanvasEnd (void);
+GL_APICALL void         GL_APIENTRY glCanvasSave (void);
+GL_APICALL void         GL_APIENTRY glCanvasSaveLayer (const SkRect* fBounds, const SkPaint* fPaint, const SkImageFilter* fBackdrop, GLuint fSaveLayerFlags);
+GL_APICALL void         GL_APIENTRY glCanvasRestore (void);
+GL_APICALL void         GL_APIENTRY glCanvasSetMatrix (GLboolean concat, const GLfloat* matrix);
+GL_APICALL void         GL_APIENTRY glCanvasTranslate (GLfloat tx, GLfloat ty);
+
+GL_APICALL void         GL_APIENTRY glCanvasClipRect (const SkRect& r, GLuint clip_op, GLboolean antialias);
+GL_APICALL void         GL_APIENTRY glCanvasClipRRect (const SkRRect& r, GLuint clip_op, GLboolean antialias);
+GL_APICALL void         GL_APIENTRY glCanvasClipPath (const SkPath& p, GLuint clip_op, GLboolean antialias);
+
+GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (const SkPaint& paint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRect (const SkRect& r, const SkPaint& panint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawOval (const SkRect& r, const SkPaint& panint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (const SkRRect& r, const SkPaint& panint);
+// TODO: DrawDRRect
+GL_APICALL void         GL_APIENTRY glCanvasDrawPath (const SkPath& path, const SkPaint& paint);
+
+GL_APICALL void         GL_APIENTRY glCanvasDrawImage (const SkImage* image, GLfloat left, GLfloat top, const SkPaint* paint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawImageRect (const SkImage* image, const SkRect* src, const SkRect& dst, const SkPaint* paint, GLboolean strict);
+
+// TODO: drawText
+// TODO: drawPosText
+GL_APICALL void         GL_APIENTRY glCanvasDrawTextBlob (const SkTextBlob* blob, GLfloat x, GLfloat y, const SkPaint& paint);
+// TODO: drawPoints
+
+GL_APICALL void         GL_APIENTRY glCanvasNewImage (const SkImage* image);
+GL_APICALL void         GL_APIENTRY glCanvasNewTextBlob (const SkTextBlob* blob);
+GL_APICALL void         GL_APIENTRY glCanvasNewPath (const SkPath* path);
+GL_APICALL void         GL_APIENTRY glCanvasNewTypeface (SkTypeface* typeface);
+
+GL_APICALL void         GL_APIENTRY glCanvasSetGradientShader (const SkShader* shader);
+GL_APICALL void         GL_APIENTRY glCanvasSetImageShader (const SkImage* image, GLuint tmx, GLuint tmy, const SkMatrix* local_matrix);

@@ -1715,6 +1715,110 @@ void GL_APIENTRY GLES2SwapBuffersWithDamageCHROMIUM(GLint x,
                                                     GLint height) {
   gles2::GetGLContext()->SwapBuffersWithDamageCHROMIUM(x, y, width, height);
 }
+void GL_APIENTRY GLES2CanvasBegin(GLenum target,
+                                  GLuint texture,
+                                  GLint width,
+                                  GLint height,
+                                  GLint msaa_sample_count,
+                                  GLboolean use_dff,
+                                  GLboolean can_use_lcd,
+                                  GLint pixel_config) {
+  gles2::GetGLContext()->CanvasBegin(target, texture, width, height,
+                                     msaa_sample_count, use_dff, can_use_lcd,
+                                     pixel_config);
+}
+void GL_APIENTRY GLES2CanvasEnd() {
+  gles2::GetGLContext()->CanvasEnd();
+}
+void GL_APIENTRY GLES2CanvasSave() {
+  gles2::GetGLContext()->CanvasSave();
+}
+void GL_APIENTRY GLES2CanvasSaveLayer(const SkRect* fBounds,
+                                      const SkPaint* fPaint,
+                                      const SkImageFilter* fBackdrop,
+                                      GLuint fSaveLayerFlags) {
+  gles2::GetGLContext()->CanvasSaveLayer(fBounds, fPaint, fBackdrop,
+                                         fSaveLayerFlags);
+}
+void GL_APIENTRY GLES2CanvasRestore() {
+  gles2::GetGLContext()->CanvasRestore();
+}
+void GL_APIENTRY GLES2CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) {
+  gles2::GetGLContext()->CanvasSetMatrix(concat, matrix);
+}
+void GL_APIENTRY GLES2CanvasTranslate(GLfloat tx, GLfloat ty) {
+  gles2::GetGLContext()->CanvasTranslate(tx, ty);
+}
+void GL_APIENTRY GLES2CanvasClipRect(const SkRect& r,
+                                     GLuint clip_op,
+                                     GLboolean antialias) {
+  gles2::GetGLContext()->CanvasClipRect(r, clip_op, antialias);
+}
+void GL_APIENTRY GLES2CanvasClipRRect(const SkRRect& r,
+                                      GLuint clip_op,
+                                      GLboolean antialias) {
+  gles2::GetGLContext()->CanvasClipRRect(r, clip_op, antialias);
+}
+void GL_APIENTRY GLES2CanvasClipPath(const SkPath& p,
+                                     GLuint clip_op,
+                                     GLboolean antialias) {
+  gles2::GetGLContext()->CanvasClipPath(p, clip_op, antialias);
+}
+void GL_APIENTRY GLES2CanvasDrawPaint(const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawPaint(paint);
+}
+void GL_APIENTRY GLES2CanvasDrawRect(const SkRect& r, const SkPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawRect(r, panint);
+}
+void GL_APIENTRY GLES2CanvasDrawOval(const SkRect& r, const SkPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawOval(r, panint);
+}
+void GL_APIENTRY GLES2CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawRRect(r, panint);
+}
+void GL_APIENTRY GLES2CanvasDrawPath(const SkPath& path, const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawPath(path, paint);
+}
+void GL_APIENTRY GLES2CanvasDrawImage(const SkImage* image,
+                                      GLfloat left,
+                                      GLfloat top,
+                                      const SkPaint* paint) {
+  gles2::GetGLContext()->CanvasDrawImage(image, left, top, paint);
+}
+void GL_APIENTRY GLES2CanvasDrawImageRect(const SkImage* image,
+                                          const SkRect* src,
+                                          const SkRect& dst,
+                                          const SkPaint* paint,
+                                          GLboolean strict) {
+  gles2::GetGLContext()->CanvasDrawImageRect(image, src, dst, paint, strict);
+}
+void GL_APIENTRY GLES2CanvasDrawTextBlob(const SkTextBlob* blob,
+                                         GLfloat x,
+                                         GLfloat y,
+                                         const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawTextBlob(blob, x, y, paint);
+}
+void GL_APIENTRY GLES2CanvasNewImage(const SkImage* image) {
+  gles2::GetGLContext()->CanvasNewImage(image);
+}
+void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
+  gles2::GetGLContext()->CanvasNewTextBlob(blob);
+}
+void GL_APIENTRY GLES2CanvasNewPath(const SkPath* path) {
+  gles2::GetGLContext()->CanvasNewPath(path);
+}
+void GL_APIENTRY GLES2CanvasNewTypeface(SkTypeface* typeface) {
+  gles2::GetGLContext()->CanvasNewTypeface(typeface);
+}
+void GL_APIENTRY GLES2CanvasSetGradientShader(const SkShader* shader) {
+  gles2::GetGLContext()->CanvasSetGradientShader(shader);
+}
+void GL_APIENTRY GLES2CanvasSetImageShader(const SkImage* image,
+                                           GLuint tmx,
+                                           GLuint tmy,
+                                           const SkMatrix* local_matrix) {
+  gles2::GetGLContext()->CanvasSetImageShader(image, tmx, tmy, local_matrix);
+}
 
 namespace gles2 {
 
@@ -3017,6 +3121,99 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glSwapBuffersWithDamageCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glSwapBuffersWithDamageCHROMIUM),
+    },
+    {
+        "glCanvasBegin", reinterpret_cast<GLES2FunctionPointer>(glCanvasBegin),
+    },
+    {
+        "glCanvasEnd", reinterpret_cast<GLES2FunctionPointer>(glCanvasEnd),
+    },
+    {
+        "glCanvasSave", reinterpret_cast<GLES2FunctionPointer>(glCanvasSave),
+    },
+    {
+        "glCanvasSaveLayer",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSaveLayer),
+    },
+    {
+        "glCanvasRestore",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasRestore),
+    },
+    {
+        "glCanvasSetMatrix",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetMatrix),
+    },
+    {
+        "glCanvasTranslate",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasTranslate),
+    },
+    {
+        "glCanvasClipRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasClipRect),
+    },
+    {
+        "glCanvasClipRRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasClipRRect),
+    },
+    {
+        "glCanvasClipPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasClipPath),
+    },
+    {
+        "glCanvasDrawPaint",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawPaint),
+    },
+    {
+        "glCanvasDrawRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawRect),
+    },
+    {
+        "glCanvasDrawOval",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawOval),
+    },
+    {
+        "glCanvasDrawRRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawRRect),
+    },
+    {
+        "glCanvasDrawPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawPath),
+    },
+    {
+        "glCanvasDrawImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawImage),
+    },
+    {
+        "glCanvasDrawImageRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawImageRect),
+    },
+    {
+        "glCanvasDrawTextBlob",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawTextBlob),
+    },
+    {
+        "glCanvasNewImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewImage),
+    },
+    {
+        "glCanvasNewTextBlob",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewTextBlob),
+    },
+    {
+        "glCanvasNewPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewPath),
+    },
+    {
+        "glCanvasNewTypeface",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewTypeface),
+    },
+    {
+        "glCanvasSetGradientShader",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetGradientShader),
+    },
+    {
+        "glCanvasSetImageShader",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetImageShader),
     },
     {
         NULL, NULL,

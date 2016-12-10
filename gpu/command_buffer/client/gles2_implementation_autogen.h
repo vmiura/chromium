@@ -1204,4 +1204,81 @@ void SwapBuffersWithDamageCHROMIUM(GLint x,
                                    GLint width,
                                    GLint height) override;
 
+void CanvasBegin(GLenum target,
+                 GLuint texture,
+                 GLint width,
+                 GLint height,
+                 GLint msaa_sample_count,
+                 GLboolean use_dff,
+                 GLboolean can_use_lcd,
+                 GLint pixel_config) override;
+
+void CanvasEnd() override;
+
+void CanvasSave() override;
+
+void CanvasSaveLayer(const SkRect* fBounds,
+                     const SkPaint* fPaint,
+                     const SkImageFilter* fBackdrop,
+                     GLuint fSaveLayerFlags) override;
+
+void CanvasRestore() override;
+
+void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) override;
+
+void CanvasTranslate(GLfloat tx, GLfloat ty) override;
+
+void CanvasClipRect(const SkRect& r,
+                    GLuint clip_op,
+                    GLboolean antialias) override;
+
+void CanvasClipRRect(const SkRRect& r,
+                     GLuint clip_op,
+                     GLboolean antialias) override;
+
+void CanvasClipPath(const SkPath& p,
+                    GLuint clip_op,
+                    GLboolean antialias) override;
+
+void CanvasDrawPaint(const SkPaint& paint) override;
+
+void CanvasDrawRect(const SkRect& r, const SkPaint& panint) override;
+
+void CanvasDrawOval(const SkRect& r, const SkPaint& panint) override;
+
+void CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) override;
+
+void CanvasDrawPath(const SkPath& path, const SkPaint& paint) override;
+
+void CanvasDrawImage(const SkImage* image,
+                     GLfloat left,
+                     GLfloat top,
+                     const SkPaint* paint) override;
+
+void CanvasDrawImageRect(const SkImage* image,
+                         const SkRect* src,
+                         const SkRect& dst,
+                         const SkPaint* paint,
+                         GLboolean strict) override;
+
+void CanvasDrawTextBlob(const SkTextBlob* blob,
+                        GLfloat x,
+                        GLfloat y,
+                        const SkPaint& paint) override;
+
+void CanvasNewImage(const SkImage* image) override;
+
+void CanvasNewTextBlob(const SkTextBlob* blob) override;
+
+void CanvasNewPath(const SkPath* path) override;
+
+void CanvasNewTypeface(SkTypeface* typeface) override;
+
+void CanvasSetGradientShader(const SkShader* shader) override;
+
+void CanvasSetImageShader(const SkImage* image,
+                          GLuint tmx,
+                          GLuint tmy,
+                          const SkMatrix* local_matrix) override;
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_AUTOGEN_H_

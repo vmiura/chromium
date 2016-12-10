@@ -2497,4 +2497,160 @@ void GLES2TraceImplementation::SwapBuffersWithDamageCHROMIUM(GLint x,
   gl_->SwapBuffersWithDamageCHROMIUM(x, y, width, height);
 }
 
+void GLES2TraceImplementation::CanvasBegin(GLenum target,
+                                           GLuint texture,
+                                           GLint width,
+                                           GLint height,
+                                           GLint msaa_sample_count,
+                                           GLboolean use_dff,
+                                           GLboolean can_use_lcd,
+                                           GLint pixel_config) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasBegin");
+  gl_->CanvasBegin(target, texture, width, height, msaa_sample_count, use_dff,
+                   can_use_lcd, pixel_config);
+}
+
+void GLES2TraceImplementation::CanvasEnd() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasEnd");
+  gl_->CanvasEnd();
+}
+
+void GLES2TraceImplementation::CanvasSave() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSave");
+  gl_->CanvasSave();
+}
+
+void GLES2TraceImplementation::CanvasSaveLayer(const SkRect* fBounds,
+                                               const SkPaint* fPaint,
+                                               const SkImageFilter* fBackdrop,
+                                               GLuint fSaveLayerFlags) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSaveLayer");
+  gl_->CanvasSaveLayer(fBounds, fPaint, fBackdrop, fSaveLayerFlags);
+}
+
+void GLES2TraceImplementation::CanvasRestore() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasRestore");
+  gl_->CanvasRestore();
+}
+
+void GLES2TraceImplementation::CanvasSetMatrix(GLboolean concat,
+                                               const GLfloat* matrix) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetMatrix");
+  gl_->CanvasSetMatrix(concat, matrix);
+}
+
+void GLES2TraceImplementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasTranslate");
+  gl_->CanvasTranslate(tx, ty);
+}
+
+void GLES2TraceImplementation::CanvasClipRect(const SkRect& r,
+                                              GLuint clip_op,
+                                              GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRect");
+  gl_->CanvasClipRect(r, clip_op, antialias);
+}
+
+void GLES2TraceImplementation::CanvasClipRRect(const SkRRect& r,
+                                               GLuint clip_op,
+                                               GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRRect");
+  gl_->CanvasClipRRect(r, clip_op, antialias);
+}
+
+void GLES2TraceImplementation::CanvasClipPath(const SkPath& p,
+                                              GLuint clip_op,
+                                              GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipPath");
+  gl_->CanvasClipPath(p, clip_op, antialias);
+}
+
+void GLES2TraceImplementation::CanvasDrawPaint(const SkPaint& paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawPaint");
+  gl_->CanvasDrawPaint(paint);
+}
+
+void GLES2TraceImplementation::CanvasDrawRect(const SkRect& r,
+                                              const SkPaint& panint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRect");
+  gl_->CanvasDrawRect(r, panint);
+}
+
+void GLES2TraceImplementation::CanvasDrawOval(const SkRect& r,
+                                              const SkPaint& panint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawOval");
+  gl_->CanvasDrawOval(r, panint);
+}
+
+void GLES2TraceImplementation::CanvasDrawRRect(const SkRRect& r,
+                                               const SkPaint& panint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRRect");
+  gl_->CanvasDrawRRect(r, panint);
+}
+
+void GLES2TraceImplementation::CanvasDrawPath(const SkPath& path,
+                                              const SkPaint& paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawPath");
+  gl_->CanvasDrawPath(path, paint);
+}
+
+void GLES2TraceImplementation::CanvasDrawImage(const SkImage* image,
+                                               GLfloat left,
+                                               GLfloat top,
+                                               const SkPaint* paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawImage");
+  gl_->CanvasDrawImage(image, left, top, paint);
+}
+
+void GLES2TraceImplementation::CanvasDrawImageRect(const SkImage* image,
+                                                   const SkRect* src,
+                                                   const SkRect& dst,
+                                                   const SkPaint* paint,
+                                                   GLboolean strict) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawImageRect");
+  gl_->CanvasDrawImageRect(image, src, dst, paint, strict);
+}
+
+void GLES2TraceImplementation::CanvasDrawTextBlob(const SkTextBlob* blob,
+                                                  GLfloat x,
+                                                  GLfloat y,
+                                                  const SkPaint& paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawTextBlob");
+  gl_->CanvasDrawTextBlob(blob, x, y, paint);
+}
+
+void GLES2TraceImplementation::CanvasNewImage(const SkImage* image) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewImage");
+  gl_->CanvasNewImage(image);
+}
+
+void GLES2TraceImplementation::CanvasNewTextBlob(const SkTextBlob* blob) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTextBlob");
+  gl_->CanvasNewTextBlob(blob);
+}
+
+void GLES2TraceImplementation::CanvasNewPath(const SkPath* path) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewPath");
+  gl_->CanvasNewPath(path);
+}
+
+void GLES2TraceImplementation::CanvasNewTypeface(SkTypeface* typeface) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTypeface");
+  gl_->CanvasNewTypeface(typeface);
+}
+
+void GLES2TraceImplementation::CanvasSetGradientShader(const SkShader* shader) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetGradientShader");
+  gl_->CanvasSetGradientShader(shader);
+}
+
+void GLES2TraceImplementation::CanvasSetImageShader(
+    const SkImage* image,
+    GLuint tmx,
+    GLuint tmy,
+    const SkMatrix* local_matrix) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetImageShader");
+  gl_->CanvasSetImageShader(image, tmx, tmy, local_matrix);
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_IMPL_AUTOGEN_H_

@@ -3507,4 +3507,70 @@ void GLES2Implementation::UniformMatrix4fvStreamTextureMatrixCHROMIUM(
   CheckGLError();
 }
 
+void GLES2Implementation::CanvasBegin(GLenum target,
+                                      GLuint texture,
+                                      GLint width,
+                                      GLint height,
+                                      GLint msaa_sample_count,
+                                      GLboolean use_dff,
+                                      GLboolean can_use_lcd,
+                                      GLint pixel_config) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasBegin("
+                     << GLES2Util::GetStringEnum(target) << ", " << texture
+                     << ", " << width << ", " << height << ", "
+                     << msaa_sample_count << ", "
+                     << GLES2Util::GetStringBool(use_dff) << ", "
+                     << GLES2Util::GetStringBool(can_use_lcd) << ", "
+                     << pixel_config << ")");
+  helper_->CanvasBegin(target, texture, width, height, msaa_sample_count,
+                       use_dff, can_use_lcd, pixel_config);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasEnd() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasEnd("
+                     << ")");
+  helper_->CanvasEnd();
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasSave() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSave("
+                     << ")");
+  helper_->CanvasSave();
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasRestore() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasRestore("
+                     << ")");
+  helper_->CanvasRestore();
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasSetMatrix(GLboolean concat,
+                                          const GLfloat* matrix) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSetMatrix("
+                     << GLES2Util::GetStringBool(concat) << ", "
+                     << static_cast<const void*>(matrix) << ")");
+  size_t count = 9;
+  for (size_t ii = 0; ii < count; ++ii)
+    GPU_CLIENT_LOG("value[" << ii << "]: " << matrix[ii]);
+  helper_->CanvasSetMatrixImmediate(concat, matrix);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasTranslate(" << tx << ", "
+                     << ty << ")");
+  helper_->CanvasTranslate(tx, ty);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

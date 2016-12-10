@@ -333,6 +333,24 @@ class CC_EXPORT ResourceProvider
     DISALLOW_COPY_AND_ASSIGN(ScopedSkSurfaceProvider);
   };
 
+  class CC_EXPORT ScopedCdlSurfaceProvider {
+   public:
+    ScopedCdlSurfaceProvider(ContextProvider* context_provider,
+                             ScopedWriteLockGL* resource_lock,
+                             bool use_mailbox,
+                             bool use_distance_field_text,
+                             bool can_use_lcd_text,
+                             bool ignore_color_space,
+                             int msaa_sample_count);
+    ~ScopedCdlSurfaceProvider();
+
+   private:
+    gpu::gles2::GLES2Interface* gl_;
+    ScopedTextureProvider texture_provider_;
+
+    DISALLOW_COPY_AND_ASSIGN(ScopedCdlSurfaceProvider);
+  };
+
   class CC_EXPORT ScopedReadLockSoftware {
    public:
     ScopedReadLockSoftware(ResourceProvider* resource_provider,

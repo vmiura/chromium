@@ -1167,4 +1167,64 @@ void GLES2InterfaceStub::SwapBuffersWithDamageCHROMIUM(GLint /* x */,
                                                        GLint /* y */,
                                                        GLint /* width */,
                                                        GLint /* height */) {}
+void GLES2InterfaceStub::CanvasBegin(GLenum /* target */,
+                                     GLuint /* texture */,
+                                     GLint /* width */,
+                                     GLint /* height */,
+                                     GLint /* msaa_sample_count */,
+                                     GLboolean /* use_dff */,
+                                     GLboolean /* can_use_lcd */,
+                                     GLint /* pixel_config */) {}
+void GLES2InterfaceStub::CanvasEnd() {}
+void GLES2InterfaceStub::CanvasSave() {}
+void GLES2InterfaceStub::CanvasSaveLayer(const SkRect* /* fBounds */,
+                                         const SkPaint* /* fPaint */,
+                                         const SkImageFilter* /* fBackdrop */,
+                                         GLuint /* fSaveLayerFlags */) {}
+void GLES2InterfaceStub::CanvasRestore() {}
+void GLES2InterfaceStub::CanvasSetMatrix(GLboolean /* concat */,
+                                         const GLfloat* /* matrix */) {}
+void GLES2InterfaceStub::CanvasTranslate(GLfloat /* tx */, GLfloat /* ty */) {}
+void GLES2InterfaceStub::CanvasClipRect(const SkRect& /* r */,
+                                        GLuint /* clip_op */,
+                                        GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasClipRRect(const SkRRect& /* r */,
+                                         GLuint /* clip_op */,
+                                         GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasClipPath(const SkPath& /* p */,
+                                        GLuint /* clip_op */,
+                                        GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasDrawPaint(const SkPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasDrawRect(const SkRect& /* r */,
+                                        const SkPaint& /* panint */) {}
+void GLES2InterfaceStub::CanvasDrawOval(const SkRect& /* r */,
+                                        const SkPaint& /* panint */) {}
+void GLES2InterfaceStub::CanvasDrawRRect(const SkRRect& /* r */,
+                                         const SkPaint& /* panint */) {}
+void GLES2InterfaceStub::CanvasDrawPath(const SkPath& /* path */,
+                                        const SkPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasDrawImage(const SkImage* /* image */,
+                                         GLfloat /* left */,
+                                         GLfloat /* top */,
+                                         const SkPaint* /* paint */) {}
+void GLES2InterfaceStub::CanvasDrawImageRect(const SkImage* /* image */,
+                                             const SkRect* /* src */,
+                                             const SkRect& /* dst */,
+                                             const SkPaint* /* paint */,
+                                             GLboolean /* strict */) {}
+void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
+                                            GLfloat /* x */,
+                                            GLfloat /* y */,
+                                            const SkPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
+void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
+void GLES2InterfaceStub::CanvasNewPath(const SkPath* /* path */) {}
+void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
+void GLES2InterfaceStub::CanvasSetGradientShader(const SkShader* /* shader */) {
+}
+void GLES2InterfaceStub::CanvasSetImageShader(
+    const SkImage* /* image */,
+    GLuint /* tmx */,
+    GLuint /* tmy */,
+    const SkMatrix* /* local_matrix */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

@@ -159,6 +159,11 @@ component("gles2_implementation") {
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx/geometry",
   ]
+
+  include_dirs = [
+    "//skia/config",
+    "//third_party/skia/include/core",
+  ]
 }
 
 # Library emulates GLES2 using command_buffers.

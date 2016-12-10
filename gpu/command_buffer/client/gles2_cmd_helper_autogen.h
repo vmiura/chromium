@@ -3177,4 +3177,340 @@ void SwapBuffersWithDamageCHROMIUM(GLint x,
   }
 }
 
+void CanvasBegin(GLenum target,
+                 GLuint texture,
+                 GLint width,
+                 GLint height,
+                 GLint msaa_sample_count,
+                 GLboolean use_dff,
+                 GLboolean can_use_lcd,
+                 GLint pixel_config) {
+  gles2::cmds::CanvasBegin* c = GetCmdSpace<gles2::cmds::CanvasBegin>();
+  if (c) {
+    c->Init(target, texture, width, height, msaa_sample_count, use_dff,
+            can_use_lcd, pixel_config);
+  }
+}
+
+void CanvasEnd() {
+  gles2::cmds::CanvasEnd* c = GetCmdSpace<gles2::cmds::CanvasEnd>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void CanvasSave() {
+  gles2::cmds::CanvasSave* c = GetCmdSpace<gles2::cmds::CanvasSave>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void CanvasSaveLayer(GLboolean use_bounds,
+                     GLboolean use_paint,
+                     GLboolean use_filter,
+                     GLfloat b_left,
+                     GLfloat b_top,
+                     GLfloat b_right,
+                     GLfloat b_bottom,
+                     GLuint flags,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasSaveLayer* c = GetCmdSpace<gles2::cmds::CanvasSaveLayer>();
+  if (c) {
+    c->Init(use_bounds, use_paint, use_filter, b_left, b_top, b_right, b_bottom,
+            flags, stroke_width, miter_limit, color, blend_mode, paint_bits);
+  }
+}
+
+void CanvasRestore() {
+  gles2::cmds::CanvasRestore* c = GetCmdSpace<gles2::cmds::CanvasRestore>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void CanvasSetMatrixImmediate(GLboolean concat, const GLfloat* matrix) {
+  const uint32_t size = gles2::cmds::CanvasSetMatrixImmediate::ComputeSize();
+  gles2::cmds::CanvasSetMatrixImmediate* c =
+      GetImmediateCmdSpaceTotalSize<gles2::cmds::CanvasSetMatrixImmediate>(
+          size);
+  if (c) {
+    c->Init(concat, matrix);
+  }
+}
+
+void CanvasTranslate(GLfloat tx, GLfloat ty) {
+  gles2::cmds::CanvasTranslate* c = GetCmdSpace<gles2::cmds::CanvasTranslate>();
+  if (c) {
+    c->Init(tx, ty);
+  }
+}
+
+void CanvasClipRect(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLuint clip_op,
+                    GLboolean antialias) {
+  gles2::cmds::CanvasClipRect* c = GetCmdSpace<gles2::cmds::CanvasClipRect>();
+  if (c) {
+    c->Init(left, top, right, bottom, clip_op, antialias);
+  }
+}
+
+void CanvasClipRRect(GLfloat left,
+                     GLfloat top,
+                     GLfloat right,
+                     GLfloat bottom,
+                     GLfloat r0_x,
+                     GLfloat r0_y,
+                     GLfloat r1_x,
+                     GLfloat r1_y,
+                     GLfloat r2_x,
+                     GLfloat r2_y,
+                     GLfloat r3_x,
+                     GLfloat r3_y,
+                     GLuint clip_op,
+                     GLboolean antialias) {
+  gles2::cmds::CanvasClipRRect* c = GetCmdSpace<gles2::cmds::CanvasClipRRect>();
+  if (c) {
+    c->Init(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x, r2_y, r3_x,
+            r3_y, clip_op, antialias);
+  }
+}
+
+void CanvasClipPath(GLuint path_id, GLuint clip_op, GLboolean antialias) {
+  gles2::cmds::CanvasClipPath* c = GetCmdSpace<gles2::cmds::CanvasClipPath>();
+  if (c) {
+    c->Init(path_id, clip_op, antialias);
+  }
+}
+
+void CanvasDrawPaint(GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasDrawPaint* c = GetCmdSpace<gles2::cmds::CanvasDrawPaint>();
+  if (c) {
+    c->Init(stroke_width, miter_limit, color, blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawRect(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) {
+  gles2::cmds::CanvasDrawRect* c = GetCmdSpace<gles2::cmds::CanvasDrawRect>();
+  if (c) {
+    c->Init(left, top, right, bottom, stroke_width, miter_limit, color,
+            blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawOval(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) {
+  gles2::cmds::CanvasDrawOval* c = GetCmdSpace<gles2::cmds::CanvasDrawOval>();
+  if (c) {
+    c->Init(left, top, right, bottom, stroke_width, miter_limit, color,
+            blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawRRect(GLfloat left,
+                     GLfloat top,
+                     GLfloat right,
+                     GLfloat bottom,
+                     GLfloat r0_x,
+                     GLfloat r0_y,
+                     GLfloat r1_x,
+                     GLfloat r1_y,
+                     GLfloat r2_x,
+                     GLfloat r2_y,
+                     GLfloat r3_x,
+                     GLfloat r3_y,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasDrawRRect* c = GetCmdSpace<gles2::cmds::CanvasDrawRRect>();
+  if (c) {
+    c->Init(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x, r2_y, r3_x,
+            r3_y, stroke_width, miter_limit, color, blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawPath(GLuint path_id,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) {
+  gles2::cmds::CanvasDrawPath* c = GetCmdSpace<gles2::cmds::CanvasDrawPath>();
+  if (c) {
+    c->Init(path_id, stroke_width, miter_limit, color, blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawImage(GLuint image_id,
+                     GLfloat x,
+                     GLfloat y,
+                     GLboolean use_paint,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasDrawImage* c = GetCmdSpace<gles2::cmds::CanvasDrawImage>();
+  if (c) {
+    c->Init(image_id, x, y, use_paint, stroke_width, miter_limit, color,
+            blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawImageRect(GLuint image_id,
+                         GLboolean use_src,
+                         GLboolean strict,
+                         GLfloat s_left,
+                         GLfloat s_top,
+                         GLfloat s_right,
+                         GLfloat s_bottom,
+                         GLfloat d_left,
+                         GLfloat d_top,
+                         GLfloat d_right,
+                         GLfloat d_bottom,
+                         GLboolean use_paint,
+                         GLfloat stroke_width,
+                         GLfloat miter_limit,
+                         GLuint color,
+                         GLuint blend_mode,
+                         GLuint paint_bits) {
+  gles2::cmds::CanvasDrawImageRect* c =
+      GetCmdSpace<gles2::cmds::CanvasDrawImageRect>();
+  if (c) {
+    c->Init(image_id, use_src, strict, s_left, s_top, s_right, s_bottom, d_left,
+            d_top, d_right, d_bottom, use_paint, stroke_width, miter_limit,
+            color, blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawTextBlob(GLuint blob_id,
+                        GLfloat x,
+                        GLfloat y,
+                        GLfloat stroke_width,
+                        GLfloat miter_limit,
+                        GLuint color,
+                        GLuint blend_mode,
+                        GLuint paint_bits) {
+  gles2::cmds::CanvasDrawTextBlob* c =
+      GetCmdSpace<gles2::cmds::CanvasDrawTextBlob>();
+  if (c) {
+    c->Init(blob_id, x, y, stroke_width, miter_limit, color, blend_mode,
+            paint_bits);
+  }
+}
+
+void CanvasNewImage(GLuint image_id,
+                    GLuint width,
+                    GLuint height,
+                    GLuint min_row_bytes,
+                    GLsizeiptr shm_size,
+                    uint32_t shm_id,
+                    uint32_t shm_offset) {
+  gles2::cmds::CanvasNewImage* c = GetCmdSpace<gles2::cmds::CanvasNewImage>();
+  if (c) {
+    c->Init(image_id, width, height, min_row_bytes, shm_size, shm_id,
+            shm_offset);
+  }
+}
+
+void CanvasNewTextBlob(GLuint blob_id,
+                       GLsizeiptr shm_size,
+                       uint32_t shm_id,
+                       uint32_t shm_offset) {
+  gles2::cmds::CanvasNewTextBlob* c =
+      GetCmdSpace<gles2::cmds::CanvasNewTextBlob>();
+  if (c) {
+    c->Init(blob_id, shm_size, shm_id, shm_offset);
+  }
+}
+
+void CanvasNewPath(GLuint path_id,
+                   GLsizeiptr shm_size,
+                   uint32_t shm_id,
+                   uint32_t shm_offset) {
+  gles2::cmds::CanvasNewPath* c = GetCmdSpace<gles2::cmds::CanvasNewPath>();
+  if (c) {
+    c->Init(path_id, shm_size, shm_id, shm_offset);
+  }
+}
+
+void CanvasNewTypeface(GLuint typeface_id,
+                       GLsizeiptr shm_size,
+                       uint32_t shm_id,
+                       uint32_t shm_offset) {
+  gles2::cmds::CanvasNewTypeface* c =
+      GetCmdSpace<gles2::cmds::CanvasNewTypeface>();
+  if (c) {
+    c->Init(typeface_id, shm_size, shm_id, shm_offset);
+  }
+}
+
+void CanvasSetGradientShader(GLsizeiptr shm_size,
+                             uint32_t shm_id,
+                             uint32_t shm_offset,
+                             GLuint gradient_type,
+                             const GLfloat m0,
+                             const GLfloat m1,
+                             const GLfloat m2,
+                             const GLfloat m3,
+                             const GLfloat m4,
+                             const GLfloat m5,
+                             const GLfloat m6,
+                             const GLfloat m7,
+                             const GLfloat m8) {
+  gles2::cmds::CanvasSetGradientShader* c =
+      GetCmdSpace<gles2::cmds::CanvasSetGradientShader>();
+  if (c) {
+    c->Init(shm_size, shm_id, shm_offset, gradient_type, m0, m1, m2, m3, m4, m5,
+            m6, m7, m8);
+  }
+}
+
+void CanvasSetImageShader(GLuint image_id,
+                          GLuint tmx,
+                          GLuint tmy,
+                          const GLfloat m0,
+                          const GLfloat m1,
+                          const GLfloat m2,
+                          const GLfloat m3,
+                          const GLfloat m4,
+                          const GLfloat m5,
+                          const GLfloat m6,
+                          const GLfloat m7,
+                          const GLfloat m8) {
+  gles2::cmds::CanvasSetImageShader* c =
+      GetCmdSpace<gles2::cmds::CanvasSetImageShader>();
+  if (c) {
+    c->Init(image_id, tmx, tmy, m0, m1, m2, m3, m4, m5, m6, m7, m8);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

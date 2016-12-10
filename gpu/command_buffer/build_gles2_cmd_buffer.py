@@ -600,7 +600,7 @@ _STATES = {
         'name': 'modelview_matrix',
         'type': 'GLfloat',
         'default': [
-          '1.0f', '0.0f','0.0f','0.0f',
+        '1.0f', '0.0f','0.0f','0.0f',
           '0.0f', '1.0f','0.0f','0.0f',
           '0.0f', '0.0f','1.0f','0.0f',
           '0.0f', '0.0f','0.0f','1.0f',
@@ -2712,6 +2712,232 @@ _FUNCTION_INFO = {
     'extension': 'KHR_blend_equation_advanced',
     'extension_flag': 'blend_equation_advanced',
     'client_test': False,
+  },
+  'CanvasBegin': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasEnd': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasSave': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasSaveLayer': {
+    'type': 'Custom',
+    'cmd_args': 'GLboolean use_bounds, GLboolean use_paint, GLboolean use_filter,'
+                'GLfloat b_left, GLfloat b_top, GLfloat b_right, GLfloat b_bottom,'
+                'GLuint flags, GLfloat stroke_width, GLfloat miter_limit,'
+                'GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasRestore': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasSetMatrix': {
+    'type': 'PUT',
+    'count': 9,
+    'data_type': 'GLfloat',
+    'decoder_func': 'DoCanvasSetMatrix',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasTranslate': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawPaint': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawOval': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawRRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y,'
+                'GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawImage': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLfloat x, GLfloat y, GLboolean use_paint, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawImageRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLboolean use_src, GLboolean strict, '
+                'GLfloat s_left, GLfloat s_top, GLfloat s_right, GLfloat s_bottom, '
+                'GLfloat d_left, GLfloat d_top, GLfloat d_right, GLfloat d_bottom, '
+                'GLboolean use_paint, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  #GLfloat s_left, GLfloat s_top, GLfloat s_right, GLfloat s_bottom, GLfloat d_left, GLfloat d_top, GLfloat d_right, GLfloat d_bottom
+  'CanvasDrawTextBlob': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint blob_id, GLfloat x, GLfloat y, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, '
+                'GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasSetGradientShader': {
+    'type': 'Custom',
+    'cmd_args': 'GLsizeiptr shm_size, uint32_t shm_id, uint32_t shm_offset,'
+                'GLuint gradient_type,'
+                'const GLfloat m0, const GLfloat m1, const GLfloat m2,'
+                'const GLfloat m3, const GLfloat m4, const GLfloat m5,'
+                'const GLfloat m6, const GLfloat m7, const GLfloat m8',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasSetImageShader': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLuint tmx, GLuint tmy, '
+                'const GLfloat m0, const GLfloat m1, const GLfloat m2,'
+                'const GLfloat m3, const GLfloat m4, const GLfloat m5,'
+                'const GLfloat m6, const GLfloat m7, const GLfloat m8',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewImage': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLuint width, GLuint height, '
+                'GLuint min_row_bytes, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewTextBlob': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint blob_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewTypeface': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint typeface_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipRRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y,'
+                'GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y,'
+                'GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
   },
   'SampleCoverage': {'decoder_func': 'DoSampleCoverage'},
   'StencilFunc': {
@@ -6882,6 +7108,10 @@ class ArrayArgTypeHandler(TypeHandler):
 
   def GetArrayType(self, func):
     """Returns the type of the element in the element array being PUT to."""
+    data_type = func.GetInfo('data_type')
+    if data_type != None:
+      return data_type
+
     for arg in func.GetOriginalArgs():
       if arg.IsPointer():
         element_type = arg.GetPointedType()
@@ -7317,6 +7547,10 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
 
   def WriteGLES2Implementation(self, func, f):
     """Overrriden from TypeHandler."""
+    impl_func = func.GetInfo('impl_func', True)
+    if not impl_func:
+      return
+
     f.write("%s GLES2Implementation::%s(%s) {\n" %
                (func.return_type, func.original_name,
                 func.MakeTypedOriginalArgString("")))
@@ -9898,6 +10132,7 @@ class GLGenerator(object):
       if match:
         func_name = match.group(2)[2:]
         func_info = self.GetFunctionInfo(func_name)
+        #print func_name
         if func_info['type'] == 'Noop':
           continue
 

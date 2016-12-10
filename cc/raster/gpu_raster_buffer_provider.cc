@@ -18,6 +18,8 @@
 #include "cc/raster/scoped_gpu_raster.h"
 #include "cc/resources/resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/skia/include/core/SkWriteBuffer.h"
+#include "third_party/skia/include/core/SkFlattenableSerialization.h"
 #include "third_party/skia/include/core/SkMultiPictureDraw.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -25,6 +27,111 @@
 
 namespace cc {
 namespace {
+
+class SkCommandBufferCanvas : public SkNoDrawCanvas {
+ public:
+  SkCommandBufferCanvas(int width, int height, gpu::gles2::GLES2Interface* gl)
+      : SkNoDrawCanvas(width, height), gl_(gl) {}
+  ~SkCommandBufferCanvas() override {}
+
+ protected:
+  void onDrawPicture(const SkPicture* picture,
+                     const SkMatrix* matrix,
+                     const SkPaint* paint) override {
+    SkCanvas::onDrawPicture(picture, matrix, paint);
+  }
+
+  SkCanvas::SaveLayerStrategy getSaveLayerStrategy(
+      const SaveLayerRec& rec) override {
+    gl_->CanvasSaveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop,
+                         rec.fSaveLayerFlags);
+    return SkCanvas::kNoLayer_SaveLayerStrategy;
+  }
+
+  void willSave() override { gl_->CanvasSave(); }
+
+  void didRestore() override { gl_->CanvasRestore(); }
+
+  void didConcat(const SkMatrix& mat) override {
+    float m[9];
+    mat.get9(m);
+    gl_->CanvasSetMatrix(true, m);
+  }
+  void didSetMatrix(const SkMatrix& mat) override {
+    float m[9];
+    mat.get9(m);
+    gl_->CanvasSetMatrix(false, m);
+  }
+  void didTranslate(SkScalar tx, SkScalar ty) override {
+    gl_->CanvasTranslate(tx, ty);
+  }
+
+  void onClipRect(const SkRect& r,
+                  SkRegion::Op op,
+                  SkCanvas::ClipEdgeStyle style) override {
+    SkNoDrawCanvas::onClipRect(r, op, style);
+    gl_->CanvasClipRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
+  }
+
+  void onClipRRect(const SkRRect& r,
+                   SkRegion::Op op,
+                   SkCanvas::ClipEdgeStyle style) override {
+    SkNoDrawCanvas::onClipRRect(r, op, style);
+    gl_->CanvasClipRRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
+  }
+
+  void onClipPath(const SkPath& p,
+                  SkRegion::Op op,
+                  SkCanvas::ClipEdgeStyle style) override {
+    SkNoDrawCanvas::onClipPath(p, op, style);
+    gl_->CanvasClipPath(p, (unsigned)op, style == kSoft_ClipEdgeStyle);
+  }
+
+  void onDrawPaint(SkPaint const& paint) override {
+    gl_->CanvasDrawPaint(paint);
+  }
+
+  void onDrawRect(const SkRect& r, const SkPaint& paint) override {
+    gl_->CanvasDrawRect(r, paint);
+  }
+
+  void onDrawOval(const SkRect& r, const SkPaint& paint) override {
+    gl_->CanvasDrawOval(r, paint);
+  }
+
+  void onDrawRRect(const SkRRect& r, const SkPaint& paint) override {
+    gl_->CanvasDrawRRect(r, paint);
+  }
+
+  void onDrawPath(const SkPath& path, const SkPaint& paint) override {
+    gl_->CanvasDrawPath(path, paint);
+  }
+
+  void onDrawTextBlob(const SkTextBlob* blob,
+                      SkScalar x,
+                      SkScalar y,
+                      const SkPaint& paint) override {
+    gl_->CanvasDrawTextBlob(blob, x, y, paint);
+  }
+
+  void onDrawImage(const SkImage* image,
+                   SkScalar left,
+                   SkScalar top,
+                   const SkPaint* paint) override {
+    gl_->CanvasDrawImage(image, left, top, paint);
+  }
+
+  void onDrawImageRect(const SkImage* image,
+                       const SkRect* src,
+                       const SkRect& dst,
+                       const SkPaint* paint,
+                       SkCanvas::SrcRectConstraint constraint) override {
+    gl_->CanvasDrawImageRect(image, src, dst, paint,
+                             constraint == SkCanvas::kStrict_SrcRectConstraint);
+  }
+
+  gpu::gles2::GLES2Interface* gl_;
+};
 
 static void RasterizeSource(
     const RasterSource* raster_source,
@@ -39,6 +146,15 @@ static void RasterizeSource(
     bool async_worker_context_enabled,
     bool use_distance_field_text,
     int msaa_sample_count) {
+  ResourceProvider::ScopedCdlSurfaceProvider scoped_surface(
+      context_provider, resource_lock, async_worker_context_enabled,
+      use_distance_field_text, raster_source->CanUseLCDText(),
+      raster_source->HasImpliedColorSpace(), msaa_sample_count);
+
+  SkCommandBufferCanvas canvas(resource_size.width(), resource_size.height(),
+                               context_provider->ContextGL());
+
+#if 0
   ScopedGpuRaster gpu_raster(context_provider);
 
   ResourceProvider::ScopedSkSurfaceProvider scoped_surface(
@@ -50,6 +166,7 @@ static void RasterizeSource(
   // rasterized, as the contents of the resource don't matter anymore.
   if (!sk_surface)
     return;
+#endif
 
   // Playback
   gfx::Rect playback_rect = raster_full_rect;
@@ -73,8 +190,13 @@ static void RasterizeSource(
         100.0f * fraction_saved);
   }
 
+#if 0
   raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
                                   playback_rect, scales, playback_settings);
+#else
+  raster_source->PlaybackToCanvas(&canvas, raster_full_rect, playback_rect,
+                                  scales, playback_settings);
+#endif
 }
 
 }  // namespace
@@ -213,6 +335,7 @@ void GpuRasterBufferProvider::PlaybackOnWorkerThread(
     gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
+#if 1
   // Turn on distance fields for layers that have ever animated.
   bool use_distance_field_text =
       use_distance_field_text_ ||
@@ -223,6 +346,7 @@ void GpuRasterBufferProvider::PlaybackOnWorkerThread(
                   scales, playback_settings, worker_context_provider_,
                   resource_lock, async_worker_context_enabled_,
                   use_distance_field_text, msaa_sample_count_);
+#endif
 
   const uint64_t fence_sync = gl->InsertFenceSyncCHROMIUM();
 
