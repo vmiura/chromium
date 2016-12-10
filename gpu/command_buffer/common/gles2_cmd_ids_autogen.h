@@ -328,7 +328,15 @@
   OP(BindFragDataLocationEXTBucket)                        /* 569 */ \
   OP(GetFragDataIndexEXT)                                  /* 570 */ \
   OP(UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate) /* 571 */ \
-  OP(SwapBuffersWithDamageCHROMIUM)                        /* 572 */
+  OP(SwapBuffersWithDamageCHROMIUM)                        /* 572 */ \
+  OP(CdlBegin)                                             /* 573 */ \
+  OP(CdlEnd)                                               /* 574 */ \
+  OP(CdlSave)                                              /* 575 */ \
+  OP(CdlRestore)                                           /* 576 */ \
+  OP(CdlSetMatrixImmediate)                                /* 577 */ \
+  OP(CdlTranslate)                                         /* 578 */ \
+  OP(CdlDrawPaint)                                         /* 579 */ \
+  OP(CdlDrawRectangle)                                     /* 580 */
 
 enum CommandId {
   kOneBeforeStartPoint =

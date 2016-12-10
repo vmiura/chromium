@@ -18,6 +18,9 @@
 #include "cc/raster/scoped_gpu_raster.h"
 #include "cc/resources/resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "skia/ext/cdl_canvas.h"
+#include "skia/ext/cdl_no_draw_canvas.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/cdl_picture.h"
 #include "skia/ext/cdl_picture_recorder.h"
 #include "third_party/skia/include/core/SkMultiPictureDraw.h"
@@ -27,6 +30,63 @@
 
 namespace cc {
 namespace {
+
+class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
+ public:
+  CdlCommandBufferCanvas(
+      int width,
+      int height,
+      gpu::gles2::GLES2Interface* gl)
+      : CdlNoDrawCanvas(width, height),
+        gl_(gl) {}
+  ~CdlCommandBufferCanvas() override {}
+
+  protected:
+    void onDrawPicture(const CdlPicture* picture,
+                       const SkMatrix* matrix,
+                       const CdlPaint* paint) override {
+      CdlCanvas::onDrawPicture(picture, matrix, paint);
+    }
+
+    int onSaveLayer(const SaveLayerRec& rec) override {
+      gl_->CdlSave(true);
+      return CdlNoDrawCanvas::onSaveLayer(rec);
+    }
+
+    int onSave() override {
+      gl_->CdlSave(false);
+      return CdlNoDrawCanvas::onSave();
+    }
+
+    void onRestore() override {
+      gl_->CdlRestore();
+      CdlNoDrawCanvas::onRestore();
+    }
+
+    void onConcat(const SkMatrix& mat) override {
+      float m[9];
+      mat.get9(m);
+      gl_->CdlSetMatrix(true, m);
+    }
+    void onSetMatrix(const SkMatrix& mat) override {
+      float m[9];
+      mat.get9(m);
+      gl_->CdlSetMatrix(false, m);
+    }
+    void onTranslate(SkScalar tx, SkScalar ty) override {
+      gl_->CdlTranslate(tx, ty);
+    }
+
+    void onDrawPaint(CdlPaint const& paint) override {
+      gl_->CdlDrawPaint(paint.getColor());
+    }
+
+    void onDrawRect(const SkRect& r, const CdlPaint& paint) override {
+      gl_->CdlDrawRectangle(r.x(), r.y(), r.width(), r.height(), paint.getColor());
+    }
+
+    gpu::gles2::GLES2Interface* gl_;
+};
 
 static void RasterizeSource(
     const RasterSource* raster_source,
@@ -41,6 +101,17 @@ static void RasterizeSource(
     bool async_worker_context_enabled,
     bool use_distance_field_text,
     int msaa_sample_count) {
+
+  ResourceProvider::ScopedCdlSurfaceProvider scoped_surface(
+      context_provider, resource_lock, async_worker_context_enabled,
+      use_distance_field_text, raster_source->CanUseLCDText(),
+      raster_source->HasImpliedColorSpace(), msaa_sample_count);
+
+  //context_provider->ContextGL()->CdlDrawRectangle(10, 10, 23, 23, 0x23232323);
+
+  CdlCommandBufferCanvas canvas(resource_size.width(), resource_size.height(), context_provider->ContextGL());
+
+#if 0
   ScopedGpuRaster gpu_raster(context_provider);
 
   ResourceProvider::ScopedSkSurfaceProvider scoped_surface(
@@ -52,6 +123,7 @@ static void RasterizeSource(
   // rasterized, as the contents of the resource don't matter anymore.
   if (!sk_surface)
     return;
+#endif
 
   // Playback
   gfx::Rect playback_rect = raster_full_rect;
@@ -75,8 +147,13 @@ static void RasterizeSource(
         100.0f * fraction_saved);
   }
 
+#if 0
   raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
                                   playback_rect, scales, playback_settings);
+#else
+  raster_source->PlaybackToCanvas(&canvas, raster_full_rect,
+                                  playback_rect, scales, playback_settings);
+#endif
 }
 
 }  // namespace
@@ -215,6 +292,7 @@ void GpuRasterBufferProvider::PlaybackOnWorkerThread(
     gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
+#if 1
   // Turn on distance fields for layers that have ever animated.
   bool use_distance_field_text =
       use_distance_field_text_ ||
@@ -225,6 +303,7 @@ void GpuRasterBufferProvider::PlaybackOnWorkerThread(
                   scales, playback_settings, worker_context_provider_,
                   resource_lock, async_worker_context_enabled_,
                   use_distance_field_text, msaa_sample_count_);
+#endif
 
   const uint64_t fence_sync = gl->InsertFenceSyncCHROMIUM();
 

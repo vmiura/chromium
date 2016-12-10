@@ -600,7 +600,7 @@ _STATES = {
         'name': 'modelview_matrix',
         'type': 'GLfloat',
         'default': [
-          '1.0f', '0.0f','0.0f','0.0f',
+        '1.0f', '0.0f','0.0f','0.0f',
           '0.0f', '1.0f','0.0f','0.0f',
           '0.0f', '0.0f','1.0f','0.0f',
           '0.0f', '0.0f','0.0f','1.0f',
@@ -2712,6 +2712,66 @@ _FUNCTION_INFO = {
     'extension': 'KHR_blend_equation_advanced',
     'extension_flag': 'blend_equation_advanced',
     'client_test': False,
+  },
+  'CdlBegin': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlEnd': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlSave': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlRestore': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlSetMatrix': {
+    'type': 'PUT',
+    'count': 9,
+    'data_type': 'GLfloat',
+    'decoder_func': 'DoCdlSetMatrix',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlTranslate': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlDrawPaint': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CdlDrawRectangle': {
+    'type': 'Custom',
+    'impl_func': True,
+    'cmd_args': 'GLfloat x, GLfloat y, GLfloat width, GLfloat height, GLuint color',
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
   },
   'SampleCoverage': {'decoder_func': 'DoSampleCoverage'},
   'StencilFunc': {
@@ -9898,6 +9958,7 @@ class GLGenerator(object):
       if match:
         func_name = match.group(2)[2:]
         func_info = self.GetFunctionInfo(func_name)
+        #print func_name
         if func_info['type'] == 'Noop':
           continue
 

@@ -5229,4 +5229,113 @@ TEST_F(GLES2FormatTest, SwapBuffersWithDamageCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CdlBegin) {
+  cmds::CdlBegin& cmd = *GetBufferAs<cmds::CdlBegin>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLenum>(11), static_cast<GLuint>(12),
+              static_cast<GLint>(13), static_cast<GLint>(14),
+              static_cast<GLint>(15), static_cast<GLboolean>(16),
+              static_cast<GLboolean>(17), static_cast<GLint>(18));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlBegin::kCmdId), cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLenum>(11), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.texture);
+  EXPECT_EQ(static_cast<GLint>(13), cmd.width);
+  EXPECT_EQ(static_cast<GLint>(14), cmd.height);
+  EXPECT_EQ(static_cast<GLint>(15), cmd.msaa_sample_count);
+  EXPECT_EQ(static_cast<GLboolean>(16), cmd.use_dff);
+  EXPECT_EQ(static_cast<GLboolean>(17), cmd.can_use_lcd);
+  EXPECT_EQ(static_cast<GLint>(18), cmd.pixel_config);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlEnd) {
+  cmds::CdlEnd& cmd = *GetBufferAs<cmds::CdlEnd>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlEnd::kCmdId), cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlSave) {
+  cmds::CdlSave& cmd = *GetBufferAs<cmds::CdlSave>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLboolean>(11));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlSave::kCmdId), cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLboolean>(11), cmd.save_layer);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlRestore) {
+  cmds::CdlRestore& cmd = *GetBufferAs<cmds::CdlRestore>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlRestore::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlSetMatrixImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLfloat data[] = {
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 3),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 4),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 5),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 6),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 7),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 8),
+  };
+  cmds::CdlSetMatrixImmediate& cmd =
+      *GetBufferAs<cmds::CdlSetMatrixImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLboolean>(11), data);
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlSetMatrixImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLboolean>(11), cmd.concat);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, CdlTranslate) {
+  cmds::CdlTranslate& cmd = *GetBufferAs<cmds::CdlTranslate>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLfloat>(11), static_cast<GLfloat>(12));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlTranslate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLfloat>(11), cmd.tx);
+  EXPECT_EQ(static_cast<GLfloat>(12), cmd.ty);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlDrawPaint) {
+  cmds::CdlDrawPaint& cmd = *GetBufferAs<cmds::CdlDrawPaint>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlDrawPaint::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.color);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CdlDrawRectangle) {
+  cmds::CdlDrawRectangle& cmd = *GetBufferAs<cmds::CdlDrawRectangle>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLfloat>(11),
+                           static_cast<GLfloat>(12), static_cast<GLfloat>(13),
+                           static_cast<GLfloat>(14), static_cast<GLuint>(15));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CdlDrawRectangle::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLfloat>(11), cmd.x);
+  EXPECT_EQ(static_cast<GLfloat>(12), cmd.y);
+  EXPECT_EQ(static_cast<GLfloat>(13), cmd.width);
+  EXPECT_EQ(static_cast<GLfloat>(14), cmd.height);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.color);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_TEST_AUTOGEN_H_

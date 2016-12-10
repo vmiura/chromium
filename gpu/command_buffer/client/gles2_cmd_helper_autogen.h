@@ -3177,4 +3177,75 @@ void SwapBuffersWithDamageCHROMIUM(GLint x,
   }
 }
 
+void CdlBegin(GLenum target,
+              GLuint texture,
+              GLint width,
+              GLint height,
+              GLint msaa_sample_count,
+              GLboolean use_dff,
+              GLboolean can_use_lcd,
+              GLint pixel_config) {
+  gles2::cmds::CdlBegin* c = GetCmdSpace<gles2::cmds::CdlBegin>();
+  if (c) {
+    c->Init(target, texture, width, height, msaa_sample_count, use_dff,
+            can_use_lcd, pixel_config);
+  }
+}
+
+void CdlEnd() {
+  gles2::cmds::CdlEnd* c = GetCmdSpace<gles2::cmds::CdlEnd>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void CdlSave(GLboolean save_layer) {
+  gles2::cmds::CdlSave* c = GetCmdSpace<gles2::cmds::CdlSave>();
+  if (c) {
+    c->Init(save_layer);
+  }
+}
+
+void CdlRestore() {
+  gles2::cmds::CdlRestore* c = GetCmdSpace<gles2::cmds::CdlRestore>();
+  if (c) {
+    c->Init();
+  }
+}
+
+void CdlSetMatrixImmediate(GLboolean concat, const GLfloat* matrix) {
+  const uint32_t size = gles2::cmds::CdlSetMatrixImmediate::ComputeSize();
+  gles2::cmds::CdlSetMatrixImmediate* c =
+      GetImmediateCmdSpaceTotalSize<gles2::cmds::CdlSetMatrixImmediate>(size);
+  if (c) {
+    c->Init(concat, matrix);
+  }
+}
+
+void CdlTranslate(GLfloat tx, GLfloat ty) {
+  gles2::cmds::CdlTranslate* c = GetCmdSpace<gles2::cmds::CdlTranslate>();
+  if (c) {
+    c->Init(tx, ty);
+  }
+}
+
+void CdlDrawPaint(GLuint color) {
+  gles2::cmds::CdlDrawPaint* c = GetCmdSpace<gles2::cmds::CdlDrawPaint>();
+  if (c) {
+    c->Init(color);
+  }
+}
+
+void CdlDrawRectangle(GLfloat x,
+                      GLfloat y,
+                      GLfloat width,
+                      GLfloat height,
+                      GLuint color) {
+  gles2::cmds::CdlDrawRectangle* c =
+      GetCmdSpace<gles2::cmds::CdlDrawRectangle>();
+  if (c) {
+    c->Init(x, y, width, height, color);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

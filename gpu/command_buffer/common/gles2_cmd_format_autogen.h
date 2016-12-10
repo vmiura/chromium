@@ -15598,4 +15598,330 @@ static_assert(offsetof(SwapBuffersWithDamageCHROMIUM, width) == 12,
 static_assert(offsetof(SwapBuffersWithDamageCHROMIUM, height) == 16,
               "offset of SwapBuffersWithDamageCHROMIUM height should be 16");
 
+struct CdlBegin {
+  typedef CdlBegin ValueType;
+  static const CommandId kCmdId = kCdlBegin;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _target,
+            GLuint _texture,
+            GLint _width,
+            GLint _height,
+            GLint _msaa_sample_count,
+            GLboolean _use_dff,
+            GLboolean _can_use_lcd,
+            GLint _pixel_config) {
+    SetHeader();
+    target = _target;
+    texture = _texture;
+    width = _width;
+    height = _height;
+    msaa_sample_count = _msaa_sample_count;
+    use_dff = _use_dff;
+    can_use_lcd = _can_use_lcd;
+    pixel_config = _pixel_config;
+  }
+
+  void* Set(void* cmd,
+            GLenum _target,
+            GLuint _texture,
+            GLint _width,
+            GLint _height,
+            GLint _msaa_sample_count,
+            GLboolean _use_dff,
+            GLboolean _can_use_lcd,
+            GLint _pixel_config) {
+    static_cast<ValueType*>(cmd)->Init(_target, _texture, _width, _height,
+                                       _msaa_sample_count, _use_dff,
+                                       _can_use_lcd, _pixel_config);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t target;
+  uint32_t texture;
+  int32_t width;
+  int32_t height;
+  int32_t msaa_sample_count;
+  uint32_t use_dff;
+  uint32_t can_use_lcd;
+  int32_t pixel_config;
+};
+
+static_assert(sizeof(CdlBegin) == 36, "size of CdlBegin should be 36");
+static_assert(offsetof(CdlBegin, header) == 0,
+              "offset of CdlBegin header should be 0");
+static_assert(offsetof(CdlBegin, target) == 4,
+              "offset of CdlBegin target should be 4");
+static_assert(offsetof(CdlBegin, texture) == 8,
+              "offset of CdlBegin texture should be 8");
+static_assert(offsetof(CdlBegin, width) == 12,
+              "offset of CdlBegin width should be 12");
+static_assert(offsetof(CdlBegin, height) == 16,
+              "offset of CdlBegin height should be 16");
+static_assert(offsetof(CdlBegin, msaa_sample_count) == 20,
+              "offset of CdlBegin msaa_sample_count should be 20");
+static_assert(offsetof(CdlBegin, use_dff) == 24,
+              "offset of CdlBegin use_dff should be 24");
+static_assert(offsetof(CdlBegin, can_use_lcd) == 28,
+              "offset of CdlBegin can_use_lcd should be 28");
+static_assert(offsetof(CdlBegin, pixel_config) == 32,
+              "offset of CdlBegin pixel_config should be 32");
+
+struct CdlEnd {
+  typedef CdlEnd ValueType;
+  static const CommandId kCmdId = kCdlEnd;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init() { SetHeader(); }
+
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+};
+
+static_assert(sizeof(CdlEnd) == 4, "size of CdlEnd should be 4");
+static_assert(offsetof(CdlEnd, header) == 0,
+              "offset of CdlEnd header should be 0");
+
+struct CdlSave {
+  typedef CdlSave ValueType;
+  static const CommandId kCmdId = kCdlSave;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLboolean _save_layer) {
+    SetHeader();
+    save_layer = _save_layer;
+  }
+
+  void* Set(void* cmd, GLboolean _save_layer) {
+    static_cast<ValueType*>(cmd)->Init(_save_layer);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t save_layer;
+};
+
+static_assert(sizeof(CdlSave) == 8, "size of CdlSave should be 8");
+static_assert(offsetof(CdlSave, header) == 0,
+              "offset of CdlSave header should be 0");
+static_assert(offsetof(CdlSave, save_layer) == 4,
+              "offset of CdlSave save_layer should be 4");
+
+struct CdlRestore {
+  typedef CdlRestore ValueType;
+  static const CommandId kCmdId = kCdlRestore;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init() { SetHeader(); }
+
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+};
+
+static_assert(sizeof(CdlRestore) == 4, "size of CdlRestore should be 4");
+static_assert(offsetof(CdlRestore, header) == 0,
+              "offset of CdlRestore header should be 0");
+
+struct CdlSetMatrixImmediate {
+  typedef CdlSetMatrixImmediate ValueType;
+  static const CommandId kCmdId = kCdlSetMatrixImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLfloat) * 9);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLboolean _concat, const GLfloat* _matrix) {
+    SetHeader();
+    concat = _concat;
+    memcpy(ImmediateDataAddress(this), _matrix, ComputeDataSize());
+  }
+
+  void* Set(void* cmd, GLboolean _concat, const GLfloat* _matrix) {
+    static_cast<ValueType*>(cmd)->Init(_concat, _matrix);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t concat;
+};
+
+static_assert(sizeof(CdlSetMatrixImmediate) == 8,
+              "size of CdlSetMatrixImmediate should be 8");
+static_assert(offsetof(CdlSetMatrixImmediate, header) == 0,
+              "offset of CdlSetMatrixImmediate header should be 0");
+static_assert(offsetof(CdlSetMatrixImmediate, concat) == 4,
+              "offset of CdlSetMatrixImmediate concat should be 4");
+
+struct CdlTranslate {
+  typedef CdlTranslate ValueType;
+  static const CommandId kCmdId = kCdlTranslate;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _tx, GLfloat _ty) {
+    SetHeader();
+    tx = _tx;
+    ty = _ty;
+  }
+
+  void* Set(void* cmd, GLfloat _tx, GLfloat _ty) {
+    static_cast<ValueType*>(cmd)->Init(_tx, _ty);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float tx;
+  float ty;
+};
+
+static_assert(sizeof(CdlTranslate) == 12, "size of CdlTranslate should be 12");
+static_assert(offsetof(CdlTranslate, header) == 0,
+              "offset of CdlTranslate header should be 0");
+static_assert(offsetof(CdlTranslate, tx) == 4,
+              "offset of CdlTranslate tx should be 4");
+static_assert(offsetof(CdlTranslate, ty) == 8,
+              "offset of CdlTranslate ty should be 8");
+
+struct CdlDrawPaint {
+  typedef CdlDrawPaint ValueType;
+  static const CommandId kCmdId = kCdlDrawPaint;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _color) {
+    SetHeader();
+    color = _color;
+  }
+
+  void* Set(void* cmd, GLuint _color) {
+    static_cast<ValueType*>(cmd)->Init(_color);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t color;
+};
+
+static_assert(sizeof(CdlDrawPaint) == 8, "size of CdlDrawPaint should be 8");
+static_assert(offsetof(CdlDrawPaint, header) == 0,
+              "offset of CdlDrawPaint header should be 0");
+static_assert(offsetof(CdlDrawPaint, color) == 4,
+              "offset of CdlDrawPaint color should be 4");
+
+struct CdlDrawRectangle {
+  typedef CdlDrawRectangle ValueType;
+  static const CommandId kCmdId = kCdlDrawRectangle;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _x,
+            GLfloat _y,
+            GLfloat _width,
+            GLfloat _height,
+            GLuint _color) {
+    SetHeader();
+    x = _x;
+    y = _y;
+    width = _width;
+    height = _height;
+    color = _color;
+  }
+
+  void* Set(void* cmd,
+            GLfloat _x,
+            GLfloat _y,
+            GLfloat _width,
+            GLfloat _height,
+            GLuint _color) {
+    static_cast<ValueType*>(cmd)->Init(_x, _y, _width, _height, _color);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float x;
+  float y;
+  float width;
+  float height;
+  uint32_t color;
+};
+
+static_assert(sizeof(CdlDrawRectangle) == 24,
+              "size of CdlDrawRectangle should be 24");
+static_assert(offsetof(CdlDrawRectangle, header) == 0,
+              "offset of CdlDrawRectangle header should be 0");
+static_assert(offsetof(CdlDrawRectangle, x) == 4,
+              "offset of CdlDrawRectangle x should be 4");
+static_assert(offsetof(CdlDrawRectangle, y) == 8,
+              "offset of CdlDrawRectangle y should be 8");
+static_assert(offsetof(CdlDrawRectangle, width) == 12,
+              "offset of CdlDrawRectangle width should be 12");
+static_assert(offsetof(CdlDrawRectangle, height) == 16,
+              "offset of CdlDrawRectangle height should be 16");
+static_assert(offsetof(CdlDrawRectangle, color) == 20,
+              "offset of CdlDrawRectangle color should be 20");
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_

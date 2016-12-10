@@ -105,6 +105,50 @@ void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
   RasterCommon(playback_canvas.get(), nullptr);
 }
 
+void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
+                                    const gfx::Rect& canvas_bitmap_rect,
+                                    const gfx::Rect& canvas_playback_rect,
+                                    const gfx::SizeF& raster_scales,
+                                    const PlaybackSettings& settings) const {
+  SkIRect raster_bounds = gfx::RectToSkIRect(canvas_bitmap_rect);
+  if (!canvas_playback_rect.IsEmpty() &&
+      !raster_bounds.intersect(gfx::RectToSkIRect(canvas_playback_rect)))
+    return;
+  // Treat all subnormal values as zero for performance.
+  ScopedSubnormalFloatDisabler disabler;
+
+  raster_canvas->save();
+  raster_canvas->translate(-canvas_bitmap_rect.x(), -canvas_bitmap_rect.y());
+  raster_canvas->clipRect(SkRect::MakeFromIRect(raster_bounds));
+  raster_canvas->scale(raster_scales.width(), raster_scales.height());
+  PlaybackToCanvas(raster_canvas, settings);
+  raster_canvas->restore();
+}
+
+void RasterSource::PlaybackToCanvas(CdlCanvas* raster_canvas,
+                                    const PlaybackSettings& settings) const {
+  /*
+  std::unique_ptr<CdlCanvas> playback_canvas;
+
+  if (settings.skip_images) {
+    // TODO(cdl): SkipImageCanvas
+    // SkipImageCanvas canvas(raster_canvas);
+    // RasterCommon(&canvas, nullptr);
+    playback_canvas.reset(new CdlPassThroughCanvas(raster_canvas));
+  } else if (settings.use_image_hijack_canvas) {
+    playback_canvas.reset(
+        new ImageHijackCanvas(raster_canvas, image_decode_cache_));
+  } else {
+    playback_canvas.reset(new CdlPassThroughCanvas(raster_canvas));
+  }
+  */
+
+  if (!settings.playback_to_shared_canvas)
+    PrepareForPlaybackToCanvas(raster_canvas);
+
+  RasterCommon(raster_canvas, nullptr);
+}
+
 void RasterSource::PrepareForPlaybackToCanvas(CdlCanvas* canvas) const {
   // TODO(hendrikw): See if we can split this up into separate functions.
 

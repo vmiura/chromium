@@ -864,4 +864,23 @@ void SwapBuffersWithDamageCHROMIUM(GLint x,
                                    GLint y,
                                    GLint width,
                                    GLint height) override;
+void CdlBegin(GLenum target,
+              GLuint texture,
+              GLint width,
+              GLint height,
+              GLint msaa_sample_count,
+              GLboolean use_dff,
+              GLboolean can_use_lcd,
+              GLint pixel_config) override;
+void CdlEnd() override;
+void CdlSave(GLboolean save_layer) override;
+void CdlRestore() override;
+void CdlSetMatrix(GLboolean concat, const GLfloat* matrix) override;
+void CdlTranslate(GLfloat tx, GLfloat ty) override;
+void CdlDrawPaint(GLuint color) override;
+void CdlDrawRectangle(GLfloat x,
+                      GLfloat y,
+                      GLfloat width,
+                      GLfloat height,
+                      GLuint color) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_AUTOGEN_H_

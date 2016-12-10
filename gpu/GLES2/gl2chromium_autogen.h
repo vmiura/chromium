@@ -384,5 +384,13 @@
   GLES2_GET_FUN(UniformMatrix4fvStreamTextureMatrixCHROMIUM)
 #define glSwapBuffersWithDamageCHROMIUM \
   GLES2_GET_FUN(SwapBuffersWithDamageCHROMIUM)
+#define glCdlBegin GLES2_GET_FUN(CdlBegin)
+#define glCdlEnd GLES2_GET_FUN(CdlEnd)
+#define glCdlSave GLES2_GET_FUN(CdlSave)
+#define glCdlRestore GLES2_GET_FUN(CdlRestore)
+#define glCdlSetMatrix GLES2_GET_FUN(CdlSetMatrix)
+#define glCdlTranslate GLES2_GET_FUN(CdlTranslate)
+#define glCdlDrawPaint GLES2_GET_FUN(CdlDrawPaint)
+#define glCdlDrawRectangle GLES2_GET_FUN(CdlDrawRectangle)
 
 #endif  // GPU_GLES2_GL2CHROMIUM_AUTOGEN_H_

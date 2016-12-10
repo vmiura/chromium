@@ -56,6 +56,13 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
                         const gfx::SizeF& raster_scales,
                         const PlaybackSettings& settings) const;
 
+  void PlaybackToCanvas(CdlCanvas* canvas,
+                        const gfx::Rect& canvas_bitmap_rect,
+                        const gfx::Rect& canvas_playback_rect,
+                        const gfx::SizeF& raster_scales,
+                        const PlaybackSettings& settings) const;
+
+
   // Raster this RasterSource into the given canvas. Canvas states such as
   // CTM and clip region will be respected. This function will replace pixels
   // in the clip region without blending. It is assumed that existing pixels
@@ -66,6 +73,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // Note that this should only be called after the image decode controller has
   // been set, which happens during commit.
   virtual void PlaybackToCanvas(SkCanvas* canvas,
+                                const PlaybackSettings& settings) const;
+
+  virtual void PlaybackToCanvas(CdlCanvas* canvas,
                                 const PlaybackSettings& settings) const;
 
   // Returns whether the given rect at given scale is of solid color in

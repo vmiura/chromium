@@ -65,7 +65,13 @@
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "gpu/command_buffer/service/vertex_array_manager.h"
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
+#include "skia/ext/texture_handle.h"
 #include "third_party/angle/src/image_util/loadimage.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/GrContext.h"
 #include "third_party/smhasher/src/City.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
@@ -90,6 +96,60 @@
 // Note that this must be included after gl_bindings.h to avoid conflicts.
 #include <OpenGL/CGLIOSurface.h>
 #endif
+
+#include "gl/GrGLInterface.h"
+#include "gl/GrGLAssembleInterface.h"
+
+#include <dlfcn.h>
+
+namespace {
+
+class GLLoader {
+public:
+    GLLoader() {
+        fLibrary = dlopen(
+                    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib",
+                    RTLD_LAZY);
+    }
+
+    ~GLLoader() {
+        if (fLibrary) {
+            dlclose(fLibrary);
+        }
+    }
+
+    void* handle() const {
+        return nullptr == fLibrary ? RTLD_DEFAULT : fLibrary;
+    }
+
+private:
+    void* fLibrary;
+};
+
+class GLProcGetter {
+public:
+    GLProcGetter() {}
+
+    GrGLFuncPtr getProc(const char name[]) const {
+        return (GrGLFuncPtr) dlsym(fLoader.handle(), name);
+    }
+
+private:
+    GLLoader fLoader;
+};
+
+static GrGLFuncPtr mac_get_gl_proc(void* ctx, const char name[]) {
+    SkASSERT(ctx);
+    const GLProcGetter* getter = (const GLProcGetter*) ctx;
+    return getter->getProc(name);
+}
+
+const GrGLInterface* CreateNativeInterface() {
+    GLProcGetter getter;
+    return GrGLAssembleGLInterface(&getter, mac_get_gl_proc);
+}
+
+}
 
 namespace gpu {
 namespace gles2 {
@@ -1034,6 +1094,10 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   void DoFlushMappedBufferRange(
       GLenum target, GLintptr offset, GLsizeiptr size);
+
+  void DoCdlSetMatrix(
+    bool concat,
+    volatile const GLfloat* matrix);
 
   // Creates a Program for the given program.
   Program* CreateProgram(GLuint client_id, GLuint service_id) {
@@ -2394,6 +2458,10 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   std::unique_ptr<CALayerSharedState> ca_layer_shared_state_;
 
+  sk_sp<class GrContext> gr_context_;
+  sk_sp<SkSurface> sk_surface_;
+  SkCanvas* canvas_;
+
   DISALLOW_COPY_AND_ASSIGN(GLES2DecoderImpl);
 };
 
@@ -3518,6 +3586,23 @@ bool GLES2DecoderImpl::Initialize(
   if (group_->gpu_preferences().enable_gpu_driver_debug_logging &&
       feature_info_->feature_flags().khr_debug) {
     InitializeGLDebugLogging();
+  }
+
+  sk_sp<const GrGLInterface> interface(CreateNativeInterface());
+  gr_context_ = sk_sp<GrContext>(
+      GrContext::Create(kOpenGL_GrBackend,
+                        // GrContext takes ownership of |interface|.
+                        reinterpret_cast<GrBackendContext>(interface.get())));
+  if (gr_context_) {
+    // The limit of the number of GPU resources we hold in the GrContext's
+    // GPU cache.
+    static const int kMaxGaneshResourceCacheCount = 8196;
+    // The limit of the bytes allocated toward GPU resources in the GrContext's
+    // GPU cache.
+    static const size_t kMaxGaneshResourceCacheBytes = 96 * 1024 * 1024;
+
+    gr_context_->setResourceCacheLimits(kMaxGaneshResourceCacheCount,
+                                        kMaxGaneshResourceCacheBytes);
   }
 
   return true;
@@ -18885,6 +18970,150 @@ error::Error GLES2DecoderImpl::HandleProgramPathFragmentInputGenCHROMIUM(
   }
   glProgramPathFragmentInputGenNV(program->service_id(), real_location,
                                   gen_mode, components, coeffs);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlBegin(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CdlBegin& c =
+      *static_cast<
+          const volatile gles2::cmds::CdlBegin*>(
+          cmd_data);
+
+  gr_context_->resetContext();
+  
+  GLenum target = c.target;
+  GrGLuint texture_id = GetTexture(c.texture)->service_id();
+  int width = c.width;
+  int height = c.height;
+  int msaa_sample_count = c.msaa_sample_count;
+  bool use_distance_field_text = c.use_dff;
+  bool can_use_lcd_text = c.can_use_lcd;
+  GrPixelConfig pixel_config = (GrPixelConfig)c.pixel_config;
+
+  GrGLTextureInfo texture_info;
+  texture_info.fID = texture_id;
+  texture_info.fTarget = target;
+  GrBackendTextureDesc desc;
+  desc.fFlags = kRenderTarget_GrBackendTextureFlag;
+  desc.fWidth = width;
+  desc.fHeight = height;
+  desc.fConfig = (GrPixelConfig)pixel_config;
+  desc.fOrigin = kTopLeft_GrSurfaceOrigin;
+  desc.fTextureHandle = skia::GrGLTextureInfoToGrBackendObject(texture_info);
+  desc.fSampleCnt = msaa_sample_count;
+
+  uint32_t flags = 
+      use_distance_field_text ? SkSurfaceProps::kUseDistanceFieldFonts_Flag : 0;
+  // Use unknown pixel geometry to disable LCD text.
+  SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
+  if (can_use_lcd_text) {
+    // LegacyFontHost will get LCD text and skia figures out what type to use.
+    surface_props =
+        SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
+  }
+
+  sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
+      gr_context_.get(), desc, nullptr, &surface_props);
+
+  //////////////////////////////////////////
+  canvas_ = sk_surface_->getCanvas();
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlEnd(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (sk_surface_.get()) {
+    sk_surface_->prepareForExternalIO();
+    sk_surface_.reset();
+  }
+
+  RestoreState(nullptr);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlSave(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CdlSave& c =
+      *static_cast<
+          const volatile gles2::cmds::CdlSave*>(
+          cmd_data);
+
+  if (c.save_layer)
+    canvas_->saveLayer(0, 0);
+  else
+    canvas_->save();
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlRestore(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  canvas_->restore();
+
+  return error::kNoError;
+}
+
+void GLES2DecoderImpl::DoCdlSetMatrix(
+    bool concat,
+    volatile const GLfloat* matrix) {
+  SkMatrix m;
+  m.set9(const_cast<const GLfloat*>(matrix));
+  if (concat)
+    canvas_->concat(m);
+  else
+    canvas_->setMatrix(m);
+}
+
+error::Error GLES2DecoderImpl::HandleCdlTranslate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CdlTranslate& c =
+      *static_cast<
+          const volatile gles2::cmds::CdlTranslate*>(
+          cmd_data);
+  canvas_->translate(c.tx, c.ty);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlDrawPaint(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CdlDrawPaint& c =
+      *static_cast<
+          const volatile gles2::cmds::CdlDrawPaint*>(
+          cmd_data);
+
+  SkPaint paint;
+  paint.setColor(c.color);
+  canvas_->drawPaint(paint);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCdlDrawRectangle(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CdlDrawRectangle& c =
+      *static_cast<
+          const volatile gles2::cmds::CdlDrawRectangle*>(
+          cmd_data);
+
+  SkRect rect = SkRect::MakeXYWH(c.x, c.y, c.width, c.height);
+  SkPaint paint;
+  paint.setColor(c.color);
+  canvas_->drawRect(rect, paint);
+
   return error::kNoError;
 }
 

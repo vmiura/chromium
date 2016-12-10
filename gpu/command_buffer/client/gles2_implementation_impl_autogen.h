@@ -3507,4 +3507,90 @@ void GLES2Implementation::UniformMatrix4fvStreamTextureMatrixCHROMIUM(
   CheckGLError();
 }
 
+void GLES2Implementation::CdlBegin(GLenum target,
+                                   GLuint texture,
+                                   GLint width,
+                                   GLint height,
+                                   GLint msaa_sample_count,
+                                   GLboolean use_dff,
+                                   GLboolean can_use_lcd,
+                                   GLint pixel_config) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlBegin("
+                     << GLES2Util::GetStringEnum(target) << ", " << texture
+                     << ", " << width << ", " << height << ", "
+                     << msaa_sample_count << ", "
+                     << GLES2Util::GetStringBool(use_dff) << ", "
+                     << GLES2Util::GetStringBool(can_use_lcd) << ", "
+                     << pixel_config << ")");
+  helper_->CdlBegin(target, texture, width, height, msaa_sample_count, use_dff,
+                    can_use_lcd, pixel_config);
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlEnd() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlEnd("
+                     << ")");
+  helper_->CdlEnd();
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlSave(GLboolean save_layer) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlSave("
+                     << GLES2Util::GetStringBool(save_layer) << ")");
+  helper_->CdlSave(save_layer);
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlRestore() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlRestore("
+                     << ")");
+  helper_->CdlRestore();
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlSetMatrix(GLboolean concat,
+                                       const GLfloat* matrix) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlSetMatrix("
+                     << GLES2Util::GetStringBool(concat) << ", "
+                     << static_cast<const void*>(matrix) << ")");
+  size_t count = 9;
+  for (size_t ii = 0; ii < count; ++ii)
+    GPU_CLIENT_LOG("value[" << ii << "]: " << matrix[ii]);
+  helper_->CdlSetMatrixImmediate(concat, matrix);
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlTranslate(GLfloat tx, GLfloat ty) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlTranslate(" << tx << ", "
+                     << ty << ")");
+  helper_->CdlTranslate(tx, ty);
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlDrawPaint(GLuint color) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlDrawPaint(" << color << ")");
+  helper_->CdlDrawPaint(color);
+  CheckGLError();
+}
+
+void GLES2Implementation::CdlDrawRectangle(GLfloat x,
+                                           GLfloat y,
+                                           GLfloat width,
+                                           GLfloat height,
+                                           GLuint color) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlDrawRectangle(" << x << ", "
+                     << y << ", " << width << ", " << height << ", " << color
+                     << ")");
+  helper_->CdlDrawRectangle(x, y, width, height, color);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

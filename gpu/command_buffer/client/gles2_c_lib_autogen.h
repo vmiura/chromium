@@ -1715,6 +1715,43 @@ void GL_APIENTRY GLES2SwapBuffersWithDamageCHROMIUM(GLint x,
                                                     GLint height) {
   gles2::GetGLContext()->SwapBuffersWithDamageCHROMIUM(x, y, width, height);
 }
+void GL_APIENTRY GLES2CdlBegin(GLenum target,
+                               GLuint texture,
+                               GLint width,
+                               GLint height,
+                               GLint msaa_sample_count,
+                               GLboolean use_dff,
+                               GLboolean can_use_lcd,
+                               GLint pixel_config) {
+  gles2::GetGLContext()->CdlBegin(target, texture, width, height,
+                                  msaa_sample_count, use_dff, can_use_lcd,
+                                  pixel_config);
+}
+void GL_APIENTRY GLES2CdlEnd() {
+  gles2::GetGLContext()->CdlEnd();
+}
+void GL_APIENTRY GLES2CdlSave(GLboolean save_layer) {
+  gles2::GetGLContext()->CdlSave(save_layer);
+}
+void GL_APIENTRY GLES2CdlRestore() {
+  gles2::GetGLContext()->CdlRestore();
+}
+void GL_APIENTRY GLES2CdlSetMatrix(GLboolean concat, const GLfloat* matrix) {
+  gles2::GetGLContext()->CdlSetMatrix(concat, matrix);
+}
+void GL_APIENTRY GLES2CdlTranslate(GLfloat tx, GLfloat ty) {
+  gles2::GetGLContext()->CdlTranslate(tx, ty);
+}
+void GL_APIENTRY GLES2CdlDrawPaint(GLuint color) {
+  gles2::GetGLContext()->CdlDrawPaint(color);
+}
+void GL_APIENTRY GLES2CdlDrawRectangle(GLfloat x,
+                                       GLfloat y,
+                                       GLfloat width,
+                                       GLfloat height,
+                                       GLuint color) {
+  gles2::GetGLContext()->CdlDrawRectangle(x, y, width, height, color);
+}
 
 namespace gles2 {
 
@@ -3017,6 +3054,34 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glSwapBuffersWithDamageCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glSwapBuffersWithDamageCHROMIUM),
+    },
+    {
+        "glCdlBegin", reinterpret_cast<GLES2FunctionPointer>(glCdlBegin),
+    },
+    {
+        "glCdlEnd", reinterpret_cast<GLES2FunctionPointer>(glCdlEnd),
+    },
+    {
+        "glCdlSave", reinterpret_cast<GLES2FunctionPointer>(glCdlSave),
+    },
+    {
+        "glCdlRestore", reinterpret_cast<GLES2FunctionPointer>(glCdlRestore),
+    },
+    {
+        "glCdlSetMatrix",
+        reinterpret_cast<GLES2FunctionPointer>(glCdlSetMatrix),
+    },
+    {
+        "glCdlTranslate",
+        reinterpret_cast<GLES2FunctionPointer>(glCdlTranslate),
+    },
+    {
+        "glCdlDrawPaint",
+        reinterpret_cast<GLES2FunctionPointer>(glCdlDrawPaint),
+    },
+    {
+        "glCdlDrawRectangle",
+        reinterpret_cast<GLES2FunctionPointer>(glCdlDrawRectangle),
     },
     {
         NULL, NULL,

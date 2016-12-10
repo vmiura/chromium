@@ -12,4 +12,16 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_4_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_4_AUTOGEN_H_
 
+TEST_P(GLES2DecoderTest4, CdlSetMatrixImmediateValidArgs) {
+  cmds::CdlSetMatrixImmediate& cmd =
+      *GetImmediateAs<cmds::CdlSetMatrixImmediate>();
+  SpecializedSetup<cmds::CdlSetMatrixImmediate, 0>(true);
+  GLfloat temp[9] = {
+      0,
+  };
+  cmd.Init(true, &temp[0]);
+  EXPECT_CALL(*gl_, CdlSetMatrix(true, PointsToArray(temp, 9)));
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_4_AUTOGEN_H_

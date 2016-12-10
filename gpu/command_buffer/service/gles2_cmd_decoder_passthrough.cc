@@ -839,6 +839,57 @@ void GLES2DecoderPassthroughImpl::UpdateTextureBinding(GLenum target,
       sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1,               \
   }, /* NOLINT */
 
+
+// CDL
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlBegin(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+error::Error GLES2DecoderPassthroughImpl::HandleCdlEnd(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlSave(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlRestore(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoCdlSetMatrix(
+    bool concat,
+    volatile const GLfloat* matrix) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlTranslate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlDrawPaint(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCdlDrawRectangle(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+///
+
 const GLES2DecoderPassthroughImpl::CommandInfo
     GLES2DecoderPassthroughImpl::command_info[] = {
         GLES2_COMMAND_LIST(GLES2_CMD_OP)};

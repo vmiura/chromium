@@ -890,4 +890,23 @@ virtual void SwapBuffersWithDamageCHROMIUM(GLint x,
                                            GLint y,
                                            GLint width,
                                            GLint height) = 0;
+virtual void CdlBegin(GLenum target,
+                      GLuint texture,
+                      GLint width,
+                      GLint height,
+                      GLint msaa_sample_count,
+                      GLboolean use_dff,
+                      GLboolean can_use_lcd,
+                      GLint pixel_config) = 0;
+virtual void CdlEnd() = 0;
+virtual void CdlSave(GLboolean save_layer) = 0;
+virtual void CdlRestore() = 0;
+virtual void CdlSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
+virtual void CdlTranslate(GLfloat tx, GLfloat ty) = 0;
+virtual void CdlDrawPaint(GLuint color) = 0;
+virtual void CdlDrawRectangle(GLfloat x,
+                              GLfloat y,
+                              GLfloat width,
+                              GLfloat height,
+                              GLuint color) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

@@ -2497,4 +2497,57 @@ void GLES2TraceImplementation::SwapBuffersWithDamageCHROMIUM(GLint x,
   gl_->SwapBuffersWithDamageCHROMIUM(x, y, width, height);
 }
 
+void GLES2TraceImplementation::CdlBegin(GLenum target,
+                                        GLuint texture,
+                                        GLint width,
+                                        GLint height,
+                                        GLint msaa_sample_count,
+                                        GLboolean use_dff,
+                                        GLboolean can_use_lcd,
+                                        GLint pixel_config) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlBegin");
+  gl_->CdlBegin(target, texture, width, height, msaa_sample_count, use_dff,
+                can_use_lcd, pixel_config);
+}
+
+void GLES2TraceImplementation::CdlEnd() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlEnd");
+  gl_->CdlEnd();
+}
+
+void GLES2TraceImplementation::CdlSave(GLboolean save_layer) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlSave");
+  gl_->CdlSave(save_layer);
+}
+
+void GLES2TraceImplementation::CdlRestore() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlRestore");
+  gl_->CdlRestore();
+}
+
+void GLES2TraceImplementation::CdlSetMatrix(GLboolean concat,
+                                            const GLfloat* matrix) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlSetMatrix");
+  gl_->CdlSetMatrix(concat, matrix);
+}
+
+void GLES2TraceImplementation::CdlTranslate(GLfloat tx, GLfloat ty) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlTranslate");
+  gl_->CdlTranslate(tx, ty);
+}
+
+void GLES2TraceImplementation::CdlDrawPaint(GLuint color) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlDrawPaint");
+  gl_->CdlDrawPaint(color);
+}
+
+void GLES2TraceImplementation::CdlDrawRectangle(GLfloat x,
+                                                GLfloat y,
+                                                GLfloat width,
+                                                GLfloat height,
+                                                GLuint color) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlDrawRectangle");
+  gl_->CdlDrawRectangle(x, y, width, height, color);
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_IMPL_AUTOGEN_H_

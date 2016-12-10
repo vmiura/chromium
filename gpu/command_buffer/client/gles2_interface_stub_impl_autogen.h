@@ -1167,4 +1167,24 @@ void GLES2InterfaceStub::SwapBuffersWithDamageCHROMIUM(GLint /* x */,
                                                        GLint /* y */,
                                                        GLint /* width */,
                                                        GLint /* height */) {}
+void GLES2InterfaceStub::CdlBegin(GLenum /* target */,
+                                  GLuint /* texture */,
+                                  GLint /* width */,
+                                  GLint /* height */,
+                                  GLint /* msaa_sample_count */,
+                                  GLboolean /* use_dff */,
+                                  GLboolean /* can_use_lcd */,
+                                  GLint /* pixel_config */) {}
+void GLES2InterfaceStub::CdlEnd() {}
+void GLES2InterfaceStub::CdlSave(GLboolean /* save_layer */) {}
+void GLES2InterfaceStub::CdlRestore() {}
+void GLES2InterfaceStub::CdlSetMatrix(GLboolean /* concat */,
+                                      const GLfloat* /* matrix */) {}
+void GLES2InterfaceStub::CdlTranslate(GLfloat /* tx */, GLfloat /* ty */) {}
+void GLES2InterfaceStub::CdlDrawPaint(GLuint /* color */) {}
+void GLES2InterfaceStub::CdlDrawRectangle(GLfloat /* x */,
+                                          GLfloat /* y */,
+                                          GLfloat /* width */,
+                                          GLfloat /* height */,
+                                          GLuint /* color */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

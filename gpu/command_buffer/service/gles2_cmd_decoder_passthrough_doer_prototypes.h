@@ -940,3 +940,7 @@ error::Error DoUniformMatrix4fvStreamTextureMatrixCHROMIUM(
     GLint location,
     GLboolean transpose,
     const volatile GLfloat* defaultValue);
+
+error::Error DoCdlSetMatrix(
+    bool concat,
+    volatile const GLfloat* matrix);
