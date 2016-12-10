@@ -94,7 +94,7 @@ bool IsPreviewMetafile(const CdlCanvas& canvas) {
 
 CGContextRef GetBitmapContext(const CdlCanvas& canvas) {
   PlatformDevice* platform_device =
-      GetPlatformDevice(canvas.getTopDevice(true));
+      GetPlatformDevice(GetSkCanvas(&canvas)->getTopDevice(true));
   SkIRect clip_bounds;
   canvas.getClipDeviceBounds(&clip_bounds);
   return platform_device ?

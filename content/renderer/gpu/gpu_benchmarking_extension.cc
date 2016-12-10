@@ -474,7 +474,7 @@ static void PrintDocument(blink::WebFrame* frame, SkDocument* doc) {
 #if defined(OS_WIN) || defined(OS_MACOSX)
     float page_shrink = frame->getPrintPageShrink(i);
     DCHECK(page_shrink > 0);
-    canvas->scale(page_shrink, page_shrink);
+    canvas.scale(page_shrink, page_shrink);
 #endif
 
     frame->printPage(i, &canvas);

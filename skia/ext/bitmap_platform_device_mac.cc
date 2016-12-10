@@ -260,7 +260,7 @@ SkBaseDevice* BitmapPlatformDevice::onCreateDevice(const CreateInfo& cinfo,
 
 // PlatformCanvas impl
 
-std::unique_ptr<SkCanvas> CreatePlatformCanvas(CGContextRef ctx,
+std::unique_ptr<CdlCanvas> CreatePlatformCanvas(CGContextRef ctx,
                                                int width,
                                                int height,
                                                bool is_opaque,
@@ -271,7 +271,7 @@ std::unique_ptr<SkCanvas> CreatePlatformCanvas(CGContextRef ctx,
   return CreateCanvas(dev, failureType);
 }
 
-std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
+std::unique_ptr<CdlCanvas> CreatePlatformCanvas(int width,
                                                int height,
                                                bool is_opaque,
                                                uint8_t* data,

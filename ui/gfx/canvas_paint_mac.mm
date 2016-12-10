@@ -26,7 +26,7 @@ CanvasSkiaPaint::~CanvasSkiaPaint() {
 
     // Blit the dirty rect to the current context.
     CGImageRef image =
-        CGBitmapContextCreateImage(skia::GetBitmapContext(*canvas->skCanvas()));
+        CGBitmapContextCreateImage(skia::GetBitmapContext(*canvas));
     CGRect dest_rect = NSRectToCGRect(rectangle_);
 
     CGContextRef destination_context =

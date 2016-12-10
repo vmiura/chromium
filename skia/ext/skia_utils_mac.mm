@@ -190,7 +190,7 @@ SkBitmap CGImageToSkBitmap(CGImageRef image) {
   int width = CGImageGetWidth(image);
   int height = CGImageGetHeight(image);
 
-  std::unique_ptr<SkCanvas> canvas(skia::CreatePlatformCanvas(
+  std::unique_ptr<CdlCanvas> canvas(skia::CreatePlatformCanvas(
       nullptr, width, height, false, RETURN_NULL_ON_FAILURE));
   ScopedPlatformPaint p(canvas.get());
   CGContextRef context = p.GetNativeDrawingContext();
@@ -328,12 +328,12 @@ CGContextRef SkiaBitLocker::cgContext() {
 
   // Now make clip_bounds be relative to the current layer/device
   if (!bitmapIsDummy_) {
-    canvas_->skCanvas()->temporary_internal_describeTopLayer(nullptr,
+    GetSkCanvas(canvas_)->temporary_internal_describeTopLayer(nullptr,
                                                              &clip_bounds);
   }
 
   SkPixmap devicePixels;
-  skia::GetWritablePixels(canvas_->skCanvas(), &devicePixels);
+  skia::GetWritablePixels(canvas_, &devicePixels);
 
   // Only draw directly if we have pixels, and we're only rect-clipped.
   // If not, we allocate an offscreen and draw into that, relying on the
