@@ -65,13 +65,18 @@
 #include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "gpu/command_buffer/service/vertex_array_manager.h"
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
+#include "skia/ext/cdl_internals.h"
 #include "skia/ext/texture_handle.h"
 #include "third_party/angle/src/image_util/loadimage.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/src/core/SkDeduper.h"
+#include "third_party/skia/src/core/SkReadBuffer.h"
 #include "third_party/smhasher/src/City.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
@@ -574,6 +579,33 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   // Overridden from AsyncAPIInterface.
   const char* GetCommandName(unsigned int command_id) const override;
+
+  // CDL hacking /////////////////////////
+  class CanvasInflator : public SkInflator {
+   public:
+    CanvasInflator() {}
+    ~CanvasInflator() override {}
+
+    SkImage* getImage(int) override { return 0; } ;
+    SkPicture* getPicture(int) override { return 0; };
+    SkTypeface* getTypeface(int typeface) override {
+      auto it = typefaces_.find(typeface);
+      if (it == typefaces_.end())
+        return 0;
+      //LOG(ERROR) << "Inflated typeface " << it->second.get();
+      return it->second.get();
+    };
+    SkFlattenable::Factory getFactory(int) override { return 0; };
+
+    void addTypeface(int id, sk_sp<SkTypeface> typeface) {
+      typefaces_.insert({id, std::move(typeface)});
+    }
+   private:
+    std::unordered_map<int, sk_sp<SkTypeface>> typefaces_;
+  };
+
+  CanvasInflator inflator_;
+  ////////////////////////////////////////
 
   // Overridden from GLES2Decoder.
   bool Initialize(const scoped_refptr<gl::GLSurface>& surface,
@@ -1095,9 +1127,13 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   void DoFlushMappedBufferRange(
       GLenum target, GLintptr offset, GLsizeiptr size);
 
-  void DoCdlSetMatrix(
+  void DoCanvasSetMatrix(
     bool concat,
     volatile const GLfloat* matrix);
+
+  //void DoCanvasDrawTextBlob(GLfloat x, GLfloat y, GLfloat stroke_width,
+  //    GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits,
+  //    GLsizei count, const volatile char* blob);
 
   // Creates a Program for the given program.
   Program* CreateProgram(GLuint client_id, GLuint service_id) {
@@ -18973,13 +19009,13 @@ error::Error GLES2DecoderImpl::HandleProgramPathFragmentInputGenCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlBegin(
+error::Error GLES2DecoderImpl::HandleCanvasBegin(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
-  const volatile gles2::cmds::CdlBegin& c =
+  const volatile gles2::cmds::CanvasBegin& c =
       *static_cast<
-          const volatile gles2::cmds::CdlBegin*>(
+          const volatile gles2::cmds::CanvasBegin*>(
           cmd_data);
 
   gr_context_->resetContext();
@@ -19017,14 +19053,12 @@ error::Error GLES2DecoderImpl::HandleCdlBegin(
 
   sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
       gr_context_.get(), desc, nullptr, &surface_props);
-
-  //////////////////////////////////////////
   canvas_ = sk_surface_->getCanvas();
 
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlEnd(
+error::Error GLES2DecoderImpl::HandleCanvasEnd(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   if (sk_surface_.get()) {
@@ -19036,13 +19070,13 @@ error::Error GLES2DecoderImpl::HandleCdlEnd(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlSave(
+error::Error GLES2DecoderImpl::HandleCanvasSave(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
-  const volatile gles2::cmds::CdlSave& c =
+  const volatile gles2::cmds::CanvasSave& c =
       *static_cast<
-          const volatile gles2::cmds::CdlSave*>(
+          const volatile gles2::cmds::CanvasSave*>(
           cmd_data);
 
   if (c.save_layer)
@@ -19053,7 +19087,7 @@ error::Error GLES2DecoderImpl::HandleCdlSave(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlRestore(
+error::Error GLES2DecoderImpl::HandleCanvasRestore(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   canvas_->restore();
@@ -19061,7 +19095,7 @@ error::Error GLES2DecoderImpl::HandleCdlRestore(
   return error::kNoError;
 }
 
-void GLES2DecoderImpl::DoCdlSetMatrix(
+void GLES2DecoderImpl::DoCanvasSetMatrix(
     bool concat,
     volatile const GLfloat* matrix) {
   SkMatrix m;
@@ -19072,47 +19106,194 @@ void GLES2DecoderImpl::DoCdlSetMatrix(
     canvas_->setMatrix(m);
 }
 
-error::Error GLES2DecoderImpl::HandleCdlTranslate(
+error::Error GLES2DecoderImpl::HandleCanvasTranslate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
-  const volatile gles2::cmds::CdlTranslate& c =
+  const volatile gles2::cmds::CanvasTranslate& c =
       *static_cast<
-          const volatile gles2::cmds::CdlTranslate*>(
+          const volatile gles2::cmds::CanvasTranslate*>(
           cmd_data);
   canvas_->translate(c.tx, c.ty);
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlDrawPaint(
+error::Error GLES2DecoderImpl::HandleCanvasDrawPaint(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
-  const volatile gles2::cmds::CdlDrawPaint& c =
+  const volatile gles2::cmds::CanvasDrawPaint& c =
       *static_cast<
-          const volatile gles2::cmds::CdlDrawPaint*>(
+          const volatile gles2::cmds::CanvasDrawPaint*>(
           cmd_data);
 
+  CdlPaintBits paint_bits;
+  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
+  paint.setFlags(paint_bits.bitfields.flags);
+  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+  paint.setStrokeWidth(c.stroke_width);
+  paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
+  paint.setBlendMode((SkBlendMode)c.blend_mode);
   canvas_->drawPaint(paint);
 
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlDrawRectangle(
+error::Error GLES2DecoderImpl::HandleCanvasDrawRect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
-  const volatile gles2::cmds::CdlDrawRectangle& c =
+  const volatile gles2::cmds::CanvasDrawRect& c =
       *static_cast<
-          const volatile gles2::cmds::CdlDrawRectangle*>(
+          const volatile gles2::cmds::CanvasDrawRect*>(
           cmd_data);
 
-  SkRect rect = SkRect::MakeXYWH(c.x, c.y, c.width, c.height);
+  SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
+  CdlPaintBits paint_bits;
+  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
+  paint.setFlags(paint_bits.bitfields.flags);
+  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+  paint.setStrokeWidth(c.stroke_width);
+  paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
+  paint.setBlendMode((SkBlendMode)c.blend_mode);
   canvas_->drawRect(rect, paint);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasDrawRRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasDrawRRect& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasDrawRRect*>(
+          cmd_data);
+
+  SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
+  SkVector radii[4];
+  radii[0].set(c.r0_x, c.r0_y);
+  radii[1].set(c.r1_x, c.r1_y);
+  radii[2].set(c.r2_x, c.r2_y);
+  radii[3].set(c.r3_x, c.r3_y);
+  SkRRect rrect;
+  rrect.setRectRadii(rect, radii);
+
+  CdlPaintBits paint_bits;
+  paint_bits.bitfields_uint = c.paint_bits;
+  SkPaint paint;
+  paint.setFlags(paint_bits.bitfields.flags);
+  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+  paint.setStrokeWidth(c.stroke_width);
+  paint.setStrokeMiter(c.miter_limit);
+  paint.setColor(c.color);
+  paint.setBlendMode((SkBlendMode)c.blend_mode);
+  canvas_->drawRRect(rrect, paint);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasDrawTextBlob& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasDrawTextBlob*>(
+          cmd_data);
+
+  CdlPaintBits paint_bits;
+  paint_bits.bitfields_uint = c.paint_bits;
+  SkPaint paint;
+  paint.setFlags(paint_bits.bitfields.flags);
+  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+  paint.setStrokeWidth(c.stroke_width);
+  paint.setStrokeMiter(c.miter_limit);
+  paint.setColor(c.color);
+  paint.setBlendMode((SkBlendMode)c.blend_mode);
+
+  void* blob = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.size);
+
+  SkReadBuffer buffer(blob, c.size);
+  buffer.setInflator(&inflator_);
+
+  //LOG(ERROR) << "CanvasDrawTextBlob"
+  //        << " x " << c.x
+  //        << " y " << c.y
+  //        << " tb size " << buffer.size();
+
+  canvas_->drawTextBlob(SkTextBlob::CreateFromBuffer(buffer), c.x, c.y, paint);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasNewTypeface(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasNewTypeface& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasNewTypeface*>(
+          cmd_data);
+
+  //LOG(ERROR) << "CanvasNewTypeface"
+  //        << " typeface_id " << c.typeface_id
+  //        << " shm_size " << c.shm_size;
+
+  void* data = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+  SkMemoryStream stream(data, c.shm_size, false);
+  inflator_.addTypeface(c.typeface_id, SkTypeface::MakeDeserialize(&stream));
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasClipRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasClipRect& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasClipRect*>(
+          cmd_data);
+
+  SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
+  canvas_->clipRect(rect, (SkCanvas::ClipOp)c.clip_op, c.antialias);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasClipRRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasClipRRect& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasClipRRect*>(
+          cmd_data);
+
+  SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
+  SkVector radii[4];
+  radii[0].set(c.r0_x, c.r0_y);
+  radii[1].set(c.r1_x, c.r1_y);
+  radii[2].set(c.r2_x, c.r2_y);
+  radii[3].set(c.r3_x, c.r3_y);
+  SkRRect rrect;
+  rrect.setRectRadii(rect, radii);
+  canvas_->clipRRect(rrect, (SkCanvas::ClipOp)c.clip_op, c.antialias);
 
   return error::kNoError;
 }

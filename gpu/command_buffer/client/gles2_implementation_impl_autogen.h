@@ -3507,89 +3507,174 @@ void GLES2Implementation::UniformMatrix4fvStreamTextureMatrixCHROMIUM(
   CheckGLError();
 }
 
-void GLES2Implementation::CdlBegin(GLenum target,
-                                   GLuint texture,
-                                   GLint width,
-                                   GLint height,
-                                   GLint msaa_sample_count,
-                                   GLboolean use_dff,
-                                   GLboolean can_use_lcd,
-                                   GLint pixel_config) {
+void GLES2Implementation::CanvasBegin(GLenum target,
+                                      GLuint texture,
+                                      GLint width,
+                                      GLint height,
+                                      GLint msaa_sample_count,
+                                      GLboolean use_dff,
+                                      GLboolean can_use_lcd,
+                                      GLint pixel_config) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlBegin("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasBegin("
                      << GLES2Util::GetStringEnum(target) << ", " << texture
                      << ", " << width << ", " << height << ", "
                      << msaa_sample_count << ", "
                      << GLES2Util::GetStringBool(use_dff) << ", "
                      << GLES2Util::GetStringBool(can_use_lcd) << ", "
                      << pixel_config << ")");
-  helper_->CdlBegin(target, texture, width, height, msaa_sample_count, use_dff,
-                    can_use_lcd, pixel_config);
+  helper_->CanvasBegin(target, texture, width, height, msaa_sample_count,
+                       use_dff, can_use_lcd, pixel_config);
   CheckGLError();
 }
 
-void GLES2Implementation::CdlEnd() {
+void GLES2Implementation::CanvasEnd() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlEnd("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasEnd("
                      << ")");
-  helper_->CdlEnd();
+  helper_->CanvasEnd();
   CheckGLError();
 }
 
-void GLES2Implementation::CdlSave(GLboolean save_layer) {
+void GLES2Implementation::CanvasSave(GLboolean save_layer) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlSave("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSave("
                      << GLES2Util::GetStringBool(save_layer) << ")");
-  helper_->CdlSave(save_layer);
+  helper_->CanvasSave(save_layer);
   CheckGLError();
 }
 
-void GLES2Implementation::CdlRestore() {
+void GLES2Implementation::CanvasRestore() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlRestore("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasRestore("
                      << ")");
-  helper_->CdlRestore();
+  helper_->CanvasRestore();
   CheckGLError();
 }
 
-void GLES2Implementation::CdlSetMatrix(GLboolean concat,
-                                       const GLfloat* matrix) {
+void GLES2Implementation::CanvasSetMatrix(GLboolean concat,
+                                          const GLfloat* matrix) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlSetMatrix("
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSetMatrix("
                      << GLES2Util::GetStringBool(concat) << ", "
                      << static_cast<const void*>(matrix) << ")");
   size_t count = 9;
   for (size_t ii = 0; ii < count; ++ii)
     GPU_CLIENT_LOG("value[" << ii << "]: " << matrix[ii]);
-  helper_->CdlSetMatrixImmediate(concat, matrix);
+  helper_->CanvasSetMatrixImmediate(concat, matrix);
   CheckGLError();
 }
 
-void GLES2Implementation::CdlTranslate(GLfloat tx, GLfloat ty) {
+void GLES2Implementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlTranslate(" << tx << ", "
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasTranslate(" << tx << ", "
                      << ty << ")");
-  helper_->CdlTranslate(tx, ty);
+  helper_->CanvasTranslate(tx, ty);
   CheckGLError();
 }
 
-void GLES2Implementation::CdlDrawPaint(GLuint color) {
+void GLES2Implementation::CanvasClipRect(GLfloat left,
+                                         GLfloat top,
+                                         GLfloat right,
+                                         GLfloat bottom,
+                                         GLuint clip_op,
+                                         GLboolean antialias) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlDrawPaint(" << color << ")");
-  helper_->CdlDrawPaint(color);
-  CheckGLError();
-}
-
-void GLES2Implementation::CdlDrawRectangle(GLfloat x,
-                                           GLfloat y,
-                                           GLfloat width,
-                                           GLfloat height,
-                                           GLuint color) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCdlDrawRectangle(" << x << ", "
-                     << y << ", " << width << ", " << height << ", " << color
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasClipRect(" << left << ", "
+                     << top << ", " << right << ", " << bottom << ", "
+                     << clip_op << ", " << GLES2Util::GetStringBool(antialias)
                      << ")");
-  helper_->CdlDrawRectangle(x, y, width, height, color);
+  helper_->CanvasClipRect(left, top, right, bottom, clip_op, antialias);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasClipRRect(GLfloat left,
+                                          GLfloat top,
+                                          GLfloat right,
+                                          GLfloat bottom,
+                                          GLfloat r0_x,
+                                          GLfloat r0_y,
+                                          GLfloat r1_x,
+                                          GLfloat r1_y,
+                                          GLfloat r2_x,
+                                          GLfloat r2_y,
+                                          GLfloat r3_x,
+                                          GLfloat r3_y,
+                                          GLuint clip_op,
+                                          GLboolean antialias) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasClipRRect(" << left << ", "
+                     << top << ", " << right << ", " << bottom << ", " << r0_x
+                     << ", " << r0_y << ", " << r1_x << ", " << r1_y << ", "
+                     << r2_x << ", " << r2_y << ", " << r3_x << ", " << r3_y
+                     << ", " << clip_op << ", "
+                     << GLES2Util::GetStringBool(antialias) << ")");
+  helper_->CanvasClipRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y,
+                           r2_x, r2_y, r3_x, r3_y, clip_op, antialias);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasDrawPaint(GLfloat stroke_width,
+                                          GLfloat miter_limit,
+                                          GLuint color,
+                                          GLuint blend_mode,
+                                          GLuint paint_bits) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasDrawPaint(" << stroke_width
+                     << ", " << miter_limit << ", " << color << ", "
+                     << blend_mode << ", " << paint_bits << ")");
+  helper_->CanvasDrawPaint(stroke_width, miter_limit, color, blend_mode,
+                           paint_bits);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasDrawRect(GLfloat left,
+                                         GLfloat top,
+                                         GLfloat right,
+                                         GLfloat bottom,
+                                         GLfloat stroke_width,
+                                         GLfloat miter_limit,
+                                         GLuint color,
+                                         GLuint blend_mode,
+                                         GLuint paint_bits) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasDrawRect(" << left << ", "
+                     << top << ", " << right << ", " << bottom << ", "
+                     << stroke_width << ", " << miter_limit << ", " << color
+                     << ", " << blend_mode << ", " << paint_bits << ")");
+  helper_->CanvasDrawRect(left, top, right, bottom, stroke_width, miter_limit,
+                          color, blend_mode, paint_bits);
+  CheckGLError();
+}
+
+void GLES2Implementation::CanvasDrawRRect(GLfloat left,
+                                          GLfloat top,
+                                          GLfloat right,
+                                          GLfloat bottom,
+                                          GLfloat r0_x,
+                                          GLfloat r0_y,
+                                          GLfloat r1_x,
+                                          GLfloat r1_y,
+                                          GLfloat r2_x,
+                                          GLfloat r2_y,
+                                          GLfloat r3_x,
+                                          GLfloat r3_y,
+                                          GLfloat stroke_width,
+                                          GLfloat miter_limit,
+                                          GLuint color,
+                                          GLuint blend_mode,
+                                          GLuint paint_bits) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasDrawRRect(" << left << ", "
+                     << top << ", " << right << ", " << bottom << ", " << r0_x
+                     << ", " << r0_y << ", " << r1_x << ", " << r1_y << ", "
+                     << r2_x << ", " << r2_y << ", " << r3_x << ", " << r3_y
+                     << ", " << stroke_width << ", " << miter_limit << ", "
+                     << color << ", " << blend_mode << ", " << paint_bits
+                     << ")");
+  helper_->CanvasDrawRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y,
+                           r2_x, r2_y, r3_x, r3_y, stroke_width, miter_limit,
+                           color, blend_mode, paint_bits);
   CheckGLError();
 }
 

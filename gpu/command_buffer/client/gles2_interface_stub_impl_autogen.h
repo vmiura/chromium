@@ -1167,24 +1167,74 @@ void GLES2InterfaceStub::SwapBuffersWithDamageCHROMIUM(GLint /* x */,
                                                        GLint /* y */,
                                                        GLint /* width */,
                                                        GLint /* height */) {}
-void GLES2InterfaceStub::CdlBegin(GLenum /* target */,
-                                  GLuint /* texture */,
-                                  GLint /* width */,
-                                  GLint /* height */,
-                                  GLint /* msaa_sample_count */,
-                                  GLboolean /* use_dff */,
-                                  GLboolean /* can_use_lcd */,
-                                  GLint /* pixel_config */) {}
-void GLES2InterfaceStub::CdlEnd() {}
-void GLES2InterfaceStub::CdlSave(GLboolean /* save_layer */) {}
-void GLES2InterfaceStub::CdlRestore() {}
-void GLES2InterfaceStub::CdlSetMatrix(GLboolean /* concat */,
-                                      const GLfloat* /* matrix */) {}
-void GLES2InterfaceStub::CdlTranslate(GLfloat /* tx */, GLfloat /* ty */) {}
-void GLES2InterfaceStub::CdlDrawPaint(GLuint /* color */) {}
-void GLES2InterfaceStub::CdlDrawRectangle(GLfloat /* x */,
-                                          GLfloat /* y */,
-                                          GLfloat /* width */,
-                                          GLfloat /* height */,
-                                          GLuint /* color */) {}
+void GLES2InterfaceStub::CanvasBegin(GLenum /* target */,
+                                     GLuint /* texture */,
+                                     GLint /* width */,
+                                     GLint /* height */,
+                                     GLint /* msaa_sample_count */,
+                                     GLboolean /* use_dff */,
+                                     GLboolean /* can_use_lcd */,
+                                     GLint /* pixel_config */) {}
+void GLES2InterfaceStub::CanvasEnd() {}
+void GLES2InterfaceStub::CanvasSave(GLboolean /* save_layer */) {}
+void GLES2InterfaceStub::CanvasRestore() {}
+void GLES2InterfaceStub::CanvasSetMatrix(GLboolean /* concat */,
+                                         const GLfloat* /* matrix */) {}
+void GLES2InterfaceStub::CanvasTranslate(GLfloat /* tx */, GLfloat /* ty */) {}
+void GLES2InterfaceStub::CanvasClipRect(GLfloat /* left */,
+                                        GLfloat /* top */,
+                                        GLfloat /* right */,
+                                        GLfloat /* bottom */,
+                                        GLuint /* clip_op */,
+                                        GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasClipRRect(GLfloat /* left */,
+                                         GLfloat /* top */,
+                                         GLfloat /* right */,
+                                         GLfloat /* bottom */,
+                                         GLfloat /* r0_x */,
+                                         GLfloat /* r0_y */,
+                                         GLfloat /* r1_x */,
+                                         GLfloat /* r1_y */,
+                                         GLfloat /* r2_x */,
+                                         GLfloat /* r2_y */,
+                                         GLfloat /* r3_x */,
+                                         GLfloat /* r3_y */,
+                                         GLuint /* clip_op */,
+                                         GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasDrawPaint(GLfloat /* stroke_width */,
+                                         GLfloat /* miter_limit */,
+                                         GLuint /* color */,
+                                         GLuint /* blend_mode */,
+                                         GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawRect(GLfloat /* left */,
+                                        GLfloat /* top */,
+                                        GLfloat /* right */,
+                                        GLfloat /* bottom */,
+                                        GLfloat /* stroke_width */,
+                                        GLfloat /* miter_limit */,
+                                        GLuint /* color */,
+                                        GLuint /* blend_mode */,
+                                        GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawRRect(GLfloat /* left */,
+                                         GLfloat /* top */,
+                                         GLfloat /* right */,
+                                         GLfloat /* bottom */,
+                                         GLfloat /* r0_x */,
+                                         GLfloat /* r0_y */,
+                                         GLfloat /* r1_x */,
+                                         GLfloat /* r1_y */,
+                                         GLfloat /* r2_x */,
+                                         GLfloat /* r2_y */,
+                                         GLfloat /* r3_x */,
+                                         GLfloat /* r3_y */,
+                                         GLfloat /* stroke_width */,
+                                         GLfloat /* miter_limit */,
+                                         GLuint /* color */,
+                                         GLuint /* blend_mode */,
+                                         GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
+                                            GLfloat /* x */,
+                                            GLfloat /* y */,
+                                            const CdlPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

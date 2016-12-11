@@ -2497,57 +2497,132 @@ void GLES2TraceImplementation::SwapBuffersWithDamageCHROMIUM(GLint x,
   gl_->SwapBuffersWithDamageCHROMIUM(x, y, width, height);
 }
 
-void GLES2TraceImplementation::CdlBegin(GLenum target,
-                                        GLuint texture,
-                                        GLint width,
-                                        GLint height,
-                                        GLint msaa_sample_count,
-                                        GLboolean use_dff,
-                                        GLboolean can_use_lcd,
-                                        GLint pixel_config) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlBegin");
-  gl_->CdlBegin(target, texture, width, height, msaa_sample_count, use_dff,
-                can_use_lcd, pixel_config);
+void GLES2TraceImplementation::CanvasBegin(GLenum target,
+                                           GLuint texture,
+                                           GLint width,
+                                           GLint height,
+                                           GLint msaa_sample_count,
+                                           GLboolean use_dff,
+                                           GLboolean can_use_lcd,
+                                           GLint pixel_config) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasBegin");
+  gl_->CanvasBegin(target, texture, width, height, msaa_sample_count, use_dff,
+                   can_use_lcd, pixel_config);
 }
 
-void GLES2TraceImplementation::CdlEnd() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlEnd");
-  gl_->CdlEnd();
+void GLES2TraceImplementation::CanvasEnd() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasEnd");
+  gl_->CanvasEnd();
 }
 
-void GLES2TraceImplementation::CdlSave(GLboolean save_layer) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlSave");
-  gl_->CdlSave(save_layer);
+void GLES2TraceImplementation::CanvasSave(GLboolean save_layer) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSave");
+  gl_->CanvasSave(save_layer);
 }
 
-void GLES2TraceImplementation::CdlRestore() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlRestore");
-  gl_->CdlRestore();
+void GLES2TraceImplementation::CanvasRestore() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasRestore");
+  gl_->CanvasRestore();
 }
 
-void GLES2TraceImplementation::CdlSetMatrix(GLboolean concat,
-                                            const GLfloat* matrix) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlSetMatrix");
-  gl_->CdlSetMatrix(concat, matrix);
+void GLES2TraceImplementation::CanvasSetMatrix(GLboolean concat,
+                                               const GLfloat* matrix) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetMatrix");
+  gl_->CanvasSetMatrix(concat, matrix);
 }
 
-void GLES2TraceImplementation::CdlTranslate(GLfloat tx, GLfloat ty) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlTranslate");
-  gl_->CdlTranslate(tx, ty);
+void GLES2TraceImplementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasTranslate");
+  gl_->CanvasTranslate(tx, ty);
 }
 
-void GLES2TraceImplementation::CdlDrawPaint(GLuint color) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlDrawPaint");
-  gl_->CdlDrawPaint(color);
+void GLES2TraceImplementation::CanvasClipRect(GLfloat left,
+                                              GLfloat top,
+                                              GLfloat right,
+                                              GLfloat bottom,
+                                              GLuint clip_op,
+                                              GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRect");
+  gl_->CanvasClipRect(left, top, right, bottom, clip_op, antialias);
 }
 
-void GLES2TraceImplementation::CdlDrawRectangle(GLfloat x,
-                                                GLfloat y,
-                                                GLfloat width,
-                                                GLfloat height,
-                                                GLuint color) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CdlDrawRectangle");
-  gl_->CdlDrawRectangle(x, y, width, height, color);
+void GLES2TraceImplementation::CanvasClipRRect(GLfloat left,
+                                               GLfloat top,
+                                               GLfloat right,
+                                               GLfloat bottom,
+                                               GLfloat r0_x,
+                                               GLfloat r0_y,
+                                               GLfloat r1_x,
+                                               GLfloat r1_y,
+                                               GLfloat r2_x,
+                                               GLfloat r2_y,
+                                               GLfloat r3_x,
+                                               GLfloat r3_y,
+                                               GLuint clip_op,
+                                               GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRRect");
+  gl_->CanvasClipRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x,
+                       r2_y, r3_x, r3_y, clip_op, antialias);
+}
+
+void GLES2TraceImplementation::CanvasDrawPaint(GLfloat stroke_width,
+                                               GLfloat miter_limit,
+                                               GLuint color,
+                                               GLuint blend_mode,
+                                               GLuint paint_bits) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawPaint");
+  gl_->CanvasDrawPaint(stroke_width, miter_limit, color, blend_mode,
+                       paint_bits);
+}
+
+void GLES2TraceImplementation::CanvasDrawRect(GLfloat left,
+                                              GLfloat top,
+                                              GLfloat right,
+                                              GLfloat bottom,
+                                              GLfloat stroke_width,
+                                              GLfloat miter_limit,
+                                              GLuint color,
+                                              GLuint blend_mode,
+                                              GLuint paint_bits) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRect");
+  gl_->CanvasDrawRect(left, top, right, bottom, stroke_width, miter_limit,
+                      color, blend_mode, paint_bits);
+}
+
+void GLES2TraceImplementation::CanvasDrawRRect(GLfloat left,
+                                               GLfloat top,
+                                               GLfloat right,
+                                               GLfloat bottom,
+                                               GLfloat r0_x,
+                                               GLfloat r0_y,
+                                               GLfloat r1_x,
+                                               GLfloat r1_y,
+                                               GLfloat r2_x,
+                                               GLfloat r2_y,
+                                               GLfloat r3_x,
+                                               GLfloat r3_y,
+                                               GLfloat stroke_width,
+                                               GLfloat miter_limit,
+                                               GLuint color,
+                                               GLuint blend_mode,
+                                               GLuint paint_bits) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRRect");
+  gl_->CanvasDrawRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x,
+                       r2_y, r3_x, r3_y, stroke_width, miter_limit, color,
+                       blend_mode, paint_bits);
+}
+
+void GLES2TraceImplementation::CanvasDrawTextBlob(const SkTextBlob* blob,
+                                                  GLfloat x,
+                                                  GLfloat y,
+                                                  const CdlPaint& paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawTextBlob");
+  gl_->CanvasDrawTextBlob(blob, x, y, paint);
+}
+
+void GLES2TraceImplementation::CanvasNewTypeface(SkTypeface* typeface) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTypeface");
+  gl_->CanvasNewTypeface(typeface);
 }
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_IMPL_AUTOGEN_H_

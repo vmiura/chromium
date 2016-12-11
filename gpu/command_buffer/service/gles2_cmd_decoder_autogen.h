@@ -5107,11 +5107,11 @@ GLES2DecoderImpl::HandleUniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCdlSetMatrixImmediate(
+error::Error GLES2DecoderImpl::HandleCanvasSetMatrixImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  const volatile gles2::cmds::CdlSetMatrixImmediate& c =
-      *static_cast<const volatile gles2::cmds::CdlSetMatrixImmediate*>(
+  const volatile gles2::cmds::CanvasSetMatrixImmediate& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetMatrixImmediate*>(
           cmd_data);
   GLboolean concat = static_cast<GLboolean>(c.concat);
   uint32_t data_size;
@@ -5126,7 +5126,7 @@ error::Error GLES2DecoderImpl::HandleCdlSetMatrixImmediate(
   if (matrix == NULL) {
     return error::kOutOfBounds;
   }
-  DoCdlSetMatrix(concat, matrix);
+  DoCanvasSetMatrix(concat, matrix);
   return error::kNoError;
 }
 

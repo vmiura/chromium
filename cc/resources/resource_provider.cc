@@ -1196,7 +1196,7 @@ ResourceProvider::ScopedCdlSurfaceProvider::ScopedCdlSurfaceProvider(
                         resource_lock,
                         use_mailbox) {
 
-  gl_->CdlBegin(
+  gl_->CanvasBegin(
       resource_lock->target(),        // target
       texture_provider_.texture_id(), // texture
       resource_lock->size().width(),  // width
@@ -1237,7 +1237,7 @@ ResourceProvider::ScopedCdlSurfaceProvider::ScopedCdlSurfaceProvider(
 }
 
 ResourceProvider::ScopedCdlSurfaceProvider::~ScopedCdlSurfaceProvider() {
-  gl_->CdlEnd();
+  gl_->CanvasEnd();
   /*
   if (sk_surface_.get()) {
     sk_surface_->prepareForExternalIO();

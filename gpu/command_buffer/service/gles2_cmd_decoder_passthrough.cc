@@ -842,48 +842,78 @@ void GLES2DecoderPassthroughImpl::UpdateTextureBinding(GLenum target,
 
 // CDL
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlBegin(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasBegin(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;
 }
-error::Error GLES2DecoderPassthroughImpl::HandleCdlEnd(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleCdlSave(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasEnd(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlRestore(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSave(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoCdlSetMatrix(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasRestore(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoCanvasSetMatrix(
     bool concat,
     volatile const GLfloat* matrix) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlTranslate(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawTextBlob(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlDrawPaint(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewTypeface(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlDrawRectangle(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasTranslate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPaint(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipRRect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;

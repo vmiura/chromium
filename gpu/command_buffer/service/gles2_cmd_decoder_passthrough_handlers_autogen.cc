@@ -4130,11 +4130,11 @@ error::Error GLES2DecoderPassthroughImpl::
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCdlSetMatrixImmediate(
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetMatrixImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  const volatile gles2::cmds::CdlSetMatrixImmediate& c =
-      *static_cast<const volatile gles2::cmds::CdlSetMatrixImmediate*>(
+  const volatile gles2::cmds::CanvasSetMatrixImmediate& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetMatrixImmediate*>(
           cmd_data);
   GLboolean concat = static_cast<GLboolean>(c.concat);
   uint32_t data_size;
@@ -4146,7 +4146,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleCdlSetMatrixImmediate(
   }
   volatile const GLfloat* matrix = GetImmediateDataAs<volatile const GLfloat*>(
       c, data_size, immediate_data_size);
-  error::Error error = DoCdlSetMatrix(concat, matrix);
+  error::Error error = DoCanvasSetMatrix(concat, matrix);
   if (error != error::kNoError) {
     return error;
   }

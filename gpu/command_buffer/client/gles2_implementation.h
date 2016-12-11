@@ -33,6 +33,9 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "third_party/skia/include/core/SkFlattenable.h"
+#include "third_party/skia/src/core/SkDeduper.h"
+
 
 #if !defined(NDEBUG) && !defined(__native_client__) && !defined(GLES2_CONFORMANCE_TESTS)  // NOLINT
   #if defined(GLES2_INLINE_OPTIMIZATION)
@@ -135,6 +138,35 @@ class GLES2_IMPL_EXPORT GLES2Implementation
         ShaderPrecisionMap;
     ShaderPrecisionMap shader_precisions;
   };
+
+  // CDL HACKING ////////////////////////
+  class CanvasDeduper : public SkDeduper {
+   public:
+    CanvasDeduper(GLES2Implementation *gl);
+    ~CanvasDeduper() override;
+    int findOrDefineImage(SkImage*) override;
+    int findOrDefinePicture(SkPicture*) override;
+    int findOrDefineTypeface(SkTypeface*) override;
+    int findOrDefineFactory(SkFlattenable*) override;
+   private:
+    GLES2Implementation *gl_;
+    std::unordered_set<int> typefaces_;
+  };
+
+  CanvasDeduper canvas_deduper_;
+
+  /*
+  void CanvasDrawTextBlob(GLfloat x,
+                          GLfloat y,
+                          GLfloat stroke_width,
+                          GLfloat miter_limit,
+                          GLuint color,
+                          GLuint blend_mode,
+                          GLuint paint_bits,
+                          GLsizei count,
+                          const char* blob) override;
+  */
+  ///////////////////////////////////////
 
   // The maximum result size from simple GL get commands.
   static const size_t kMaxSizeOfSimpleResult =

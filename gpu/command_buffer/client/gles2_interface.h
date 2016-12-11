@@ -8,6 +8,11 @@
 #include <GLES2/gl2.h>
 
 #include "base/compiler_specific.h"
+#include "skia/ext/cdl_common.h"
+#include "skia/ext/cdl_internals.h"
+
+class SkTextBlob;
+class SkTypeface;
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
 

@@ -2713,62 +2713,102 @@ _FUNCTION_INFO = {
     'extension_flag': 'blend_equation_advanced',
     'client_test': False,
   },
-  'CdlBegin': {
+  'CanvasBegin': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlEnd': {
+  'CanvasEnd': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlSave': {
+  'CanvasSave': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlRestore': {
+  'CanvasRestore': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlSetMatrix': {
+  'CanvasSetMatrix': {
     'type': 'PUT',
     'count': 9,
     'data_type': 'GLfloat',
-    'decoder_func': 'DoCdlSetMatrix',
+    'decoder_func': 'DoCanvasSetMatrix',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlTranslate': {
+  'CanvasTranslate': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlDrawPaint': {
+  'CanvasDrawPaint': {
     'type': 'Custom',
     'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
-  'CdlDrawRectangle': {
+  'CanvasDrawRect': {
     'type': 'Custom',
     'impl_func': True,
-    'cmd_args': 'GLfloat x, GLfloat y, GLfloat width, GLfloat height, GLuint color',
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawRRect': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewTypeface': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint typeface_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawTextBlob': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat x, GLfloat y, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, '
+                'GLuint paint_bits, GLsizeiptr size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipRect': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipRRect': {
+    'type': 'Custom',
+    'impl_func': True,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
@@ -6942,6 +6982,10 @@ class ArrayArgTypeHandler(TypeHandler):
 
   def GetArrayType(self, func):
     """Returns the type of the element in the element array being PUT to."""
+    data_type = func.GetInfo('data_type')
+    if data_type != None:
+      return data_type
+
     for arg in func.GetOriginalArgs():
       if arg.IsPointer():
         element_type = arg.GetPointedType()
@@ -7377,6 +7421,10 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
 
   def WriteGLES2Implementation(self, func, f):
     """Overrriden from TypeHandler."""
+    impl_func = func.GetInfo('impl_func', True)
+    if not impl_func:
+      return
+
     f.write("%s GLES2Implementation::%s(%s) {\n" %
                (func.return_type, func.original_name,
                 func.MakeTypedOriginalArgString("")))

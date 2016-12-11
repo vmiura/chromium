@@ -364,11 +364,19 @@ GL_APICALL void         GL_APIENTRY glUniformMatrix4fvStreamTextureMatrixCHROMIU
 
 GL_APICALL void         GL_APIENTRY glSwapBuffersWithDamageCHROMIUM (GLint x, GLint y, GLint width, GLint height);
 
-GL_APICALL void         GL_APIENTRY glCdlBegin (GLenum target, GLuint texture, GLint width, GLint height, GLint msaa_sample_count, GLboolean use_dff, GLboolean can_use_lcd, GLint pixel_config);
-GL_APICALL void         GL_APIENTRY glCdlEnd (void);
-GL_APICALL void         GL_APIENTRY glCdlSave (GLboolean save_layer);
-GL_APICALL void         GL_APIENTRY glCdlRestore (void);
-GL_APICALL void         GL_APIENTRY glCdlSetMatrix (GLboolean concat, const GLfloat* matrix);
-GL_APICALL void         GL_APIENTRY glCdlTranslate (GLfloat tx, GLfloat ty);
-GL_APICALL void         GL_APIENTRY glCdlDrawPaint (GLuint color);
-GL_APICALL void         GL_APIENTRY glCdlDrawRectangle (GLfloat x, GLfloat y, GLfloat width, GLfloat height, GLuint color);
+GL_APICALL void         GL_APIENTRY glCanvasBegin (GLenum target, GLuint texture, GLint width, GLint height, GLint msaa_sample_count, GLboolean use_dff, GLboolean can_use_lcd, GLint pixel_config);
+GL_APICALL void         GL_APIENTRY glCanvasEnd (void);
+GL_APICALL void         GL_APIENTRY glCanvasSave (GLboolean save_layer);
+GL_APICALL void         GL_APIENTRY glCanvasRestore (void);
+GL_APICALL void         GL_APIENTRY glCanvasSetMatrix (GLboolean concat, const GLfloat* matrix);
+GL_APICALL void         GL_APIENTRY glCanvasTranslate (GLfloat tx, GLfloat ty);
+
+GL_APICALL void         GL_APIENTRY glCanvasClipRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLuint clip_op, GLboolean antialias);
+GL_APICALL void         GL_APIENTRY glCanvasClipRRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y, GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y, GLuint clip_op, GLboolean antialias);
+
+GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y, GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y, GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
+
+GL_APICALL void         GL_APIENTRY glCanvasDrawTextBlob (const SkTextBlob* blob, GLfloat x, GLfloat y, const CdlPaint& paint);
+GL_APICALL void         GL_APIENTRY glCanvasNewTypeface (SkTypeface* typeface);

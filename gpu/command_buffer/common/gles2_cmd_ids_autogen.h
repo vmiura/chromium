@@ -329,14 +329,19 @@
   OP(GetFragDataIndexEXT)                                  /* 570 */ \
   OP(UniformMatrix4fvStreamTextureMatrixCHROMIUMImmediate) /* 571 */ \
   OP(SwapBuffersWithDamageCHROMIUM)                        /* 572 */ \
-  OP(CdlBegin)                                             /* 573 */ \
-  OP(CdlEnd)                                               /* 574 */ \
-  OP(CdlSave)                                              /* 575 */ \
-  OP(CdlRestore)                                           /* 576 */ \
-  OP(CdlSetMatrixImmediate)                                /* 577 */ \
-  OP(CdlTranslate)                                         /* 578 */ \
-  OP(CdlDrawPaint)                                         /* 579 */ \
-  OP(CdlDrawRectangle)                                     /* 580 */
+  OP(CanvasBegin)                                          /* 573 */ \
+  OP(CanvasEnd)                                            /* 574 */ \
+  OP(CanvasSave)                                           /* 575 */ \
+  OP(CanvasRestore)                                        /* 576 */ \
+  OP(CanvasSetMatrixImmediate)                             /* 577 */ \
+  OP(CanvasTranslate)                                      /* 578 */ \
+  OP(CanvasClipRect)                                       /* 579 */ \
+  OP(CanvasClipRRect)                                      /* 580 */ \
+  OP(CanvasDrawPaint)                                      /* 581 */ \
+  OP(CanvasDrawRect)                                       /* 582 */ \
+  OP(CanvasDrawRRect)                                      /* 583 */ \
+  OP(CanvasDrawTextBlob)                                   /* 584 */ \
+  OP(CanvasNewTypeface)                                    /* 585 */
 
 enum CommandId {
   kOneBeforeStartPoint =

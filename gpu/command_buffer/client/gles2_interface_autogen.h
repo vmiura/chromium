@@ -890,23 +890,73 @@ virtual void SwapBuffersWithDamageCHROMIUM(GLint x,
                                            GLint y,
                                            GLint width,
                                            GLint height) = 0;
-virtual void CdlBegin(GLenum target,
-                      GLuint texture,
-                      GLint width,
-                      GLint height,
-                      GLint msaa_sample_count,
-                      GLboolean use_dff,
-                      GLboolean can_use_lcd,
-                      GLint pixel_config) = 0;
-virtual void CdlEnd() = 0;
-virtual void CdlSave(GLboolean save_layer) = 0;
-virtual void CdlRestore() = 0;
-virtual void CdlSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
-virtual void CdlTranslate(GLfloat tx, GLfloat ty) = 0;
-virtual void CdlDrawPaint(GLuint color) = 0;
-virtual void CdlDrawRectangle(GLfloat x,
-                              GLfloat y,
-                              GLfloat width,
-                              GLfloat height,
-                              GLuint color) = 0;
+virtual void CanvasBegin(GLenum target,
+                         GLuint texture,
+                         GLint width,
+                         GLint height,
+                         GLint msaa_sample_count,
+                         GLboolean use_dff,
+                         GLboolean can_use_lcd,
+                         GLint pixel_config) = 0;
+virtual void CanvasEnd() = 0;
+virtual void CanvasSave(GLboolean save_layer) = 0;
+virtual void CanvasRestore() = 0;
+virtual void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
+virtual void CanvasTranslate(GLfloat tx, GLfloat ty) = 0;
+virtual void CanvasClipRect(GLfloat left,
+                            GLfloat top,
+                            GLfloat right,
+                            GLfloat bottom,
+                            GLuint clip_op,
+                            GLboolean antialias) = 0;
+virtual void CanvasClipRRect(GLfloat left,
+                             GLfloat top,
+                             GLfloat right,
+                             GLfloat bottom,
+                             GLfloat r0_x,
+                             GLfloat r0_y,
+                             GLfloat r1_x,
+                             GLfloat r1_y,
+                             GLfloat r2_x,
+                             GLfloat r2_y,
+                             GLfloat r3_x,
+                             GLfloat r3_y,
+                             GLuint clip_op,
+                             GLboolean antialias) = 0;
+virtual void CanvasDrawPaint(GLfloat stroke_width,
+                             GLfloat miter_limit,
+                             GLuint color,
+                             GLuint blend_mode,
+                             GLuint paint_bits) = 0;
+virtual void CanvasDrawRect(GLfloat left,
+                            GLfloat top,
+                            GLfloat right,
+                            GLfloat bottom,
+                            GLfloat stroke_width,
+                            GLfloat miter_limit,
+                            GLuint color,
+                            GLuint blend_mode,
+                            GLuint paint_bits) = 0;
+virtual void CanvasDrawRRect(GLfloat left,
+                             GLfloat top,
+                             GLfloat right,
+                             GLfloat bottom,
+                             GLfloat r0_x,
+                             GLfloat r0_y,
+                             GLfloat r1_x,
+                             GLfloat r1_y,
+                             GLfloat r2_x,
+                             GLfloat r2_y,
+                             GLfloat r3_x,
+                             GLfloat r3_y,
+                             GLfloat stroke_width,
+                             GLfloat miter_limit,
+                             GLuint color,
+                             GLuint blend_mode,
+                             GLuint paint_bits) = 0;
+virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
+                                GLfloat x,
+                                GLfloat y,
+                                const CdlPaint& paint) = 0;
+virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

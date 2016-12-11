@@ -51,6 +51,9 @@ class CdlPaint {
   SkBlendMode getBlendMode() const { return paint_.getBlendMode(); }
   bool isSrcOver() const { return paint_.isSrcOver(); }
 
+  uint32_t getFlags() const { return paint_.getFlags(); }
+  void setFlags(uint32_t flags) { paint_.setFlags(flags); }
+
   bool isAntiAlias() const { return paint_.isAntiAlias(); }
   void setAntiAlias(bool aa) { paint_.setAntiAlias(aa); }
 

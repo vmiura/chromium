@@ -39,6 +39,9 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/id_allocator.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "skia/ext/cdl_paint.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkWriteBuffer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -51,6 +54,19 @@ namespace gpu {
 namespace gles2 {
 
 namespace {
+
+inline uint32_t GetPaintBits(const CdlPaint& paint) {
+  CdlPaintBits paint_bits;
+  paint_bits.bitfields.flags = paint.getFlags();
+  paint_bits.bitfields.text_align = 0;
+  paint_bits.bitfields.cap_type = paint.getStrokeCap();
+  paint_bits.bitfields.join_type = paint.getStrokeJoin();
+  paint_bits.bitfields.style = paint.getStyle();
+  paint_bits.bitfields.text_encoding = paint.getTextEncoding();
+  paint_bits.bitfields.hinting = paint.getHinting();
+  paint_bits.bitfields.filter_quality = paint.getFilterQuality();
+  return paint_bits.bitfields_uint;
+}
 
 void CopyRectToBuffer(const void* pixels,
                       uint32_t height,
@@ -92,6 +108,92 @@ const size_t GLES2Implementation::kMaxSizeOfSimpleResult;
 const unsigned int GLES2Implementation::kStartingOffset;
 #endif
 
+// CDL HACKING ////////////////////////
+
+GLES2Implementation::CanvasDeduper::CanvasDeduper(GLES2Implementation *gl)
+ : gl_(gl) {}
+GLES2Implementation::CanvasDeduper::~CanvasDeduper() {};
+
+int GLES2Implementation::CanvasDeduper::findOrDefineImage(SkImage*) {
+  LOG(ERROR) << "findOrDefineImage";
+  return 0;
+}
+int GLES2Implementation::CanvasDeduper::findOrDefinePicture(SkPicture*) {
+  LOG(ERROR) << "findOrDefinePicture";
+  return 0;
+}
+int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typeface) {
+  
+  int unique_id = typeface->uniqueID();
+  auto it = typefaces_.find(unique_id);
+  if (it == typefaces_.end()) {
+    //LOG(ERROR) << "New typeface " << typeface;
+    typefaces_.insert(unique_id);
+    gl_->CanvasNewTypeface(typeface);
+  }
+  return unique_id;
+}
+int GLES2Implementation::CanvasDeduper::findOrDefineFactory(SkFlattenable*) {
+  LOG(ERROR) << "findOrDefineFactory";
+  return 0;
+}
+
+void GLES2Implementation::CanvasDrawTextBlob(
+                                const SkTextBlob* blob,
+                                GLfloat x,
+                                GLfloat y,
+                                const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+
+  SkBinaryWriteBuffer writer;
+  writer.setDeduper(&canvas_deduper_);
+
+  blob->flatten(writer);
+  size_t size = writer.bytesWritten();
+  //auto data = SkData::MakeUninitialized(size);
+  //writer.writeToMemory(data->writable_data());
+  
+  //LOG(ERROR) << "CanvasDrawTextBlob"
+  //    << " x " << x
+  //    << " y " << y
+  //    << " tb size " << size;
+
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  writer.writeToMemory(buffer.address());
+
+  helper_->CanvasDrawTextBlob(
+                          x,
+                          y,
+                          paint.getStrokeWidth(),
+                          paint.getStrokeMiter(),
+                          paint.getColor(),
+                          (unsigned)paint.getBlendMode(),
+                          GetPaintBits(paint),
+                          size,
+                          buffer.shm_id(),
+                          buffer.offset());
+}
+
+static sk_sp<SkData> encode(SkTypeface* tf) {
+  SkDynamicMemoryWStream stream;
+  tf->serialize(&stream);
+  return sk_sp<SkData>(stream.detachAsData());
+}
+
+void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  sk_sp<SkData> data = encode(typeface);
+  ScopedTransferBufferPtr buffer(data->size(), helper_, transfer_buffer_);
+  memcpy(buffer.address(), data->data(), data->size());
+
+  helper_->CanvasNewTypeface(typeface->uniqueID(),
+                             buffer.size(),
+                             buffer.shm_id(),
+                             buffer.offset());
+}
+
+///////////////////////////////////////
+
 GLES2Implementation::GLStaticState::GLStaticState() {
 }
 
@@ -118,7 +220,8 @@ GLES2Implementation::GLES2Implementation(
     bool lose_context_when_out_of_memory,
     bool support_client_side_arrays,
     GpuControl* gpu_control)
-    : helper_(helper),
+    : canvas_deduper_(this),
+      helper_(helper),
       transfer_buffer_(transfer_buffer),
       chromium_framebuffer_multisample_(kUnknownExtensionStatus),
       pack_alignment_(4),

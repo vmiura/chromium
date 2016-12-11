@@ -864,23 +864,73 @@ void SwapBuffersWithDamageCHROMIUM(GLint x,
                                    GLint y,
                                    GLint width,
                                    GLint height) override;
-void CdlBegin(GLenum target,
-              GLuint texture,
-              GLint width,
-              GLint height,
-              GLint msaa_sample_count,
-              GLboolean use_dff,
-              GLboolean can_use_lcd,
-              GLint pixel_config) override;
-void CdlEnd() override;
-void CdlSave(GLboolean save_layer) override;
-void CdlRestore() override;
-void CdlSetMatrix(GLboolean concat, const GLfloat* matrix) override;
-void CdlTranslate(GLfloat tx, GLfloat ty) override;
-void CdlDrawPaint(GLuint color) override;
-void CdlDrawRectangle(GLfloat x,
-                      GLfloat y,
-                      GLfloat width,
-                      GLfloat height,
-                      GLuint color) override;
+void CanvasBegin(GLenum target,
+                 GLuint texture,
+                 GLint width,
+                 GLint height,
+                 GLint msaa_sample_count,
+                 GLboolean use_dff,
+                 GLboolean can_use_lcd,
+                 GLint pixel_config) override;
+void CanvasEnd() override;
+void CanvasSave(GLboolean save_layer) override;
+void CanvasRestore() override;
+void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) override;
+void CanvasTranslate(GLfloat tx, GLfloat ty) override;
+void CanvasClipRect(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLuint clip_op,
+                    GLboolean antialias) override;
+void CanvasClipRRect(GLfloat left,
+                     GLfloat top,
+                     GLfloat right,
+                     GLfloat bottom,
+                     GLfloat r0_x,
+                     GLfloat r0_y,
+                     GLfloat r1_x,
+                     GLfloat r1_y,
+                     GLfloat r2_x,
+                     GLfloat r2_y,
+                     GLfloat r3_x,
+                     GLfloat r3_y,
+                     GLuint clip_op,
+                     GLboolean antialias) override;
+void CanvasDrawPaint(GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) override;
+void CanvasDrawRect(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) override;
+void CanvasDrawRRect(GLfloat left,
+                     GLfloat top,
+                     GLfloat right,
+                     GLfloat bottom,
+                     GLfloat r0_x,
+                     GLfloat r0_y,
+                     GLfloat r1_x,
+                     GLfloat r1_y,
+                     GLfloat r2_x,
+                     GLfloat r2_y,
+                     GLfloat r3_x,
+                     GLfloat r3_y,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) override;
+void CanvasDrawTextBlob(const SkTextBlob* blob,
+                        GLfloat x,
+                        GLfloat y,
+                        const CdlPaint& paint) override;
+void CanvasNewTypeface(SkTypeface* typeface) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_AUTOGEN_H_
