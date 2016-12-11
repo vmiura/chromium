@@ -395,7 +395,10 @@
 #define glCanvasDrawPaint GLES2_GET_FUN(CanvasDrawPaint)
 #define glCanvasDrawRect GLES2_GET_FUN(CanvasDrawRect)
 #define glCanvasDrawRRect GLES2_GET_FUN(CanvasDrawRRect)
+#define glCanvasDrawImage GLES2_GET_FUN(CanvasDrawImage)
+#define glCanvasDrawImageRect GLES2_GET_FUN(CanvasDrawImageRect)
 #define glCanvasDrawTextBlob GLES2_GET_FUN(CanvasDrawTextBlob)
+#define glCanvasNewImage GLES2_GET_FUN(CanvasNewImage)
 #define glCanvasNewTextBlob GLES2_GET_FUN(CanvasNewTextBlob)
 #define glCanvasNewTypeface GLES2_GET_FUN(CanvasNewTypeface)
 

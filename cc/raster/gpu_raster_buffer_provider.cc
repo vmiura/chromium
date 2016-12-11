@@ -117,7 +117,7 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
                            r.radii(SkRRect::kLowerRight_Corner).x(),
                            r.radii(SkRRect::kLowerRight_Corner).y(),
                            r.radii(SkRRect::kLowerLeft_Corner).x(),
-                           r.radii(SkRRect::kLowerLeft_Corner).y(), 
+                           r.radii(SkRRect::kLowerLeft_Corner).y(),
                            (unsigned)op,
                            style == kSoft_ClipEdgeStyle);
       CdlNoDrawCanvas::onClipRRect(r, op, style);
@@ -163,6 +163,22 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
                            paint.getColor(),
                            (unsigned)paint.getBlendMode(),
                            GetPaintBits(paint));
+    }
+
+    void onDrawImage(const SkImage* image,
+                      SkScalar left,
+                      SkScalar top,
+                      const CdlPaint* paint) override {
+      gl_->CanvasDrawImage(image, left, top, paint);
+    }
+
+    void onDrawImageRect(const SkImage* image,
+                         const SkRect* src,
+                         const SkRect& dst,
+                         const CdlPaint* paint,
+                         SkCanvas::SrcRectConstraint constraint) override {
+      // TODO add image rect version.
+      gl_->CanvasDrawImageRect(image, src, dst, paint, constraint == SkCanvas::kStrict_SrcRectConstraint);
     }
 
     void onDrawTextBlob(const SkTextBlob* blob,

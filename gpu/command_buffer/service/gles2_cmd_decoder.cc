@@ -586,9 +586,16 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
     CanvasInflator() {}
     ~CanvasInflator() override {}
 
-    SkImage* getImage(int) override { return 0; } ;
     SkPicture* getPicture(int) override { return 0; };
     SkFlattenable::Factory getFactory(int) override { return 0; };
+
+    SkImage* getImage(int image) override { 
+      auto it = images_.find(image);
+      if (it == images_.end())
+        return 0;
+      //LOG(ERROR) << "Inflated typeface " << it->second.get();
+      return it->second.get();
+    } ;
 
     SkTypeface* getTypeface(int typeface) override {
       auto it = typefaces_.find(typeface);
@@ -605,7 +612,10 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       //LOG(ERROR) << "Inflated typeface " << it->second.get();
       return it->second.get();
     };
-    
+
+    void addImage(int id, sk_sp<SkImage> image) {
+      images_.insert({id, std::move(image)});
+    }    
 
     void addTextBlob(int id, sk_sp<SkTextBlob> blob) {
       text_blobs_.insert({id, std::move(blob)});
@@ -615,6 +625,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       typefaces_.insert({id, std::move(typeface)});
     }
    private:
+    std::unordered_map<int, sk_sp<SkImage>> images_;
     std::unordered_map<int, sk_sp<SkTextBlob>> text_blobs_;
     std::unordered_map<int, sk_sp<SkTypeface>> typefaces_;
   };
@@ -19081,7 +19092,7 @@ error::Error GLES2DecoderImpl::HandleCanvasEnd(
     sk_surface_.reset();
   }
 
-  RestoreState(nullptr);
+  //RestoreState(nullptr);
   return error::kNoError;
 }
 
@@ -19221,6 +19232,81 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRRect(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasDrawImage(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasDrawImage& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasDrawImage*>(
+          cmd_data);
+  
+  SkPaint paint;
+  if (c.use_paint) {
+    CdlPaintBits paint_bits;
+    paint_bits.bitfields_uint = c.paint_bits;
+    paint.setFlags(paint_bits.bitfields.flags);
+    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+    paint.setStrokeWidth(c.stroke_width);
+    paint.setStrokeMiter(c.miter_limit);
+    paint.setColor(c.color);
+    paint.setBlendMode((SkBlendMode)c.blend_mode);
+  }
+
+  canvas_->drawImage(inflator_.getImage(c.image_id), c.x, c.y, c.use_paint ? &paint : 0);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasDrawImageRect(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasDrawImageRect& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasDrawImageRect*>(
+          cmd_data);
+  
+  SkRect src_rect;
+  if (c.use_src)
+    src_rect = SkRect::MakeLTRB(c.s_left, c.s_top, c.s_right, c.s_bottom);
+  SkRect dst_rect = SkRect::MakeLTRB(c.d_left, c.d_top, c.d_right, c.d_bottom);
+  SkPaint paint;
+  if (c.use_paint) {
+    CdlPaintBits paint_bits;
+    paint_bits.bitfields_uint = c.paint_bits;
+    paint.setFlags(paint_bits.bitfields.flags);
+    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+    paint.setStrokeWidth(c.stroke_width);
+    paint.setStrokeMiter(c.miter_limit);
+    paint.setColor(c.color);
+    paint.setBlendMode((SkBlendMode)c.blend_mode);
+  }
+
+  if (c.use_src) {
+    canvas_->drawImageRect(
+                     inflator_.getImage(c.image_id),
+                     src_rect,
+                     dst_rect,
+                     c.use_paint ? &paint : 0,
+                     c.strict ? SkCanvas::kStrict_SrcRectConstraint
+                              : SkCanvas::kFast_SrcRectConstraint);
+  } else {
+    canvas_->drawImageRect(
+                     inflator_.getImage(c.image_id),
+                     dst_rect,
+                     c.use_paint ? &paint : 0,
+                     c.strict ? SkCanvas::kStrict_SrcRectConstraint
+                              : SkCanvas::kFast_SrcRectConstraint);
+  }
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_size,
     const volatile void* cmd_data) {
 
@@ -19243,6 +19329,26 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_
   paint.setBlendMode((SkBlendMode)c.blend_mode);
 
   canvas_->drawTextBlob(inflator_.getTextBlob(c.blob_id), c.x, c.y, paint);
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasNewImage(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasNewImage& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasNewImage*>(
+          cmd_data);
+
+  void* pixels = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+
+  SkImageInfo info = SkImageInfo::Make(c.width, c.height,
+                                       kN32_SkColorType, kPremul_SkAlphaType);
+
+  SkPixmap pixmap(info, pixels, c.min_row_bytes, NULL);
+  inflator_.addImage(c.image_id, SkImage::MakeTextureFromPixmap(
+                         gr_context_.get(), pixmap, SkBudgeted::kNo));
 
   return error::kNoError;
 }

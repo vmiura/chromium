@@ -2612,12 +2612,34 @@ void GLES2TraceImplementation::CanvasDrawRRect(GLfloat left,
                        blend_mode, paint_bits);
 }
 
+void GLES2TraceImplementation::CanvasDrawImage(const SkImage* image,
+                                               GLfloat left,
+                                               GLfloat top,
+                                               const CdlPaint* paint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawImage");
+  gl_->CanvasDrawImage(image, left, top, paint);
+}
+
+void GLES2TraceImplementation::CanvasDrawImageRect(const SkImage* image,
+                                                   const SkRect* src,
+                                                   const SkRect& dst,
+                                                   const CdlPaint* paint,
+                                                   GLboolean strict) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawImageRect");
+  gl_->CanvasDrawImageRect(image, src, dst, paint, strict);
+}
+
 void GLES2TraceImplementation::CanvasDrawTextBlob(const SkTextBlob* blob,
                                                   GLfloat x,
                                                   GLfloat y,
                                                   const CdlPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawTextBlob");
   gl_->CanvasDrawTextBlob(blob, x, y, paint);
+}
+
+void GLES2TraceImplementation::CanvasNewImage(const SkImage* image) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewImage");
+  gl_->CanvasNewImage(image);
 }
 
 void GLES2TraceImplementation::CanvasNewTextBlob(const SkTextBlob* blob) {

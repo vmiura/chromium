@@ -954,10 +954,20 @@ virtual void CanvasDrawRRect(GLfloat left,
                              GLuint color,
                              GLuint blend_mode,
                              GLuint paint_bits) = 0;
+virtual void CanvasDrawImage(const SkImage* image,
+                             GLfloat left,
+                             GLfloat top,
+                             const CdlPaint* paint) = 0;
+virtual void CanvasDrawImageRect(const SkImage* image,
+                                 const SkRect* src,
+                                 const SkRect& dst,
+                                 const CdlPaint* paint,
+                                 GLboolean strict) = 0;
 virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
                                 GLfloat x,
                                 GLfloat y,
                                 const CdlPaint& paint) = 0;
+virtual void CanvasNewImage(const SkImage* image) = 0;
 virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
 virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

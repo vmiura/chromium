@@ -1232,10 +1232,20 @@ void GLES2InterfaceStub::CanvasDrawRRect(GLfloat /* left */,
                                          GLuint /* color */,
                                          GLuint /* blend_mode */,
                                          GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawImage(const SkImage* /* image */,
+                                         GLfloat /* left */,
+                                         GLfloat /* top */,
+                                         const CdlPaint* /* paint */) {}
+void GLES2InterfaceStub::CanvasDrawImageRect(const SkImage* /* image */,
+                                             const SkRect* /* src */,
+                                             const SkRect& /* dst */,
+                                             const CdlPaint* /* paint */,
+                                             GLboolean /* strict */) {}
 void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
                                             GLfloat /* x */,
                                             GLfloat /* y */,
                                             const CdlPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

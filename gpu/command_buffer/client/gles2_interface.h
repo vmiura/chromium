@@ -11,6 +11,8 @@
 #include "skia/ext/cdl_common.h"
 #include "skia/ext/cdl_internals.h"
 
+class SkImage;
+struct SkRect;
 class SkTextBlob;
 class SkTypeface;
 

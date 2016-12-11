@@ -1279,10 +1279,23 @@ void CanvasDrawRRect(GLfloat left,
                      GLuint blend_mode,
                      GLuint paint_bits) override;
 
+void CanvasDrawImage(const SkImage* image,
+                     GLfloat left,
+                     GLfloat top,
+                     const CdlPaint* paint) override;
+
+void CanvasDrawImageRect(const SkImage* image,
+                         const SkRect* src,
+                         const SkRect& dst,
+                         const CdlPaint* paint,
+                         GLboolean strict) override;
+
 void CanvasDrawTextBlob(const SkTextBlob* blob,
                         GLfloat x,
                         GLfloat y,
                         const CdlPaint& paint) override;
+
+void CanvasNewImage(const SkImage* image) override;
 
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
 

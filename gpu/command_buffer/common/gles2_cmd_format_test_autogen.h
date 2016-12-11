@@ -5434,6 +5434,63 @@ TEST_F(GLES2FormatTest, CanvasDrawRRect) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasDrawImage) {
+  cmds::CanvasDrawImage& cmd = *GetBufferAs<cmds::CanvasDrawImage>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLfloat>(12), static_cast<GLfloat>(13),
+                           static_cast<GLboolean>(14), static_cast<GLfloat>(15),
+                           static_cast<GLfloat>(16), static_cast<GLuint>(17),
+                           static_cast<GLuint>(18), static_cast<GLuint>(19));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasDrawImage::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLfloat>(12), cmd.x);
+  EXPECT_EQ(static_cast<GLfloat>(13), cmd.y);
+  EXPECT_EQ(static_cast<GLboolean>(14), cmd.use_paint);
+  EXPECT_EQ(static_cast<GLfloat>(15), cmd.stroke_width);
+  EXPECT_EQ(static_cast<GLfloat>(16), cmd.miter_limit);
+  EXPECT_EQ(static_cast<GLuint>(17), cmd.color);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.blend_mode);
+  EXPECT_EQ(static_cast<GLuint>(19), cmd.paint_bits);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CanvasDrawImageRect) {
+  cmds::CanvasDrawImageRect& cmd = *GetBufferAs<cmds::CanvasDrawImageRect>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLboolean>(12),
+              static_cast<GLboolean>(13), static_cast<GLfloat>(14),
+              static_cast<GLfloat>(15), static_cast<GLfloat>(16),
+              static_cast<GLfloat>(17), static_cast<GLfloat>(18),
+              static_cast<GLfloat>(19), static_cast<GLfloat>(20),
+              static_cast<GLfloat>(21), static_cast<GLboolean>(22),
+              static_cast<GLfloat>(23), static_cast<GLfloat>(24),
+              static_cast<GLuint>(25), static_cast<GLuint>(26),
+              static_cast<GLuint>(27));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasDrawImageRect::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLboolean>(12), cmd.use_src);
+  EXPECT_EQ(static_cast<GLboolean>(13), cmd.strict);
+  EXPECT_EQ(static_cast<GLfloat>(14), cmd.s_left);
+  EXPECT_EQ(static_cast<GLfloat>(15), cmd.s_top);
+  EXPECT_EQ(static_cast<GLfloat>(16), cmd.s_right);
+  EXPECT_EQ(static_cast<GLfloat>(17), cmd.s_bottom);
+  EXPECT_EQ(static_cast<GLfloat>(18), cmd.d_left);
+  EXPECT_EQ(static_cast<GLfloat>(19), cmd.d_top);
+  EXPECT_EQ(static_cast<GLfloat>(20), cmd.d_right);
+  EXPECT_EQ(static_cast<GLfloat>(21), cmd.d_bottom);
+  EXPECT_EQ(static_cast<GLboolean>(22), cmd.use_paint);
+  EXPECT_EQ(static_cast<GLfloat>(23), cmd.stroke_width);
+  EXPECT_EQ(static_cast<GLfloat>(24), cmd.miter_limit);
+  EXPECT_EQ(static_cast<GLuint>(25), cmd.color);
+  EXPECT_EQ(static_cast<GLuint>(26), cmd.blend_mode);
+  EXPECT_EQ(static_cast<GLuint>(27), cmd.paint_bits);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasDrawTextBlob) {
   cmds::CanvasDrawTextBlob& cmd = *GetBufferAs<cmds::CanvasDrawTextBlob>();
   void* next_cmd =
@@ -5452,6 +5509,26 @@ TEST_F(GLES2FormatTest, CanvasDrawTextBlob) {
   EXPECT_EQ(static_cast<GLuint>(16), cmd.color);
   EXPECT_EQ(static_cast<GLuint>(17), cmd.blend_mode);
   EXPECT_EQ(static_cast<GLuint>(18), cmd.paint_bits);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CanvasNewImage) {
+  cmds::CanvasNewImage& cmd = *GetBufferAs<cmds::CanvasNewImage>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
+              static_cast<GLuint>(13), static_cast<GLuint>(14),
+              static_cast<GLsizeiptr>(15), static_cast<uint32_t>(16),
+              static_cast<uint32_t>(17));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasNewImage::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.width);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.height);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.min_row_bytes);
+  EXPECT_EQ(static_cast<GLsizeiptr>(15), cmd.shm_size);
+  EXPECT_EQ(static_cast<uint32_t>(16), cmd.shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(17), cmd.shm_offset);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

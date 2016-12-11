@@ -3314,6 +3314,48 @@ void CanvasDrawRRect(GLfloat left,
   }
 }
 
+void CanvasDrawImage(GLuint image_id,
+                     GLfloat x,
+                     GLfloat y,
+                     GLboolean use_paint,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasDrawImage* c = GetCmdSpace<gles2::cmds::CanvasDrawImage>();
+  if (c) {
+    c->Init(image_id, x, y, use_paint, stroke_width, miter_limit, color,
+            blend_mode, paint_bits);
+  }
+}
+
+void CanvasDrawImageRect(GLuint image_id,
+                         GLboolean use_src,
+                         GLboolean strict,
+                         GLfloat s_left,
+                         GLfloat s_top,
+                         GLfloat s_right,
+                         GLfloat s_bottom,
+                         GLfloat d_left,
+                         GLfloat d_top,
+                         GLfloat d_right,
+                         GLfloat d_bottom,
+                         GLboolean use_paint,
+                         GLfloat stroke_width,
+                         GLfloat miter_limit,
+                         GLuint color,
+                         GLuint blend_mode,
+                         GLuint paint_bits) {
+  gles2::cmds::CanvasDrawImageRect* c =
+      GetCmdSpace<gles2::cmds::CanvasDrawImageRect>();
+  if (c) {
+    c->Init(image_id, use_src, strict, s_left, s_top, s_right, s_bottom, d_left,
+            d_top, d_right, d_bottom, use_paint, stroke_width, miter_limit,
+            color, blend_mode, paint_bits);
+  }
+}
+
 void CanvasDrawTextBlob(GLuint blob_id,
                         GLfloat x,
                         GLfloat y,
@@ -3327,6 +3369,20 @@ void CanvasDrawTextBlob(GLuint blob_id,
   if (c) {
     c->Init(blob_id, x, y, stroke_width, miter_limit, color, blend_mode,
             paint_bits);
+  }
+}
+
+void CanvasNewImage(GLuint image_id,
+                    GLuint width,
+                    GLuint height,
+                    GLuint min_row_bytes,
+                    GLsizeiptr shm_size,
+                    uint32_t shm_id,
+                    uint32_t shm_offset) {
+  gles2::cmds::CanvasNewImage* c = GetCmdSpace<gles2::cmds::CanvasNewImage>();
+  if (c) {
+    c->Init(image_id, width, height, min_row_bytes, shm_size, shm_id,
+            shm_offset);
   }
 }
 

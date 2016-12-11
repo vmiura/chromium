@@ -2779,6 +2779,48 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasDrawImage': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLfloat x, GLfloat y, GLboolean use_paint, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawImageRect': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLboolean use_src, GLboolean strict, '
+                'GLfloat s_left, GLfloat s_top, GLfloat s_right, GLfloat s_bottom, '
+                'GLfloat d_left, GLfloat d_top, GLfloat d_right, GLfloat d_bottom, '
+                'GLboolean use_paint, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  #GLfloat s_left, GLfloat s_top, GLfloat s_right, GLfloat s_bottom, GLfloat d_left, GLfloat d_top, GLfloat d_right, GLfloat d_bottom
+  'CanvasDrawTextBlob': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint blob_id, GLfloat x, GLfloat y, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, '
+                'GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewImage': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLuint width, GLuint height, '
+                'GLuint min_row_bytes, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasNewTextBlob': {
     'type': 'Custom',
     'cmd_args': 'GLuint blob_id, GLsizeiptr shm_size, '
@@ -2792,16 +2834,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'cmd_args': 'GLuint typeface_id, GLsizeiptr shm_size, '
                 'uint32_t shm_id, uint32_t shm_offset',
-    'impl_func': False,
-    'client_test': False,
-    'no_gl' : True,
-    'extension': True,
-  },
-  'CanvasDrawTextBlob': {
-    'type': 'Custom',
-    'cmd_args': 'GLuint blob_id, GLfloat x, GLfloat y, GLfloat stroke_width, '
-                'GLfloat miter_limit, GLuint color, GLuint blend_mode, '
-                'GLuint paint_bits',
     'impl_func': False,
     'client_test': False,
     'no_gl' : True,

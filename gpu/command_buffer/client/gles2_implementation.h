@@ -151,6 +151,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation
     int findOrDefineTextBlob(const SkTextBlob*);
    private:
     GLES2Implementation *gl_;
+    std::unordered_set<int> images_;
     std::unordered_set<int> text_blobs_;
     std::unordered_set<int> typefaces_;
   };

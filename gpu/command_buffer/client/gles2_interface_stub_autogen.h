@@ -928,10 +928,20 @@ void CanvasDrawRRect(GLfloat left,
                      GLuint color,
                      GLuint blend_mode,
                      GLuint paint_bits) override;
+void CanvasDrawImage(const SkImage* image,
+                     GLfloat left,
+                     GLfloat top,
+                     const CdlPaint* paint) override;
+void CanvasDrawImageRect(const SkImage* image,
+                         const SkRect* src,
+                         const SkRect& dst,
+                         const CdlPaint* paint,
+                         GLboolean strict) override;
 void CanvasDrawTextBlob(const SkTextBlob* blob,
                         GLfloat x,
                         GLfloat y,
                         const CdlPaint& paint) override;
+void CanvasNewImage(const SkImage* image) override;
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
 void CanvasNewTypeface(SkTypeface* typeface) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_AUTOGEN_H_

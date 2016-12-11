@@ -114,10 +114,6 @@ GLES2Implementation::CanvasDeduper::CanvasDeduper(GLES2Implementation *gl)
  : gl_(gl) {}
 GLES2Implementation::CanvasDeduper::~CanvasDeduper() {};
 
-int GLES2Implementation::CanvasDeduper::findOrDefineImage(SkImage*) {
-  LOG(ERROR) << "findOrDefineImage";
-  return 0;
-}
 int GLES2Implementation::CanvasDeduper::findOrDefinePicture(SkPicture*) {
   LOG(ERROR) << "findOrDefinePicture";
   return 0;
@@ -127,11 +123,20 @@ int GLES2Implementation::CanvasDeduper::findOrDefineFactory(SkFlattenable*) {
   return 0;
 }
 
+int GLES2Implementation::CanvasDeduper::findOrDefineImage(SkImage* image) {
+  int unique_id = image->uniqueID();
+  auto it = images_.find(unique_id);
+  if (it == images_.end()) {
+    images_.insert(unique_id);
+    gl_->CanvasNewImage(image);
+  }
+  return unique_id;
+}
+
 int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typeface) {
   int unique_id = typeface->uniqueID();
   auto it = typefaces_.find(unique_id);
   if (it == typefaces_.end()) {
-    //LOG(ERROR) << "New typeface " << typeface;
     typefaces_.insert(unique_id);
     gl_->CanvasNewTypeface(typeface);
   }
@@ -149,6 +154,90 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(const SkTextBlob* t
 }
 
 
+void GLES2Implementation::CanvasDrawImage(
+                                const SkImage* image,
+                                GLfloat x,
+                                GLfloat y,
+                                const CdlPaint* paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+
+  int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
+
+  if (paint) {
+    helper_->CanvasDrawImage(image_id,
+                             x,
+                             y,
+                             true, // use_paint
+                             paint->getStrokeWidth(),
+                             paint->getStrokeMiter(),
+                             paint->getColor(),
+                             (unsigned)paint->getBlendMode(),
+                             GetPaintBits(*paint));
+  } else {
+    helper_->CanvasDrawImage(image_id,
+                             x,
+                             y,
+                             false, // use_paint
+                             0,
+                             0,
+                             0,
+                             0,
+                             0);
+  }
+}
+
+void GLES2Implementation::CanvasDrawImageRect(
+    const SkImage* image, const SkRect* src, const SkRect& dst,
+    const CdlPaint* paint, GLboolean strict) {
+  
+  GLboolean use_src, use_paint;
+  GLfloat stroke_width, miter_limit;
+  GLuint color, blend_mode, paint_bits;
+  SkRect src_rect;
+
+  int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
+
+  if (src) {
+    use_src = true;
+    src_rect = *src;
+  } else {
+    use_src = false;
+  }
+
+  if (paint) {
+    use_paint = true;
+    stroke_width = paint->getStrokeWidth();
+    miter_limit  = paint->getStrokeMiter();
+    color        = paint->getColor();
+    blend_mode   = (unsigned)paint->getBlendMode();
+    paint_bits   = GetPaintBits(*paint);
+  } else {
+    use_paint = false;
+    stroke_width = 0;
+    miter_limit  = 0;
+    color        = 0;
+    blend_mode   = 0;
+    paint_bits   = 0;
+  }
+
+  helper_->CanvasDrawImageRect(image_id,
+                               use_src,
+                               strict,
+                               src_rect.left(),
+                               src_rect.top(),
+                               src_rect.right(),
+                               src_rect.bottom(),
+                               dst.left(),
+                               dst.top(),
+                               dst.right(),
+                               dst.bottom(),
+                               use_paint,
+                               stroke_width,
+                               miter_limit,
+                               color,
+                               blend_mode,
+                               paint_bits);
+}
 
 void GLES2Implementation::CanvasDrawTextBlob(
                                 const SkTextBlob* blob,
@@ -167,6 +256,32 @@ void GLES2Implementation::CanvasDrawTextBlob(
                           paint.getColor(),
                           (unsigned)paint.getBlendMode(),
                           GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasNewImage(const SkImage* image) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  SkImageInfo decoded_info = SkImageInfo::Make(
+                                 image->width(),
+                                 image->height(),
+                                 kN32_SkColorType,
+                                 kPremul_SkAlphaType);
+
+  ScopedTransferBufferPtr buffer(
+      decoded_info.minRowBytes() * decoded_info.height(),
+      helper_, transfer_buffer_);
+
+  bool result = image->readPixels(decoded_info, buffer.address(),
+                                    decoded_info.minRowBytes(), 0, 0,
+                                    SkImage::kDisallow_CachingHint);
+  (void)result;
+
+  helper_->CanvasNewImage(image->uniqueID(),
+                          decoded_info.width(),
+                          decoded_info.height(),
+                          decoded_info.minRowBytes(),
+                          buffer.size(),
+                          buffer.shm_id(),
+                          buffer.offset());
 }
 
 void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {

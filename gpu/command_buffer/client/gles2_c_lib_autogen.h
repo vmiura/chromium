@@ -1811,11 +1811,27 @@ void GL_APIENTRY GLES2CanvasDrawRRect(GLfloat left,
       left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x, r2_y, r3_x, r3_y,
       stroke_width, miter_limit, color, blend_mode, paint_bits);
 }
+void GL_APIENTRY GLES2CanvasDrawImage(const SkImage* image,
+                                      GLfloat left,
+                                      GLfloat top,
+                                      const CdlPaint* paint) {
+  gles2::GetGLContext()->CanvasDrawImage(image, left, top, paint);
+}
+void GL_APIENTRY GLES2CanvasDrawImageRect(const SkImage* image,
+                                          const SkRect* src,
+                                          const SkRect& dst,
+                                          const CdlPaint* paint,
+                                          GLboolean strict) {
+  gles2::GetGLContext()->CanvasDrawImageRect(image, src, dst, paint, strict);
+}
 void GL_APIENTRY GLES2CanvasDrawTextBlob(const SkTextBlob* blob,
                                          GLfloat x,
                                          GLfloat y,
                                          const CdlPaint& paint) {
   gles2::GetGLContext()->CanvasDrawTextBlob(blob, x, y, paint);
+}
+void GL_APIENTRY GLES2CanvasNewImage(const SkImage* image) {
+  gles2::GetGLContext()->CanvasNewImage(image);
 }
 void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
   gles2::GetGLContext()->CanvasNewTextBlob(blob);
@@ -3168,8 +3184,20 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawRRect),
     },
     {
+        "glCanvasDrawImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawImage),
+    },
+    {
+        "glCanvasDrawImageRect",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawImageRect),
+    },
+    {
         "glCanvasDrawTextBlob",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawTextBlob),
+    },
+    {
+        "glCanvasNewImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewImage),
     },
     {
         "glCanvasNewTextBlob",
