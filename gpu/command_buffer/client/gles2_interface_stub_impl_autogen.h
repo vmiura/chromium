@@ -1236,5 +1236,6 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
                                             GLfloat /* x */,
                                             GLfloat /* y */,
                                             const CdlPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

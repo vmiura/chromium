@@ -3314,21 +3314,30 @@ void CanvasDrawRRect(GLfloat left,
   }
 }
 
-void CanvasDrawTextBlob(GLfloat x,
+void CanvasDrawTextBlob(GLuint blob_id,
+                        GLfloat x,
                         GLfloat y,
                         GLfloat stroke_width,
                         GLfloat miter_limit,
                         GLuint color,
                         GLuint blend_mode,
-                        GLuint paint_bits,
-                        GLsizeiptr size,
-                        uint32_t shm_id,
-                        uint32_t shm_offset) {
+                        GLuint paint_bits) {
   gles2::cmds::CanvasDrawTextBlob* c =
       GetCmdSpace<gles2::cmds::CanvasDrawTextBlob>();
   if (c) {
-    c->Init(x, y, stroke_width, miter_limit, color, blend_mode, paint_bits,
-            size, shm_id, shm_offset);
+    c->Init(blob_id, x, y, stroke_width, miter_limit, color, blend_mode,
+            paint_bits);
+  }
+}
+
+void CanvasNewTextBlob(GLuint blob_id,
+                       GLsizeiptr shm_size,
+                       uint32_t shm_id,
+                       uint32_t shm_offset) {
+  gles2::cmds::CanvasNewTextBlob* c =
+      GetCmdSpace<gles2::cmds::CanvasNewTextBlob>();
+  if (c) {
+    c->Init(blob_id, shm_size, shm_id, shm_offset);
   }
 }
 

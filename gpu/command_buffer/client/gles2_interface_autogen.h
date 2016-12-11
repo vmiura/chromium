@@ -958,5 +958,6 @@ virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
                                 GLfloat x,
                                 GLfloat y,
                                 const CdlPaint& paint) = 0;
+virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
 virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

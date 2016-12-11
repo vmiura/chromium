@@ -148,8 +148,10 @@ class GLES2_IMPL_EXPORT GLES2Implementation
     int findOrDefinePicture(SkPicture*) override;
     int findOrDefineTypeface(SkTypeface*) override;
     int findOrDefineFactory(SkFlattenable*) override;
+    int findOrDefineTextBlob(const SkTextBlob*);
    private:
     GLES2Implementation *gl_;
+    std::unordered_set<int> text_blobs_;
     std::unordered_set<int> typefaces_;
   };
 

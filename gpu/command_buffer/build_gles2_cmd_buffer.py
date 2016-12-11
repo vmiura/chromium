@@ -2779,6 +2779,15 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasNewTextBlob': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint blob_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasNewTypeface': {
     'type': 'Custom',
     'cmd_args': 'GLuint typeface_id, GLsizeiptr shm_size, '
@@ -2790,10 +2799,9 @@ _FUNCTION_INFO = {
   },
   'CanvasDrawTextBlob': {
     'type': 'Custom',
-    'cmd_args': 'GLfloat x, GLfloat y, GLfloat stroke_width, '
+    'cmd_args': 'GLuint blob_id, GLfloat x, GLfloat y, GLfloat stroke_width, '
                 'GLfloat miter_limit, GLuint color, GLuint blend_mode, '
-                'GLuint paint_bits, GLsizeiptr size, '
-                'uint32_t shm_id, uint32_t shm_offset',
+                'GLuint paint_bits',
     'impl_func': False,
     'client_test': False,
     'no_gl' : True,

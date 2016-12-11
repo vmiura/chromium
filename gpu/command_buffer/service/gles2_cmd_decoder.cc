@@ -588,6 +588,8 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
     SkImage* getImage(int) override { return 0; } ;
     SkPicture* getPicture(int) override { return 0; };
+    SkFlattenable::Factory getFactory(int) override { return 0; };
+
     SkTypeface* getTypeface(int typeface) override {
       auto it = typefaces_.find(typeface);
       if (it == typefaces_.end())
@@ -595,12 +597,25 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       //LOG(ERROR) << "Inflated typeface " << it->second.get();
       return it->second.get();
     };
-    SkFlattenable::Factory getFactory(int) override { return 0; };
+
+    SkTextBlob* getTextBlob(int blob) {
+      auto it = text_blobs_.find(blob);
+      if (it == text_blobs_.end())
+        return 0;
+      //LOG(ERROR) << "Inflated typeface " << it->second.get();
+      return it->second.get();
+    };
+    
+
+    void addTextBlob(int id, sk_sp<SkTextBlob> blob) {
+      text_blobs_.insert({id, std::move(blob)});
+    }
 
     void addTypeface(int id, sk_sp<SkTypeface> typeface) {
       typefaces_.insert({id, std::move(typeface)});
     }
    private:
+    std::unordered_map<int, sk_sp<SkTextBlob>> text_blobs_;
     std::unordered_map<int, sk_sp<SkTypeface>> typefaces_;
   };
 
@@ -19227,17 +19242,23 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_
   paint.setColor(c.color);
   paint.setBlendMode((SkBlendMode)c.blend_mode);
 
-  void* blob = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.size);
+  canvas_->drawTextBlob(inflator_.getTextBlob(c.blob_id), c.x, c.y, paint);
 
-  SkReadBuffer buffer(blob, c.size);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasNewTextBlob(uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasNewTextBlob& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasNewTextBlob*>(
+          cmd_data);
+
+  void* blob = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+  SkReadBuffer buffer(blob, c.shm_size);
   buffer.setInflator(&inflator_);
-
-  //LOG(ERROR) << "CanvasDrawTextBlob"
-  //        << " x " << c.x
-  //        << " y " << c.y
-  //        << " tb size " << buffer.size();
-
-  canvas_->drawTextBlob(SkTextBlob::CreateFromBuffer(buffer), c.x, c.y, paint);
+  inflator_.addTextBlob(c.blob_id, SkTextBlob::MakeFromBuffer(buffer));
 
   return error::kNoError;
 }
@@ -19249,10 +19270,6 @@ error::Error GLES2DecoderImpl::HandleCanvasNewTypeface(uint32_t immediate_data_s
       *static_cast<
           const volatile gles2::cmds::CanvasNewTypeface*>(
           cmd_data);
-
-  //LOG(ERROR) << "CanvasNewTypeface"
-  //        << " typeface_id " << c.typeface_id
-  //        << " shm_size " << c.shm_size;
 
   void* data = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
   SkMemoryStream stream(data, c.shm_size, false);

@@ -122,8 +122,12 @@ int GLES2Implementation::CanvasDeduper::findOrDefinePicture(SkPicture*) {
   LOG(ERROR) << "findOrDefinePicture";
   return 0;
 }
+int GLES2Implementation::CanvasDeduper::findOrDefineFactory(SkFlattenable*) {
+  LOG(ERROR) << "findOrDefineFactory";
+  return 0;
+}
+
 int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typeface) {
-  
   int unique_id = typeface->uniqueID();
   auto it = typefaces_.find(unique_id);
   if (it == typefaces_.end()) {
@@ -133,10 +137,18 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typefac
   }
   return unique_id;
 }
-int GLES2Implementation::CanvasDeduper::findOrDefineFactory(SkFlattenable*) {
-  LOG(ERROR) << "findOrDefineFactory";
-  return 0;
+
+int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(const SkTextBlob* text_blob) {
+  int unique_id = text_blob->uniqueID();
+  auto it = text_blobs_.find(unique_id);
+  if (it == text_blobs_.end()) {
+    text_blobs_.insert(unique_id);
+    gl_->CanvasNewTextBlob(text_blob);
+  }
+  return unique_id;
 }
+
+
 
 void GLES2Implementation::CanvasDrawTextBlob(
                                 const SkTextBlob* blob,
@@ -145,33 +157,31 @@ void GLES2Implementation::CanvasDrawTextBlob(
                                 const CdlPaint& paint) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
 
-  SkBinaryWriteBuffer writer;
-  writer.setDeduper(&canvas_deduper_);
-
-  blob->flatten(writer);
-  size_t size = writer.bytesWritten();
-  //auto data = SkData::MakeUninitialized(size);
-  //writer.writeToMemory(data->writable_data());
-  
-  //LOG(ERROR) << "CanvasDrawTextBlob"
-  //    << " x " << x
-  //    << " y " << y
-  //    << " tb size " << size;
-
-  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
-  writer.writeToMemory(buffer.address());
-
+  int blob_id = canvas_deduper_.findOrDefineTextBlob(blob);
   helper_->CanvasDrawTextBlob(
+                          blob_id,
                           x,
                           y,
                           paint.getStrokeWidth(),
                           paint.getStrokeMiter(),
                           paint.getColor(),
                           (unsigned)paint.getBlendMode(),
-                          GetPaintBits(paint),
-                          size,
-                          buffer.shm_id(),
-                          buffer.offset());
+                          GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  SkBinaryWriteBuffer writer;
+  writer.setDeduper(&canvas_deduper_);
+  blob->flatten(writer);
+  size_t size = writer.bytesWritten();
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  writer.writeToMemory(buffer.address());
+
+  helper_->CanvasNewTextBlob(blob->uniqueID(),
+                             buffer.size(),
+                             buffer.shm_id(),
+                             buffer.offset());
 }
 
 static sk_sp<SkData> encode(SkTypeface* tf) {

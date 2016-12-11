@@ -16302,17 +16302,16 @@ struct CanvasDrawTextBlob {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(GLfloat _x,
+  void Init(GLuint _blob_id,
+            GLfloat _x,
             GLfloat _y,
             GLfloat _stroke_width,
             GLfloat _miter_limit,
             GLuint _color,
             GLuint _blend_mode,
-            GLuint _paint_bits,
-            GLsizeiptr _size,
-            uint32_t _shm_id,
-            uint32_t _shm_offset) {
+            GLuint _paint_bits) {
     SetHeader();
+    blob_id = _blob_id;
     x = _x;
     y = _y;
     stroke_width = _stroke_width;
@@ -16320,29 +16319,25 @@ struct CanvasDrawTextBlob {
     color = _color;
     blend_mode = _blend_mode;
     paint_bits = _paint_bits;
-    size = _size;
-    shm_id = _shm_id;
-    shm_offset = _shm_offset;
   }
 
   void* Set(void* cmd,
+            GLuint _blob_id,
             GLfloat _x,
             GLfloat _y,
             GLfloat _stroke_width,
             GLfloat _miter_limit,
             GLuint _color,
             GLuint _blend_mode,
-            GLuint _paint_bits,
-            GLsizeiptr _size,
-            uint32_t _shm_id,
-            uint32_t _shm_offset) {
-    static_cast<ValueType*>(cmd)->Init(_x, _y, _stroke_width, _miter_limit,
-                                       _color, _blend_mode, _paint_bits, _size,
-                                       _shm_id, _shm_offset);
+            GLuint _paint_bits) {
+    static_cast<ValueType*>(cmd)->Init(_blob_id, _x, _y, _stroke_width,
+                                       _miter_limit, _color, _blend_mode,
+                                       _paint_bits);
     return NextCmdAddress<ValueType>(cmd);
   }
 
   gpu::CommandHeader header;
+  uint32_t blob_id;
   float x;
   float y;
   float stroke_width;
@@ -16350,35 +16345,81 @@ struct CanvasDrawTextBlob {
   uint32_t color;
   uint32_t blend_mode;
   uint32_t paint_bits;
-  int32_t size;
+};
+
+static_assert(sizeof(CanvasDrawTextBlob) == 36,
+              "size of CanvasDrawTextBlob should be 36");
+static_assert(offsetof(CanvasDrawTextBlob, header) == 0,
+              "offset of CanvasDrawTextBlob header should be 0");
+static_assert(offsetof(CanvasDrawTextBlob, blob_id) == 4,
+              "offset of CanvasDrawTextBlob blob_id should be 4");
+static_assert(offsetof(CanvasDrawTextBlob, x) == 8,
+              "offset of CanvasDrawTextBlob x should be 8");
+static_assert(offsetof(CanvasDrawTextBlob, y) == 12,
+              "offset of CanvasDrawTextBlob y should be 12");
+static_assert(offsetof(CanvasDrawTextBlob, stroke_width) == 16,
+              "offset of CanvasDrawTextBlob stroke_width should be 16");
+static_assert(offsetof(CanvasDrawTextBlob, miter_limit) == 20,
+              "offset of CanvasDrawTextBlob miter_limit should be 20");
+static_assert(offsetof(CanvasDrawTextBlob, color) == 24,
+              "offset of CanvasDrawTextBlob color should be 24");
+static_assert(offsetof(CanvasDrawTextBlob, blend_mode) == 28,
+              "offset of CanvasDrawTextBlob blend_mode should be 28");
+static_assert(offsetof(CanvasDrawTextBlob, paint_bits) == 32,
+              "offset of CanvasDrawTextBlob paint_bits should be 32");
+
+struct CanvasNewTextBlob {
+  typedef CanvasNewTextBlob ValueType;
+  static const CommandId kCmdId = kCanvasNewTextBlob;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _blob_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    SetHeader();
+    blob_id = _blob_id;
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLuint _blob_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_blob_id, _shm_size, _shm_id,
+                                       _shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t blob_id;
+  int32_t shm_size;
   uint32_t shm_id;
   uint32_t shm_offset;
 };
 
-static_assert(sizeof(CanvasDrawTextBlob) == 44,
-              "size of CanvasDrawTextBlob should be 44");
-static_assert(offsetof(CanvasDrawTextBlob, header) == 0,
-              "offset of CanvasDrawTextBlob header should be 0");
-static_assert(offsetof(CanvasDrawTextBlob, x) == 4,
-              "offset of CanvasDrawTextBlob x should be 4");
-static_assert(offsetof(CanvasDrawTextBlob, y) == 8,
-              "offset of CanvasDrawTextBlob y should be 8");
-static_assert(offsetof(CanvasDrawTextBlob, stroke_width) == 12,
-              "offset of CanvasDrawTextBlob stroke_width should be 12");
-static_assert(offsetof(CanvasDrawTextBlob, miter_limit) == 16,
-              "offset of CanvasDrawTextBlob miter_limit should be 16");
-static_assert(offsetof(CanvasDrawTextBlob, color) == 20,
-              "offset of CanvasDrawTextBlob color should be 20");
-static_assert(offsetof(CanvasDrawTextBlob, blend_mode) == 24,
-              "offset of CanvasDrawTextBlob blend_mode should be 24");
-static_assert(offsetof(CanvasDrawTextBlob, paint_bits) == 28,
-              "offset of CanvasDrawTextBlob paint_bits should be 28");
-static_assert(offsetof(CanvasDrawTextBlob, size) == 32,
-              "offset of CanvasDrawTextBlob size should be 32");
-static_assert(offsetof(CanvasDrawTextBlob, shm_id) == 36,
-              "offset of CanvasDrawTextBlob shm_id should be 36");
-static_assert(offsetof(CanvasDrawTextBlob, shm_offset) == 40,
-              "offset of CanvasDrawTextBlob shm_offset should be 40");
+static_assert(sizeof(CanvasNewTextBlob) == 20,
+              "size of CanvasNewTextBlob should be 20");
+static_assert(offsetof(CanvasNewTextBlob, header) == 0,
+              "offset of CanvasNewTextBlob header should be 0");
+static_assert(offsetof(CanvasNewTextBlob, blob_id) == 4,
+              "offset of CanvasNewTextBlob blob_id should be 4");
+static_assert(offsetof(CanvasNewTextBlob, shm_size) == 8,
+              "offset of CanvasNewTextBlob shm_size should be 8");
+static_assert(offsetof(CanvasNewTextBlob, shm_id) == 12,
+              "offset of CanvasNewTextBlob shm_id should be 12");
+static_assert(offsetof(CanvasNewTextBlob, shm_offset) == 16,
+              "offset of CanvasNewTextBlob shm_offset should be 16");
 
 struct CanvasNewTypeface {
   typedef CanvasNewTypeface ValueType;

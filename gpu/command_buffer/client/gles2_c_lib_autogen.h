@@ -1817,6 +1817,9 @@ void GL_APIENTRY GLES2CanvasDrawTextBlob(const SkTextBlob* blob,
                                          const CdlPaint& paint) {
   gles2::GetGLContext()->CanvasDrawTextBlob(blob, x, y, paint);
 }
+void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
+  gles2::GetGLContext()->CanvasNewTextBlob(blob);
+}
 void GL_APIENTRY GLES2CanvasNewTypeface(SkTypeface* typeface) {
   gles2::GetGLContext()->CanvasNewTypeface(typeface);
 }
@@ -3167,6 +3170,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasDrawTextBlob",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawTextBlob),
+    },
+    {
+        "glCanvasNewTextBlob",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewTextBlob),
     },
     {
         "glCanvasNewTypeface",

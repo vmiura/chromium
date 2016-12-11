@@ -341,7 +341,8 @@
   OP(CanvasDrawRect)                                       /* 582 */ \
   OP(CanvasDrawRRect)                                      /* 583 */ \
   OP(CanvasDrawTextBlob)                                   /* 584 */ \
-  OP(CanvasNewTypeface)                                    /* 585 */
+  OP(CanvasNewTextBlob)                                    /* 585 */ \
+  OP(CanvasNewTypeface)                                    /* 586 */
 
 enum CommandId {
   kOneBeforeStartPoint =

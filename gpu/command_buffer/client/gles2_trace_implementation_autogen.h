@@ -932,5 +932,6 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
                         GLfloat x,
                         GLfloat y,
                         const CdlPaint& paint) override;
+void CanvasNewTextBlob(const SkTextBlob* blob) override;
 void CanvasNewTypeface(SkTypeface* typeface) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_AUTOGEN_H_

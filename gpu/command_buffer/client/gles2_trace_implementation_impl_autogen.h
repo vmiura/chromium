@@ -2620,6 +2620,11 @@ void GLES2TraceImplementation::CanvasDrawTextBlob(const SkTextBlob* blob,
   gl_->CanvasDrawTextBlob(blob, x, y, paint);
 }
 
+void GLES2TraceImplementation::CanvasNewTextBlob(const SkTextBlob* blob) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTextBlob");
+  gl_->CanvasNewTextBlob(blob);
+}
+
 void GLES2TraceImplementation::CanvasNewTypeface(SkTypeface* typeface) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTypeface");
   gl_->CanvasNewTypeface(typeface);

@@ -396,6 +396,7 @@
 #define glCanvasDrawRect GLES2_GET_FUN(CanvasDrawRect)
 #define glCanvasDrawRRect GLES2_GET_FUN(CanvasDrawRRect)
 #define glCanvasDrawTextBlob GLES2_GET_FUN(CanvasDrawTextBlob)
+#define glCanvasNewTextBlob GLES2_GET_FUN(CanvasNewTextBlob)
 #define glCanvasNewTypeface GLES2_GET_FUN(CanvasNewTypeface)
 
 #endif  // GPU_GLES2_GL2CHROMIUM_AUTOGEN_H_
