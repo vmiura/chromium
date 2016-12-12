@@ -102,60 +102,6 @@
 #include <OpenGL/CGLIOSurface.h>
 #endif
 
-#include "gl/GrGLInterface.h"
-#include "gl/GrGLAssembleInterface.h"
-
-#include <dlfcn.h>
-
-namespace {
-
-class GLLoader {
-public:
-    GLLoader() {
-        fLibrary = dlopen(
-                    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib",
-                    RTLD_LAZY);
-    }
-
-    ~GLLoader() {
-        if (fLibrary) {
-            dlclose(fLibrary);
-        }
-    }
-
-    void* handle() const {
-        return nullptr == fLibrary ? RTLD_DEFAULT : fLibrary;
-    }
-
-private:
-    void* fLibrary;
-};
-
-class GLProcGetter {
-public:
-    GLProcGetter() {}
-
-    GrGLFuncPtr getProc(const char name[]) const {
-        return (GrGLFuncPtr) dlsym(fLoader.handle(), name);
-    }
-
-private:
-    GLLoader fLoader;
-};
-
-static GrGLFuncPtr mac_get_gl_proc(void* ctx, const char name[]) {
-    SkASSERT(ctx);
-    const GLProcGetter* getter = (const GLProcGetter*) ctx;
-    return getter->getProc(name);
-}
-
-const GrGLInterface* CreateNativeInterface() {
-    GLProcGetter getter;
-    return GrGLAssembleGLInterface(&getter, mac_get_gl_proc);
-}
-
-}
-
 namespace gpu {
 namespace gles2 {
 
@@ -589,7 +535,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
     SkPicture* getPicture(int) override { return 0; };
     SkFlattenable::Factory getFactory(int) override { return 0; };
 
-    SkImage* getImage(int image) override { 
+    SkImage* getImage(int image) override {
       auto it = images_.find(image);
       if (it == images_.end())
         return 0;
@@ -615,7 +561,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
     void addImage(int id, sk_sp<SkImage> image) {
       images_.insert({id, std::move(image)});
-    }    
+    }
 
     void addTextBlob(int id, sk_sp<SkTextBlob> blob) {
       text_blobs_.insert({id, std::move(blob)});
@@ -3650,7 +3596,7 @@ bool GLES2DecoderImpl::Initialize(
     InitializeGLDebugLogging();
   }
 
-  sk_sp<const GrGLInterface> interface(CreateNativeInterface());
+  sk_sp<const GrGLInterface> interface(GrGLCreateNativeInterface());
   gr_context_ = sk_sp<GrContext>(
       GrContext::Create(kOpenGL_GrBackend,
                         // GrContext takes ownership of |interface|.
@@ -19045,7 +18991,7 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
           cmd_data);
 
   gr_context_->resetContext();
-  
+
   GLenum target = c.target;
   GrGLuint texture_id = GetTexture(c.texture)->service_id();
   int width = c.width;
@@ -19067,7 +19013,7 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
   desc.fTextureHandle = skia::GrGLTextureInfoToGrBackendObject(texture_info);
   desc.fSampleCnt = msaa_sample_count;
 
-  uint32_t flags = 
+  uint32_t flags =
       use_distance_field_text ? SkSurfaceProps::kUseDistanceFieldFonts_Flag : 0;
   // Use unknown pixel geometry to disable LCD text.
   SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
@@ -19092,7 +19038,8 @@ error::Error GLES2DecoderImpl::HandleCanvasEnd(
     sk_surface_.reset();
   }
 
-  //RestoreState(nullptr);
+  // Invalidate virtual state
+  RestoreState(nullptr);
   return error::kNoError;
 }
 
@@ -19239,7 +19186,7 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImage(uint32_t immediate_data_siz
       *static_cast<
           const volatile gles2::cmds::CanvasDrawImage*>(
           cmd_data);
-  
+
   SkPaint paint;
   if (c.use_paint) {
     CdlPaintBits paint_bits;
@@ -19267,7 +19214,7 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImageRect(uint32_t immediate_data
       *static_cast<
           const volatile gles2::cmds::CanvasDrawImageRect*>(
           cmd_data);
-  
+
   SkRect src_rect;
   if (c.use_src)
     src_rect = SkRect::MakeLTRB(c.s_left, c.s_top, c.s_right, c.s_bottom);
