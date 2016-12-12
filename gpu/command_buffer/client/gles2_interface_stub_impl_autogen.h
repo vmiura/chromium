@@ -1248,4 +1248,9 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
 void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
+void GLES2InterfaceStub::CanvasSetImageShader(
+    const SkImage* /* image */,
+    GLuint /* tmx */,
+    GLuint /* tmy */,
+    const SkMatrix* /* local_matrix */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

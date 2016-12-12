@@ -970,4 +970,8 @@ virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
 virtual void CanvasNewImage(const SkImage* image) = 0;
 virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
 virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
+virtual void CanvasSetImageShader(const SkImage* image,
+                                  GLuint tmx,
+                                  GLuint tmy,
+                                  const SkMatrix* local_matrix) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

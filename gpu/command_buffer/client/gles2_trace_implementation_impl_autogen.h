@@ -2652,4 +2652,13 @@ void GLES2TraceImplementation::CanvasNewTypeface(SkTypeface* typeface) {
   gl_->CanvasNewTypeface(typeface);
 }
 
+void GLES2TraceImplementation::CanvasSetImageShader(
+    const SkImage* image,
+    GLuint tmx,
+    GLuint tmy,
+    const SkMatrix* local_matrix) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetImageShader");
+  gl_->CanvasSetImageShader(image, tmx, tmy, local_matrix);
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_IMPL_AUTOGEN_H_

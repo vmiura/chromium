@@ -345,7 +345,8 @@
   OP(CanvasDrawTextBlob)                                   /* 586 */ \
   OP(CanvasNewImage)                                       /* 587 */ \
   OP(CanvasNewTextBlob)                                    /* 588 */ \
-  OP(CanvasNewTypeface)                                    /* 589 */
+  OP(CanvasNewTypeface)                                    /* 589 */ \
+  OP(CanvasSetImageShader)                                 /* 590 */
 
 enum CommandId {
   kOneBeforeStartPoint =

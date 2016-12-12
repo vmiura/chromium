@@ -944,4 +944,8 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
 void CanvasNewImage(const SkImage* image) override;
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
 void CanvasNewTypeface(SkTypeface* typeface) override;
+void CanvasSetImageShader(const SkImage* image,
+                          GLuint tmx,
+                          GLuint tmy,
+                          const SkMatrix* local_matrix) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_AUTOGEN_H_

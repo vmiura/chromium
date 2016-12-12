@@ -3408,4 +3408,23 @@ void CanvasNewTypeface(GLuint typeface_id,
   }
 }
 
+void CanvasSetImageShader(GLuint image_id,
+                          GLuint tmx,
+                          GLuint tmy,
+                          const GLfloat m0,
+                          const GLfloat m1,
+                          const GLfloat m2,
+                          const GLfloat m3,
+                          const GLfloat m4,
+                          const GLfloat m5,
+                          const GLfloat m6,
+                          const GLfloat m7,
+                          const GLfloat m8) {
+  gles2::cmds::CanvasSetImageShader* c =
+      GetCmdSpace<gles2::cmds::CanvasSetImageShader>();
+  if (c) {
+    c->Init(image_id, tmx, tmy, m0, m1, m2, m3, m4, m5, m6, m7, m8);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

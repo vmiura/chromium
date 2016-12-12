@@ -1839,6 +1839,12 @@ void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
 void GL_APIENTRY GLES2CanvasNewTypeface(SkTypeface* typeface) {
   gles2::GetGLContext()->CanvasNewTypeface(typeface);
 }
+void GL_APIENTRY GLES2CanvasSetImageShader(const SkImage* image,
+                                           GLuint tmx,
+                                           GLuint tmy,
+                                           const SkMatrix* local_matrix) {
+  gles2::GetGLContext()->CanvasSetImageShader(image, tmx, tmy, local_matrix);
+}
 
 namespace gles2 {
 
@@ -3206,6 +3212,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasNewTypeface",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasNewTypeface),
+    },
+    {
+        "glCanvasSetImageShader",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetImageShader),
     },
     {
         NULL, NULL,

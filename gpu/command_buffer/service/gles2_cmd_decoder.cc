@@ -2468,6 +2468,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   sk_sp<class GrContext> gr_context_;
   sk_sp<SkSurface> sk_surface_;
+  sk_sp<SkShader> sk_shader_;
   SkCanvas* canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(GLES2DecoderImpl);
@@ -19079,6 +19080,38 @@ void GLES2DecoderImpl::DoCanvasSetMatrix(
     canvas_->setMatrix(m);
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasSetImageShader(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasSetImageShader& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasSetImageShader*>(
+          cmd_data);
+
+  LOG(ERROR) << "Got ImageShader";
+  SkImage* image = inflator_.getImage(c.image_id);
+  if (image) {
+    SkMatrix matrix;
+    matrix.set(0, c.m0);
+    matrix.set(1, c.m1);
+    matrix.set(2, c.m2);
+    matrix.set(3, c.m3);
+    matrix.set(4, c.m4);
+    matrix.set(5, c.m5);
+    matrix.set(6, c.m6);
+    matrix.set(7, c.m7);
+    matrix.set(8, c.m8);
+    LOG(ERROR) << "Make ImageShader";
+    sk_shader_ = image->makeShader(
+                              (SkShader::TileMode)c.tmx,
+                              (SkShader::TileMode)c.tmy,
+                              &matrix);
+  }
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasTranslate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -19112,6 +19145,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawPaint(
   paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
   paint.setBlendMode((SkBlendMode)c.blend_mode);
+  if (sk_shader_.get()) {
+    paint.setShader(sk_shader_);
+    sk_shader_.reset();
+  }
   canvas_->drawPaint(paint);
 
   return error::kNoError;
@@ -19139,6 +19176,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRect(
   paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
   paint.setBlendMode((SkBlendMode)c.blend_mode);
+  if (sk_shader_.get()) {
+    paint.setShader(sk_shader_);
+    sk_shader_.reset();
+  }
   canvas_->drawRect(rect, paint);
 
   return error::kNoError;
@@ -19174,6 +19215,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRRect(
   paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
   paint.setBlendMode((SkBlendMode)c.blend_mode);
+  if (sk_shader_.get()) {
+    paint.setShader(sk_shader_);
+    sk_shader_.reset();
+  }
   canvas_->drawRRect(rrect, paint);
 
   return error::kNoError;
@@ -19200,6 +19245,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImage(uint32_t immediate_data_siz
     paint.setStrokeMiter(c.miter_limit);
     paint.setColor(c.color);
     paint.setBlendMode((SkBlendMode)c.blend_mode);
+    if (sk_shader_.get()) {
+      paint.setShader(sk_shader_);
+      sk_shader_.reset();
+    }
   }
 
   canvas_->drawImage(inflator_.getImage(c.image_id), c.x, c.y, c.use_paint ? &paint : 0);
@@ -19232,6 +19281,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImageRect(uint32_t immediate_data
     paint.setStrokeMiter(c.miter_limit);
     paint.setColor(c.color);
     paint.setBlendMode((SkBlendMode)c.blend_mode);
+    if (sk_shader_.get()) {
+      paint.setShader(sk_shader_);
+      sk_shader_.reset();
+    }
   }
 
   if (c.use_src) {
@@ -19274,6 +19327,10 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_
   paint.setStrokeMiter(c.miter_limit);
   paint.setColor(c.color);
   paint.setBlendMode((SkBlendMode)c.blend_mode);
+  if (sk_shader_.get()) {
+    paint.setShader(sk_shader_);
+    sk_shader_.reset();
+  }
 
   canvas_->drawTextBlob(inflator_.getTextBlob(c.blob_id), c.x, c.y, paint);
 

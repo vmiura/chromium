@@ -2811,6 +2811,17 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasSetImageShader': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLuint tmx, GLuint tmy, '
+                'const GLfloat m0, const GLfloat m1, const GLfloat m2,'
+                'const GLfloat m3, const GLfloat m4, const GLfloat m5,'
+                'const GLfloat m6, const GLfloat m7, const GLfloat m8',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasNewImage': {
     'type': 'Custom',
     'cmd_args': 'GLuint image_id, GLuint width, GLuint height, '

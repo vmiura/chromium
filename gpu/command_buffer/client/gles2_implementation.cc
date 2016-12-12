@@ -189,7 +189,7 @@ void GLES2Implementation::CanvasDrawImage(
 void GLES2Implementation::CanvasDrawImageRect(
     const SkImage* image, const SkRect* src, const SkRect& dst,
     const CdlPaint* paint, GLboolean strict) {
-  
+
   GLboolean use_src, use_paint;
   GLfloat stroke_width, miter_limit;
   GLuint color, blend_mode, paint_bits;
@@ -315,6 +315,27 @@ void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
                              buffer.size(),
                              buffer.shm_id(),
                              buffer.offset());
+}
+
+void GLES2Implementation::CanvasSetImageShader(
+                          const SkImage* image,
+                          GLuint tmx,
+                          GLuint tmy,
+                          const SkMatrix* local_matrix) {
+  int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
+
+  helper_->CanvasSetImageShader(image_id,
+                                (unsigned)tmx,
+                                (unsigned)tmy,
+                                local_matrix->get(0),
+                                local_matrix->get(1),
+                                local_matrix->get(2),
+                                local_matrix->get(3),
+                                local_matrix->get(4),
+                                local_matrix->get(5),
+                                local_matrix->get(6),
+                                local_matrix->get(7),
+                                local_matrix->get(8));
 }
 
 ///////////////////////////////////////

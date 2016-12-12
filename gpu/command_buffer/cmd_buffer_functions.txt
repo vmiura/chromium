@@ -386,3 +386,5 @@ GL_APICALL void         GL_APIENTRY glCanvasDrawTextBlob (const SkTextBlob* blob
 GL_APICALL void         GL_APIENTRY glCanvasNewImage (const SkImage* image);
 GL_APICALL void         GL_APIENTRY glCanvasNewTextBlob (const SkTextBlob* blob);
 GL_APICALL void         GL_APIENTRY glCanvasNewTypeface (SkTypeface* typeface);
+
+GL_APICALL void         GL_APIENTRY glCanvasSetImageShader (const SkImage* image, GLuint tmx, GLuint tmy, const SkMatrix* local_matrix);

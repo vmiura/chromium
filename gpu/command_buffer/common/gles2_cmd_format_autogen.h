@@ -16763,4 +16763,105 @@ static_assert(offsetof(CanvasNewTypeface, shm_id) == 12,
 static_assert(offsetof(CanvasNewTypeface, shm_offset) == 16,
               "offset of CanvasNewTypeface shm_offset should be 16");
 
+struct CanvasSetImageShader {
+  typedef CanvasSetImageShader ValueType;
+  static const CommandId kCmdId = kCanvasSetImageShader;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _image_id,
+            GLuint _tmx,
+            GLuint _tmy,
+            const GLfloat _m0,
+            const GLfloat _m1,
+            const GLfloat _m2,
+            const GLfloat _m3,
+            const GLfloat _m4,
+            const GLfloat _m5,
+            const GLfloat _m6,
+            const GLfloat _m7,
+            const GLfloat _m8) {
+    SetHeader();
+    image_id = _image_id;
+    tmx = _tmx;
+    tmy = _tmy;
+    m0 = _m0;
+    m1 = _m1;
+    m2 = _m2;
+    m3 = _m3;
+    m4 = _m4;
+    m5 = _m5;
+    m6 = _m6;
+    m7 = _m7;
+    m8 = _m8;
+  }
+
+  void* Set(void* cmd,
+            GLuint _image_id,
+            GLuint _tmx,
+            GLuint _tmy,
+            const GLfloat _m0,
+            const GLfloat _m1,
+            const GLfloat _m2,
+            const GLfloat _m3,
+            const GLfloat _m4,
+            const GLfloat _m5,
+            const GLfloat _m6,
+            const GLfloat _m7,
+            const GLfloat _m8) {
+    static_cast<ValueType*>(cmd)->Init(_image_id, _tmx, _tmy, _m0, _m1, _m2,
+                                       _m3, _m4, _m5, _m6, _m7, _m8);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t image_id;
+  uint32_t tmx;
+  uint32_t tmy;
+  uint32_t m0;
+  uint32_t m1;
+  uint32_t m2;
+  uint32_t m3;
+  uint32_t m4;
+  uint32_t m5;
+  uint32_t m6;
+  uint32_t m7;
+  uint32_t m8;
+};
+
+static_assert(sizeof(CanvasSetImageShader) == 52,
+              "size of CanvasSetImageShader should be 52");
+static_assert(offsetof(CanvasSetImageShader, header) == 0,
+              "offset of CanvasSetImageShader header should be 0");
+static_assert(offsetof(CanvasSetImageShader, image_id) == 4,
+              "offset of CanvasSetImageShader image_id should be 4");
+static_assert(offsetof(CanvasSetImageShader, tmx) == 8,
+              "offset of CanvasSetImageShader tmx should be 8");
+static_assert(offsetof(CanvasSetImageShader, tmy) == 12,
+              "offset of CanvasSetImageShader tmy should be 12");
+static_assert(offsetof(CanvasSetImageShader, m0) == 16,
+              "offset of CanvasSetImageShader m0 should be 16");
+static_assert(offsetof(CanvasSetImageShader, m1) == 20,
+              "offset of CanvasSetImageShader m1 should be 20");
+static_assert(offsetof(CanvasSetImageShader, m2) == 24,
+              "offset of CanvasSetImageShader m2 should be 24");
+static_assert(offsetof(CanvasSetImageShader, m3) == 28,
+              "offset of CanvasSetImageShader m3 should be 28");
+static_assert(offsetof(CanvasSetImageShader, m4) == 32,
+              "offset of CanvasSetImageShader m4 should be 32");
+static_assert(offsetof(CanvasSetImageShader, m5) == 36,
+              "offset of CanvasSetImageShader m5 should be 36");
+static_assert(offsetof(CanvasSetImageShader, m6) == 40,
+              "offset of CanvasSetImageShader m6 should be 40");
+static_assert(offsetof(CanvasSetImageShader, m7) == 44,
+              "offset of CanvasSetImageShader m7 should be 44");
+static_assert(offsetof(CanvasSetImageShader, m8) == 48,
+              "offset of CanvasSetImageShader m8 should be 48");
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_

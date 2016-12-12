@@ -10,6 +10,7 @@
 #if CDL_ENABLED
 
 #include "base/synchronization/lock.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "skia/ext/cdl_picture.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -41,6 +42,9 @@ class CdlWrapSkShader : public CdlShader {
 
   bool isOpaque() const override { return shader_->isOpaque(); }
 
+  void setupShader(gpu::gles2::GLES2Interface* gl) override {
+  }
+
  private:
   sk_sp<SkShader> shader_;
 };
@@ -71,6 +75,13 @@ class CdlImageShader : public CdlShader {
   }
 
   bool isOpaque() const override { return image_->isOpaque(); }
+
+  void setupShader(gpu::gles2::GLES2Interface* gl) override {
+    gl->CanvasSetImageShader(image_.get(),
+                             (unsigned)tmx_,
+                             (unsigned) tmy_,
+                             &getLocalMatrix());
+  }
 
  private:
   sk_sp<SkImage> image_;
@@ -109,6 +120,9 @@ class CdlPictureShader : public CdlShader {
 
     return shader_ = SkShader::MakePictureShader(
                picture_->toSkPicture(), tmx_, tmy_, &getLocalMatrix(), &tile_);
+  }
+
+  void setupShader(gpu::gles2::GLES2Interface* gl) override {
   }
 
  private:

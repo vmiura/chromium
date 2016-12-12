@@ -37,6 +37,8 @@ config("skia_config") {
   include_dirs = [
     "config",
     "ext",
+    "//gpu",
+    "//third_party/khronos",
     "//third_party/skia/include/c",
     "//third_party/skia/include/config",
     "//third_party/skia/include/core",

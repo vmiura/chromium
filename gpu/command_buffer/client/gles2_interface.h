@@ -12,6 +12,7 @@
 #include "skia/ext/cdl_internals.h"
 
 class SkImage;
+class SkMatrix;
 struct SkRect;
 class SkTextBlob;
 class SkTypeface;

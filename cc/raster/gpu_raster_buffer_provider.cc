@@ -124,6 +124,8 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
     }
 
     void onDrawPaint(CdlPaint const& paint) override {
+      if (paint.getShader())
+        paint.getShader()->setupShader(gl_);
       gl_->CanvasDrawPaint(paint.getStrokeWidth(),
                            paint.getStrokeMiter(),
                            paint.getColor(),
@@ -132,6 +134,8 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
     }
 
     void onDrawRect(const SkRect& r, const CdlPaint& paint) override {
+      if (paint.getShader())
+        paint.getShader()->setupShader(gl_);
       gl_->CanvasDrawRect(r.left(),
                           r.top(),
                           r.right(),
@@ -146,6 +150,8 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
     // void setRectRadii(const SkRect& rect, const SkVector radii[4]);
 
     void onDrawRRect(const SkRRect& r, const CdlPaint& paint) override {
+      if (paint.getShader())
+        paint.getShader()->setupShader(gl_);
       gl_->CanvasDrawRRect(r.rect().left(),
                            r.rect().top(),
                            r.rect().right(),
@@ -177,7 +183,6 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
                          const SkRect& dst,
                          const CdlPaint* paint,
                          SkCanvas::SrcRectConstraint constraint) override {
-      // TODO add image rect version.
       gl_->CanvasDrawImageRect(image, src, dst, paint, constraint == SkCanvas::kStrict_SrcRectConstraint);
     }
 
@@ -185,10 +190,12 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
                               SkScalar x,
                               SkScalar y,
                               const CdlPaint& paint) override {
+      if (paint.getShader())
+        paint.getShader()->setupShader(gl_);
       gl_->CanvasDrawTextBlob(blob, x, y, paint);
     }
 
-    
+
 
     gpu::gles2::GLES2Interface* gl_;
 };

@@ -5562,4 +5562,31 @@ TEST_F(GLES2FormatTest, CanvasNewTypeface) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasSetImageShader) {
+  cmds::CanvasSetImageShader& cmd = *GetBufferAs<cmds::CanvasSetImageShader>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
+              static_cast<GLuint>(13), static_cast<const GLfloat>(14),
+              static_cast<const GLfloat>(15), static_cast<const GLfloat>(16),
+              static_cast<const GLfloat>(17), static_cast<const GLfloat>(18),
+              static_cast<const GLfloat>(19), static_cast<const GLfloat>(20),
+              static_cast<const GLfloat>(21), static_cast<const GLfloat>(22));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasSetImageShader::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.tmx);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.tmy);
+  EXPECT_EQ(static_cast<const GLfloat>(14), cmd.m0);
+  EXPECT_EQ(static_cast<const GLfloat>(15), cmd.m1);
+  EXPECT_EQ(static_cast<const GLfloat>(16), cmd.m2);
+  EXPECT_EQ(static_cast<const GLfloat>(17), cmd.m3);
+  EXPECT_EQ(static_cast<const GLfloat>(18), cmd.m4);
+  EXPECT_EQ(static_cast<const GLfloat>(19), cmd.m5);
+  EXPECT_EQ(static_cast<const GLfloat>(20), cmd.m6);
+  EXPECT_EQ(static_cast<const GLfloat>(21), cmd.m7);
+  EXPECT_EQ(static_cast<const GLfloat>(22), cmd.m8);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_TEST_AUTOGEN_H_
