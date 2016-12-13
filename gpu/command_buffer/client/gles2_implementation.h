@@ -36,7 +36,6 @@
 #include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/src/core/SkDeduper.h"
 
-
 #if !defined(NDEBUG) && !defined(__native_client__) && !defined(GLES2_CONFORMANCE_TESTS)  // NOLINT
   #if defined(GLES2_INLINE_OPTIMIZATION)
     // TODO(gman): Replace with macros that work with inline optmization.
@@ -142,15 +141,16 @@ class GLES2_IMPL_EXPORT GLES2Implementation
   // CDL HACKING ////////////////////////
   class CanvasDeduper : public SkDeduper {
    public:
-    CanvasDeduper(GLES2Implementation *gl);
+    CanvasDeduper(GLES2Implementation* gl);
     ~CanvasDeduper() override;
     int findOrDefineImage(SkImage*) override;
     int findOrDefinePicture(SkPicture*) override;
     int findOrDefineTypeface(SkTypeface*) override;
     int findOrDefineFactory(SkFlattenable*) override;
     int findOrDefineTextBlob(const SkTextBlob*);
+
    private:
-    GLES2Implementation *gl_;
+    GLES2Implementation* gl_;
     std::unordered_set<int> images_;
     std::unordered_set<int> text_blobs_;
     std::unordered_set<int> typefaces_;

@@ -17,9 +17,9 @@
 #include "third_party/skia/include/core/SkShader.h"
 
 namespace gpu {
-  namespace gles2 {
-    class GLES2Interface;
-  }
+namespace gles2 {
+class GLES2Interface;
+}
 }
 
 class CdlPicture;
@@ -47,7 +47,6 @@ class CdlShader : public SkRefCnt {
   virtual sk_sp<SkShader> createSkShader() = 0;
   virtual void setupShader(gpu::gles2::GLES2Interface* gl) = 0;
   virtual bool isOpaque() const;
-
 
  private:
   SkMatrix local_matrix_;

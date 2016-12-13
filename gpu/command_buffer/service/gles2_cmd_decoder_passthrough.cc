@@ -839,7 +839,6 @@ void GLES2DecoderPassthroughImpl::UpdateTextureBinding(GLenum target,
       sizeof(cmds::name) / sizeof(CommandBufferEntry) - 1,               \
   }, /* NOLINT */
 
-
 // CDL
 
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasBegin(

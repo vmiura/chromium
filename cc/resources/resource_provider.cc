@@ -1192,19 +1192,16 @@ ResourceProvider::ScopedCdlSurfaceProvider::ScopedCdlSurfaceProvider(
     bool ignore_color_space,
     int msaa_sample_count)
     : gl_(context_provider->ContextGL()),
-      texture_provider_(gl_,
-                        resource_lock,
-                        use_mailbox) {
-
+      texture_provider_(gl_, resource_lock, use_mailbox) {
   gl_->CanvasBegin(
-      resource_lock->target(),        // target
-      texture_provider_.texture_id(), // texture
-      resource_lock->size().width(),  // width
-      resource_lock->size().height(), // height
-      msaa_sample_count,              // msaa_sample_count
-      use_distance_field_text,        // GLboolean use_dff
-      can_use_lcd_text,               // GLboolean can_use_lcd
-      ToGrPixelConfig(resource_lock->format()) // GLint pixel_config
+      resource_lock->target(),                  // target
+      texture_provider_.texture_id(),           // texture
+      resource_lock->size().width(),            // width
+      resource_lock->size().height(),           // height
+      msaa_sample_count,                        // msaa_sample_count
+      use_distance_field_text,                  // GLboolean use_dff
+      can_use_lcd_text,                         // GLboolean can_use_lcd
+      ToGrPixelConfig(resource_lock->format())  // GLint pixel_config
       );
 
   /*

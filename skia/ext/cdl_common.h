@@ -52,5 +52,4 @@ typedef SkSurface CdlSurface;
 
 #endif
 
-
 #endif  // SKIA_EXT_CDL_CONFIG_H_

@@ -110,9 +110,9 @@ const unsigned int GLES2Implementation::kStartingOffset;
 
 // CDL HACKING ////////////////////////
 
-GLES2Implementation::CanvasDeduper::CanvasDeduper(GLES2Implementation *gl)
- : gl_(gl) {}
-GLES2Implementation::CanvasDeduper::~CanvasDeduper() {};
+GLES2Implementation::CanvasDeduper::CanvasDeduper(GLES2Implementation* gl)
+    : gl_(gl) {}
+GLES2Implementation::CanvasDeduper::~CanvasDeduper(){};
 
 int GLES2Implementation::CanvasDeduper::findOrDefinePicture(SkPicture*) {
   LOG(ERROR) << "findOrDefinePicture";
@@ -133,7 +133,8 @@ int GLES2Implementation::CanvasDeduper::findOrDefineImage(SkImage* image) {
   return unique_id;
 }
 
-int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typeface) {
+int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(
+    SkTypeface* typeface) {
   int unique_id = typeface->uniqueID();
   auto it = typefaces_.find(unique_id);
   if (it == typefaces_.end()) {
@@ -143,7 +144,8 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTypeface(SkTypeface* typefac
   return unique_id;
 }
 
-int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(const SkTextBlob* text_blob) {
+int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(
+    const SkTextBlob* text_blob) {
   int unique_id = text_blob->uniqueID();
   auto it = text_blobs_.find(unique_id);
   if (it == text_blobs_.end()) {
@@ -153,61 +155,46 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(const SkTextBlob* t
   return unique_id;
 }
 
-
-void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds, const CdlPaint* fPaint,
-    const SkImageFilter* fBackdrop, GLuint fSaveLayerFlags) {
-  helper_->CanvasSaveLayer(fBounds != 0,
-                           fPaint != 0,
-                           fBackdrop != 0,
-                           fBounds ? fBounds->left() : 0,
-                           fBounds ? fBounds->top() : 0,
-                           fBounds ? fBounds->right() : 0,
-                           fBounds ? fBounds->bottom() : 0,
-                           fSaveLayerFlags,
-                           fPaint ? fPaint->getStrokeWidth() : 0,
-                           fPaint ? fPaint->getStrokeMiter() : 0,
-                           fPaint ? fPaint->getColor() : 0,
-                           fPaint ? (unsigned)fPaint->getBlendMode() : 0,
-                           fPaint ? GetPaintBits(*fPaint) : 0
-                           );
+void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds,
+                                          const CdlPaint* fPaint,
+                                          const SkImageFilter* fBackdrop,
+                                          GLuint fSaveLayerFlags) {
+  helper_->CanvasSaveLayer(
+      fBounds != 0, fPaint != 0, fBackdrop != 0, fBounds ? fBounds->left() : 0,
+      fBounds ? fBounds->top() : 0, fBounds ? fBounds->right() : 0,
+      fBounds ? fBounds->bottom() : 0, fSaveLayerFlags,
+      fPaint ? fPaint->getStrokeWidth() : 0,
+      fPaint ? fPaint->getStrokeMiter() : 0, fPaint ? fPaint->getColor() : 0,
+      fPaint ? (unsigned)fPaint->getBlendMode() : 0,
+      fPaint ? GetPaintBits(*fPaint) : 0);
 }
 
-void GLES2Implementation::CanvasDrawImage(
-                                const SkImage* image,
-                                GLfloat x,
-                                GLfloat y,
-                                const CdlPaint* paint) {
+void GLES2Implementation::CanvasDrawImage(const SkImage* image,
+                                          GLfloat x,
+                                          GLfloat y,
+                                          const CdlPaint* paint) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
 
   int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
 
   if (paint) {
-    helper_->CanvasDrawImage(image_id,
-                             x,
-                             y,
-                             true, // use_paint
-                             paint->getStrokeWidth(),
-                             paint->getStrokeMiter(),
-                             paint->getColor(),
-                             (unsigned)paint->getBlendMode(),
+    helper_->CanvasDrawImage(image_id, x, y,
+                             true,  // use_paint
+                             paint->getStrokeWidth(), paint->getStrokeMiter(),
+                             paint->getColor(), (unsigned)paint->getBlendMode(),
                              GetPaintBits(*paint));
   } else {
-    helper_->CanvasDrawImage(image_id,
-                             x,
-                             y,
-                             false, // use_paint
-                             0,
-                             0,
-                             0,
-                             0,
-                             0);
+    helper_->CanvasDrawImage(image_id, x, y,
+                             false,  // use_paint
+                             0, 0, 0, 0, 0);
   }
 }
 
-void GLES2Implementation::CanvasDrawImageRect(
-    const SkImage* image, const SkRect* src, const SkRect& dst,
-    const CdlPaint* paint, GLboolean strict) {
-
+void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
+                                              const SkRect* src,
+                                              const SkRect& dst,
+                                              const CdlPaint* paint,
+                                              GLboolean strict) {
   GLboolean use_src, use_paint;
   GLfloat stroke_width, miter_limit;
   GLuint color, blend_mode, paint_bits;
@@ -225,81 +212,55 @@ void GLES2Implementation::CanvasDrawImageRect(
   if (paint) {
     use_paint = true;
     stroke_width = paint->getStrokeWidth();
-    miter_limit  = paint->getStrokeMiter();
-    color        = paint->getColor();
-    blend_mode   = (unsigned)paint->getBlendMode();
-    paint_bits   = GetPaintBits(*paint);
+    miter_limit = paint->getStrokeMiter();
+    color = paint->getColor();
+    blend_mode = (unsigned)paint->getBlendMode();
+    paint_bits = GetPaintBits(*paint);
   } else {
     use_paint = false;
     stroke_width = 0;
-    miter_limit  = 0;
-    color        = 0;
-    blend_mode   = 0;
-    paint_bits   = 0;
+    miter_limit = 0;
+    color = 0;
+    blend_mode = 0;
+    paint_bits = 0;
   }
 
-  helper_->CanvasDrawImageRect(image_id,
-                               use_src,
-                               strict,
-                               src_rect.left(),
-                               src_rect.top(),
-                               src_rect.right(),
-                               src_rect.bottom(),
-                               dst.left(),
-                               dst.top(),
-                               dst.right(),
-                               dst.bottom(),
-                               use_paint,
-                               stroke_width,
-                               miter_limit,
-                               color,
-                               blend_mode,
-                               paint_bits);
+  helper_->CanvasDrawImageRect(
+      image_id, use_src, strict, src_rect.left(), src_rect.top(),
+      src_rect.right(), src_rect.bottom(), dst.left(), dst.top(), dst.right(),
+      dst.bottom(), use_paint, stroke_width, miter_limit, color, blend_mode,
+      paint_bits);
 }
 
-void GLES2Implementation::CanvasDrawTextBlob(
-                                const SkTextBlob* blob,
-                                GLfloat x,
-                                GLfloat y,
-                                const CdlPaint& paint) {
+void GLES2Implementation::CanvasDrawTextBlob(const SkTextBlob* blob,
+                                             GLfloat x,
+                                             GLfloat y,
+                                             const CdlPaint& paint) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
 
   int blob_id = canvas_deduper_.findOrDefineTextBlob(blob);
   helper_->CanvasDrawTextBlob(
-                          blob_id,
-                          x,
-                          y,
-                          paint.getStrokeWidth(),
-                          paint.getStrokeMiter(),
-                          paint.getColor(),
-                          (unsigned)paint.getBlendMode(),
-                          GetPaintBits(paint));
+      blob_id, x, y, paint.getStrokeWidth(), paint.getStrokeMiter(),
+      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
 }
 
 void GLES2Implementation::CanvasNewImage(const SkImage* image) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   SkImageInfo decoded_info = SkImageInfo::Make(
-                                 image->width(),
-                                 image->height(),
-                                 kN32_SkColorType,
-                                 kPremul_SkAlphaType);
+      image->width(), image->height(), kN32_SkColorType, kPremul_SkAlphaType);
 
   ScopedTransferBufferPtr buffer(
-      decoded_info.minRowBytes() * decoded_info.height(),
-      helper_, transfer_buffer_);
+      decoded_info.minRowBytes() * decoded_info.height(), helper_,
+      transfer_buffer_);
 
   bool result = image->readPixels(decoded_info, buffer.address(),
-                                    decoded_info.minRowBytes(), 0, 0,
-                                    SkImage::kDisallow_CachingHint);
+                                  decoded_info.minRowBytes(), 0, 0,
+                                  SkImage::kDisallow_CachingHint);
   (void)result;
 
-  helper_->CanvasNewImage(image->uniqueID(),
-                          decoded_info.width(),
-                          decoded_info.height(),
-                          decoded_info.minRowBytes(),
-                          buffer.size(),
-                          buffer.shm_id(),
-                          buffer.offset());
+  helper_->CanvasNewImage(image->uniqueID(), decoded_info.width(),
+                          decoded_info.height(), decoded_info.minRowBytes(),
+                          buffer.size(), buffer.shm_id(), buffer.offset());
 }
 
 void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
@@ -311,9 +272,7 @@ void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
   ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
   writer.writeToMemory(buffer.address());
 
-  helper_->CanvasNewTextBlob(blob->uniqueID(),
-                             buffer.size(),
-                             buffer.shm_id(),
+  helper_->CanvasNewTextBlob(blob->uniqueID(), buffer.size(), buffer.shm_id(),
                              buffer.offset());
 }
 
@@ -329,14 +288,11 @@ void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
   ScopedTransferBufferPtr buffer(data->size(), helper_, transfer_buffer_);
   memcpy(buffer.address(), data->data(), data->size());
 
-  helper_->CanvasNewTypeface(typeface->uniqueID(),
-                             buffer.size(),
-                             buffer.shm_id(),
-                             buffer.offset());
+  helper_->CanvasNewTypeface(typeface->uniqueID(), buffer.size(),
+                             buffer.shm_id(), buffer.offset());
 }
 
-void GLES2Implementation::CanvasSetGradientShader(
-  const SkShader* shader) {
+void GLES2Implementation::CanvasSetGradientShader(const SkShader* shader) {
   /*
   enum GradientType {
       kNone_GradientType,
@@ -369,21 +325,21 @@ void GLES2Implementation::CanvasSetGradientShader(
   SkShader::GradientType type = shader->asAGradient(&info);
 
   if (type == SkShader::kNone_GradientType)
-    return; // Not a gradient
+    return;  // Not a gradient
 
-  int tot_size = sizeof(SkShader::GradientInfo)
-      + (sizeof(SkColor) + sizeof(SkScalar)) * info.fColorCount;
-  
+  int tot_size = sizeof(SkShader::GradientInfo) +
+                 (sizeof(SkColor) + sizeof(SkScalar)) * info.fColorCount;
+
   ScopedTransferBufferPtr buffer(tot_size, helper_, transfer_buffer_);
-  char *buffer_ptr = (char *)buffer.address();
+  char* buffer_ptr = (char*)buffer.address();
   SkShader::GradientInfo* sh_info = (SkShader::GradientInfo*)buffer_ptr;
-  buffer_ptr += sizeof (SkShader::GradientInfo);
+  buffer_ptr += sizeof(SkShader::GradientInfo);
 
   // Fill in expected color count and pointers.
   sh_info->fColorCount = info.fColorCount;
-  sh_info->fColors = (SkColor *)buffer_ptr;
+  sh_info->fColors = (SkColor*)buffer_ptr;
   buffer_ptr += sizeof(SkColor) * info.fColorCount;
-  sh_info->fColorOffsets = (SkScalar *)buffer_ptr;
+  sh_info->fColorOffsets = (SkScalar*)buffer_ptr;
 
   // Read gradient info into shared memory.
   type = shader->asAGradient(sh_info);
@@ -395,40 +351,24 @@ void GLES2Implementation::CanvasSetGradientShader(
 
   SkMatrix local_matrix = shader->getLocalMatrix();
 
-  helper_->CanvasSetGradientShader( buffer.size(),
-                                    buffer.shm_id(),
-                                    buffer.offset(),
-                                    (unsigned)type,
-                                    local_matrix.get(0),
-                                    local_matrix.get(1),
-                                    local_matrix.get(2),
-                                    local_matrix.get(3),
-                                    local_matrix.get(4),
-                                    local_matrix.get(5),
-                                    local_matrix.get(6),
-                                    local_matrix.get(7),
-                                    local_matrix.get(8));
+  helper_->CanvasSetGradientShader(
+      buffer.size(), buffer.shm_id(), buffer.offset(), (unsigned)type,
+      local_matrix.get(0), local_matrix.get(1), local_matrix.get(2),
+      local_matrix.get(3), local_matrix.get(4), local_matrix.get(5),
+      local_matrix.get(6), local_matrix.get(7), local_matrix.get(8));
 }
 
-void GLES2Implementation::CanvasSetImageShader(
-                          const SkImage* image,
-                          GLuint tmx,
-                          GLuint tmy,
-                          const SkMatrix* local_matrix) {
+void GLES2Implementation::CanvasSetImageShader(const SkImage* image,
+                                               GLuint tmx,
+                                               GLuint tmy,
+                                               const SkMatrix* local_matrix) {
   int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
 
-  helper_->CanvasSetImageShader(image_id,
-                                (unsigned)tmx,
-                                (unsigned)tmy,
-                                local_matrix->get(0),
-                                local_matrix->get(1),
-                                local_matrix->get(2),
-                                local_matrix->get(3),
-                                local_matrix->get(4),
-                                local_matrix->get(5),
-                                local_matrix->get(6),
-                                local_matrix->get(7),
-                                local_matrix->get(8));
+  helper_->CanvasSetImageShader(
+      image_id, (unsigned)tmx, (unsigned)tmy, local_matrix->get(0),
+      local_matrix->get(1), local_matrix->get(2), local_matrix->get(3),
+      local_matrix->get(4), local_matrix->get(5), local_matrix->get(6),
+      local_matrix->get(7), local_matrix->get(8));
 }
 
 ///////////////////////////////////////

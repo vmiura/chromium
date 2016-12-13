@@ -941,6 +941,4 @@ error::Error DoUniformMatrix4fvStreamTextureMatrixCHROMIUM(
     GLboolean transpose,
     const volatile GLfloat* defaultValue);
 
-error::Error DoCanvasSetMatrix(
-    bool concat,
-    volatile const GLfloat* matrix);
+error::Error DoCanvasSetMatrix(bool concat, volatile const GLfloat* matrix);

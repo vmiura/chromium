@@ -78,9 +78,7 @@ class CdlImageShader : public CdlShader {
   bool isOpaque() const override { return image_->isOpaque(); }
 
   void setupShader(gpu::gles2::GLES2Interface* gl) override {
-    gl->CanvasSetImageShader(image_.get(),
-                             (unsigned)tmx_,
-                             (unsigned) tmy_,
+    gl->CanvasSetImageShader(image_.get(), (unsigned)tmx_, (unsigned)tmy_,
                              &getLocalMatrix());
   }
 
@@ -123,8 +121,7 @@ class CdlPictureShader : public CdlShader {
                picture_->toSkPicture(), tmx_, tmy_, &getLocalMatrix(), &tile_);
   }
 
-  void setupShader(gpu::gles2::GLES2Interface* gl) override {
-  }
+  void setupShader(gpu::gles2::GLES2Interface* gl) override {}
 
  private:
   sk_sp<CdlPicture> picture_;

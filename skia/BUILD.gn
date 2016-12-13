@@ -332,11 +332,12 @@ component("skia") {
 
   sources += [ "//third_party/skia/src/gpu/gl/GrGLDefaultInterface_native.cpp" ]
 
-  sources -= get_path_info([
-                             "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp",
-                             "//third_party/skia/src/gpu/gl/GrGLDefaultInterface_none.cpp",
-                           ],
-                           "abspath")
+  sources -= get_path_info(
+          [
+            "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp",
+            "//third_party/skia/src/gpu/gl/GrGLDefaultInterface_none.cpp",
+          ],
+          "abspath")
   libs = []
   if (is_android) {
     sources += [ "//third_party/skia/src/gpu/gl/android/GrGLCreateNativeInterface_android.cpp" ]
@@ -354,7 +355,8 @@ component("skia") {
     sources += [ "//third_party/skia/src/gpu/gl/win/GrGLCreateNativeInterface_win.cpp" ]
     libs += [ "OpenGL32.lib" ]
   } else {
-    sources += [ "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp" ]
+    sources +=
+        [ "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp" ]
   }
 
   if (is_win) {

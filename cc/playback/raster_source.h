@@ -62,7 +62,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
                         const gfx::SizeF& raster_scales,
                         const PlaybackSettings& settings) const;
 
-
   // Raster this RasterSource into the given canvas. Canvas states such as
   // CTM and clip region will be respected. This function will replace pixels
   // in the clip region without blending. It is assumed that existing pixels
