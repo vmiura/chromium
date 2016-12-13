@@ -918,6 +918,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewTextBlob(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewTypeface(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -937,6 +943,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPaint(
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPath(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return error::kNoError;

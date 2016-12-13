@@ -16393,6 +16393,71 @@ static_assert(offsetof(CanvasDrawRRect, blend_mode) == 64,
 static_assert(offsetof(CanvasDrawRRect, paint_bits) == 68,
               "offset of CanvasDrawRRect paint_bits should be 68");
 
+struct CanvasDrawPath {
+  typedef CanvasDrawPath ValueType;
+  static const CommandId kCmdId = kCanvasDrawPath;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _path_id,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    SetHeader();
+    path_id = _path_id;
+    stroke_width = _stroke_width;
+    miter_limit = _miter_limit;
+    color = _color;
+    blend_mode = _blend_mode;
+    paint_bits = _paint_bits;
+  }
+
+  void* Set(void* cmd,
+            GLuint _path_id,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    static_cast<ValueType*>(cmd)->Init(_path_id, _stroke_width, _miter_limit,
+                                       _color, _blend_mode, _paint_bits);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t path_id;
+  float stroke_width;
+  float miter_limit;
+  uint32_t color;
+  uint32_t blend_mode;
+  uint32_t paint_bits;
+};
+
+static_assert(sizeof(CanvasDrawPath) == 28,
+              "size of CanvasDrawPath should be 28");
+static_assert(offsetof(CanvasDrawPath, header) == 0,
+              "offset of CanvasDrawPath header should be 0");
+static_assert(offsetof(CanvasDrawPath, path_id) == 4,
+              "offset of CanvasDrawPath path_id should be 4");
+static_assert(offsetof(CanvasDrawPath, stroke_width) == 8,
+              "offset of CanvasDrawPath stroke_width should be 8");
+static_assert(offsetof(CanvasDrawPath, miter_limit) == 12,
+              "offset of CanvasDrawPath miter_limit should be 12");
+static_assert(offsetof(CanvasDrawPath, color) == 16,
+              "offset of CanvasDrawPath color should be 16");
+static_assert(offsetof(CanvasDrawPath, blend_mode) == 20,
+              "offset of CanvasDrawPath blend_mode should be 20");
+static_assert(offsetof(CanvasDrawPath, paint_bits) == 24,
+              "offset of CanvasDrawPath paint_bits should be 24");
+
 struct CanvasDrawImage {
   typedef CanvasDrawImage ValueType;
   static const CommandId kCmdId = kCanvasDrawImage;
@@ -16812,6 +16877,59 @@ static_assert(offsetof(CanvasNewTextBlob, shm_id) == 12,
               "offset of CanvasNewTextBlob shm_id should be 12");
 static_assert(offsetof(CanvasNewTextBlob, shm_offset) == 16,
               "offset of CanvasNewTextBlob shm_offset should be 16");
+
+struct CanvasNewPath {
+  typedef CanvasNewPath ValueType;
+  static const CommandId kCmdId = kCanvasNewPath;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _path_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    SetHeader();
+    path_id = _path_id;
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLuint _path_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_path_id, _shm_size, _shm_id,
+                                       _shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t path_id;
+  int32_t shm_size;
+  uint32_t shm_id;
+  uint32_t shm_offset;
+};
+
+static_assert(sizeof(CanvasNewPath) == 20,
+              "size of CanvasNewPath should be 20");
+static_assert(offsetof(CanvasNewPath, header) == 0,
+              "offset of CanvasNewPath header should be 0");
+static_assert(offsetof(CanvasNewPath, path_id) == 4,
+              "offset of CanvasNewPath path_id should be 4");
+static_assert(offsetof(CanvasNewPath, shm_size) == 8,
+              "offset of CanvasNewPath shm_size should be 8");
+static_assert(offsetof(CanvasNewPath, shm_id) == 12,
+              "offset of CanvasNewPath shm_id should be 12");
+static_assert(offsetof(CanvasNewPath, shm_offset) == 16,
+              "offset of CanvasNewPath shm_offset should be 16");
 
 struct CanvasNewTypeface {
   typedef CanvasNewTypeface ValueType;

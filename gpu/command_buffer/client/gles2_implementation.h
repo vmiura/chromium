@@ -148,27 +148,18 @@ class GLES2_IMPL_EXPORT GLES2Implementation
     int findOrDefineTypeface(SkTypeface*) override;
     int findOrDefineFactory(SkFlattenable*) override;
     int findOrDefineTextBlob(const SkTextBlob*);
+    int findOrDefinePath(const SkPath*);
 
    private:
     GLES2Implementation* gl_;
     std::unordered_set<int> images_;
+    std::unordered_set<int> paths_;
     std::unordered_set<int> text_blobs_;
     std::unordered_set<int> typefaces_;
   };
 
   CanvasDeduper canvas_deduper_;
 
-  /*
-  void CanvasDrawTextBlob(GLfloat x,
-                          GLfloat y,
-                          GLfloat stroke_width,
-                          GLfloat miter_limit,
-                          GLuint color,
-                          GLuint blend_mode,
-                          GLuint paint_bits,
-                          GLsizei count,
-                          const char* blob) override;
-  */
   ///////////////////////////////////////
 
   // The maximum result size from simple GL get commands.

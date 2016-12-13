@@ -153,6 +153,11 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
         (unsigned)paint.getBlendMode(), GetPaintBits(paint));
   }
 
+  void onDrawPath(const SkPath& path,
+                  const CdlPaint& paint) override {
+    gl_->CanvasDrawPath(path, paint);
+  }
+
   void onDrawImage(const SkImage* image,
                    SkScalar left,
                    SkScalar top,

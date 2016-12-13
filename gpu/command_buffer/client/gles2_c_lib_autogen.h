@@ -1818,6 +1818,10 @@ void GL_APIENTRY GLES2CanvasDrawRRect(GLfloat left,
       left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x, r2_y, r3_x, r3_y,
       stroke_width, miter_limit, color, blend_mode, paint_bits);
 }
+void GL_APIENTRY GLES2CanvasDrawPath(const SkPath& path,
+                                     const CdlPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawPath(path, paint);
+}
 void GL_APIENTRY GLES2CanvasDrawImage(const SkImage* image,
                                       GLfloat left,
                                       GLfloat top,
@@ -1842,6 +1846,9 @@ void GL_APIENTRY GLES2CanvasNewImage(const SkImage* image) {
 }
 void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
   gles2::GetGLContext()->CanvasNewTextBlob(blob);
+}
+void GL_APIENTRY GLES2CanvasNewPath(const SkPath* path) {
+  gles2::GetGLContext()->CanvasNewPath(path);
 }
 void GL_APIENTRY GLES2CanvasNewTypeface(SkTypeface* typeface) {
   gles2::GetGLContext()->CanvasNewTypeface(typeface);
@@ -3204,6 +3211,10 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawRRect),
     },
     {
+        "glCanvasDrawPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawPath),
+    },
+    {
         "glCanvasDrawImage",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawImage),
     },
@@ -3222,6 +3233,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasNewTextBlob",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasNewTextBlob),
+    },
+    {
+        "glCanvasNewPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewPath),
     },
     {
         "glCanvasNewTypeface",

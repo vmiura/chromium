@@ -2790,6 +2790,15 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasDrawPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLfloat stroke_width, '
+                'GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasDrawImage': {
     'type': 'Custom',
     'cmd_args': 'GLuint image_id, GLfloat x, GLfloat y, GLboolean use_paint, GLfloat stroke_width, '
@@ -2858,6 +2867,15 @@ _FUNCTION_INFO = {
   'CanvasNewTextBlob': {
     'type': 'Custom',
     'cmd_args': 'GLuint blob_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasNewPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLsizeiptr shm_size, '
                 'uint32_t shm_id, uint32_t shm_offset',
     'impl_func': False,
     'client_test': False,

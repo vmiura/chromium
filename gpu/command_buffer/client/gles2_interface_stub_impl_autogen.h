@@ -1236,6 +1236,8 @@ void GLES2InterfaceStub::CanvasDrawRRect(GLfloat /* left */,
                                          GLuint /* color */,
                                          GLuint /* blend_mode */,
                                          GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawPath(const SkPath& /* path */,
+                                        const CdlPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawImage(const SkImage* /* image */,
                                          GLfloat /* left */,
                                          GLfloat /* top */,
@@ -1251,6 +1253,7 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
                                             const CdlPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
+void GLES2InterfaceStub::CanvasNewPath(const SkPath* /* path */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
 void GLES2InterfaceStub::CanvasSetGradientShader(const SkShader* /* shader */) {
 }

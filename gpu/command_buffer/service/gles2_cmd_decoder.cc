@@ -544,6 +544,14 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       return it->second.get();
     };
 
+    SkPath* getPath(int path) {
+      auto it = paths_.find(path);
+      if (it == paths_.end())
+        return 0;
+      // LOG(ERROR) << "Inflated typeface " << it->second.get();
+      return it->second.get();
+    };
+
     SkTypeface* getTypeface(int typeface) override {
       auto it = typefaces_.find(typeface);
       if (it == typefaces_.end())
@@ -564,6 +572,10 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       images_.insert({id, std::move(image)});
     }
 
+    void addPath(int id, std::unique_ptr<SkPath> path) {
+      paths_.insert({id, std::move(path)});
+    }
+
     void addTextBlob(int id, sk_sp<SkTextBlob> blob) {
       text_blobs_.insert({id, std::move(blob)});
     }
@@ -574,6 +586,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
    private:
     std::unordered_map<int, sk_sp<SkImage>> images_;
+    std::unordered_map<int, std::unique_ptr<SkPath>> paths_;
     std::unordered_map<int, sk_sp<SkTextBlob>> text_blobs_;
     std::unordered_map<int, sk_sp<SkTypeface>> typefaces_;
   };
@@ -19325,6 +19338,21 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasDrawPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasDrawPath& c =
+      *static_cast<const volatile gles2::cmds::CanvasDrawPath*>(cmd_data);
+
+  SkPaint paint;
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color, c.blend_mode,
+                  c.paint_bits);
+
+  canvas_->drawPath(*inflator_.getPath(c.path_id), paint);
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasNewImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -19354,6 +19382,21 @@ error::Error GLES2DecoderImpl::HandleCanvasNewTextBlob(
   SkReadBuffer buffer(blob, c.shm_size);
   buffer.setInflator(&inflator_);
   inflator_.addTextBlob(c.blob_id, SkTextBlob::MakeFromBuffer(buffer));
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasNewPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasNewPath& c =
+      *static_cast<const volatile gles2::cmds::CanvasNewPath*>(cmd_data);
+
+
+  void* buffer = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);  
+  std::unique_ptr<SkPath> path(new SkPath());
+  path->readFromMemory(buffer, c.shm_size);
+  inflator_.addPath(c.path_id, std::move(path));
 
   return error::kNoError;
 }

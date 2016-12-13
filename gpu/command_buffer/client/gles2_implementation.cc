@@ -155,6 +155,17 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(
   return unique_id;
 }
 
+int GLES2Implementation::CanvasDeduper::findOrDefinePath(
+    const SkPath* path) {
+  int unique_id = path->getGenerationID();
+  auto it = paths_.find(unique_id);
+  if (it == paths_.end()) {
+    paths_.insert(unique_id);
+    gl_->CanvasNewPath(path);
+  }
+  return unique_id;
+}
+
 void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds,
                                           const CdlPaint* fPaint,
                                           const SkImageFilter* fBackdrop,
@@ -232,6 +243,15 @@ void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
       paint_bits);
 }
 
+void GLES2Implementation::CanvasDrawPath(const SkPath& path, const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+
+  int path_id = canvas_deduper_.findOrDefinePath(&path);
+  helper_->CanvasDrawPath(
+      path_id, paint.getStrokeWidth(), paint.getStrokeMiter(),
+      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
+}
+
 void GLES2Implementation::CanvasDrawTextBlob(const SkTextBlob* blob,
                                              GLfloat x,
                                              GLfloat y,
@@ -274,6 +294,17 @@ void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
 
   helper_->CanvasNewTextBlob(blob->uniqueID(), buffer.size(), buffer.shm_id(),
                              buffer.offset());
+}
+
+void GLES2Implementation::CanvasNewPath(const SkPath* path) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+
+  size_t size = path->writeToMemory(0);
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  path->writeToMemory(buffer.address());
+
+  helper_->CanvasNewPath(path->getGenerationID(), buffer.size(), buffer.shm_id(),
+                         buffer.offset());
 }
 
 static sk_sp<SkData> encode(SkTypeface* tf) {

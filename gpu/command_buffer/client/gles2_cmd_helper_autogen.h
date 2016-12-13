@@ -3334,6 +3334,18 @@ void CanvasDrawRRect(GLfloat left,
   }
 }
 
+void CanvasDrawPath(GLuint path_id,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) {
+  gles2::cmds::CanvasDrawPath* c = GetCmdSpace<gles2::cmds::CanvasDrawPath>();
+  if (c) {
+    c->Init(path_id, stroke_width, miter_limit, color, blend_mode, paint_bits);
+  }
+}
+
 void CanvasDrawImage(GLuint image_id,
                      GLfloat x,
                      GLfloat y,
@@ -3414,6 +3426,16 @@ void CanvasNewTextBlob(GLuint blob_id,
       GetCmdSpace<gles2::cmds::CanvasNewTextBlob>();
   if (c) {
     c->Init(blob_id, shm_size, shm_id, shm_offset);
+  }
+}
+
+void CanvasNewPath(GLuint path_id,
+                   GLsizeiptr shm_size,
+                   uint32_t shm_id,
+                   uint32_t shm_offset) {
+  gles2::cmds::CanvasNewPath* c = GetCmdSpace<gles2::cmds::CanvasNewPath>();
+  if (c) {
+    c->Init(path_id, shm_size, shm_id, shm_offset);
   }
 }
 

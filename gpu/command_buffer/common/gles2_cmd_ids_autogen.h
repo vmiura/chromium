@@ -341,14 +341,16 @@
   OP(CanvasDrawPaint)                                      /* 582 */ \
   OP(CanvasDrawRect)                                       /* 583 */ \
   OP(CanvasDrawRRect)                                      /* 584 */ \
-  OP(CanvasDrawImage)                                      /* 585 */ \
-  OP(CanvasDrawImageRect)                                  /* 586 */ \
-  OP(CanvasDrawTextBlob)                                   /* 587 */ \
-  OP(CanvasNewImage)                                       /* 588 */ \
-  OP(CanvasNewTextBlob)                                    /* 589 */ \
-  OP(CanvasNewTypeface)                                    /* 590 */ \
-  OP(CanvasSetGradientShader)                              /* 591 */ \
-  OP(CanvasSetImageShader)                                 /* 592 */
+  OP(CanvasDrawPath)                                       /* 585 */ \
+  OP(CanvasDrawImage)                                      /* 586 */ \
+  OP(CanvasDrawImageRect)                                  /* 587 */ \
+  OP(CanvasDrawTextBlob)                                   /* 588 */ \
+  OP(CanvasNewImage)                                       /* 589 */ \
+  OP(CanvasNewTextBlob)                                    /* 590 */ \
+  OP(CanvasNewPath)                                        /* 591 */ \
+  OP(CanvasNewTypeface)                                    /* 592 */ \
+  OP(CanvasSetGradientShader)                              /* 593 */ \
+  OP(CanvasSetImageShader)                                 /* 594 */
 
 enum CommandId {
   kOneBeforeStartPoint =

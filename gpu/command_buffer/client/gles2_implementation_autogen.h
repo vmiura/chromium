@@ -1284,6 +1284,8 @@ void CanvasDrawRRect(GLfloat left,
                      GLuint blend_mode,
                      GLuint paint_bits) override;
 
+void CanvasDrawPath(const SkPath& path, const CdlPaint& paint) override;
+
 void CanvasDrawImage(const SkImage* image,
                      GLfloat left,
                      GLfloat top,
@@ -1303,6 +1305,8 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
 void CanvasNewImage(const SkImage* image) override;
 
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
+
+void CanvasNewPath(const SkPath* path) override;
 
 void CanvasNewTypeface(SkTypeface* typeface) override;
 
