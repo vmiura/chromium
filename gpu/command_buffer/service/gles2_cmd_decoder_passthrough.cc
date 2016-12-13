@@ -971,6 +971,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipRRect(
     const volatile void* cmd_data) {
   return error::kNoError;
 }
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
 ///
 
 const GLES2DecoderPassthroughImpl::CommandInfo

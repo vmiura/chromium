@@ -3283,6 +3283,13 @@ void CanvasClipRRect(GLfloat left,
   }
 }
 
+void CanvasClipPath(GLuint path_id, GLuint clip_op, GLboolean antialias) {
+  gles2::cmds::CanvasClipPath* c = GetCmdSpace<gles2::cmds::CanvasClipPath>();
+  if (c) {
+    c->Init(path_id, clip_op, antialias);
+  }
+}
+
 void CanvasDrawPaint(GLfloat stroke_width,
                      GLfloat miter_limit,
                      GLuint color,

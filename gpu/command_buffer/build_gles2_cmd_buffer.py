@@ -2893,14 +2893,28 @@ _FUNCTION_INFO = {
   },
   'CanvasClipRect': {
     'type': 'Custom',
-    'impl_func': True,
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
   'CanvasClipRRect': {
     'type': 'Custom',
-    'impl_func': True,
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y,'
+                'GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y,'
+                'GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasClipPath': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint path_id, GLuint clip_op, GLboolean antialias',
+    'impl_func': False,
     'client_test': False,
     'no_gl' : True,
     'extension': True,

@@ -907,26 +907,15 @@ virtual void CanvasSaveLayer(const SkRect* fBounds,
 virtual void CanvasRestore() = 0;
 virtual void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
 virtual void CanvasTranslate(GLfloat tx, GLfloat ty) = 0;
-virtual void CanvasClipRect(GLfloat left,
-                            GLfloat top,
-                            GLfloat right,
-                            GLfloat bottom,
+virtual void CanvasClipRect(const SkRect& r,
                             GLuint clip_op,
                             GLboolean antialias) = 0;
-virtual void CanvasClipRRect(GLfloat left,
-                             GLfloat top,
-                             GLfloat right,
-                             GLfloat bottom,
-                             GLfloat r0_x,
-                             GLfloat r0_y,
-                             GLfloat r1_x,
-                             GLfloat r1_y,
-                             GLfloat r2_x,
-                             GLfloat r2_y,
-                             GLfloat r3_x,
-                             GLfloat r3_y,
+virtual void CanvasClipRRect(const SkRRect& r,
                              GLuint clip_op,
                              GLboolean antialias) = 0;
+virtual void CanvasClipPath(const SkPath& p,
+                            GLuint clip_op,
+                            GLboolean antialias) = 0;
 virtual void CanvasDrawPaint(GLfloat stroke_width,
                              GLfloat miter_limit,
                              GLuint color,

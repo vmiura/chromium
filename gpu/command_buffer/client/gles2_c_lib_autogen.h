@@ -1749,32 +1749,20 @@ void GL_APIENTRY GLES2CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) {
 void GL_APIENTRY GLES2CanvasTranslate(GLfloat tx, GLfloat ty) {
   gles2::GetGLContext()->CanvasTranslate(tx, ty);
 }
-void GL_APIENTRY GLES2CanvasClipRect(GLfloat left,
-                                     GLfloat top,
-                                     GLfloat right,
-                                     GLfloat bottom,
+void GL_APIENTRY GLES2CanvasClipRect(const SkRect& r,
                                      GLuint clip_op,
                                      GLboolean antialias) {
-  gles2::GetGLContext()->CanvasClipRect(left, top, right, bottom, clip_op,
-                                        antialias);
+  gles2::GetGLContext()->CanvasClipRect(r, clip_op, antialias);
 }
-void GL_APIENTRY GLES2CanvasClipRRect(GLfloat left,
-                                      GLfloat top,
-                                      GLfloat right,
-                                      GLfloat bottom,
-                                      GLfloat r0_x,
-                                      GLfloat r0_y,
-                                      GLfloat r1_x,
-                                      GLfloat r1_y,
-                                      GLfloat r2_x,
-                                      GLfloat r2_y,
-                                      GLfloat r3_x,
-                                      GLfloat r3_y,
+void GL_APIENTRY GLES2CanvasClipRRect(const SkRRect& r,
                                       GLuint clip_op,
                                       GLboolean antialias) {
-  gles2::GetGLContext()->CanvasClipRRect(left, top, right, bottom, r0_x, r0_y,
-                                         r1_x, r1_y, r2_x, r2_y, r3_x, r3_y,
-                                         clip_op, antialias);
+  gles2::GetGLContext()->CanvasClipRRect(r, clip_op, antialias);
+}
+void GL_APIENTRY GLES2CanvasClipPath(const SkPath& p,
+                                     GLuint clip_op,
+                                     GLboolean antialias) {
+  gles2::GetGLContext()->CanvasClipPath(p, clip_op, antialias);
 }
 void GL_APIENTRY GLES2CanvasDrawPaint(GLfloat stroke_width,
                                       GLfloat miter_limit,
@@ -3197,6 +3185,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasClipRRect",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasClipRRect),
+    },
+    {
+        "glCanvasClipPath",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasClipPath),
     },
     {
         "glCanvasDrawPaint",

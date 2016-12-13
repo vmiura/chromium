@@ -3573,47 +3573,6 @@ void GLES2Implementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
   CheckGLError();
 }
 
-void GLES2Implementation::CanvasClipRect(GLfloat left,
-                                         GLfloat top,
-                                         GLfloat right,
-                                         GLfloat bottom,
-                                         GLuint clip_op,
-                                         GLboolean antialias) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasClipRect(" << left << ", "
-                     << top << ", " << right << ", " << bottom << ", "
-                     << clip_op << ", " << GLES2Util::GetStringBool(antialias)
-                     << ")");
-  helper_->CanvasClipRect(left, top, right, bottom, clip_op, antialias);
-  CheckGLError();
-}
-
-void GLES2Implementation::CanvasClipRRect(GLfloat left,
-                                          GLfloat top,
-                                          GLfloat right,
-                                          GLfloat bottom,
-                                          GLfloat r0_x,
-                                          GLfloat r0_y,
-                                          GLfloat r1_x,
-                                          GLfloat r1_y,
-                                          GLfloat r2_x,
-                                          GLfloat r2_y,
-                                          GLfloat r3_x,
-                                          GLfloat r3_y,
-                                          GLuint clip_op,
-                                          GLboolean antialias) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasClipRRect(" << left << ", "
-                     << top << ", " << right << ", " << bottom << ", " << r0_x
-                     << ", " << r0_y << ", " << r1_x << ", " << r1_y << ", "
-                     << r2_x << ", " << r2_y << ", " << r3_x << ", " << r3_y
-                     << ", " << clip_op << ", "
-                     << GLES2Util::GetStringBool(antialias) << ")");
-  helper_->CanvasClipRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y,
-                           r2_x, r2_y, r3_x, r3_y, clip_op, antialias);
-  CheckGLError();
-}
-
 void GLES2Implementation::CanvasDrawPaint(GLfloat stroke_width,
                                           GLfloat miter_limit,
                                           GLuint color,

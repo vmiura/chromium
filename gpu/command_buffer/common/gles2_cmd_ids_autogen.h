@@ -338,19 +338,20 @@
   OP(CanvasTranslate)                                      /* 579 */ \
   OP(CanvasClipRect)                                       /* 580 */ \
   OP(CanvasClipRRect)                                      /* 581 */ \
-  OP(CanvasDrawPaint)                                      /* 582 */ \
-  OP(CanvasDrawRect)                                       /* 583 */ \
-  OP(CanvasDrawRRect)                                      /* 584 */ \
-  OP(CanvasDrawPath)                                       /* 585 */ \
-  OP(CanvasDrawImage)                                      /* 586 */ \
-  OP(CanvasDrawImageRect)                                  /* 587 */ \
-  OP(CanvasDrawTextBlob)                                   /* 588 */ \
-  OP(CanvasNewImage)                                       /* 589 */ \
-  OP(CanvasNewTextBlob)                                    /* 590 */ \
-  OP(CanvasNewPath)                                        /* 591 */ \
-  OP(CanvasNewTypeface)                                    /* 592 */ \
-  OP(CanvasSetGradientShader)                              /* 593 */ \
-  OP(CanvasSetImageShader)                                 /* 594 */
+  OP(CanvasClipPath)                                       /* 582 */ \
+  OP(CanvasDrawPaint)                                      /* 583 */ \
+  OP(CanvasDrawRect)                                       /* 584 */ \
+  OP(CanvasDrawRRect)                                      /* 585 */ \
+  OP(CanvasDrawPath)                                       /* 586 */ \
+  OP(CanvasDrawImage)                                      /* 587 */ \
+  OP(CanvasDrawImageRect)                                  /* 588 */ \
+  OP(CanvasDrawTextBlob)                                   /* 589 */ \
+  OP(CanvasNewImage)                                       /* 590 */ \
+  OP(CanvasNewTextBlob)                                    /* 591 */ \
+  OP(CanvasNewPath)                                        /* 592 */ \
+  OP(CanvasNewTypeface)                                    /* 593 */ \
+  OP(CanvasSetGradientShader)                              /* 594 */ \
+  OP(CanvasSetImageShader)                                 /* 595 */
 
 enum CommandId {
   kOneBeforeStartPoint =

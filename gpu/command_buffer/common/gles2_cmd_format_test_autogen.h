@@ -5390,6 +5390,19 @@ TEST_F(GLES2FormatTest, CanvasClipRRect) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasClipPath) {
+  cmds::CanvasClipPath& cmd = *GetBufferAs<cmds::CanvasClipPath>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLuint>(12), static_cast<GLboolean>(13));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasClipPath::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.path_id);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.clip_op);
+  EXPECT_EQ(static_cast<GLboolean>(13), cmd.antialias);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasDrawPaint) {
   cmds::CanvasDrawPaint& cmd = *GetBufferAs<cmds::CanvasDrawPaint>();
   void* next_cmd = cmd.Set(&cmd, static_cast<GLfloat>(11),

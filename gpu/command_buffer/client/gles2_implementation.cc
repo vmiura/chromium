@@ -180,6 +180,34 @@ void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds,
       fPaint ? GetPaintBits(*fPaint) : 0);
 }
 
+void GLES2Implementation::CanvasClipRect(const SkRect& r, GLuint op,
+                                         GLboolean antialias) {
+  helper_->CanvasClipRect(r.left(), r.top(), r.right(), r.bottom(), op,
+                          antialias);
+}
+
+void GLES2Implementation::CanvasClipRRect(const SkRRect& r, GLuint op,
+                                         GLboolean antialias) {
+  helper_->CanvasClipRRect(r.rect().left(), r.rect().top(), r.rect().right(),
+                           r.rect().bottom(),
+                           r.radii(SkRRect::kUpperLeft_Corner).x(),
+                           r.radii(SkRRect::kUpperLeft_Corner).y(),
+                           r.radii(SkRRect::kUpperRight_Corner).x(),
+                           r.radii(SkRRect::kUpperRight_Corner).y(),
+                           r.radii(SkRRect::kLowerRight_Corner).x(),
+                           r.radii(SkRRect::kLowerRight_Corner).y(),
+                           r.radii(SkRRect::kLowerLeft_Corner).x(),
+                           r.radii(SkRRect::kLowerLeft_Corner).y(),
+                           op,
+                           antialias);
+}
+
+void GLES2Implementation::CanvasClipPath(const SkPath& p, GLuint op,
+                                         GLboolean antialias) {
+  int path_id = canvas_deduper_.findOrDefinePath(&p);
+  helper_->CanvasClipPath(path_id, op, antialias);
+}
+
 void GLES2Implementation::CanvasDrawImage(const SkImage* image,
                                           GLfloat x,
                                           GLfloat y,
@@ -355,8 +383,9 @@ void GLES2Implementation::CanvasSetGradientShader(const SkShader* shader) {
   memset(&info, 0, sizeof(info));
   SkShader::GradientType type = shader->asAGradient(&info);
 
-  if (type == SkShader::kNone_GradientType)
+  if (type == SkShader::kNone_GradientType) {
     return;  // Not a gradient
+  }
 
   int tot_size = sizeof(SkShader::GradientInfo) +
                  (sizeof(SkColor) + sizeof(SkScalar)) * info.fColorCount;

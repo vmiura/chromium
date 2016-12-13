@@ -1185,26 +1185,15 @@ void GLES2InterfaceStub::CanvasRestore() {}
 void GLES2InterfaceStub::CanvasSetMatrix(GLboolean /* concat */,
                                          const GLfloat* /* matrix */) {}
 void GLES2InterfaceStub::CanvasTranslate(GLfloat /* tx */, GLfloat /* ty */) {}
-void GLES2InterfaceStub::CanvasClipRect(GLfloat /* left */,
-                                        GLfloat /* top */,
-                                        GLfloat /* right */,
-                                        GLfloat /* bottom */,
+void GLES2InterfaceStub::CanvasClipRect(const SkRect& /* r */,
                                         GLuint /* clip_op */,
                                         GLboolean /* antialias */) {}
-void GLES2InterfaceStub::CanvasClipRRect(GLfloat /* left */,
-                                         GLfloat /* top */,
-                                         GLfloat /* right */,
-                                         GLfloat /* bottom */,
-                                         GLfloat /* r0_x */,
-                                         GLfloat /* r0_y */,
-                                         GLfloat /* r1_x */,
-                                         GLfloat /* r1_y */,
-                                         GLfloat /* r2_x */,
-                                         GLfloat /* r2_y */,
-                                         GLfloat /* r3_x */,
-                                         GLfloat /* r3_y */,
+void GLES2InterfaceStub::CanvasClipRRect(const SkRRect& /* r */,
                                          GLuint /* clip_op */,
                                          GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasClipPath(const SkPath& /* p */,
+                                        GLuint /* clip_op */,
+                                        GLboolean /* antialias */) {}
 void GLES2InterfaceStub::CanvasDrawPaint(GLfloat /* stroke_width */,
                                          GLfloat /* miter_limit */,
                                          GLuint /* color */,

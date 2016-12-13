@@ -16117,6 +16117,47 @@ static_assert(offsetof(CanvasClipRRect, clip_op) == 52,
 static_assert(offsetof(CanvasClipRRect, antialias) == 56,
               "offset of CanvasClipRRect antialias should be 56");
 
+struct CanvasClipPath {
+  typedef CanvasClipPath ValueType;
+  static const CommandId kCmdId = kCanvasClipPath;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _path_id, GLuint _clip_op, GLboolean _antialias) {
+    SetHeader();
+    path_id = _path_id;
+    clip_op = _clip_op;
+    antialias = _antialias;
+  }
+
+  void* Set(void* cmd, GLuint _path_id, GLuint _clip_op, GLboolean _antialias) {
+    static_cast<ValueType*>(cmd)->Init(_path_id, _clip_op, _antialias);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t path_id;
+  uint32_t clip_op;
+  uint32_t antialias;
+};
+
+static_assert(sizeof(CanvasClipPath) == 16,
+              "size of CanvasClipPath should be 16");
+static_assert(offsetof(CanvasClipPath, header) == 0,
+              "offset of CanvasClipPath header should be 0");
+static_assert(offsetof(CanvasClipPath, path_id) == 4,
+              "offset of CanvasClipPath path_id should be 4");
+static_assert(offsetof(CanvasClipPath, clip_op) == 8,
+              "offset of CanvasClipPath clip_op should be 8");
+static_assert(offsetof(CanvasClipPath, antialias) == 12,
+              "offset of CanvasClipPath antialias should be 12");
+
 struct CanvasDrawPaint {
   typedef CanvasDrawPaint ValueType;
   static const CommandId kCmdId = kCanvasDrawPaint;

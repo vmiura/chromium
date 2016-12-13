@@ -19445,6 +19445,17 @@ error::Error GLES2DecoderImpl::HandleCanvasClipRRect(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasClipPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasClipPath& c =
+      *static_cast<const volatile gles2::cmds::CanvasClipPath*>(cmd_data);
+
+  canvas_->clipPath(*inflator_.getPath(c.path_id), (SkCanvas::ClipOp)c.clip_op, c.antialias);
+
+  return error::kNoError;
+}
+
 void GLES2DecoderImpl::RestoreAllExternalTextureBindingsIfNeeded() {
   if (texture_manager()->GetServiceIdGeneration() ==
       texture_manager_service_id_generation_)

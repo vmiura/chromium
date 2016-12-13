@@ -2544,33 +2544,25 @@ void GLES2TraceImplementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
   gl_->CanvasTranslate(tx, ty);
 }
 
-void GLES2TraceImplementation::CanvasClipRect(GLfloat left,
-                                              GLfloat top,
-                                              GLfloat right,
-                                              GLfloat bottom,
+void GLES2TraceImplementation::CanvasClipRect(const SkRect& r,
                                               GLuint clip_op,
                                               GLboolean antialias) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRect");
-  gl_->CanvasClipRect(left, top, right, bottom, clip_op, antialias);
+  gl_->CanvasClipRect(r, clip_op, antialias);
 }
 
-void GLES2TraceImplementation::CanvasClipRRect(GLfloat left,
-                                               GLfloat top,
-                                               GLfloat right,
-                                               GLfloat bottom,
-                                               GLfloat r0_x,
-                                               GLfloat r0_y,
-                                               GLfloat r1_x,
-                                               GLfloat r1_y,
-                                               GLfloat r2_x,
-                                               GLfloat r2_y,
-                                               GLfloat r3_x,
-                                               GLfloat r3_y,
+void GLES2TraceImplementation::CanvasClipRRect(const SkRRect& r,
                                                GLuint clip_op,
                                                GLboolean antialias) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRRect");
-  gl_->CanvasClipRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x,
-                       r2_y, r3_x, r3_y, clip_op, antialias);
+  gl_->CanvasClipRRect(r, clip_op, antialias);
+}
+
+void GLES2TraceImplementation::CanvasClipPath(const SkPath& p,
+                                              GLuint clip_op,
+                                              GLboolean antialias) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipPath");
+  gl_->CanvasClipPath(p, clip_op, antialias);
 }
 
 void GLES2TraceImplementation::CanvasDrawPaint(GLfloat stroke_width,

@@ -95,26 +95,22 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
   void onClipRect(const SkRect& r,
                   SkRegion::Op op,
                   CdlCanvas::ClipEdgeStyle style) override {
-    gl_->CanvasClipRect(r.left(), r.top(), r.right(), r.bottom(), (unsigned)op,
-                        style == kSoft_ClipEdgeStyle);
+    gl_->CanvasClipRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
     CdlNoDrawCanvas::onClipRect(r, op, style);
   }
 
   void onClipRRect(const SkRRect& r,
                    SkRegion::Op op,
                    CdlCanvas::ClipEdgeStyle style) override {
-    gl_->CanvasClipRRect(r.rect().left(), r.rect().top(), r.rect().right(),
-                         r.rect().bottom(),
-                         r.radii(SkRRect::kUpperLeft_Corner).x(),
-                         r.radii(SkRRect::kUpperLeft_Corner).y(),
-                         r.radii(SkRRect::kUpperRight_Corner).x(),
-                         r.radii(SkRRect::kUpperRight_Corner).y(),
-                         r.radii(SkRRect::kLowerRight_Corner).x(),
-                         r.radii(SkRRect::kLowerRight_Corner).y(),
-                         r.radii(SkRRect::kLowerLeft_Corner).x(),
-                         r.radii(SkRRect::kLowerLeft_Corner).y(), (unsigned)op,
-                         style == kSoft_ClipEdgeStyle);
+    gl_->CanvasClipRRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
     CdlNoDrawCanvas::onClipRRect(r, op, style);
+  }
+
+  void onClipPath(const SkPath& p,
+                   SkRegion::Op op,
+                   CdlCanvas::ClipEdgeStyle style) override {
+    gl_->CanvasClipPath(p, (unsigned)op, style == kSoft_ClipEdgeStyle);
+    CdlNoDrawCanvas::onClipPath(p, op, style);
   }
 
   void onDrawPaint(CdlPaint const& paint) override {
