@@ -2652,6 +2652,11 @@ void GLES2TraceImplementation::CanvasNewTypeface(SkTypeface* typeface) {
   gl_->CanvasNewTypeface(typeface);
 }
 
+void GLES2TraceImplementation::CanvasSetGradientShader(const SkShader* shader) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetGradientShader");
+  gl_->CanvasSetGradientShader(shader);
+}
+
 void GLES2TraceImplementation::CanvasSetImageShader(
     const SkImage* image,
     GLuint tmx,

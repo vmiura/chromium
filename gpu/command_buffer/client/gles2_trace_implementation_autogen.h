@@ -944,6 +944,7 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
 void CanvasNewImage(const SkImage* image) override;
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
 void CanvasNewTypeface(SkTypeface* typeface) override;
+void CanvasSetGradientShader(const SkShader* shader) override;
 void CanvasSetImageShader(const SkImage* image,
                           GLuint tmx,
                           GLuint tmy,

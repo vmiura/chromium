@@ -43,6 +43,7 @@ class CdlWrapSkShader : public CdlShader {
   bool isOpaque() const override { return shader_->isOpaque(); }
 
   void setupShader(gpu::gles2::GLES2Interface* gl) override {
+    gl->CanvasSetGradientShader(shader_.get());
   }
 
  private:

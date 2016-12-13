@@ -317,6 +317,81 @@ void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
                              buffer.offset());
 }
 
+void GLES2Implementation::CanvasSetGradientShader(
+  const SkShader* shader) {
+  /*
+  enum GradientType {
+      kNone_GradientType,
+      kColor_GradientType,
+      kLinear_GradientType,
+      kRadial_GradientType,
+      kSweep_GradientType,
+      kConical_GradientType,
+      kLast_GradientType = kConical_GradientType
+  };
+
+  struct GradientInfo {
+      int         fColorCount;    //!< In-out parameter, specifies passed size
+                                  //   of fColors/fColorOffsets on input, and
+                                  //   actual number of colors/offsets on
+                                  //   output.
+      SkColor*    fColors;        //!< The colors in the gradient.
+      SkScalar*   fColorOffsets;  //!< The unit offset for color transitions.
+      SkPoint     fPoint[2];      //!< Type specific, see above.
+      SkScalar    fRadius[2];     //!< Type specific, see above.
+      TileMode    fTileMode;      //!< The tile mode used.
+      uint32_t    fGradientFlags; //!< see SkGradientShader::Flags
+  };
+
+  virtual GradientType asAGradient(GradientInfo* info) const;
+  */
+
+  SkShader::GradientInfo info;
+  memset(&info, 0, sizeof(info));
+  SkShader::GradientType type = shader->asAGradient(&info);
+
+  if (type == SkShader::kNone_GradientType)
+    return; // Not a gradient
+
+  int tot_size = sizeof(SkShader::GradientInfo)
+      + (sizeof(SkColor) + sizeof(SkScalar)) * info.fColorCount;
+  
+  ScopedTransferBufferPtr buffer(tot_size, helper_, transfer_buffer_);
+  char *buffer_ptr = (char *)buffer.address();
+  SkShader::GradientInfo* sh_info = (SkShader::GradientInfo*)buffer_ptr;
+  buffer_ptr += sizeof (SkShader::GradientInfo);
+
+  // Fill in expected color count and pointers.
+  sh_info->fColorCount = info.fColorCount;
+  sh_info->fColors = (SkColor *)buffer_ptr;
+  buffer_ptr += sizeof(SkColor) * info.fColorCount;
+  sh_info->fColorOffsets = (SkScalar *)buffer_ptr;
+
+  // Read gradient info into shared memory.
+  type = shader->asAGradient(sh_info);
+  DCHECK(type != SkShader::kNone_GradientType);
+
+  // Reset pointers before IPC.
+  sh_info->fColors = 0;
+  sh_info->fColorOffsets = 0;
+
+  SkMatrix local_matrix = shader->getLocalMatrix();
+
+  helper_->CanvasSetGradientShader( buffer.size(),
+                                    buffer.shm_id(),
+                                    buffer.offset(),
+                                    (unsigned)type,
+                                    local_matrix.get(0),
+                                    local_matrix.get(1),
+                                    local_matrix.get(2),
+                                    local_matrix.get(3),
+                                    local_matrix.get(4),
+                                    local_matrix.get(5),
+                                    local_matrix.get(6),
+                                    local_matrix.get(7),
+                                    local_matrix.get(8));
+}
+
 void GLES2Implementation::CanvasSetImageShader(
                           const SkImage* image,
                           GLuint tmx,

@@ -69,6 +69,7 @@
 #include "skia/ext/texture_handle.h"
 #include "third_party/angle/src/image_util/loadimage.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -19080,6 +19081,82 @@ void GLES2DecoderImpl::DoCanvasSetMatrix(
     canvas_->setMatrix(m);
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasSetGradientShader(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasSetGradientShader& c =
+      *static_cast<
+          const volatile gles2::cmds::CanvasSetGradientShader*>(
+          cmd_data);
+
+  SkShader::GradientInfo* info = GetSharedMemoryAs<SkShader::GradientInfo*>(c.shm_id, c.shm_offset, c.shm_size);
+
+  // Init info pointers
+  char *buffer_ptr = (char *)info;
+  buffer_ptr += sizeof (SkShader::GradientInfo);
+  info->fColors = (SkColor *)buffer_ptr;
+  buffer_ptr += sizeof(SkColor) * info->fColorCount;
+  info->fColorOffsets = (SkScalar *)buffer_ptr;
+
+  SkMatrix matrix;
+  matrix.set(0, c.m0);
+  matrix.set(1, c.m1);
+  matrix.set(2, c.m2);
+  matrix.set(3, c.m3);
+  matrix.set(4, c.m4);
+  matrix.set(5, c.m5);
+  matrix.set(6, c.m6);
+  matrix.set(7, c.m7);
+  matrix.set(8, c.m8);
+
+  switch(c.gradient_type) {
+    case SkShader::kColor_GradientType:
+      sk_shader_ = SkShader::MakeColorShader(info->fColors[0]);
+      break;
+    case SkShader::kLinear_GradientType:
+      sk_shader_ = SkGradientShader::MakeLinear(
+                                      info->fPoint,
+                                      info->fColors,
+                                      info->fColorOffsets,
+                                      info->fColorCount,
+                                      info->fTileMode,
+                                      info->fGradientFlags,
+                                      &matrix);
+      break;
+    case SkShader::kRadial_GradientType:
+      sk_shader_ = SkGradientShader::MakeRadial(info->fPoint[0],
+                                                info->fRadius[0],
+                                                info->fColors,
+                                                info->fColorOffsets,
+                                                info->fColorCount,
+                                                info->fTileMode,
+                                                info->fGradientFlags,
+                                                &matrix);
+      break;
+    case SkShader::kConical_GradientType:
+      sk_shader_ = SkGradientShader::MakeTwoPointConical(
+                                                info->fPoint[0],
+                                                info->fRadius[0],
+                                                info->fPoint[1],
+                                                info->fRadius[1],
+                                                info->fColors,
+                                                info->fColorOffsets,
+                                                info->fColorCount,
+                                                info->fTileMode,
+                                                info->fGradientFlags,
+                                                &matrix);
+      break;
+    case SkShader::kSweep_GradientType:
+      // Unused by blink
+      break;
+    default:
+      break;
+  };
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasSetImageShader(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -19089,7 +19166,6 @@ error::Error GLES2DecoderImpl::HandleCanvasSetImageShader(
           const volatile gles2::cmds::CanvasSetImageShader*>(
           cmd_data);
 
-  LOG(ERROR) << "Got ImageShader";
   SkImage* image = inflator_.getImage(c.image_id);
   if (image) {
     SkMatrix matrix;
@@ -19102,7 +19178,6 @@ error::Error GLES2DecoderImpl::HandleCanvasSetImageShader(
     matrix.set(6, c.m6);
     matrix.set(7, c.m7);
     matrix.set(8, c.m8);
-    LOG(ERROR) << "Make ImageShader";
     sk_shader_ = image->makeShader(
                               (SkShader::TileMode)c.tmx,
                               (SkShader::TileMode)c.tmy,

@@ -16,6 +16,7 @@ class SkMatrix;
 struct SkRect;
 class SkTextBlob;
 class SkTypeface;
+class SkShader;
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
 

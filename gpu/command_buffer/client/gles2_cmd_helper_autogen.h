@@ -3408,6 +3408,27 @@ void CanvasNewTypeface(GLuint typeface_id,
   }
 }
 
+void CanvasSetGradientShader(GLsizeiptr shm_size,
+                             uint32_t shm_id,
+                             uint32_t shm_offset,
+                             GLuint gradient_type,
+                             const GLfloat m0,
+                             const GLfloat m1,
+                             const GLfloat m2,
+                             const GLfloat m3,
+                             const GLfloat m4,
+                             const GLfloat m5,
+                             const GLfloat m6,
+                             const GLfloat m7,
+                             const GLfloat m8) {
+  gles2::cmds::CanvasSetGradientShader* c =
+      GetCmdSpace<gles2::cmds::CanvasSetGradientShader>();
+  if (c) {
+    c->Init(shm_size, shm_id, shm_offset, gradient_type, m0, m1, m2, m3, m4, m5,
+            m6, m7, m8);
+  }
+}
+
 void CanvasSetImageShader(GLuint image_id,
                           GLuint tmx,
                           GLuint tmy,

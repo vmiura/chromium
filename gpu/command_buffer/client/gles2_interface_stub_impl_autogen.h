@@ -1248,6 +1248,8 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
 void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}
+void GLES2InterfaceStub::CanvasSetGradientShader(const SkShader* /* shader */) {
+}
 void GLES2InterfaceStub::CanvasSetImageShader(
     const SkImage* /* image */,
     GLuint /* tmx */,

@@ -16763,6 +16763,114 @@ static_assert(offsetof(CanvasNewTypeface, shm_id) == 12,
 static_assert(offsetof(CanvasNewTypeface, shm_offset) == 16,
               "offset of CanvasNewTypeface shm_offset should be 16");
 
+struct CanvasSetGradientShader {
+  typedef CanvasSetGradientShader ValueType;
+  static const CommandId kCmdId = kCanvasSetGradientShader;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset,
+            GLuint _gradient_type,
+            const GLfloat _m0,
+            const GLfloat _m1,
+            const GLfloat _m2,
+            const GLfloat _m3,
+            const GLfloat _m4,
+            const GLfloat _m5,
+            const GLfloat _m6,
+            const GLfloat _m7,
+            const GLfloat _m8) {
+    SetHeader();
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+    gradient_type = _gradient_type;
+    m0 = _m0;
+    m1 = _m1;
+    m2 = _m2;
+    m3 = _m3;
+    m4 = _m4;
+    m5 = _m5;
+    m6 = _m6;
+    m7 = _m7;
+    m8 = _m8;
+  }
+
+  void* Set(void* cmd,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset,
+            GLuint _gradient_type,
+            const GLfloat _m0,
+            const GLfloat _m1,
+            const GLfloat _m2,
+            const GLfloat _m3,
+            const GLfloat _m4,
+            const GLfloat _m5,
+            const GLfloat _m6,
+            const GLfloat _m7,
+            const GLfloat _m8) {
+    static_cast<ValueType*>(cmd)->Init(_shm_size, _shm_id, _shm_offset,
+                                       _gradient_type, _m0, _m1, _m2, _m3, _m4,
+                                       _m5, _m6, _m7, _m8);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t shm_size;
+  uint32_t shm_id;
+  uint32_t shm_offset;
+  uint32_t gradient_type;
+  uint32_t m0;
+  uint32_t m1;
+  uint32_t m2;
+  uint32_t m3;
+  uint32_t m4;
+  uint32_t m5;
+  uint32_t m6;
+  uint32_t m7;
+  uint32_t m8;
+};
+
+static_assert(sizeof(CanvasSetGradientShader) == 56,
+              "size of CanvasSetGradientShader should be 56");
+static_assert(offsetof(CanvasSetGradientShader, header) == 0,
+              "offset of CanvasSetGradientShader header should be 0");
+static_assert(offsetof(CanvasSetGradientShader, shm_size) == 4,
+              "offset of CanvasSetGradientShader shm_size should be 4");
+static_assert(offsetof(CanvasSetGradientShader, shm_id) == 8,
+              "offset of CanvasSetGradientShader shm_id should be 8");
+static_assert(offsetof(CanvasSetGradientShader, shm_offset) == 12,
+              "offset of CanvasSetGradientShader shm_offset should be 12");
+static_assert(offsetof(CanvasSetGradientShader, gradient_type) == 16,
+              "offset of CanvasSetGradientShader gradient_type should be 16");
+static_assert(offsetof(CanvasSetGradientShader, m0) == 20,
+              "offset of CanvasSetGradientShader m0 should be 20");
+static_assert(offsetof(CanvasSetGradientShader, m1) == 24,
+              "offset of CanvasSetGradientShader m1 should be 24");
+static_assert(offsetof(CanvasSetGradientShader, m2) == 28,
+              "offset of CanvasSetGradientShader m2 should be 28");
+static_assert(offsetof(CanvasSetGradientShader, m3) == 32,
+              "offset of CanvasSetGradientShader m3 should be 32");
+static_assert(offsetof(CanvasSetGradientShader, m4) == 36,
+              "offset of CanvasSetGradientShader m4 should be 36");
+static_assert(offsetof(CanvasSetGradientShader, m5) == 40,
+              "offset of CanvasSetGradientShader m5 should be 40");
+static_assert(offsetof(CanvasSetGradientShader, m6) == 44,
+              "offset of CanvasSetGradientShader m6 should be 44");
+static_assert(offsetof(CanvasSetGradientShader, m7) == 48,
+              "offset of CanvasSetGradientShader m7 should be 48");
+static_assert(offsetof(CanvasSetGradientShader, m8) == 52,
+              "offset of CanvasSetGradientShader m8 should be 52");
+
 struct CanvasSetImageShader {
   typedef CanvasSetImageShader ValueType;
   static const CommandId kCmdId = kCanvasSetImageShader;

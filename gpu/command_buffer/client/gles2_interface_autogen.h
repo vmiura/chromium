@@ -970,6 +970,7 @@ virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
 virtual void CanvasNewImage(const SkImage* image) = 0;
 virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
 virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;
+virtual void CanvasSetGradientShader(const SkShader* shader) = 0;
 virtual void CanvasSetImageShader(const SkImage* image,
                                   GLuint tmx,
                                   GLuint tmy,
