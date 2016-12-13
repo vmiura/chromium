@@ -1215,7 +1215,12 @@ void CanvasBegin(GLenum target,
 
 void CanvasEnd() override;
 
-void CanvasSave(GLboolean save_layer) override;
+void CanvasSave() override;
+
+void CanvasSaveLayer(const SkRect* fBounds,
+                     const CdlPaint* fPaint,
+                     const SkImageFilter* fBackdrop,
+                     GLuint fSaveLayerFlags) override;
 
 void CanvasRestore() override;
 

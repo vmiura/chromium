@@ -1176,7 +1176,11 @@ void GLES2InterfaceStub::CanvasBegin(GLenum /* target */,
                                      GLboolean /* can_use_lcd */,
                                      GLint /* pixel_config */) {}
 void GLES2InterfaceStub::CanvasEnd() {}
-void GLES2InterfaceStub::CanvasSave(GLboolean /* save_layer */) {}
+void GLES2InterfaceStub::CanvasSave() {}
+void GLES2InterfaceStub::CanvasSaveLayer(const SkRect* /* fBounds */,
+                                         const CdlPaint* /* fPaint */,
+                                         const SkImageFilter* /* fBackdrop */,
+                                         GLuint /* fSaveLayerFlags */) {}
 void GLES2InterfaceStub::CanvasRestore() {}
 void GLES2InterfaceStub::CanvasSetMatrix(GLboolean /* concat */,
                                          const GLfloat* /* matrix */) {}

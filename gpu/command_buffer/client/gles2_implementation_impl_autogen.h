@@ -3536,11 +3536,11 @@ void GLES2Implementation::CanvasEnd() {
   CheckGLError();
 }
 
-void GLES2Implementation::CanvasSave(GLboolean save_layer) {
+void GLES2Implementation::CanvasSave() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSave("
-                     << GLES2Util::GetStringBool(save_layer) << ")");
-  helper_->CanvasSave(save_layer);
+                     << ")");
+  helper_->CanvasSave();
   CheckGLError();
 }
 

@@ -19048,16 +19048,48 @@ error::Error GLES2DecoderImpl::HandleCanvasEnd(
 error::Error GLES2DecoderImpl::HandleCanvasSave(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
+  canvas_->save();
+  return error::kNoError;
+}
 
-  const volatile gles2::cmds::CanvasSave& c =
+error::Error GLES2DecoderImpl::HandleCanvasSaveLayer(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+
+  const volatile gles2::cmds::CanvasSaveLayer& c =
       *static_cast<
-          const volatile gles2::cmds::CanvasSave*>(
+          const volatile gles2::cmds::CanvasSaveLayer*>(
           cmd_data);
 
-  if (c.save_layer)
-    canvas_->saveLayer(0, 0);
-  else
-    canvas_->save();
+  SkRect bounds;
+  SkPaint paint;
+
+  if (c.use_bounds) {
+    bounds = SkRect::MakeLTRB(c.b_left, c.b_top, c.b_right, c.b_bottom);
+  }
+
+  if (c.use_paint) {
+    CdlPaintBits paint_bits;
+    paint_bits.bitfields_uint = c.paint_bits;
+    paint.setFlags(paint_bits.bitfields.flags);
+    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+    paint.setStrokeWidth(c.stroke_width);
+    paint.setStrokeMiter(c.miter_limit);
+    paint.setColor(c.color);
+    paint.setBlendMode((SkBlendMode)c.blend_mode);
+    if (sk_shader_.get()) {
+      paint.setShader(sk_shader_);
+      sk_shader_.reset();
+    }
+  }
+
+  // Ignore SkImageFilter for now.
+
+  SkCanvas::SaveLayerRec rec(c.use_bounds ? &bounds : 0, c.use_paint ? &paint : 0, 0, c.flags);
+  canvas_->saveLayer(rec);
 
   return error::kNoError;
 }

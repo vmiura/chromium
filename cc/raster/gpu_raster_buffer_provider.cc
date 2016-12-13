@@ -64,12 +64,12 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
     }
 
     int onSaveLayer(const SaveLayerRec& rec) override {
-      gl_->CanvasSave(true);
+      gl_->CanvasSaveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop, rec.fSaveLayerFlags);
       return CdlNoDrawCanvas::onSaveLayer(rec);
     }
 
     int onSave() override {
-      gl_->CanvasSave(false);
+      gl_->CanvasSave();
       return CdlNoDrawCanvas::onSave();
     }
 

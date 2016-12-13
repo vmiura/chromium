@@ -2515,9 +2515,17 @@ void GLES2TraceImplementation::CanvasEnd() {
   gl_->CanvasEnd();
 }
 
-void GLES2TraceImplementation::CanvasSave(GLboolean save_layer) {
+void GLES2TraceImplementation::CanvasSave() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSave");
-  gl_->CanvasSave(save_layer);
+  gl_->CanvasSave();
+}
+
+void GLES2TraceImplementation::CanvasSaveLayer(const SkRect* fBounds,
+                                               const CdlPaint* fPaint,
+                                               const SkImageFilter* fBackdrop,
+                                               GLuint fSaveLayerFlags) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSaveLayer");
+  gl_->CanvasSaveLayer(fBounds, fPaint, fBackdrop, fSaveLayerFlags);
 }
 
 void GLES2TraceImplementation::CanvasRestore() {

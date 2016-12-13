@@ -1730,8 +1730,15 @@ void GL_APIENTRY GLES2CanvasBegin(GLenum target,
 void GL_APIENTRY GLES2CanvasEnd() {
   gles2::GetGLContext()->CanvasEnd();
 }
-void GL_APIENTRY GLES2CanvasSave(GLboolean save_layer) {
-  gles2::GetGLContext()->CanvasSave(save_layer);
+void GL_APIENTRY GLES2CanvasSave() {
+  gles2::GetGLContext()->CanvasSave();
+}
+void GL_APIENTRY GLES2CanvasSaveLayer(const SkRect* fBounds,
+                                      const CdlPaint* fPaint,
+                                      const SkImageFilter* fBackdrop,
+                                      GLuint fSaveLayerFlags) {
+  gles2::GetGLContext()->CanvasSaveLayer(fBounds, fPaint, fBackdrop,
+                                         fSaveLayerFlags);
 }
 void GL_APIENTRY GLES2CanvasRestore() {
   gles2::GetGLContext()->CanvasRestore();
@@ -3159,6 +3166,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     },
     {
         "glCanvasSave", reinterpret_cast<GLES2FunctionPointer>(glCanvasSave),
+    },
+    {
+        "glCanvasSaveLayer",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSaveLayer),
     },
     {
         "glCanvasRestore",

@@ -387,6 +387,7 @@
 #define glCanvasBegin GLES2_GET_FUN(CanvasBegin)
 #define glCanvasEnd GLES2_GET_FUN(CanvasEnd)
 #define glCanvasSave GLES2_GET_FUN(CanvasSave)
+#define glCanvasSaveLayer GLES2_GET_FUN(CanvasSaveLayer)
 #define glCanvasRestore GLES2_GET_FUN(CanvasRestore)
 #define glCanvasSetMatrix GLES2_GET_FUN(CanvasSetMatrix)
 #define glCanvasTranslate GLES2_GET_FUN(CanvasTranslate)

@@ -332,22 +332,23 @@
   OP(CanvasBegin)                                          /* 573 */ \
   OP(CanvasEnd)                                            /* 574 */ \
   OP(CanvasSave)                                           /* 575 */ \
-  OP(CanvasRestore)                                        /* 576 */ \
-  OP(CanvasSetMatrixImmediate)                             /* 577 */ \
-  OP(CanvasTranslate)                                      /* 578 */ \
-  OP(CanvasClipRect)                                       /* 579 */ \
-  OP(CanvasClipRRect)                                      /* 580 */ \
-  OP(CanvasDrawPaint)                                      /* 581 */ \
-  OP(CanvasDrawRect)                                       /* 582 */ \
-  OP(CanvasDrawRRect)                                      /* 583 */ \
-  OP(CanvasDrawImage)                                      /* 584 */ \
-  OP(CanvasDrawImageRect)                                  /* 585 */ \
-  OP(CanvasDrawTextBlob)                                   /* 586 */ \
-  OP(CanvasNewImage)                                       /* 587 */ \
-  OP(CanvasNewTextBlob)                                    /* 588 */ \
-  OP(CanvasNewTypeface)                                    /* 589 */ \
-  OP(CanvasSetGradientShader)                              /* 590 */ \
-  OP(CanvasSetImageShader)                                 /* 591 */
+  OP(CanvasSaveLayer)                                      /* 576 */ \
+  OP(CanvasRestore)                                        /* 577 */ \
+  OP(CanvasSetMatrixImmediate)                             /* 578 */ \
+  OP(CanvasTranslate)                                      /* 579 */ \
+  OP(CanvasClipRect)                                       /* 580 */ \
+  OP(CanvasClipRRect)                                      /* 581 */ \
+  OP(CanvasDrawPaint)                                      /* 582 */ \
+  OP(CanvasDrawRect)                                       /* 583 */ \
+  OP(CanvasDrawRRect)                                      /* 584 */ \
+  OP(CanvasDrawImage)                                      /* 585 */ \
+  OP(CanvasDrawImageRect)                                  /* 586 */ \
+  OP(CanvasDrawTextBlob)                                   /* 587 */ \
+  OP(CanvasNewImage)                                       /* 588 */ \
+  OP(CanvasNewTextBlob)                                    /* 589 */ \
+  OP(CanvasNewTypeface)                                    /* 590 */ \
+  OP(CanvasSetGradientShader)                              /* 591 */ \
+  OP(CanvasSetImageShader)                                 /* 592 */
 
 enum CommandId {
   kOneBeforeStartPoint =

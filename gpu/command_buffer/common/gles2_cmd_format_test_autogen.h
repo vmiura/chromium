@@ -5260,11 +5260,39 @@ TEST_F(GLES2FormatTest, CanvasEnd) {
 
 TEST_F(GLES2FormatTest, CanvasSave) {
   cmds::CanvasSave& cmd = *GetBufferAs<cmds::CanvasSave>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLboolean>(11));
+  void* next_cmd = cmd.Set(&cmd);
   EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasSave::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLboolean>(11), cmd.save_layer);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, CanvasSaveLayer) {
+  cmds::CanvasSaveLayer& cmd = *GetBufferAs<cmds::CanvasSaveLayer>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLboolean>(11), static_cast<GLboolean>(12),
+              static_cast<GLboolean>(13), static_cast<GLfloat>(14),
+              static_cast<GLfloat>(15), static_cast<GLfloat>(16),
+              static_cast<GLfloat>(17), static_cast<GLuint>(18),
+              static_cast<GLfloat>(19), static_cast<GLfloat>(20),
+              static_cast<GLuint>(21), static_cast<GLuint>(22),
+              static_cast<GLuint>(23));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasSaveLayer::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLboolean>(11), cmd.use_bounds);
+  EXPECT_EQ(static_cast<GLboolean>(12), cmd.use_paint);
+  EXPECT_EQ(static_cast<GLboolean>(13), cmd.use_filter);
+  EXPECT_EQ(static_cast<GLfloat>(14), cmd.b_left);
+  EXPECT_EQ(static_cast<GLfloat>(15), cmd.b_top);
+  EXPECT_EQ(static_cast<GLfloat>(16), cmd.b_right);
+  EXPECT_EQ(static_cast<GLfloat>(17), cmd.b_bottom);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.flags);
+  EXPECT_EQ(static_cast<GLfloat>(19), cmd.stroke_width);
+  EXPECT_EQ(static_cast<GLfloat>(20), cmd.miter_limit);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.color);
+  EXPECT_EQ(static_cast<GLuint>(22), cmd.blend_mode);
+  EXPECT_EQ(static_cast<GLuint>(23), cmd.paint_bits);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

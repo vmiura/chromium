@@ -2734,6 +2734,17 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasSaveLayer': {
+    'type': 'Custom',
+    'cmd_args': 'GLboolean use_bounds, GLboolean use_paint, GLboolean use_filter,'
+                'GLfloat b_left, GLfloat b_top, GLfloat b_right, GLfloat b_bottom,'
+                'GLuint flags, GLfloat stroke_width, GLfloat miter_limit,'
+                'GLuint color, GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasRestore': {
     'type': 'Custom',
     'impl_func': True,

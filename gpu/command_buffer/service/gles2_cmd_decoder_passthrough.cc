@@ -859,6 +859,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasSave(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSaveLayer(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasRestore(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

@@ -873,7 +873,11 @@ void CanvasBegin(GLenum target,
                  GLboolean can_use_lcd,
                  GLint pixel_config) override;
 void CanvasEnd() override;
-void CanvasSave(GLboolean save_layer) override;
+void CanvasSave() override;
+void CanvasSaveLayer(const SkRect* fBounds,
+                     const CdlPaint* fPaint,
+                     const SkImageFilter* fBackdrop,
+                     GLuint fSaveLayerFlags) override;
 void CanvasRestore() override;
 void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) override;
 void CanvasTranslate(GLfloat tx, GLfloat ty) override;

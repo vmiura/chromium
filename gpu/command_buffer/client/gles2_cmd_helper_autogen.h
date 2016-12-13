@@ -3199,10 +3199,30 @@ void CanvasEnd() {
   }
 }
 
-void CanvasSave(GLboolean save_layer) {
+void CanvasSave() {
   gles2::cmds::CanvasSave* c = GetCmdSpace<gles2::cmds::CanvasSave>();
   if (c) {
-    c->Init(save_layer);
+    c->Init();
+  }
+}
+
+void CanvasSaveLayer(GLboolean use_bounds,
+                     GLboolean use_paint,
+                     GLboolean use_filter,
+                     GLfloat b_left,
+                     GLfloat b_top,
+                     GLfloat b_right,
+                     GLfloat b_bottom,
+                     GLuint flags,
+                     GLfloat stroke_width,
+                     GLfloat miter_limit,
+                     GLuint color,
+                     GLuint blend_mode,
+                     GLuint paint_bits) {
+  gles2::cmds::CanvasSaveLayer* c = GetCmdSpace<gles2::cmds::CanvasSaveLayer>();
+  if (c) {
+    c->Init(use_bounds, use_paint, use_filter, b_left, b_top, b_right, b_bottom,
+            flags, stroke_width, miter_limit, color, blend_mode, paint_bits);
   }
 }
 

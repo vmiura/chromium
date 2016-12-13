@@ -899,7 +899,11 @@ virtual void CanvasBegin(GLenum target,
                          GLboolean can_use_lcd,
                          GLint pixel_config) = 0;
 virtual void CanvasEnd() = 0;
-virtual void CanvasSave(GLboolean save_layer) = 0;
+virtual void CanvasSave() = 0;
+virtual void CanvasSaveLayer(const SkRect* fBounds,
+                             const CdlPaint* fPaint,
+                             const SkImageFilter* fBackdrop,
+                             GLuint fSaveLayerFlags) = 0;
 virtual void CanvasRestore() = 0;
 virtual void CanvasSetMatrix(GLboolean concat, const GLfloat* matrix) = 0;
 virtual void CanvasTranslate(GLfloat tx, GLfloat ty) = 0;

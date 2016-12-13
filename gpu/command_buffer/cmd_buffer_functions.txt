@@ -366,7 +366,8 @@ GL_APICALL void         GL_APIENTRY glSwapBuffersWithDamageCHROMIUM (GLint x, GL
 
 GL_APICALL void         GL_APIENTRY glCanvasBegin (GLenum target, GLuint texture, GLint width, GLint height, GLint msaa_sample_count, GLboolean use_dff, GLboolean can_use_lcd, GLint pixel_config);
 GL_APICALL void         GL_APIENTRY glCanvasEnd (void);
-GL_APICALL void         GL_APIENTRY glCanvasSave (GLboolean save_layer);
+GL_APICALL void         GL_APIENTRY glCanvasSave (void);
+GL_APICALL void         GL_APIENTRY glCanvasSaveLayer (const SkRect* fBounds, const CdlPaint* fPaint, const SkImageFilter* fBackdrop, GLuint fSaveLayerFlags);
 GL_APICALL void         GL_APIENTRY glCanvasRestore (void);
 GL_APICALL void         GL_APIENTRY glCanvasSetMatrix (GLboolean concat, const GLfloat* matrix);
 GL_APICALL void         GL_APIENTRY glCanvasTranslate (GLfloat tx, GLfloat ty);

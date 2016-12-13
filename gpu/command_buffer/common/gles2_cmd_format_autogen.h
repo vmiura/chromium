@@ -15713,25 +15713,128 @@ struct CanvasSave {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(GLboolean _save_layer) {
-    SetHeader();
-    save_layer = _save_layer;
-  }
+  void Init() { SetHeader(); }
 
-  void* Set(void* cmd, GLboolean _save_layer) {
-    static_cast<ValueType*>(cmd)->Init(_save_layer);
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
     return NextCmdAddress<ValueType>(cmd);
   }
 
   gpu::CommandHeader header;
-  uint32_t save_layer;
 };
 
-static_assert(sizeof(CanvasSave) == 8, "size of CanvasSave should be 8");
+static_assert(sizeof(CanvasSave) == 4, "size of CanvasSave should be 4");
 static_assert(offsetof(CanvasSave, header) == 0,
               "offset of CanvasSave header should be 0");
-static_assert(offsetof(CanvasSave, save_layer) == 4,
-              "offset of CanvasSave save_layer should be 4");
+
+struct CanvasSaveLayer {
+  typedef CanvasSaveLayer ValueType;
+  static const CommandId kCmdId = kCanvasSaveLayer;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLboolean _use_bounds,
+            GLboolean _use_paint,
+            GLboolean _use_filter,
+            GLfloat _b_left,
+            GLfloat _b_top,
+            GLfloat _b_right,
+            GLfloat _b_bottom,
+            GLuint _flags,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    SetHeader();
+    use_bounds = _use_bounds;
+    use_paint = _use_paint;
+    use_filter = _use_filter;
+    b_left = _b_left;
+    b_top = _b_top;
+    b_right = _b_right;
+    b_bottom = _b_bottom;
+    flags = _flags;
+    stroke_width = _stroke_width;
+    miter_limit = _miter_limit;
+    color = _color;
+    blend_mode = _blend_mode;
+    paint_bits = _paint_bits;
+  }
+
+  void* Set(void* cmd,
+            GLboolean _use_bounds,
+            GLboolean _use_paint,
+            GLboolean _use_filter,
+            GLfloat _b_left,
+            GLfloat _b_top,
+            GLfloat _b_right,
+            GLfloat _b_bottom,
+            GLuint _flags,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    static_cast<ValueType*>(cmd)->Init(_use_bounds, _use_paint, _use_filter,
+                                       _b_left, _b_top, _b_right, _b_bottom,
+                                       _flags, _stroke_width, _miter_limit,
+                                       _color, _blend_mode, _paint_bits);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t use_bounds;
+  uint32_t use_paint;
+  uint32_t use_filter;
+  float b_left;
+  float b_top;
+  float b_right;
+  float b_bottom;
+  uint32_t flags;
+  float stroke_width;
+  float miter_limit;
+  uint32_t color;
+  uint32_t blend_mode;
+  uint32_t paint_bits;
+};
+
+static_assert(sizeof(CanvasSaveLayer) == 56,
+              "size of CanvasSaveLayer should be 56");
+static_assert(offsetof(CanvasSaveLayer, header) == 0,
+              "offset of CanvasSaveLayer header should be 0");
+static_assert(offsetof(CanvasSaveLayer, use_bounds) == 4,
+              "offset of CanvasSaveLayer use_bounds should be 4");
+static_assert(offsetof(CanvasSaveLayer, use_paint) == 8,
+              "offset of CanvasSaveLayer use_paint should be 8");
+static_assert(offsetof(CanvasSaveLayer, use_filter) == 12,
+              "offset of CanvasSaveLayer use_filter should be 12");
+static_assert(offsetof(CanvasSaveLayer, b_left) == 16,
+              "offset of CanvasSaveLayer b_left should be 16");
+static_assert(offsetof(CanvasSaveLayer, b_top) == 20,
+              "offset of CanvasSaveLayer b_top should be 20");
+static_assert(offsetof(CanvasSaveLayer, b_right) == 24,
+              "offset of CanvasSaveLayer b_right should be 24");
+static_assert(offsetof(CanvasSaveLayer, b_bottom) == 28,
+              "offset of CanvasSaveLayer b_bottom should be 28");
+static_assert(offsetof(CanvasSaveLayer, flags) == 32,
+              "offset of CanvasSaveLayer flags should be 32");
+static_assert(offsetof(CanvasSaveLayer, stroke_width) == 36,
+              "offset of CanvasSaveLayer stroke_width should be 36");
+static_assert(offsetof(CanvasSaveLayer, miter_limit) == 40,
+              "offset of CanvasSaveLayer miter_limit should be 40");
+static_assert(offsetof(CanvasSaveLayer, color) == 44,
+              "offset of CanvasSaveLayer color should be 44");
+static_assert(offsetof(CanvasSaveLayer, blend_mode) == 48,
+              "offset of CanvasSaveLayer blend_mode should be 48");
+static_assert(offsetof(CanvasSaveLayer, paint_bits) == 52,
+              "offset of CanvasSaveLayer paint_bits should be 52");
 
 struct CanvasRestore {
   typedef CanvasRestore ValueType;

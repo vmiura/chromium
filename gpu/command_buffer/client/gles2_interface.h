@@ -17,6 +17,7 @@ struct SkRect;
 class SkTextBlob;
 class SkTypeface;
 class SkShader;
+class SkImageFilter;
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
 

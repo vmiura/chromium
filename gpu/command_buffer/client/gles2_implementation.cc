@@ -154,6 +154,24 @@ int GLES2Implementation::CanvasDeduper::findOrDefineTextBlob(const SkTextBlob* t
 }
 
 
+void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds, const CdlPaint* fPaint,
+    const SkImageFilter* fBackdrop, GLuint fSaveLayerFlags) {
+  helper_->CanvasSaveLayer(fBounds != 0,
+                           fPaint != 0,
+                           fBackdrop != 0,
+                           fBounds ? fBounds->left() : 0,
+                           fBounds ? fBounds->top() : 0,
+                           fBounds ? fBounds->right() : 0,
+                           fBounds ? fBounds->bottom() : 0,
+                           fSaveLayerFlags,
+                           fPaint ? fPaint->getStrokeWidth() : 0,
+                           fPaint ? fPaint->getStrokeMiter() : 0,
+                           fPaint ? fPaint->getColor() : 0,
+                           fPaint ? (unsigned)fPaint->getBlendMode() : 0,
+                           fPaint ? GetPaintBits(*fPaint) : 0
+                           );
+}
+
 void GLES2Implementation::CanvasDrawImage(
                                 const SkImage* image,
                                 GLfloat x,
