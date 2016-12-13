@@ -1100,6 +1100,28 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   void DoFlushMappedBufferRange(
       GLenum target, GLintptr offset, GLsizeiptr size);
 
+  void FillCanvasPaint(SkPaint& paint, GLfloat stroke_width,
+      GLfloat miter_limit, GLuint color, GLuint blend_mode,
+      GLuint bits) {
+    paint.setStrokeWidth(stroke_width);
+    paint.setStrokeMiter(miter_limit);
+    paint.setColor(color);
+    paint.setBlendMode((SkBlendMode)blend_mode);
+
+    CdlPaintBits paint_bits;
+    paint_bits.bitfields_uint = bits;
+    paint.setFlags(paint_bits.bitfields.flags);
+    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
+    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
+    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
+    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
+    
+    if (sk_shader_.get()) {
+      paint.setShader(sk_shader_);
+      sk_shader_.reset();
+    }
+  }
+
   void DoCanvasSetMatrix(
     bool concat,
     volatile const GLfloat* matrix);
@@ -19069,21 +19091,8 @@ error::Error GLES2DecoderImpl::HandleCanvasSaveLayer(
   }
 
   if (c.use_paint) {
-    CdlPaintBits paint_bits;
-    paint_bits.bitfields_uint = c.paint_bits;
-    paint.setFlags(paint_bits.bitfields.flags);
-    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-    paint.setStrokeWidth(c.stroke_width);
-    paint.setStrokeMiter(c.miter_limit);
-    paint.setColor(c.color);
-    paint.setBlendMode((SkBlendMode)c.blend_mode);
-    if (sk_shader_.get()) {
-      paint.setShader(sk_shader_);
-      sk_shader_.reset();
-    }
+    FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                    c.blend_mode, c.paint_bits);
   }
 
   // Ignore SkImageFilter for now.
@@ -19240,22 +19249,9 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawPaint(
           const volatile gles2::cmds::CanvasDrawPaint*>(
           cmd_data);
 
-  CdlPaintBits paint_bits;
-  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
-  paint.setFlags(paint_bits.bitfields.flags);
-  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-  paint.setStrokeWidth(c.stroke_width);
-  paint.setStrokeMiter(c.miter_limit);
-  paint.setColor(c.color);
-  paint.setBlendMode((SkBlendMode)c.blend_mode);
-  if (sk_shader_.get()) {
-    paint.setShader(sk_shader_);
-    sk_shader_.reset();
-  }
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                    c.blend_mode, c.paint_bits);
   canvas_->drawPaint(paint);
 
   return error::kNoError;
@@ -19271,22 +19267,9 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRect(
           cmd_data);
 
   SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
-  CdlPaintBits paint_bits;
-  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
-  paint.setFlags(paint_bits.bitfields.flags);
-  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-  paint.setStrokeWidth(c.stroke_width);
-  paint.setStrokeMiter(c.miter_limit);
-  paint.setColor(c.color);
-  paint.setBlendMode((SkBlendMode)c.blend_mode);
-  if (sk_shader_.get()) {
-    paint.setShader(sk_shader_);
-    sk_shader_.reset();
-  }
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                  c.blend_mode, c.paint_bits);
   canvas_->drawRect(rect, paint);
 
   return error::kNoError;
@@ -19310,22 +19293,9 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRRect(
   SkRRect rrect;
   rrect.setRectRadii(rect, radii);
 
-  CdlPaintBits paint_bits;
-  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
-  paint.setFlags(paint_bits.bitfields.flags);
-  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-  paint.setStrokeWidth(c.stroke_width);
-  paint.setStrokeMiter(c.miter_limit);
-  paint.setColor(c.color);
-  paint.setBlendMode((SkBlendMode)c.blend_mode);
-  if (sk_shader_.get()) {
-    paint.setShader(sk_shader_);
-    sk_shader_.reset();
-  }
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                  c.blend_mode, c.paint_bits);
   canvas_->drawRRect(rrect, paint);
 
   return error::kNoError;
@@ -19341,21 +19311,8 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImage(uint32_t immediate_data_siz
 
   SkPaint paint;
   if (c.use_paint) {
-    CdlPaintBits paint_bits;
-    paint_bits.bitfields_uint = c.paint_bits;
-    paint.setFlags(paint_bits.bitfields.flags);
-    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-    paint.setStrokeWidth(c.stroke_width);
-    paint.setStrokeMiter(c.miter_limit);
-    paint.setColor(c.color);
-    paint.setBlendMode((SkBlendMode)c.blend_mode);
-    if (sk_shader_.get()) {
-      paint.setShader(sk_shader_);
-      sk_shader_.reset();
-    }
+    FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                    c.blend_mode, c.paint_bits);
   }
 
   canvas_->drawImage(inflator_.getImage(c.image_id), c.x, c.y, c.use_paint ? &paint : 0);
@@ -19377,21 +19334,8 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawImageRect(uint32_t immediate_data
   SkRect dst_rect = SkRect::MakeLTRB(c.d_left, c.d_top, c.d_right, c.d_bottom);
   SkPaint paint;
   if (c.use_paint) {
-    CdlPaintBits paint_bits;
-    paint_bits.bitfields_uint = c.paint_bits;
-    paint.setFlags(paint_bits.bitfields.flags);
-    paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-    paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-    paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-    paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-    paint.setStrokeWidth(c.stroke_width);
-    paint.setStrokeMiter(c.miter_limit);
-    paint.setColor(c.color);
-    paint.setBlendMode((SkBlendMode)c.blend_mode);
-    if (sk_shader_.get()) {
-      paint.setShader(sk_shader_);
-      sk_shader_.reset();
-    }
+    FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                    c.blend_mode, c.paint_bits);
   }
 
   if (c.use_src) {
@@ -19422,22 +19366,9 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawTextBlob(uint32_t immediate_data_
           const volatile gles2::cmds::CanvasDrawTextBlob*>(
           cmd_data);
 
-  CdlPaintBits paint_bits;
-  paint_bits.bitfields_uint = c.paint_bits;
   SkPaint paint;
-  paint.setFlags(paint_bits.bitfields.flags);
-  paint.setStrokeCap((SkPaint::Cap)paint_bits.bitfields.cap_type);
-  paint.setStrokeJoin((SkPaint::Join)paint_bits.bitfields.join_type);
-  paint.setStyle((SkPaint::Style)paint_bits.bitfields.style);
-  paint.setFilterQuality((SkFilterQuality)paint_bits.bitfields.filter_quality);
-  paint.setStrokeWidth(c.stroke_width);
-  paint.setStrokeMiter(c.miter_limit);
-  paint.setColor(c.color);
-  paint.setBlendMode((SkBlendMode)c.blend_mode);
-  if (sk_shader_.get()) {
-    paint.setShader(sk_shader_);
-    sk_shader_.reset();
-  }
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color,
+                  c.blend_mode, c.paint_bits);
 
   canvas_->drawTextBlob(inflator_.getTextBlob(c.blob_id), c.x, c.y, paint);
 
