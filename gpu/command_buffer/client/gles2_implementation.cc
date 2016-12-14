@@ -367,7 +367,6 @@ void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
 }
 
 void GLES2Implementation::CanvasNewImage(const SkImage* image) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
   SkImageInfo decoded_info = SkImageInfo::Make(
       image->width(), image->height(), kN32_SkColorType, kPremul_SkAlphaType);
 
@@ -375,10 +374,14 @@ void GLES2Implementation::CanvasNewImage(const SkImage* image) {
       decoded_info.minRowBytes() * decoded_info.height(), helper_,
       transfer_buffer_);
 
-  bool result = image->readPixels(decoded_info, buffer.address(),
-                                  decoded_info.minRowBytes(), 0, 0,
-                                  SkImage::kDisallow_CachingHint);
-  (void)result;
+  if (!image->isTextureBacked()) {
+    bool result = image->readPixels(decoded_info, buffer.address(),
+                                    decoded_info.minRowBytes(), 0, 0,
+                                    SkImage::kDisallow_CachingHint);
+    (void)result;
+  } else {
+    // Get backend texture
+  }
 
   helper_->CanvasNewImage(image->uniqueID(), decoded_info.width(),
                           decoded_info.height(), decoded_info.minRowBytes(),
@@ -386,7 +389,6 @@ void GLES2Implementation::CanvasNewImage(const SkImage* image) {
 }
 
 void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
   SkBinaryWriteBuffer writer;
   writer.setDeduper(&canvas_deduper_);
   blob->flatten(writer);
@@ -399,8 +401,6 @@ void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
 }
 
 void GLES2Implementation::CanvasNewPath(const SkPath* path) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-
   size_t size = path->writeToMemory(0);
   ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
   path->writeToMemory(buffer.address());
@@ -416,7 +416,6 @@ static sk_sp<SkData> encode(SkTypeface* tf) {
 }
 
 void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
   sk_sp<SkData> data = encode(typeface);
   ScopedTransferBufferPtr buffer(data->size(), helper_, transfer_buffer_);
   memcpy(buffer.address(), data->data(), data->size());
