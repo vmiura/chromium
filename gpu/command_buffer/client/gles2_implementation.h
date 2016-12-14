@@ -150,12 +150,22 @@ class GLES2_IMPL_EXPORT GLES2Implementation
     int findOrDefineTextBlob(const SkTextBlob*);
     int findOrDefinePath(const SkPath*);
 
+    struct CacheRecord {
+      CacheRecord(int id, int size)
+       : id(id), size(size) {}
+      int id;
+      int size;
+    };
+
    private:
     GLES2Implementation* gl_;
     std::unordered_set<int> images_;
     std::unordered_set<int> paths_;
     std::unordered_set<int> text_blobs_;
     std::unordered_set<int> typefaces_;
+
+    std::deque<CacheRecord> image_records_;
+    int image_total_size_ = 0;
   };
 
   CanvasDeduper canvas_deduper_;
