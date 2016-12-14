@@ -128,6 +128,21 @@ int GLES2Implementation::CanvasDeduper::findOrDefineImage(SkImage* image) {
   int unique_id = image->uniqueID();
   auto it = images_.find(unique_id);
   if (it == images_.end()) {
+    SkImageInfo decoded_info = SkImageInfo::Make(
+        image->width(), image->height(), kN32_SkColorType, kPremul_SkAlphaType);
+    int image_size = decoded_info.minRowBytes() * decoded_info.height();
+
+    // Delete least recently created images until we're under a budget.
+    while (image_total_size_ &&
+           image_total_size_ + image_size > 128 * 1024 * 1024) {
+      images_.erase(image_records_.front().id);
+      image_total_size_ -= image_records_.front().size;
+      gl_->CanvasDeleteImage(unique_id);
+    }
+
+    // Save record for this image.
+    image_records_.emplace_back(unique_id, image_size);
+    image_total_size_ += image_size;
     images_.insert(unique_id);
     gl_->CanvasNewImage(image);
   }

@@ -3441,6 +3441,14 @@ void CanvasNewImage(GLuint image_id,
   }
 }
 
+void CanvasDeleteImage(int image_id) {
+  gles2::cmds::CanvasDeleteImage* c =
+      GetCmdSpace<gles2::cmds::CanvasDeleteImage>();
+  if (c) {
+    c->Init(image_id);
+  }
+}
+
 void CanvasNewTextBlob(GLuint blob_id,
                        GLsizeiptr shm_size,
                        uint32_t shm_id,

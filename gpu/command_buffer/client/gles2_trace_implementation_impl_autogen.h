@@ -2624,6 +2624,11 @@ void GLES2TraceImplementation::CanvasNewImage(const SkImage* image) {
   gl_->CanvasNewImage(image);
 }
 
+void GLES2TraceImplementation::CanvasDeleteImage(int image_id) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDeleteImage");
+  gl_->CanvasDeleteImage(image_id);
+}
+
 void GLES2TraceImplementation::CanvasNewTextBlob(const SkTextBlob* blob) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewTextBlob");
   gl_->CanvasNewTextBlob(blob);

@@ -16950,6 +16950,39 @@ static_assert(offsetof(CanvasNewImage, shm_id) == 24,
 static_assert(offsetof(CanvasNewImage, shm_offset) == 28,
               "offset of CanvasNewImage shm_offset should be 28");
 
+struct CanvasDeleteImage {
+  typedef CanvasDeleteImage ValueType;
+  static const CommandId kCmdId = kCanvasDeleteImage;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(int _image_id) {
+    SetHeader();
+    image_id = _image_id;
+  }
+
+  void* Set(void* cmd, int _image_id) {
+    static_cast<ValueType*>(cmd)->Init(_image_id);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t image_id;
+};
+
+static_assert(sizeof(CanvasDeleteImage) == 8,
+              "size of CanvasDeleteImage should be 8");
+static_assert(offsetof(CanvasDeleteImage, header) == 0,
+              "offset of CanvasDeleteImage header should be 0");
+static_assert(offsetof(CanvasDeleteImage, image_id) == 4,
+              "offset of CanvasDeleteImage image_id should be 4");
+
 struct CanvasNewTextBlob {
   typedef CanvasNewTextBlob ValueType;
   static const CommandId kCmdId = kCanvasNewTextBlob;

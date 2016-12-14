@@ -572,6 +572,10 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       images_.insert({id, std::move(image)});
     }
 
+    void removeImage(int id) {
+      images_.erase(id);
+    }
+
     void addPath(int id, std::unique_ptr<SkPath> path) {
       paths_.insert({id, std::move(path)});
     }
@@ -19063,16 +19067,23 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
   sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
       gr_context_.get(), desc, nullptr, &surface_props);
   canvas_ = sk_surface_->getCanvas();
+  canvas_->clear(0xffff0000);
 
   return error::kNoError;
 }
 
 error::Error GLES2DecoderImpl::HandleCanvasEnd(uint32_t immediate_data_size,
                                                const volatile void* cmd_data) {
+  canvas_->flush();
   if (sk_surface_.get()) {
     sk_surface_->prepareForExternalIO();
     sk_surface_.reset();
   }
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+  while (glGetError() != GL_NO_ERROR)
+    LOG(ERROR) << "Gog GL Error in Skia";
 
   // Invalidate virtual state
   RestoreState(nullptr);
@@ -19384,6 +19395,16 @@ error::Error GLES2DecoderImpl::HandleCanvasNewImage(
                      SkImage::MakeTextureFromPixmap(gr_context_.get(), pixmap,
                                                     SkBudgeted::kNo));
 
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasDeleteImage(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasDeleteImage& c =
+      *static_cast<const volatile gles2::cmds::CanvasDeleteImage*>(cmd_data);
+
+  inflator_.removeImage(c.image_id);
   return error::kNoError;
 }
 

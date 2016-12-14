@@ -2884,6 +2884,13 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasDeleteImage': {
+    'type': 'Custom',
+    'impl_func': True,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasNewTextBlob': {
     'type': 'Custom',
     'cmd_args': 'GLuint blob_id, GLsizeiptr shm_size, '

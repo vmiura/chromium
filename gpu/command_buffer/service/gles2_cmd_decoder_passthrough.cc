@@ -912,6 +912,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewImage(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDeleteImage(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewTextBlob(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

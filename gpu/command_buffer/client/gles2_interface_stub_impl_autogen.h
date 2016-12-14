@@ -1217,6 +1217,7 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
                                             GLfloat /* y */,
                                             const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
+void GLES2InterfaceStub::CanvasDeleteImage(int /* image_id */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}
 void GLES2InterfaceStub::CanvasNewPath(const SkPath* /* path */) {}
 void GLES2InterfaceStub::CanvasNewTypeface(SkTypeface* /* typeface */) {}

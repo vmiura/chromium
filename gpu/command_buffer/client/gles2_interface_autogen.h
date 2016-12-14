@@ -935,6 +935,7 @@ virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
                                 GLfloat y,
                                 const SkPaint& paint) = 0;
 virtual void CanvasNewImage(const SkImage* image) = 0;
+virtual void CanvasDeleteImage(int image_id) = 0;
 virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;
 virtual void CanvasNewPath(const SkPath* path) = 0;
 virtual void CanvasNewTypeface(SkTypeface* typeface) = 0;

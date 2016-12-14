@@ -1801,6 +1801,9 @@ void GL_APIENTRY GLES2CanvasDrawTextBlob(const SkTextBlob* blob,
 void GL_APIENTRY GLES2CanvasNewImage(const SkImage* image) {
   gles2::GetGLContext()->CanvasNewImage(image);
 }
+void GL_APIENTRY GLES2CanvasDeleteImage(int image_id) {
+  gles2::GetGLContext()->CanvasDeleteImage(image_id);
+}
 void GL_APIENTRY GLES2CanvasNewTextBlob(const SkTextBlob* blob) {
   gles2::GetGLContext()->CanvasNewTextBlob(blob);
 }
@@ -3194,6 +3197,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasNewImage",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasNewImage),
+    },
+    {
+        "glCanvasDeleteImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDeleteImage),
     },
     {
         "glCanvasNewTextBlob",

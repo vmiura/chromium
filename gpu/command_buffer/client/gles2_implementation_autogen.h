@@ -1268,6 +1268,8 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
 
 void CanvasNewImage(const SkImage* image) override;
 
+void CanvasDeleteImage(int image_id) override;
+
 void CanvasNewTextBlob(const SkTextBlob* blob) override;
 
 void CanvasNewPath(const SkPath* path) override;

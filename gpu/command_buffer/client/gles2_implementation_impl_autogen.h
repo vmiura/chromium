@@ -3573,4 +3573,12 @@ void GLES2Implementation::CanvasTranslate(GLfloat tx, GLfloat ty) {
   CheckGLError();
 }
 
+void GLES2Implementation::CanvasDeleteImage(int image_id) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasDeleteImage(" << image_id
+                     << ")");
+  helper_->CanvasDeleteImage(image_id);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_
