@@ -2565,51 +2565,27 @@ void GLES2TraceImplementation::CanvasClipPath(const SkPath& p,
   gl_->CanvasClipPath(p, clip_op, antialias);
 }
 
-void GLES2TraceImplementation::CanvasDrawPaint(GLfloat stroke_width,
-                                               GLfloat miter_limit,
-                                               GLuint color,
-                                               GLuint blend_mode,
-                                               GLuint paint_bits) {
+void GLES2TraceImplementation::CanvasDrawPaint(const CdlPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawPaint");
-  gl_->CanvasDrawPaint(stroke_width, miter_limit, color, blend_mode,
-                       paint_bits);
+  gl_->CanvasDrawPaint(paint);
 }
 
-void GLES2TraceImplementation::CanvasDrawRect(GLfloat left,
-                                              GLfloat top,
-                                              GLfloat right,
-                                              GLfloat bottom,
-                                              GLfloat stroke_width,
-                                              GLfloat miter_limit,
-                                              GLuint color,
-                                              GLuint blend_mode,
-                                              GLuint paint_bits) {
+void GLES2TraceImplementation::CanvasDrawRect(const SkRect& r,
+                                              const CdlPaint& panint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRect");
-  gl_->CanvasDrawRect(left, top, right, bottom, stroke_width, miter_limit,
-                      color, blend_mode, paint_bits);
+  gl_->CanvasDrawRect(r, panint);
 }
 
-void GLES2TraceImplementation::CanvasDrawRRect(GLfloat left,
-                                               GLfloat top,
-                                               GLfloat right,
-                                               GLfloat bottom,
-                                               GLfloat r0_x,
-                                               GLfloat r0_y,
-                                               GLfloat r1_x,
-                                               GLfloat r1_y,
-                                               GLfloat r2_x,
-                                               GLfloat r2_y,
-                                               GLfloat r3_x,
-                                               GLfloat r3_y,
-                                               GLfloat stroke_width,
-                                               GLfloat miter_limit,
-                                               GLuint color,
-                                               GLuint blend_mode,
-                                               GLuint paint_bits) {
+void GLES2TraceImplementation::CanvasDrawOval(const SkRect& r,
+                                              const CdlPaint& panint) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawOval");
+  gl_->CanvasDrawOval(r, panint);
+}
+
+void GLES2TraceImplementation::CanvasDrawRRect(const SkRRect& r,
+                                               const CdlPaint& panint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRRect");
-  gl_->CanvasDrawRRect(left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x,
-                       r2_y, r3_x, r3_y, stroke_width, miter_limit, color,
-                       blend_mode, paint_bits);
+  gl_->CanvasDrawRRect(r, panint);
 }
 
 void GLES2TraceImplementation::CanvasDrawPath(const SkPath& path,

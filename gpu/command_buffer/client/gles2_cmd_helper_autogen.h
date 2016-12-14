@@ -3317,6 +3317,22 @@ void CanvasDrawRect(GLfloat left,
   }
 }
 
+void CanvasDrawOval(GLfloat left,
+                    GLfloat top,
+                    GLfloat right,
+                    GLfloat bottom,
+                    GLfloat stroke_width,
+                    GLfloat miter_limit,
+                    GLuint color,
+                    GLuint blend_mode,
+                    GLuint paint_bits) {
+  gles2::cmds::CanvasDrawOval* c = GetCmdSpace<gles2::cmds::CanvasDrawOval>();
+  if (c) {
+    c->Init(left, top, right, bottom, stroke_width, miter_limit, color,
+            blend_mode, paint_bits);
+  }
+}
+
 void CanvasDrawRRect(GLfloat left,
                      GLfloat top,
                      GLfloat right,

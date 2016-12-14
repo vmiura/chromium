@@ -16301,6 +16301,90 @@ static_assert(offsetof(CanvasDrawRect, blend_mode) == 32,
 static_assert(offsetof(CanvasDrawRect, paint_bits) == 36,
               "offset of CanvasDrawRect paint_bits should be 36");
 
+struct CanvasDrawOval {
+  typedef CanvasDrawOval ValueType;
+  static const CommandId kCmdId = kCanvasDrawOval;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _left,
+            GLfloat _top,
+            GLfloat _right,
+            GLfloat _bottom,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    SetHeader();
+    left = _left;
+    top = _top;
+    right = _right;
+    bottom = _bottom;
+    stroke_width = _stroke_width;
+    miter_limit = _miter_limit;
+    color = _color;
+    blend_mode = _blend_mode;
+    paint_bits = _paint_bits;
+  }
+
+  void* Set(void* cmd,
+            GLfloat _left,
+            GLfloat _top,
+            GLfloat _right,
+            GLfloat _bottom,
+            GLfloat _stroke_width,
+            GLfloat _miter_limit,
+            GLuint _color,
+            GLuint _blend_mode,
+            GLuint _paint_bits) {
+    static_cast<ValueType*>(cmd)->Init(_left, _top, _right, _bottom,
+                                       _stroke_width, _miter_limit, _color,
+                                       _blend_mode, _paint_bits);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float left;
+  float top;
+  float right;
+  float bottom;
+  float stroke_width;
+  float miter_limit;
+  uint32_t color;
+  uint32_t blend_mode;
+  uint32_t paint_bits;
+};
+
+static_assert(sizeof(CanvasDrawOval) == 40,
+              "size of CanvasDrawOval should be 40");
+static_assert(offsetof(CanvasDrawOval, header) == 0,
+              "offset of CanvasDrawOval header should be 0");
+static_assert(offsetof(CanvasDrawOval, left) == 4,
+              "offset of CanvasDrawOval left should be 4");
+static_assert(offsetof(CanvasDrawOval, top) == 8,
+              "offset of CanvasDrawOval top should be 8");
+static_assert(offsetof(CanvasDrawOval, right) == 12,
+              "offset of CanvasDrawOval right should be 12");
+static_assert(offsetof(CanvasDrawOval, bottom) == 16,
+              "offset of CanvasDrawOval bottom should be 16");
+static_assert(offsetof(CanvasDrawOval, stroke_width) == 20,
+              "offset of CanvasDrawOval stroke_width should be 20");
+static_assert(offsetof(CanvasDrawOval, miter_limit) == 24,
+              "offset of CanvasDrawOval miter_limit should be 24");
+static_assert(offsetof(CanvasDrawOval, color) == 28,
+              "offset of CanvasDrawOval color should be 28");
+static_assert(offsetof(CanvasDrawOval, blend_mode) == 32,
+              "offset of CanvasDrawOval blend_mode should be 32");
+static_assert(offsetof(CanvasDrawOval, paint_bits) == 36,
+              "offset of CanvasDrawOval paint_bits should be 36");
+
 struct CanvasDrawRRect {
   typedef CanvasDrawRRect ValueType;
   static const CommandId kCmdId = kCanvasDrawRRect;

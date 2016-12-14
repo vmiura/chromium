@@ -170,6 +170,7 @@ void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds,
                                           const CdlPaint* fPaint,
                                           const SkImageFilter* fBackdrop,
                                           GLuint fSaveLayerFlags) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
   helper_->CanvasSaveLayer(
       fBounds != 0, fPaint != 0, fBackdrop != 0, fBounds ? fBounds->left() : 0,
       fBounds ? fBounds->top() : 0, fBounds ? fBounds->right() : 0,
@@ -182,12 +183,14 @@ void GLES2Implementation::CanvasSaveLayer(const SkRect* fBounds,
 
 void GLES2Implementation::CanvasClipRect(const SkRect& r, GLuint op,
                                          GLboolean antialias) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
   helper_->CanvasClipRect(r.left(), r.top(), r.right(), r.bottom(), op,
                           antialias);
 }
 
 void GLES2Implementation::CanvasClipRRect(const SkRRect& r, GLuint op,
                                          GLboolean antialias) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
   helper_->CanvasClipRRect(r.rect().left(), r.rect().top(), r.rect().right(),
                            r.rect().bottom(),
                            r.radii(SkRRect::kUpperLeft_Corner).x(),
@@ -204,8 +207,82 @@ void GLES2Implementation::CanvasClipRRect(const SkRRect& r, GLuint op,
 
 void GLES2Implementation::CanvasClipPath(const SkPath& p, GLuint op,
                                          GLboolean antialias) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
   int path_id = canvas_deduper_.findOrDefinePath(&p);
   helper_->CanvasClipPath(path_id, op, antialias);
+}
+
+void GLES2Implementation::CanvasDrawPaint(const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  helper_->CanvasDrawPaint(paint.getStrokeWidth(), paint.getStrokeMiter(),
+                           paint.getColor(), (unsigned)paint.getBlendMode(),
+                           GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasDrawRect(const SkRect& r, const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  helper_->CanvasDrawRect(r.left(), r.top(), r.right(), r.bottom(),
+                          paint.getStrokeWidth(), paint.getStrokeMiter(),
+                          paint.getColor(), (unsigned)paint.getBlendMode(),
+                          GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasDrawOval(const SkRect& r, const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  helper_->CanvasDrawOval(r.left(), r.top(), r.right(), r.bottom(),
+                          paint.getStrokeWidth(), paint.getStrokeMiter(),
+                          paint.getColor(), (unsigned)paint.getBlendMode(),
+                          GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasDrawRRect(const SkRRect& r, const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  helper_->CanvasDrawRRect(r.rect().left(),
+                           r.rect().top(),
+                           r.rect().right(),
+                           r.rect().bottom(),
+                           r.radii(SkRRect::kUpperLeft_Corner).x(),
+                           r.radii(SkRRect::kUpperLeft_Corner).y(),
+                           r.radii(SkRRect::kUpperRight_Corner).x(),
+                           r.radii(SkRRect::kUpperRight_Corner).y(),
+                           r.radii(SkRRect::kLowerRight_Corner).x(),
+                           r.radii(SkRRect::kLowerRight_Corner).y(),
+                           r.radii(SkRRect::kLowerLeft_Corner).x(),
+                           r.radii(SkRRect::kLowerLeft_Corner).y(),
+                           paint.getStrokeWidth(), paint.getStrokeMiter(),
+                           paint.getColor(), (unsigned)paint.getBlendMode(),
+                           GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasDrawPath(const SkPath& path, const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  int path_id = canvas_deduper_.findOrDefinePath(&path);
+  helper_->CanvasDrawPath(
+      path_id, paint.getStrokeWidth(), paint.getStrokeMiter(),
+      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
+}
+
+void GLES2Implementation::CanvasDrawTextBlob(const SkTextBlob* blob,
+                                             GLfloat x,
+                                             GLfloat y,
+                                             const CdlPaint& paint) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  if (paint.getShader())
+    paint.getShader()->setupShader(this);
+  int blob_id = canvas_deduper_.findOrDefineTextBlob(blob);
+  helper_->CanvasDrawTextBlob(
+      blob_id, x, y, paint.getStrokeWidth(), paint.getStrokeMiter(),
+      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
 }
 
 void GLES2Implementation::CanvasDrawImage(const SkImage* image,
@@ -213,7 +290,6 @@ void GLES2Implementation::CanvasDrawImage(const SkImage* image,
                                           GLfloat y,
                                           const CdlPaint* paint) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-
   int image_id = canvas_deduper_.findOrDefineImage(const_cast<SkImage*>(image));
 
   if (paint) {
@@ -234,6 +310,7 @@ void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
                                               const SkRect& dst,
                                               const CdlPaint* paint,
                                               GLboolean strict) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
   GLboolean use_src, use_paint;
   GLfloat stroke_width, miter_limit;
   GLuint color, blend_mode, paint_bits;
@@ -269,27 +346,6 @@ void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
       src_rect.right(), src_rect.bottom(), dst.left(), dst.top(), dst.right(),
       dst.bottom(), use_paint, stroke_width, miter_limit, color, blend_mode,
       paint_bits);
-}
-
-void GLES2Implementation::CanvasDrawPath(const SkPath& path, const CdlPaint& paint) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-
-  int path_id = canvas_deduper_.findOrDefinePath(&path);
-  helper_->CanvasDrawPath(
-      path_id, paint.getStrokeWidth(), paint.getStrokeMiter(),
-      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
-}
-
-void GLES2Implementation::CanvasDrawTextBlob(const SkTextBlob* blob,
-                                             GLfloat x,
-                                             GLfloat y,
-                                             const CdlPaint& paint) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-
-  int blob_id = canvas_deduper_.findOrDefineTextBlob(blob);
-  helper_->CanvasDrawTextBlob(
-      blob_id, x, y, paint.getStrokeWidth(), paint.getStrokeMiter(),
-      paint.getColor(), (unsigned)paint.getBlendMode(), GetPaintBits(paint));
 }
 
 void GLES2Implementation::CanvasNewImage(const SkImage* image) {
@@ -352,33 +408,6 @@ void GLES2Implementation::CanvasNewTypeface(SkTypeface* typeface) {
 }
 
 void GLES2Implementation::CanvasSetGradientShader(const SkShader* shader) {
-  /*
-  enum GradientType {
-      kNone_GradientType,
-      kColor_GradientType,
-      kLinear_GradientType,
-      kRadial_GradientType,
-      kSweep_GradientType,
-      kConical_GradientType,
-      kLast_GradientType = kConical_GradientType
-  };
-
-  struct GradientInfo {
-      int         fColorCount;    //!< In-out parameter, specifies passed size
-                                  //   of fColors/fColorOffsets on input, and
-                                  //   actual number of colors/offsets on
-                                  //   output.
-      SkColor*    fColors;        //!< The colors in the gradient.
-      SkScalar*   fColorOffsets;  //!< The unit offset for color transitions.
-      SkPoint     fPoint[2];      //!< Type specific, see above.
-      SkScalar    fRadius[2];     //!< Type specific, see above.
-      TileMode    fTileMode;      //!< The tile mode used.
-      uint32_t    fGradientFlags; //!< see SkGradientShader::Flags
-  };
-
-  virtual GradientType asAGradient(GradientInfo* info) const;
-  */
-
   SkShader::GradientInfo info;
   memset(&info, 0, sizeof(info));
   SkShader::GradientType type = shader->asAGradient(&info);

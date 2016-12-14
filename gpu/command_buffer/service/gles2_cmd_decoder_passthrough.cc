@@ -936,30 +936,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasTranslate(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPaint(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPath(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRRect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipRect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -977,6 +953,37 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasClipPath(
     const volatile void* cmd_data) {
   return error::kNoError;
 }
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPaint(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawOval(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawRRect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawPath(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 ///
 
 const GLES2DecoderPassthroughImpl::CommandInfo

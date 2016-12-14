@@ -890,37 +890,10 @@ void CanvasClipRRect(const SkRRect& r,
 void CanvasClipPath(const SkPath& p,
                     GLuint clip_op,
                     GLboolean antialias) override;
-void CanvasDrawPaint(GLfloat stroke_width,
-                     GLfloat miter_limit,
-                     GLuint color,
-                     GLuint blend_mode,
-                     GLuint paint_bits) override;
-void CanvasDrawRect(GLfloat left,
-                    GLfloat top,
-                    GLfloat right,
-                    GLfloat bottom,
-                    GLfloat stroke_width,
-                    GLfloat miter_limit,
-                    GLuint color,
-                    GLuint blend_mode,
-                    GLuint paint_bits) override;
-void CanvasDrawRRect(GLfloat left,
-                     GLfloat top,
-                     GLfloat right,
-                     GLfloat bottom,
-                     GLfloat r0_x,
-                     GLfloat r0_y,
-                     GLfloat r1_x,
-                     GLfloat r1_y,
-                     GLfloat r2_x,
-                     GLfloat r2_y,
-                     GLfloat r3_x,
-                     GLfloat r3_y,
-                     GLfloat stroke_width,
-                     GLfloat miter_limit,
-                     GLuint color,
-                     GLuint blend_mode,
-                     GLuint paint_bits) override;
+void CanvasDrawPaint(const CdlPaint& paint) override;
+void CanvasDrawRect(const SkRect& r, const CdlPaint& panint) override;
+void CanvasDrawOval(const SkRect& r, const CdlPaint& panint) override;
+void CanvasDrawRRect(const SkRRect& r, const CdlPaint& panint) override;
 void CanvasDrawPath(const SkPath& path, const CdlPaint& paint) override;
 void CanvasDrawImage(const SkImage* image,
                      GLfloat left,

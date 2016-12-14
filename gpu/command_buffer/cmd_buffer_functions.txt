@@ -376,15 +376,20 @@ GL_APICALL void         GL_APIENTRY glCanvasClipRect (const SkRect& r, GLuint cl
 GL_APICALL void         GL_APIENTRY glCanvasClipRRect (const SkRRect& r, GLuint clip_op, GLboolean antialias);
 GL_APICALL void         GL_APIENTRY glCanvasClipPath (const SkPath& p, GLuint clip_op, GLboolean antialias);
 
-GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
-GL_APICALL void         GL_APIENTRY glCanvasDrawRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
-GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (GLfloat left, GLfloat top, GLfloat right, GLfloat bottom, GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y, GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y, GLfloat stroke_width, GLfloat miter_limit, GLuint color, GLuint blend_mode, GLuint paint_bits);
+GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (const CdlPaint& paint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRect (const SkRect& r, const CdlPaint& panint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawOval (const SkRect& r, const CdlPaint& panint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (const SkRRect& r, const CdlPaint& panint);
+// TODO: DrawDRRect
 GL_APICALL void         GL_APIENTRY glCanvasDrawPath (const SkPath& path, const CdlPaint& paint);
 
 GL_APICALL void         GL_APIENTRY glCanvasDrawImage (const SkImage* image, GLfloat left, GLfloat top, const CdlPaint* paint);
 GL_APICALL void         GL_APIENTRY glCanvasDrawImageRect (const SkImage* image, const SkRect* src, const SkRect& dst, const CdlPaint* paint, GLboolean strict);
 
+// TODO: drawText
+// TODO: drawPosText
 GL_APICALL void         GL_APIENTRY glCanvasDrawTextBlob (const SkTextBlob* blob, GLfloat x, GLfloat y, const CdlPaint& paint);
+// TODO: drawPoints
 
 GL_APICALL void         GL_APIENTRY glCanvasNewImage (const SkImage* image);
 GL_APICALL void         GL_APIENTRY glCanvasNewTextBlob (const SkTextBlob* blob);

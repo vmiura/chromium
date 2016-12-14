@@ -916,37 +916,10 @@ virtual void CanvasClipRRect(const SkRRect& r,
 virtual void CanvasClipPath(const SkPath& p,
                             GLuint clip_op,
                             GLboolean antialias) = 0;
-virtual void CanvasDrawPaint(GLfloat stroke_width,
-                             GLfloat miter_limit,
-                             GLuint color,
-                             GLuint blend_mode,
-                             GLuint paint_bits) = 0;
-virtual void CanvasDrawRect(GLfloat left,
-                            GLfloat top,
-                            GLfloat right,
-                            GLfloat bottom,
-                            GLfloat stroke_width,
-                            GLfloat miter_limit,
-                            GLuint color,
-                            GLuint blend_mode,
-                            GLuint paint_bits) = 0;
-virtual void CanvasDrawRRect(GLfloat left,
-                             GLfloat top,
-                             GLfloat right,
-                             GLfloat bottom,
-                             GLfloat r0_x,
-                             GLfloat r0_y,
-                             GLfloat r1_x,
-                             GLfloat r1_y,
-                             GLfloat r2_x,
-                             GLfloat r2_y,
-                             GLfloat r3_x,
-                             GLfloat r3_y,
-                             GLfloat stroke_width,
-                             GLfloat miter_limit,
-                             GLuint color,
-                             GLuint blend_mode,
-                             GLuint paint_bits) = 0;
+virtual void CanvasDrawPaint(const CdlPaint& paint) = 0;
+virtual void CanvasDrawRect(const SkRect& r, const CdlPaint& panint) = 0;
+virtual void CanvasDrawOval(const SkRect& r, const CdlPaint& panint) = 0;
+virtual void CanvasDrawRRect(const SkRRect& r, const CdlPaint& panint) = 0;
 virtual void CanvasDrawPath(const SkPath& path, const CdlPaint& paint) = 0;
 virtual void CanvasDrawImage(const SkImage* image,
                              GLfloat left,

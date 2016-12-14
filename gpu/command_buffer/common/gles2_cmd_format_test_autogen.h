@@ -5441,6 +5441,28 @@ TEST_F(GLES2FormatTest, CanvasDrawRect) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasDrawOval) {
+  cmds::CanvasDrawOval& cmd = *GetBufferAs<cmds::CanvasDrawOval>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLfloat>(11),
+                           static_cast<GLfloat>(12), static_cast<GLfloat>(13),
+                           static_cast<GLfloat>(14), static_cast<GLfloat>(15),
+                           static_cast<GLfloat>(16), static_cast<GLuint>(17),
+                           static_cast<GLuint>(18), static_cast<GLuint>(19));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasDrawOval::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLfloat>(11), cmd.left);
+  EXPECT_EQ(static_cast<GLfloat>(12), cmd.top);
+  EXPECT_EQ(static_cast<GLfloat>(13), cmd.right);
+  EXPECT_EQ(static_cast<GLfloat>(14), cmd.bottom);
+  EXPECT_EQ(static_cast<GLfloat>(15), cmd.stroke_width);
+  EXPECT_EQ(static_cast<GLfloat>(16), cmd.miter_limit);
+  EXPECT_EQ(static_cast<GLuint>(17), cmd.color);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.blend_mode);
+  EXPECT_EQ(static_cast<GLuint>(19), cmd.paint_bits);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasDrawRRect) {
   cmds::CanvasDrawRRect& cmd = *GetBufferAs<cmds::CanvasDrawRRect>();
   void* next_cmd = cmd.Set(&cmd, static_cast<GLfloat>(11),

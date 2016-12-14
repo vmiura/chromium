@@ -114,44 +114,31 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
   }
 
   void onDrawPaint(CdlPaint const& paint) override {
-    if (paint.getShader())
-      paint.getShader()->setupShader(gl_);
-    gl_->CanvasDrawPaint(paint.getStrokeWidth(), paint.getStrokeMiter(),
-                         paint.getColor(), (unsigned)paint.getBlendMode(),
-                         GetPaintBits(paint));
+    gl_->CanvasDrawPaint(paint);
   }
 
   void onDrawRect(const SkRect& r, const CdlPaint& paint) override {
-    if (paint.getShader())
-      paint.getShader()->setupShader(gl_);
-    gl_->CanvasDrawRect(r.left(), r.top(), r.right(), r.bottom(),
-                        paint.getStrokeWidth(), paint.getStrokeMiter(),
-                        paint.getColor(), (unsigned)paint.getBlendMode(),
-                        GetPaintBits(paint));
+    gl_->CanvasDrawRect(r, paint);
   }
 
-  // void setRectRadii(const SkRect& rect, const SkVector radii[4]);
+  void onDrawOval(const SkRect& r, const CdlPaint& paint) override {
+    gl_->CanvasDrawOval(r, paint);
+  }
 
   void onDrawRRect(const SkRRect& r, const CdlPaint& paint) override {
-    if (paint.getShader())
-      paint.getShader()->setupShader(gl_);
-    gl_->CanvasDrawRRect(
-        r.rect().left(), r.rect().top(), r.rect().right(), r.rect().bottom(),
-        r.radii(SkRRect::kUpperLeft_Corner).x(),
-        r.radii(SkRRect::kUpperLeft_Corner).y(),
-        r.radii(SkRRect::kUpperRight_Corner).x(),
-        r.radii(SkRRect::kUpperRight_Corner).y(),
-        r.radii(SkRRect::kLowerRight_Corner).x(),
-        r.radii(SkRRect::kLowerRight_Corner).y(),
-        r.radii(SkRRect::kLowerLeft_Corner).x(),
-        r.radii(SkRRect::kLowerLeft_Corner).y(), paint.getStrokeWidth(),
-        paint.getStrokeMiter(), paint.getColor(),
-        (unsigned)paint.getBlendMode(), GetPaintBits(paint));
+    gl_->CanvasDrawRRect(r, paint);
   }
 
   void onDrawPath(const SkPath& path,
                   const CdlPaint& paint) override {
     gl_->CanvasDrawPath(path, paint);
+  }
+
+  void onDrawTextBlob(const SkTextBlob* blob,
+                      SkScalar x,
+                      SkScalar y,
+                      const CdlPaint& paint) override {
+    gl_->CanvasDrawTextBlob(blob, x, y, paint);
   }
 
   void onDrawImage(const SkImage* image,
@@ -168,15 +155,6 @@ class CdlCommandBufferCanvas : public CdlNoDrawCanvas {
                        SkCanvas::SrcRectConstraint constraint) override {
     gl_->CanvasDrawImageRect(image, src, dst, paint,
                              constraint == SkCanvas::kStrict_SrcRectConstraint);
-  }
-
-  void onDrawTextBlob(const SkTextBlob* blob,
-                      SkScalar x,
-                      SkScalar y,
-                      const CdlPaint& paint) override {
-    if (paint.getShader())
-      paint.getShader()->setupShader(gl_);
-    gl_->CanvasDrawTextBlob(blob, x, y, paint);
   }
 
   gpu::gles2::GLES2Interface* gl_;

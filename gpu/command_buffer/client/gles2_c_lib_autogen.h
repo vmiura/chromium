@@ -1764,47 +1764,18 @@ void GL_APIENTRY GLES2CanvasClipPath(const SkPath& p,
                                      GLboolean antialias) {
   gles2::GetGLContext()->CanvasClipPath(p, clip_op, antialias);
 }
-void GL_APIENTRY GLES2CanvasDrawPaint(GLfloat stroke_width,
-                                      GLfloat miter_limit,
-                                      GLuint color,
-                                      GLuint blend_mode,
-                                      GLuint paint_bits) {
-  gles2::GetGLContext()->CanvasDrawPaint(stroke_width, miter_limit, color,
-                                         blend_mode, paint_bits);
+void GL_APIENTRY GLES2CanvasDrawPaint(const CdlPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawPaint(paint);
 }
-void GL_APIENTRY GLES2CanvasDrawRect(GLfloat left,
-                                     GLfloat top,
-                                     GLfloat right,
-                                     GLfloat bottom,
-                                     GLfloat stroke_width,
-                                     GLfloat miter_limit,
-                                     GLuint color,
-                                     GLuint blend_mode,
-                                     GLuint paint_bits) {
-  gles2::GetGLContext()->CanvasDrawRect(left, top, right, bottom, stroke_width,
-                                        miter_limit, color, blend_mode,
-                                        paint_bits);
+void GL_APIENTRY GLES2CanvasDrawRect(const SkRect& r, const CdlPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawRect(r, panint);
 }
-void GL_APIENTRY GLES2CanvasDrawRRect(GLfloat left,
-                                      GLfloat top,
-                                      GLfloat right,
-                                      GLfloat bottom,
-                                      GLfloat r0_x,
-                                      GLfloat r0_y,
-                                      GLfloat r1_x,
-                                      GLfloat r1_y,
-                                      GLfloat r2_x,
-                                      GLfloat r2_y,
-                                      GLfloat r3_x,
-                                      GLfloat r3_y,
-                                      GLfloat stroke_width,
-                                      GLfloat miter_limit,
-                                      GLuint color,
-                                      GLuint blend_mode,
-                                      GLuint paint_bits) {
-  gles2::GetGLContext()->CanvasDrawRRect(
-      left, top, right, bottom, r0_x, r0_y, r1_x, r1_y, r2_x, r2_y, r3_x, r3_y,
-      stroke_width, miter_limit, color, blend_mode, paint_bits);
+void GL_APIENTRY GLES2CanvasDrawOval(const SkRect& r, const CdlPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawOval(r, panint);
+}
+void GL_APIENTRY GLES2CanvasDrawRRect(const SkRRect& r,
+                                      const CdlPaint& panint) {
+  gles2::GetGLContext()->CanvasDrawRRect(r, panint);
 }
 void GL_APIENTRY GLES2CanvasDrawPath(const SkPath& path,
                                      const CdlPaint& paint) {
@@ -3197,6 +3168,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasDrawRect",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawRect),
+    },
+    {
+        "glCanvasDrawOval",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawOval),
     },
     {
         "glCanvasDrawRRect",

@@ -19251,6 +19251,21 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawRect(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasDrawOval(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasDrawRect& c =
+      *static_cast<const volatile gles2::cmds::CanvasDrawRect*>(cmd_data);
+
+  SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
+  SkPaint paint;
+  FillCanvasPaint(paint, c.stroke_width, c.miter_limit, c.color, c.blend_mode,
+                  c.paint_bits);
+  canvas_->drawOval(rect, paint);
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasDrawRRect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

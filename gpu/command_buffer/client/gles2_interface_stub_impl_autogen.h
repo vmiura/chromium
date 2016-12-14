@@ -1194,37 +1194,13 @@ void GLES2InterfaceStub::CanvasClipRRect(const SkRRect& /* r */,
 void GLES2InterfaceStub::CanvasClipPath(const SkPath& /* p */,
                                         GLuint /* clip_op */,
                                         GLboolean /* antialias */) {}
-void GLES2InterfaceStub::CanvasDrawPaint(GLfloat /* stroke_width */,
-                                         GLfloat /* miter_limit */,
-                                         GLuint /* color */,
-                                         GLuint /* blend_mode */,
-                                         GLuint /* paint_bits */) {}
-void GLES2InterfaceStub::CanvasDrawRect(GLfloat /* left */,
-                                        GLfloat /* top */,
-                                        GLfloat /* right */,
-                                        GLfloat /* bottom */,
-                                        GLfloat /* stroke_width */,
-                                        GLfloat /* miter_limit */,
-                                        GLuint /* color */,
-                                        GLuint /* blend_mode */,
-                                        GLuint /* paint_bits */) {}
-void GLES2InterfaceStub::CanvasDrawRRect(GLfloat /* left */,
-                                         GLfloat /* top */,
-                                         GLfloat /* right */,
-                                         GLfloat /* bottom */,
-                                         GLfloat /* r0_x */,
-                                         GLfloat /* r0_y */,
-                                         GLfloat /* r1_x */,
-                                         GLfloat /* r1_y */,
-                                         GLfloat /* r2_x */,
-                                         GLfloat /* r2_y */,
-                                         GLfloat /* r3_x */,
-                                         GLfloat /* r3_y */,
-                                         GLfloat /* stroke_width */,
-                                         GLfloat /* miter_limit */,
-                                         GLuint /* color */,
-                                         GLuint /* blend_mode */,
-                                         GLuint /* paint_bits */) {}
+void GLES2InterfaceStub::CanvasDrawPaint(const CdlPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasDrawRect(const SkRect& /* r */,
+                                        const CdlPaint& /* panint */) {}
+void GLES2InterfaceStub::CanvasDrawOval(const SkRect& /* r */,
+                                        const CdlPaint& /* panint */) {}
+void GLES2InterfaceStub::CanvasDrawRRect(const SkRRect& /* r */,
+                                         const CdlPaint& /* panint */) {}
 void GLES2InterfaceStub::CanvasDrawPath(const SkPath& /* path */,
                                         const CdlPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawImage(const SkImage* /* image */,

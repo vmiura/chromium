@@ -2771,21 +2771,41 @@ _FUNCTION_INFO = {
   },
   'CanvasDrawPaint': {
     'type': 'Custom',
-    'impl_func': True,
+    'cmd_args': 'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
   'CanvasDrawRect': {
     'type': 'Custom',
-    'impl_func': True,
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
+  'CanvasDrawOval': {
+    'type': 'Custom',
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
   },
   'CanvasDrawRRect': {
     'type': 'Custom',
-    'impl_func': True,
+    'cmd_args': 'GLfloat left, GLfloat top, GLfloat right, GLfloat bottom,'
+                'GLfloat r0_x, GLfloat r0_y, GLfloat r1_x, GLfloat r1_y,'
+                'GLfloat r2_x, GLfloat r2_y, GLfloat r3_x, GLfloat r3_y,'
+                'GLfloat stroke_width, GLfloat miter_limit, GLuint color,'
+                'GLuint blend_mode, GLuint paint_bits',
+    'impl_func': False,
     'client_test': False,
     'no_gl' : True,
     'extension': True,
