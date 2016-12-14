@@ -3441,6 +3441,18 @@ void CanvasNewImage(GLuint image_id,
   }
 }
 
+void CanvasNewTextureImage(GLuint image_id,
+                           GLenum target,
+                           GLuint texture_id,
+                           GLsizei width,
+                           GLsizei height) {
+  gles2::cmds::CanvasNewTextureImage* c =
+      GetCmdSpace<gles2::cmds::CanvasNewTextureImage>();
+  if (c) {
+    c->Init(image_id, target, texture_id, width, height);
+  }
+}
+
 void CanvasDeleteImage(int image_id) {
   gles2::cmds::CanvasDeleteImage* c =
       GetCmdSpace<gles2::cmds::CanvasDeleteImage>();

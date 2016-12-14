@@ -40,6 +40,7 @@
 #include "gpu/command_buffer/common/id_allocator.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/cdl_internals.h"
+#include "skia/ext/texture_handle.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkWriteBuffer.h"
@@ -369,22 +370,31 @@ void GLES2Implementation::CanvasNewImage(const SkImage* image) {
   SkImageInfo decoded_info = SkImageInfo::Make(
       image->width(), image->height(), kN32_SkColorType, kPremul_SkAlphaType);
 
-  ScopedTransferBufferPtr buffer(
+  if (!image->isTextureBacked()) {
+    ScopedTransferBufferPtr buffer(
       decoded_info.minRowBytes() * decoded_info.height(), helper_,
       transfer_buffer_);
 
-  if (!image->isTextureBacked()) {
     bool result = image->readPixels(decoded_info, buffer.address(),
                                     decoded_info.minRowBytes(), 0, 0,
                                     SkImage::kDisallow_CachingHint);
     (void)result;
-  } else {
-    // Get backend texture
-  }
 
-  helper_->CanvasNewImage(image->uniqueID(), decoded_info.width(),
+    helper_->CanvasNewImage(image->uniqueID(), decoded_info.width(),
                           decoded_info.height(), decoded_info.minRowBytes(),
                           buffer.size(), buffer.shm_id(), buffer.offset());
+  } else {
+    // Get backend texture
+    const GrGLTextureInfo* texture_info =
+        skia::GrBackendObjectToGrGLTextureInfo(image->getTextureHandle(true));
+
+    helper_->CanvasNewTextureImage(image->uniqueID(),
+                                   texture_info->fTarget,
+                                   texture_info->fID,
+                                   image->width(), image->height());
+  }
+
+
 }
 
 void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {

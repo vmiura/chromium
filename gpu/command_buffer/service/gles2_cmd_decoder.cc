@@ -19398,6 +19398,29 @@ error::Error GLES2DecoderImpl::HandleCanvasNewImage(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasNewTextureImage(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasNewTextureImage& c =
+      *static_cast<const volatile gles2::cmds::CanvasNewTextureImage*>(cmd_data);
+
+  GrGLTextureInfo texture_info;
+  texture_info.fTarget = c.target;
+  texture_info.fID = c.texture_id;
+  GrBackendTextureDesc desc;
+  desc.fWidth = c.width;
+  desc.fHeight = c.height;
+  desc.fConfig = kSkia8888_GrPixelConfig;
+  desc.fTextureHandle =
+      skia::GrGLTextureInfoToGrBackendObject(texture_info);
+  desc.fOrigin = kTopLeft_GrSurfaceOrigin;
+
+  inflator_.addImage(c.image_id,
+                     SkImage::MakeFromTexture(gr_context_.get(), desc));
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasDeleteImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

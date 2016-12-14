@@ -5613,6 +5613,23 @@ TEST_F(GLES2FormatTest, CanvasNewImage) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasNewTextureImage) {
+  cmds::CanvasNewTextureImage& cmd =
+      *GetBufferAs<cmds::CanvasNewTextureImage>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLenum>(12), static_cast<GLuint>(13),
+                           static_cast<GLsizei>(14), static_cast<GLsizei>(15));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasNewTextureImage::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.texture_id);
+  EXPECT_EQ(static_cast<GLsizei>(14), cmd.width);
+  EXPECT_EQ(static_cast<GLsizei>(15), cmd.height);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasDeleteImage) {
   cmds::CanvasDeleteImage& cmd = *GetBufferAs<cmds::CanvasDeleteImage>();
   void* next_cmd = cmd.Set(&cmd, static_cast<int>(11));

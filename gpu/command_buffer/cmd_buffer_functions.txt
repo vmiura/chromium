@@ -392,6 +392,7 @@ GL_APICALL void         GL_APIENTRY glCanvasDrawTextBlob (const SkTextBlob* blob
 // TODO: drawPoints
 
 GL_APICALL void         GL_APIENTRY glCanvasNewImage (const SkImage* image);
+GL_APICALL void         GL_APIENTRY glCanvasNewTextureImage (GLuint image_id, GLenum target, GLuint texture_id, GLsizei width, GLsizei height);
 GL_APICALL void         GL_APIENTRY glCanvasDeleteImage (int image_id);
 GL_APICALL void         GL_APIENTRY glCanvasNewTextBlob (const SkTextBlob* blob);
 GL_APICALL void         GL_APIENTRY glCanvasNewPath (const SkPath* path);

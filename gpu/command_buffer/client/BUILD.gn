@@ -163,6 +163,7 @@ component("gles2_implementation") {
   include_dirs = [
     "//skia/config",
     "//third_party/skia/include/core",
+    "//third_party/skia/include/gpu",
   ]
 }
 
