@@ -56,6 +56,11 @@ source_set("common_sources") {
     "time.h",
   ]
 
+  include_dirs = [
+    "//skia/config",
+    "//third_party/skia/include/core",
+  ]
+
   configs += [ "//gpu:gpu_implementation" ]
 
   public_deps = [

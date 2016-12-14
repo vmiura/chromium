@@ -577,7 +577,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
     }
 
     void addPath(int id, std::unique_ptr<SkPath> path) {
-      paths_.insert({id, std::move(path)});
+      paths_[id] = std::move(path);
     }
 
     void addTextBlob(int id, sk_sp<SkTextBlob> blob) {
