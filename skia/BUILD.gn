@@ -312,35 +312,6 @@ component("skia") {
     "//third_party/skia/src/fonts/SkGScalerContext.cpp",
   ]
 
-  sources += [ "//third_party/skia/src/gpu/gl/GrGLDefaultInterface_native.cpp" ]
-
-  sources -= get_path_info(
-          [
-            "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp",
-            "//third_party/skia/src/gpu/gl/GrGLDefaultInterface_none.cpp",
-          ],
-          "abspath")
-  libs = []
-  if (is_android) {
-    sources += [ "//third_party/skia/src/gpu/gl/android/GrGLCreateNativeInterface_android.cpp" ]
-  } else if (is_linux) {
-    sources += [ "//third_party/skia/src/gpu/gl/glx/GrGLCreateNativeInterface_glx.cpp" ]
-    libs += [
-      "GL",
-      "X11",
-    ]
-  } else if (is_mac) {
-    sources += [ "//third_party/skia/src/gpu/gl/mac/GrGLCreateNativeInterface_mac.cpp" ]
-  } else if (is_ios) {
-    sources += [ "//third_party/skia/src/gpu/gl/iOS/GrGLCreateNativeInterface_iOS.cpp" ]
-  } else if (is_win) {
-    sources += [ "//third_party/skia/src/gpu/gl/win/GrGLCreateNativeInterface_win.cpp" ]
-    libs += [ "OpenGL32.lib" ]
-  } else {
-    sources +=
-        [ "//third_party/skia/src/gpu/gl/GrGLCreateNativeInterface_none.cpp" ]
-  }
-
   if (is_win) {
     sources -= [
       # Keeping _win.cpp
