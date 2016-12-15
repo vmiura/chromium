@@ -14,6 +14,7 @@ class SkImage;
 class SkMatrix;
 class SkPaint;
 class SkPath;
+class SkRegion;
 struct SkRect;
 class SkRRect;
 class SkTextBlob;

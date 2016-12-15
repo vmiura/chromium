@@ -1248,6 +1248,8 @@ void CanvasClipPath(const SkPath& p,
                     GLuint clip_op,
                     GLboolean antialias) override;
 
+void CanvasClipRegion(const SkRegion& r, GLuint clip_op) override;
+
 void CanvasDrawPaint(const SkPaint& paint) override;
 
 void CanvasDrawRect(const SkRect& r, const SkPaint& panint) override;
