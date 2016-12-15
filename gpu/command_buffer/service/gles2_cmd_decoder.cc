@@ -19048,8 +19048,14 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
 
   gr_context_->resetContext();
 
+  TextureRef* texture_ref = GetTexture(c.texture);
+
+  // Mark texture safe to render from, otherwise command buffer will
+  // clear it later.
+  texture_manager()->SetLevelCleared(texture_ref, c.target, 0, true);
+
   GLenum target = c.target;
-  GrGLuint texture_id = GetTexture(c.texture)->service_id();
+  GrGLuint texture_id = texture_ref->service_id();
   int width = c.width;
   int height = c.height;
   int msaa_sample_count = c.msaa_sample_count;
