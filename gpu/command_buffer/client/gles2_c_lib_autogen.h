@@ -1764,6 +1764,9 @@ void GL_APIENTRY GLES2CanvasClipPath(const SkPath& p,
                                      GLboolean antialias) {
   gles2::GetGLContext()->CanvasClipPath(p, clip_op, antialias);
 }
+void GL_APIENTRY GLES2CanvasClipRegion(const SkRegion& r, GLuint clip_op) {
+  gles2::GetGLContext()->CanvasClipRegion(r, clip_op);
+}
 void GL_APIENTRY GLES2CanvasDrawPaint(const SkPaint& paint) {
   gles2::GetGLContext()->CanvasDrawPaint(paint);
 }
@@ -3161,6 +3164,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasClipPath",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasClipPath),
+    },
+    {
+        "glCanvasClipRegion",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasClipRegion),
     },
     {
         "glCanvasDrawPaint",

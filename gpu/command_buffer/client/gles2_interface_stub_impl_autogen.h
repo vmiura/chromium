@@ -1194,6 +1194,8 @@ void GLES2InterfaceStub::CanvasClipRRect(const SkRRect& /* r */,
 void GLES2InterfaceStub::CanvasClipPath(const SkPath& /* p */,
                                         GLuint /* clip_op */,
                                         GLboolean /* antialias */) {}
+void GLES2InterfaceStub::CanvasClipRegion(const SkRegion& /* r */,
+                                          GLuint /* clip_op */) {}
 void GLES2InterfaceStub::CanvasDrawPaint(const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawRect(const SkRect& /* r */,
                                         const SkPaint& /* panint */) {}

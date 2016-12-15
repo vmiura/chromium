@@ -394,6 +394,7 @@
 #define glCanvasClipRect GLES2_GET_FUN(CanvasClipRect)
 #define glCanvasClipRRect GLES2_GET_FUN(CanvasClipRRect)
 #define glCanvasClipPath GLES2_GET_FUN(CanvasClipPath)
+#define glCanvasClipRegion GLES2_GET_FUN(CanvasClipRegion)
 #define glCanvasDrawPaint GLES2_GET_FUN(CanvasDrawPaint)
 #define glCanvasDrawRect GLES2_GET_FUN(CanvasDrawRect)
 #define glCanvasDrawOval GLES2_GET_FUN(CanvasDrawOval)

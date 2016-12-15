@@ -2954,6 +2954,15 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasClipRegion': {
+    'type': 'Custom',
+    'cmd_args': 'GLsizeiptr shm_size, uint32_t shm_id, uint32_t shm_offset,'
+                'GLuint clip_op',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'SampleCoverage': {'decoder_func': 'DoSampleCoverage'},
   'StencilFunc': {
     'type': 'StateSetFrontBack',

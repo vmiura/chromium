@@ -3290,6 +3290,17 @@ void CanvasClipPath(GLuint path_id, GLuint clip_op, GLboolean antialias) {
   }
 }
 
+void CanvasClipRegion(GLsizeiptr shm_size,
+                      uint32_t shm_id,
+                      uint32_t shm_offset,
+                      GLuint clip_op) {
+  gles2::cmds::CanvasClipRegion* c =
+      GetCmdSpace<gles2::cmds::CanvasClipRegion>();
+  if (c) {
+    c->Init(shm_size, shm_id, shm_offset, clip_op);
+  }
+}
+
 void CanvasDrawPaint(GLfloat stroke_width,
                      GLfloat miter_limit,
                      GLuint color,

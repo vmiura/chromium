@@ -2565,6 +2565,12 @@ void GLES2TraceImplementation::CanvasClipPath(const SkPath& p,
   gl_->CanvasClipPath(p, clip_op, antialias);
 }
 
+void GLES2TraceImplementation::CanvasClipRegion(const SkRegion& r,
+                                                GLuint clip_op) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasClipRegion");
+  gl_->CanvasClipRegion(r, clip_op);
+}
+
 void GLES2TraceImplementation::CanvasDrawPaint(const SkPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawPaint");
   gl_->CanvasDrawPaint(paint);

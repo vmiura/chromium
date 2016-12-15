@@ -375,6 +375,7 @@ GL_APICALL void         GL_APIENTRY glCanvasTranslate (GLfloat tx, GLfloat ty);
 GL_APICALL void         GL_APIENTRY glCanvasClipRect (const SkRect& r, GLuint clip_op, GLboolean antialias);
 GL_APICALL void         GL_APIENTRY glCanvasClipRRect (const SkRRect& r, GLuint clip_op, GLboolean antialias);
 GL_APICALL void         GL_APIENTRY glCanvasClipPath (const SkPath& p, GLuint clip_op, GLboolean antialias);
+GL_APICALL void         GL_APIENTRY glCanvasClipRegion (const SkRegion& r, GLuint clip_op);
 
 GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (const SkPaint& paint);
 GL_APICALL void         GL_APIENTRY glCanvasDrawRect (const SkRect& r, const SkPaint& panint);

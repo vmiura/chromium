@@ -87,6 +87,12 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
     gl_->CanvasClipPath(p, (unsigned)op, style == kSoft_ClipEdgeStyle);
   }
 
+  void onClipRegion(const SkRegion& r,
+                    SkRegion::Op op) override {
+    SkNoDrawCanvas::onClipRegion(r, op);
+    gl_->CanvasClipRegion(r, (unsigned)op);
+  }
+
   void onDrawPaint(SkPaint const& paint) override {
     gl_->CanvasDrawPaint(paint);
   }

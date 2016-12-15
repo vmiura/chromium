@@ -916,6 +916,7 @@ virtual void CanvasClipRRect(const SkRRect& r,
 virtual void CanvasClipPath(const SkPath& p,
                             GLuint clip_op,
                             GLboolean antialias) = 0;
+virtual void CanvasClipRegion(const SkRegion& r, GLuint clip_op) = 0;
 virtual void CanvasDrawPaint(const SkPaint& paint) = 0;
 virtual void CanvasDrawRect(const SkRect& r, const SkPaint& panint) = 0;
 virtual void CanvasDrawOval(const SkRect& r, const SkPaint& panint) = 0;

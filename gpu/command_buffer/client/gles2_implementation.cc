@@ -41,6 +41,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/cdl_internals.h"
 #include "skia/ext/texture_handle.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkWriteBuffer.h"
@@ -227,6 +228,18 @@ void GLES2Implementation::CanvasClipPath(const SkPath& p,
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   int path_id = canvas_deduper_.findOrDefinePath(&p);
   helper_->CanvasClipPath(path_id, op, antialias);
+}
+
+void GLES2Implementation::CanvasClipRegion(const SkRegion& region,
+                                           GLuint op) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+
+  size_t size = region.writeToMemory(0);
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  region.writeToMemory(buffer.address());
+
+  helper_->CanvasClipRegion(buffer.size(), buffer.shm_id(), buffer.offset(),
+                            op);
 }
 
 void GLES2Implementation::CanvasDrawPaint(const SkPaint& paint) {

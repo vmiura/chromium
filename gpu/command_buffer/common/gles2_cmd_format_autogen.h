@@ -16158,6 +16158,59 @@ static_assert(offsetof(CanvasClipPath, clip_op) == 8,
 static_assert(offsetof(CanvasClipPath, antialias) == 12,
               "offset of CanvasClipPath antialias should be 12");
 
+struct CanvasClipRegion {
+  typedef CanvasClipRegion ValueType;
+  static const CommandId kCmdId = kCanvasClipRegion;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset,
+            GLuint _clip_op) {
+    SetHeader();
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+    clip_op = _clip_op;
+  }
+
+  void* Set(void* cmd,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset,
+            GLuint _clip_op) {
+    static_cast<ValueType*>(cmd)->Init(_shm_size, _shm_id, _shm_offset,
+                                       _clip_op);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t shm_size;
+  uint32_t shm_id;
+  uint32_t shm_offset;
+  uint32_t clip_op;
+};
+
+static_assert(sizeof(CanvasClipRegion) == 20,
+              "size of CanvasClipRegion should be 20");
+static_assert(offsetof(CanvasClipRegion, header) == 0,
+              "offset of CanvasClipRegion header should be 0");
+static_assert(offsetof(CanvasClipRegion, shm_size) == 4,
+              "offset of CanvasClipRegion shm_size should be 4");
+static_assert(offsetof(CanvasClipRegion, shm_id) == 8,
+              "offset of CanvasClipRegion shm_id should be 8");
+static_assert(offsetof(CanvasClipRegion, shm_offset) == 12,
+              "offset of CanvasClipRegion shm_offset should be 12");
+static_assert(offsetof(CanvasClipRegion, clip_op) == 16,
+              "offset of CanvasClipRegion clip_op should be 16");
+
 struct CanvasDrawPaint {
   typedef CanvasDrawPaint ValueType;
   static const CommandId kCmdId = kCanvasDrawPaint;

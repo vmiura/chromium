@@ -19515,6 +19515,20 @@ error::Error GLES2DecoderImpl::HandleCanvasClipPath(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasClipRegion(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasClipRegion& c =
+      *static_cast<const volatile gles2::cmds::CanvasClipRegion*>(cmd_data);
+
+  void* buffer = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+  SkRegion region;
+  region.readFromMemory(buffer, c.shm_size);
+  canvas_->clipRegion(region, (SkCanvas::ClipOp)c.clip_op);
+
+  return error::kNoError;
+}
+
 void GLES2DecoderImpl::RestoreAllExternalTextureBindingsIfNeeded() {
   if (texture_manager()->GetServiceIdGeneration() ==
       texture_manager_service_id_generation_)
