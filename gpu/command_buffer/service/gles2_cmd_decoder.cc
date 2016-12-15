@@ -74,6 +74,7 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
 #include "third_party/skia/src/core/SkDeduper.h"
@@ -107,6 +108,12 @@ namespace gpu {
 namespace gles2 {
 
 namespace {
+
+static GrGLFuncPtr get_gl_proc(void* ctx, const char name[]) {
+  SkASSERT(nullptr == ctx);
+  GrGLFuncPtr ptr = (GrGLFuncPtr)gl::GetGLProcAddress(name);
+  return ptr;
+}
 
 const char kOESDerivativeExtension[] = "GL_OES_standard_derivatives";
 const char kEXTFragDepthExtension[] = "GL_EXT_frag_depth";
@@ -3640,11 +3647,17 @@ bool GLES2DecoderImpl::Initialize(
     InitializeGLDebugLogging();
   }
 
-  sk_sp<const GrGLInterface> interface(GrGLCreateNativeInterface());
-  gr_context_ = sk_sp<GrContext>(
-      GrContext::Create(kOpenGL_GrBackend,
-                        // GrContext takes ownership of |interface|.
-                        reinterpret_cast<GrBackendContext>(interface.get())));
+  LOG(ERROR) << "Get GrGLInterface";
+  sk_sp<const GrGLInterface> interface(GrGLAssembleInterface(nullptr, get_gl_proc));
+  LOG(ERROR) << " got " << interface.get();
+
+  if (interface.get()) {
+    gr_context_ = sk_sp<GrContext>(
+        GrContext::Create(kOpenGL_GrBackend,
+                          // GrContext takes ownership of |interface|.
+                          reinterpret_cast<GrBackendContext>(interface.get())));
+  }
+
   if (gr_context_) {
     // The limit of the number of GPU resources we hold in the GrContext's
     // GPU cache.
@@ -3655,6 +3668,8 @@ bool GLES2DecoderImpl::Initialize(
 
     gr_context_->setResourceCacheLimits(kMaxGaneshResourceCacheCount,
                                         kMaxGaneshResourceCacheBytes);
+  } else {
+    LOG(ERROR) << "Failed to create GrContext";
   }
 
   return true;
@@ -19066,8 +19081,12 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
 
   sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
       gr_context_.get(), desc, nullptr, &surface_props);
-  canvas_ = sk_surface_->getCanvas();
-  canvas_->clear(0xffff0000);
+  if (sk_surface_.get()) {
+    canvas_ = sk_surface_->getCanvas();
+    //canvas_->clear(0xffff0000);
+  } else {
+    LOG(ERROR) << "Failed to create SkSurface";
+  }
 
   return error::kNoError;
 }
@@ -19083,7 +19102,7 @@ error::Error GLES2DecoderImpl::HandleCanvasEnd(uint32_t immediate_data_size,
   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
   while (glGetError() != GL_NO_ERROR)
-    LOG(ERROR) << "Gog GL Error in Skia";
+    LOG(ERROR) << "Got GL Error in Skia";
 
   // Invalidate virtual state
   RestoreState(nullptr);

@@ -152,27 +152,6 @@ static void RasterizeSource(
     bool async_worker_context_enabled,
     bool use_distance_field_text,
     int msaa_sample_count) {
-  ResourceProvider::ScopedCdlSurfaceProvider scoped_surface(
-      context_provider, resource_lock, async_worker_context_enabled,
-      use_distance_field_text, raster_source->CanUseLCDText(),
-      raster_source->HasImpliedColorSpace(), msaa_sample_count);
-
-  SkCommandBufferCanvas canvas(resource_size.width(), resource_size.height(),
-                               context_provider->ContextGL());
-
-#if 0
-  ScopedGpuRaster gpu_raster(context_provider);
-
-  ResourceProvider::ScopedSkSurfaceProvider scoped_surface(
-      context_provider, resource_lock, async_worker_context_enabled,
-      use_distance_field_text, raster_source->CanUseLCDText(),
-      raster_source->HasImpliedColorSpace(), msaa_sample_count);
-  SkSurface* sk_surface = scoped_surface.sk_surface();
-  // Allocating an SkSurface will fail after a lost context.  Pretend we
-  // rasterized, as the contents of the resource don't matter anymore.
-  if (!sk_surface)
-    return;
-#endif
 
   // Playback
   gfx::Rect playback_rect = raster_full_rect;
@@ -196,12 +175,34 @@ static void RasterizeSource(
         100.0f * fraction_saved);
   }
 
-#if 0
-  raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
-                                  playback_rect, scales, playback_settings);
-#else
+#define USE_CANVAS_COMMAND_BUFFER 1
+
+#if USE_CANVAS_COMMAND_BUFFER
+  ResourceProvider::ScopedCdlSurfaceProvider scoped_surface(
+      context_provider, resource_lock, async_worker_context_enabled,
+      use_distance_field_text, raster_source->CanUseLCDText(),
+      raster_source->HasImpliedColorSpace(), msaa_sample_count);
+
+  SkCommandBufferCanvas canvas(resource_size.width(), resource_size.height(),
+                               context_provider->ContextGL());
+
   raster_source->PlaybackToCanvas(&canvas, raster_full_rect, playback_rect,
                                   scales, playback_settings);
+#else
+  ScopedGpuRaster gpu_raster(context_provider);
+
+  ResourceProvider::ScopedSkSurfaceProvider scoped_surface(
+      context_provider, resource_lock, async_worker_context_enabled,
+      use_distance_field_text, raster_source->CanUseLCDText(),
+      raster_source->HasImpliedColorSpace(), msaa_sample_count);
+  SkSurface* sk_surface = scoped_surface.sk_surface();
+  // Allocating an SkSurface will fail after a lost context.  Pretend we
+  // rasterized, as the contents of the resource don't matter anymore.
+  if (!sk_surface)
+    return;
+
+  raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
+                                playback_rect, scales, playback_settings);
 #endif
 }
 
@@ -311,7 +312,8 @@ bool GpuRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
   // Partial raster doesn't support MSAA, as the MSAA resolve is unaware of clip
   // rects.
   // TODO(crbug.com/629683): See if we can work around this limitation.
-  return msaa_sample_count_ == 0;
+  //return msaa_sample_count_ == 0;
+  return false;
 }
 
 void GpuRasterBufferProvider::Shutdown() {
