@@ -145,7 +145,10 @@ component("gles2_implementation") {
   sources = gles2_implementation_source_files
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  configs += [
+    "//build/config/compiler:no_size_t_to_int_warning",
+    "//skia:skia_config",
+  ]
 
   defines = [ "GLES2_IMPL_IMPLEMENTATION" ]
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
@@ -158,12 +161,6 @@ component("gles2_implementation") {
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx/geometry",
-  ]
-
-  include_dirs = [
-    "//skia/config",
-    "//third_party/skia/include/core",
-    "//third_party/skia/include/gpu",
   ]
 }
 

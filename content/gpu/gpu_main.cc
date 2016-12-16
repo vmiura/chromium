@@ -73,7 +73,7 @@
 #endif
 
 #if defined(OS_LINUX)
-#include "content/common/child_process_sandbox_support_impl_linux.h"
+#include "content/child/child_process_sandbox_support_impl_linux.h"
 #include "content/common/font_config_ipc_linux.h"
 #include "content/common/sandbox_linux/sandbox_linux.h"
 #include "content/public/common/sandbox_init.h"

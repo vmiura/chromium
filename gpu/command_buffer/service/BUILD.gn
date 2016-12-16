@@ -149,13 +149,12 @@ target(link_target_type, "service_sources") {
     "//build/config:precompiled_headers",
     "//gpu:gpu_implementation",
     "//third_party/khronos:khronos_headers",
+    "//skia:skia_config",
   ]
 
   # Prefer mesa GL headers to system headers, which cause problems on Win.
   include_dirs = [
     "//third_party/mesa/src/include",
-    "//skia/config",
-    "//third_party/skia/include/core",
     "//third_party/skia/include/private",
   ]
 

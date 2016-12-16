@@ -19924,7 +19924,7 @@ error::Error GLES2DecoderImpl::HandleCanvasClipRect(
       *static_cast<const volatile gles2::cmds::CanvasClipRect*>(cmd_data);
 
   SkRect rect = SkRect::MakeLTRB(c.left, c.top, c.right, c.bottom);
-  canvas_->clipRect(rect, (SkCanvas::ClipOp)c.clip_op, c.antialias);
+  canvas_->clipRect(rect, (SkClipOp)c.clip_op, c.antialias);
 
   return error::kNoError;
 }
@@ -19943,7 +19943,7 @@ error::Error GLES2DecoderImpl::HandleCanvasClipRRect(
   radii[3].set(c.r3_x, c.r3_y);
   SkRRect rrect;
   rrect.setRectRadii(rect, radii);
-  canvas_->clipRRect(rrect, (SkCanvas::ClipOp)c.clip_op, c.antialias);
+  canvas_->clipRRect(rrect, (SkClipOp)c.clip_op, c.antialias);
 
   return error::kNoError;
 }
@@ -19954,7 +19954,7 @@ error::Error GLES2DecoderImpl::HandleCanvasClipPath(
   const volatile gles2::cmds::CanvasClipPath& c =
       *static_cast<const volatile gles2::cmds::CanvasClipPath*>(cmd_data);
 
-  canvas_->clipPath(*inflator_.getPath(c.path_id), (SkCanvas::ClipOp)c.clip_op,
+  canvas_->clipPath(*inflator_.getPath(c.path_id), (SkClipOp)c.clip_op,
                     c.antialias);
 
   return error::kNoError;
@@ -19969,7 +19969,7 @@ error::Error GLES2DecoderImpl::HandleCanvasClipRegion(
   void* buffer = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
   SkRegion region;
   region.readFromMemory(buffer, c.shm_size);
-  canvas_->clipRegion(region, (SkCanvas::ClipOp)c.clip_op);
+  canvas_->clipRegion(region, (SkClipOp)c.clip_op);
 
   return error::kNoError;
 }

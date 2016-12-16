@@ -69,28 +69,28 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
   }
 
   void onClipRect(const SkRect& r,
-                  SkRegion::Op op,
+                  SkClipOp op,
                   SkCanvas::ClipEdgeStyle style) override {
     SkNoDrawCanvas::onClipRect(r, op, style);
     gl_->CanvasClipRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
   }
 
   void onClipRRect(const SkRRect& r,
-                   SkRegion::Op op,
+                   SkClipOp op,
                    SkCanvas::ClipEdgeStyle style) override {
     SkNoDrawCanvas::onClipRRect(r, op, style);
     gl_->CanvasClipRRect(r, (unsigned)op, style == kSoft_ClipEdgeStyle);
   }
 
   void onClipPath(const SkPath& p,
-                  SkRegion::Op op,
+                  SkClipOp op,
                   SkCanvas::ClipEdgeStyle style) override {
     SkNoDrawCanvas::onClipPath(p, op, style);
     gl_->CanvasClipPath(p, (unsigned)op, style == kSoft_ClipEdgeStyle);
   }
 
   void onClipRegion(const SkRegion& r,
-                    SkRegion::Op op) override {
+                    SkClipOp op) override {
     SkNoDrawCanvas::onClipRegion(r, op);
     gl_->CanvasClipRegion(r, (unsigned)op);
   }
@@ -189,7 +189,7 @@ static void RasterizeSource(
                                context_provider->ContextGL());
 
   raster_source->PlaybackToCanvas(&canvas, raster_full_rect, playback_rect,
-                                  scales, playback_settings);
+                                  scale, playback_settings);
 #else
   ScopedGpuRaster gpu_raster(context_provider);
 
@@ -206,7 +206,7 @@ static void RasterizeSource(
   }
 
   raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
-                                playback_rect, scales, playback_settings);
+                                  playback_rect, scale, playback_settings);
 #endif
 }
 
