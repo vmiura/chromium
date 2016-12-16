@@ -39,6 +39,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
@@ -71,6 +72,8 @@
 #endif
 
 #if defined(OS_LINUX)
+#include "content/common/child_process_sandbox_support_impl_linux.h"
+#include "content/common/font_config_ipc_linux.h"
 #include "content/public/common/sandbox_init.h"
 #endif
 
@@ -192,6 +195,7 @@ int GpuMain(const MainFunctionParams& parameters) {
 #endif
 
   logging::SetLogMessageHandler(GpuProcessLogMessageHandler);
+  SkGraphics::Init();
 
   // We are experiencing what appear to be memory-stomp issues in the GPU
   // process. These issues seem to be impacting the message loop and listeners
@@ -258,6 +262,13 @@ int GpuMain(const MainFunctionParams& parameters) {
   // message from the browser.
   const bool init_success = gpu_init.InitializeAndStartSandbox(command_line);
   const bool dead_on_arrival = !init_success;
+
+#if defined(OS_LINUX)
+  if (init_success) {
+    SkFontConfigInterface::SetGlobal(
+           new FontConfigIPC(GetSandboxFD()))->unref();
+  }
+#endif
 
   logging::SetLogMessageHandler(NULL);
   GetContentClient()->SetGpuInfo(gpu_init.gpu_info());

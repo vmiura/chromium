@@ -279,7 +279,8 @@ void LaunchOnLauncherThread(const NotifyCallback& callback,
             base::GlobalDescriptors::kBaseDescriptor);
 
 #if !defined(OS_MACOSX)
-    if (process_type == switches::kRendererProcess) {
+    if (process_type == switches::kRendererProcess ||
+        process_type == switches::kGpuProcess) {
       const int sandbox_fd =
           RenderSandboxHostLinux::GetInstance()->GetRendererSocket();
       fds_to_map.push_back(std::make_pair(
