@@ -29,6 +29,7 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
+  'github_git': 'https://github.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'pdfium_git': 'https://pdfium.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
@@ -40,7 +41,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'd87fbee77524f83f0eccb7860516d1696e318a96',
+  'skia_revision': 'baeff69424a7b811ecc92ef2facaf343b147c6ea',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -173,7 +174,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/googlei18n/sfntly.git' + '@' + Var('sfntly_revision'),
 
   'src/third_party/skia':
-    Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+    Var('github_git') + '/vmiura/skia.git' + '@' +  Var('skia_revision'),
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + '6be0a66a1ebd7ebc5abc1b2f405a945f6d871521',
