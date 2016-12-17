@@ -8,7 +8,12 @@
 #include <stdint.h>
 
 #include "base/callback.h"
+#include "third_party/skia/include/core/SkFlattenable.h"
+#include "third_party/skia/src/core/SkDeduper.h"
 #include "ui/gfx/overlay_transform.h"
+
+class SkTextBlob;
+class SkPath;
 
 namespace gfx {
 class Rect;
@@ -19,7 +24,7 @@ namespace gpu {
 
 struct SyncToken;
 
-class ContextSupport {
+class ContextSupport : public SkDeduper {
  public:
   // Runs |callback| when a sync token is signalled.
   virtual void SignalSyncToken(const SyncToken& sync_token,
@@ -57,9 +62,16 @@ class ContextSupport {
   virtual void SetErrorMessageCallback(
       const base::Callback<void(const char*, int32_t)>& callback) = 0;
 
+
+  // CDL HACKING ///////////////////////////////////////////////////////////////
+  virtual int findOrDefineTextBlob(const SkTextBlob*) = 0;
+  virtual int findOrDefinePath(const SkPath*) = 0;
+  //////////////////////////////////////////////////////////////////////////////
+
+
  protected:
   ContextSupport() {}
-  virtual ~ContextSupport() {}
+  ~ContextSupport() override {}
 };
 
 }

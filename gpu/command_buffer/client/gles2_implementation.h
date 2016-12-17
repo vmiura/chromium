@@ -138,42 +138,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation
     ShaderPrecisionMap shader_precisions;
   };
 
-  // CDL HACKING ////////////////////////
-  class CanvasDeduper : public SkDeduper {
-   public:
-    CanvasDeduper(GLES2Implementation* gl);
-    ~CanvasDeduper() override;
-    int findOrDefineImage(SkImage*) override;
-    int findOrDefinePicture(SkPicture*) override;
-    int findOrDefineTypeface(SkTypeface*) override;
-    int findOrDefineFactory(SkFlattenable*) override;
-    int findOrDefineTextBlob(const SkTextBlob*);
-    int findOrDefinePath(const SkPath*);
-
-    struct CacheRecord {
-      CacheRecord(int id, int size)
-       : id(id), size(size) {}
-      int id;
-      int size;
-    };
-
-   private:
-    GLES2Implementation* gl_;
-    std::unordered_set<int> images_;
-    std::unordered_set<int> paths_;
-    std::unordered_set<int> text_blobs_;
-    std::unordered_set<int> typefaces_;
-
-    std::deque<CacheRecord> image_records_;
-    int image_total_size_ = 0;
-  };
-
-  CanvasDeduper canvas_deduper_;
-
-  void CanvasSetupShader(const SkShader* shader);
-
-  ///////////////////////////////////////
-
   // The maximum result size from simple GL get commands.
   static const size_t kMaxSizeOfSimpleResult =
       16 * sizeof(uint32_t);  // NOLINT.
@@ -309,6 +273,35 @@ class GLES2_IMPL_EXPORT GLES2Implementation
   ShareGroupContextData* share_group_context_data() {
     return &share_group_context_data_;
   }
+
+  // CDL HACKING ///////////////////////////////////////////////////////////////
+ public:
+  // SkDeduper overrides
+  int findOrDefineImage(SkImage*) override;
+  int findOrDefinePicture(SkPicture*) override;
+  int findOrDefineTypeface(SkTypeface*) override;
+  int findOrDefineFactory(SkFlattenable*) override;
+
+  // ContextSupport overrides
+  int findOrDefineTextBlob(const SkTextBlob*) override;
+  int findOrDefinePath(const SkPath*) override;
+
+  struct CacheRecord {
+    CacheRecord(int id, int size)
+     : id(id), size(size) {}
+    int id;
+    int size;
+  };
+
+ private:
+  std::unordered_set<int> images_;
+  std::unordered_set<int> paths_;
+  std::unordered_set<int> text_blobs_;
+  std::unordered_set<int> typefaces_;
+
+  std::deque<CacheRecord> image_records_;
+  int image_total_size_ = 0;
+  //////////////////////////////////////////////////////////////////////////////
 
  private:
   friend class GLES2ImplementationTest;

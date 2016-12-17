@@ -18,6 +18,7 @@
 #include "cc/raster/scoped_gpu_raster.h"
 #include "cc/resources/resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/context_support.h"
 #include "third_party/skia/include/core/SkWriteBuffer.h"
 #include "third_party/skia/include/core/SkFlattenableSerialization.h"
 #include "third_party/skia/include/core/SkMultiPictureDraw.h"
@@ -30,8 +31,11 @@ namespace {
 
 class SkCommandBufferCanvas : public SkNoDrawCanvas {
  public:
-  SkCommandBufferCanvas(int width, int height, gpu::gles2::GLES2Interface* gl)
-      : SkNoDrawCanvas(width, height), gl_(gl) {}
+  SkCommandBufferCanvas(int width, int height, gpu::gles2::GLES2Interface* gl,
+                        gpu::ContextSupport* context_support)
+      : SkNoDrawCanvas(width, height),
+        gl_(gl),
+        context_support_(context_support) {}
   ~SkCommandBufferCanvas() override {}
 
  protected:
@@ -94,22 +98,32 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
   }
 
   void onDrawPaint(SkPaint const& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawPaint(paint);
   }
 
   void onDrawRect(const SkRect& r, const SkPaint& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawRect(r, paint);
   }
 
   void onDrawOval(const SkRect& r, const SkPaint& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawOval(r, paint);
   }
 
   void onDrawRRect(const SkRRect& r, const SkPaint& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawRRect(r, paint);
   }
 
   void onDrawPath(const SkPath& path, const SkPaint& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawPath(path, paint);
   }
 
@@ -117,6 +131,8 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
                       SkScalar x,
                       SkScalar y,
                       const SkPaint& paint) override {
+    if (paint.getShader())
+      SetupShader(paint.getShader());
     gl_->CanvasDrawTextBlob(blob, x, y, paint);
   }
 
@@ -135,8 +151,88 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
     gl_->CanvasDrawImageRect(image, src, dst, paint,
                              constraint == SkCanvas::kStrict_SrcRectConstraint);
   }
+ private:
+  void SetupShader(const SkShader* shader) {
+    SkShader::GradientType type = shader->asAGradient(0);
+    if (type != SkShader::kNone_GradientType) {
+      gl_->CanvasSetGradientShader(shader);
+    } else if (shader->isAImage()) {
+      SkMatrix local_matrix;
+      SkShader::TileMode tile_mode[2];
+      SkImage* image = shader->isAImage(&local_matrix, tile_mode);
+      gl_->CanvasSetImageShader(image, tile_mode[0], tile_mode[1], &local_matrix);
+    } else if (shader->isAPicture()) {
+      (void)context_support_;
+      /*
+      SkMatrix local_matrix;
+      SkShader::TileMode tile_mode[2];
+      SkRect tile;
+      SkPicture* picture = shader->isAPicture(&local_matrix, tile_mode, &tile);
+
+      SkMatrix m;
+      m.setConcat(viewMatrix, this->getLocalMatrix());
+      if (localM) {
+          m.preConcat(*localM);
+      }
+
+      // Use a rotation-invariant scale
+      SkPoint scale;
+      //
+      // TODO: replace this with decomposeScale() -- but beware LayoutTest rebaselines!
+      //
+      if (!SkDecomposeUpper2x2(m, nullptr, &scale, nullptr)) {
+          // Decomposition failed, use an approximation.
+          scale.set(SkScalarSqrt(m.getScaleX() * m.getScaleX() + m.getSkewX() * m.getSkewX()),
+                    SkScalarSqrt(m.getScaleY() * m.getScaleY() + m.getSkewY() * m.getSkewY()));
+      }
+      SkSize scaledSize = SkSize::Make(SkScalarAbs(scale.x() * fTile.width()),
+                                       SkScalarAbs(scale.y() * fTile.height()));
+
+      // Clamp the tile size to about 4M pixels
+      static const SkScalar kMaxTileArea = 2048 * 2048;
+      SkScalar tileArea = SkScalarMul(scaledSize.width(), scaledSize.height());
+      if (tileArea > kMaxTileArea) {
+          SkScalar clampScale = SkScalarSqrt(kMaxTileArea / tileArea);
+          scaledSize.set(SkScalarMul(scaledSize.width(), clampScale),
+                         SkScalarMul(scaledSize.height(), clampScale));
+      }
+  #if SK_SUPPORT_GPU
+      // Scale down the tile size if larger than maxTextureSize for GPU Path or it should fail on create texture
+      if (maxTextureSize) {
+          if (scaledSize.width() > maxTextureSize || scaledSize.height() > maxTextureSize) {
+              SkScalar downScale = maxTextureSize / SkMaxScalar(scaledSize.width(), scaledSize.height());
+              scaledSize.set(SkScalarFloorToScalar(SkScalarMul(scaledSize.width(), downScale)),
+                             SkScalarFloorToScalar(SkScalarMul(scaledSize.height(), downScale)));
+          }
+      }
+  #endif
+
+  #ifdef SK_SUPPORT_LEGACY_PICTURESHADER_ROUNDING
+      const SkISize tileSize = scaledSize.toRound();
+  #else
+      const SkISize tileSize = scaledSize.toCeil();
+  #endif
+      if (tileSize.isEmpty()) {
+          return SkShader::MakeEmptyShader();
+      }
+
+      // The actual scale, compensating for rounding & clamping.
+      const SkSize tileScale = SkSize::Make(SkIntToScalar(tileSize.width()) / fTile.width(),
+                                            SkIntToScalar(tileSize.height()) / fTile.height());
+
+      sk_sp<SkShader> tileShader;
+      BitmapShaderKey key(fPicture->uniqueID(),
+                          fTile,
+                          fTmx,
+                          fTmy,
+                          tileScale,
+                          this->getLocalMatrix());
+      */
+    }
+  }
 
   gpu::gles2::GLES2Interface* gl_;
+  gpu::ContextSupport* context_support_;
 };
 
 static void RasterizeSource(
@@ -183,8 +279,10 @@ static void RasterizeSource(
       use_distance_field_text, raster_source->CanUseLCDText(),
       raster_source->HasImpliedColorSpace(), msaa_sample_count);
 
-  SkCommandBufferCanvas canvas(resource_size.width(), resource_size.height(),
-                               context_provider->ContextGL());
+  SkCommandBufferCanvas canvas(resource_size.width(),
+                               resource_size.height(),
+                               context_provider->ContextGL(),
+                               context_provider->ContextSupport());
 
   raster_source->PlaybackToCanvas(&canvas, raster_full_rect, playback_rect,
                                   scales, playback_settings);
