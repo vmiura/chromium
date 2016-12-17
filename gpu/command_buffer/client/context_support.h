@@ -11,6 +11,7 @@
 
 
 #include "base/callback.h"
+#include "gpu/gpu_export.h"
 #include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/src/core/SkDeduper.h"
 #include "ui/gfx/overlay_transform.h"
@@ -28,9 +29,9 @@ namespace gpu {
 
 struct SyncToken;
 
-class CdlResourceCache {
+class GPU_EXPORT CdlResourceCache {
  public:
-  struct Key {
+  struct GPU_EXPORT Key {
     /** Key subclasses must call this after their own fields and data are initialized.
      *  All fields and data must be tightly packed.
      *  @param nameSpace must be unique per Key subclass.
@@ -68,7 +69,7 @@ class CdlResourceCache {
     const uint32_t* as32() const { return (const uint32_t*)this; }
   };
 
-  struct Rec {
+  struct GPU_EXPORT Rec {
     typedef CdlResourceCache::Key Key;
 
     Rec() {}

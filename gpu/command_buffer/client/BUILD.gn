@@ -35,6 +35,8 @@ source_set("client_sources") {
   visibility = [ "//gpu/*" ]
 
   sources = [
+    "cmd_buffer_canvas.cc",
+    "cmd_buffer_canvas.h",
     "cmd_buffer_helper.cc",
     "cmd_buffer_helper.h",
     "fenced_allocator.cc",
@@ -54,6 +56,7 @@ source_set("client_sources") {
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
     "//build/config/compiler:no_size_t_to_int_warning",
     "//gpu:gpu_implementation",
+    "//skia:skia_config",
   ]
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
