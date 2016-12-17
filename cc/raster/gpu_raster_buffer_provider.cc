@@ -25,9 +25,73 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/src/core/SkMatrixUtils.h"
 
 namespace cc {
 namespace {
+
+static unsigned gPictureImageKeyNamespaceLabel;
+
+struct PictureImageKey : public gpu::CdlResourceCache::Key {
+public:
+  PictureImageKey(uint32_t pictureID,
+                  const SkRect& tile,
+                  SkShader::TileMode tmx,
+                  SkShader::TileMode tmy,
+                  const SkSize& scale,
+                  const SkMatrix& localMatrix)
+    : fPictureID(pictureID)
+    , fTile(tile)
+    , fTmx(tmx)
+    , fTmy(tmy)
+    , fScale(scale) {
+
+    for (int i = 0; i < 9; ++i) {
+      fLocalMatrixStorage[i] = localMatrix[i];
+    }
+
+    static const size_t keySize = sizeof(fPictureID) +
+                                  sizeof(fTile) +
+                                  sizeof(fTmx) + sizeof(fTmy) +
+                                  sizeof(fScale) +
+                                  sizeof(fLocalMatrixStorage);
+    // This better be packed.
+    SkASSERT(sizeof(uint32_t) * (&fEndOfStruct - &fPictureID) == keySize);
+    this->init(&gPictureImageKeyNamespaceLabel, keySize);
+  }
+
+private:
+  uint32_t           fPictureID;
+  SkRect             fTile;
+  SkShader::TileMode fTmx, fTmy;
+  SkSize             fScale;
+  SkScalar           fLocalMatrixStorage[9];
+
+  SkDEBUGCODE(uint32_t fEndOfStruct;)
+};
+
+struct PictureImageRec : public gpu::CdlResourceCache::Rec {
+  PictureImageRec(const PictureImageKey& key, sk_sp<SkImage> image)
+      : key(key)
+      , image(image) {}
+
+  PictureImageKey key;
+  sk_sp<SkImage>  image;
+
+  const Key& getKey() const override { return key; }
+  size_t bytesUsed() const override {
+      // Just the record overhead -- the actual pixels are accounted by SkImageCacherator.
+      return sizeof(key) + sizeof(image);
+  }
+  const char* getCategory() const override { return "picture-image"; }
+
+  static bool Visitor(const gpu::CdlResourceCache::Rec& baseRec, void* contextShader) {
+      const PictureImageRec& rec = static_cast<const PictureImageRec&>(baseRec);
+      SkImage** result = reinterpret_cast<SkImage**>(contextShader);
+      *result = rec.image.get();
+      return true;
+  }
+};
 
 class SkCommandBufferCanvas : public SkNoDrawCanvas {
  public:
@@ -162,15 +226,15 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
       SkImage* image = shader->isAImage(&local_matrix, tile_mode);
       gl_->CanvasSetImageShader(image, tile_mode[0], tile_mode[1], &local_matrix);
     } else if (shader->isAPicture()) {
-      (void)context_support_;
-      /*
       SkMatrix local_matrix;
       SkShader::TileMode tile_mode[2];
       SkRect tile;
       SkPicture* picture = shader->isAPicture(&local_matrix, tile_mode, &tile);
 
+      // TODO(cdl): Figure out where this optional local matrix comes from.
+      SkMatrix* localM = nullptr;
       SkMatrix m;
-      m.setConcat(viewMatrix, this->getLocalMatrix());
+      m.setConcat(getTotalMatrix(), local_matrix);
       if (localM) {
           m.preConcat(*localM);
       }
@@ -185,8 +249,8 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
           scale.set(SkScalarSqrt(m.getScaleX() * m.getScaleX() + m.getSkewX() * m.getSkewX()),
                     SkScalarSqrt(m.getScaleY() * m.getScaleY() + m.getSkewY() * m.getSkewY()));
       }
-      SkSize scaledSize = SkSize::Make(SkScalarAbs(scale.x() * fTile.width()),
-                                       SkScalarAbs(scale.y() * fTile.height()));
+      SkSize scaledSize = SkSize::Make(SkScalarAbs(scale.x() * tile.width()),
+                                       SkScalarAbs(scale.y() * tile.height()));
 
       // Clamp the tile size to about 4M pixels
       static const SkScalar kMaxTileArea = 2048 * 2048;
@@ -198,6 +262,7 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
       }
   #if SK_SUPPORT_GPU
       // Scale down the tile size if larger than maxTextureSize for GPU Path or it should fail on create texture
+      int maxTextureSize = 2048;
       if (maxTextureSize) {
           if (scaledSize.width() > maxTextureSize || scaledSize.height() > maxTextureSize) {
               SkScalar downScale = maxTextureSize / SkMaxScalar(scaledSize.width(), scaledSize.height());
@@ -213,21 +278,41 @@ class SkCommandBufferCanvas : public SkNoDrawCanvas {
       const SkISize tileSize = scaledSize.toCeil();
   #endif
       if (tileSize.isEmpty()) {
-          return SkShader::MakeEmptyShader();
+        // TODO: Make empty shader if needed.
+        //return SkShader::MakeEmptyShader();
+        return;
       }
 
       // The actual scale, compensating for rounding & clamping.
-      const SkSize tileScale = SkSize::Make(SkIntToScalar(tileSize.width()) / fTile.width(),
-                                            SkIntToScalar(tileSize.height()) / fTile.height());
+      const SkSize tileScale = SkSize::Make(SkIntToScalar(tileSize.width()) / tile.width(),
+                                            SkIntToScalar(tileSize.height()) / tile.height());
 
-      sk_sp<SkShader> tileShader;
-      BitmapShaderKey key(fPicture->uniqueID(),
-                          fTile,
-                          fTmx,
-                          fTmy,
+      SkImage* tile_image = 0;
+      PictureImageKey key(picture->uniqueID(),
+                          tile,
+                          tile_mode[0],
+                          tile_mode[1],
                           tileScale,
-                          this->getLocalMatrix());
-      */
+                          local_matrix);
+
+      gpu::CdlResourceCache* resource_cache = context_support_->resource_cache();
+      if (!resource_cache->find(key, PictureImageRec::Visitor, &tile_image)) {
+        // Temp: Draw SkPicture to a local SkBitmap.
+        SkBitmap bitmap;
+        bitmap.allocPixels(
+            SkImageInfo::MakeN32Premul(tileSize.width(), tileSize.height()));
+        SkCanvas canvas(bitmap);
+        canvas.drawPicture(picture);
+        bitmap.setImmutable();
+        sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
+
+        // Save image in resource cache for re-use.
+        resource_cache->add(new PictureImageRec(key, image));
+
+        gl_->CanvasSetImageShader(image.get(), tile_mode[0], tile_mode[1], &local_matrix);
+      } else {
+        gl_->CanvasSetImageShader(tile_image, tile_mode[0], tile_mode[1], &local_matrix);
+      }
     }
   }
 
