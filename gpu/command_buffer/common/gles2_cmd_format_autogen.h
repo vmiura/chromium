@@ -17270,15 +17270,15 @@ struct CanvasSetGradientShader {
             uint32_t _shm_id,
             uint32_t _shm_offset,
             GLuint _gradient_type,
-            const GLfloat _m0,
-            const GLfloat _m1,
-            const GLfloat _m2,
-            const GLfloat _m3,
-            const GLfloat _m4,
-            const GLfloat _m5,
-            const GLfloat _m6,
-            const GLfloat _m7,
-            const GLfloat _m8) {
+            GLfloat _m0,
+            GLfloat _m1,
+            GLfloat _m2,
+            GLfloat _m3,
+            GLfloat _m4,
+            GLfloat _m5,
+            GLfloat _m6,
+            GLfloat _m7,
+            GLfloat _m8) {
     SetHeader();
     shm_size = _shm_size;
     shm_id = _shm_id;
@@ -17300,15 +17300,15 @@ struct CanvasSetGradientShader {
             uint32_t _shm_id,
             uint32_t _shm_offset,
             GLuint _gradient_type,
-            const GLfloat _m0,
-            const GLfloat _m1,
-            const GLfloat _m2,
-            const GLfloat _m3,
-            const GLfloat _m4,
-            const GLfloat _m5,
-            const GLfloat _m6,
-            const GLfloat _m7,
-            const GLfloat _m8) {
+            GLfloat _m0,
+            GLfloat _m1,
+            GLfloat _m2,
+            GLfloat _m3,
+            GLfloat _m4,
+            GLfloat _m5,
+            GLfloat _m6,
+            GLfloat _m7,
+            GLfloat _m8) {
     static_cast<ValueType*>(cmd)->Init(_shm_size, _shm_id, _shm_offset,
                                        _gradient_type, _m0, _m1, _m2, _m3, _m4,
                                        _m5, _m6, _m7, _m8);
@@ -17320,15 +17320,15 @@ struct CanvasSetGradientShader {
   uint32_t shm_id;
   uint32_t shm_offset;
   uint32_t gradient_type;
-  uint32_t m0;
-  uint32_t m1;
-  uint32_t m2;
-  uint32_t m3;
-  uint32_t m4;
-  uint32_t m5;
-  uint32_t m6;
-  uint32_t m7;
-  uint32_t m8;
+  float m0;
+  float m1;
+  float m2;
+  float m3;
+  float m4;
+  float m5;
+  float m6;
+  float m7;
+  float m8;
 };
 
 static_assert(sizeof(CanvasSetGradientShader) == 56,
@@ -17377,15 +17377,15 @@ struct CanvasSetImageShader {
   void Init(GLuint _image_id,
             GLuint _tmx,
             GLuint _tmy,
-            const GLfloat _m0,
-            const GLfloat _m1,
-            const GLfloat _m2,
-            const GLfloat _m3,
-            const GLfloat _m4,
-            const GLfloat _m5,
-            const GLfloat _m6,
-            const GLfloat _m7,
-            const GLfloat _m8) {
+            GLfloat _m0,
+            GLfloat _m1,
+            GLfloat _m2,
+            GLfloat _m3,
+            GLfloat _m4,
+            GLfloat _m5,
+            GLfloat _m6,
+            GLfloat _m7,
+            GLfloat _m8) {
     SetHeader();
     image_id = _image_id;
     tmx = _tmx;
@@ -17405,15 +17405,15 @@ struct CanvasSetImageShader {
             GLuint _image_id,
             GLuint _tmx,
             GLuint _tmy,
-            const GLfloat _m0,
-            const GLfloat _m1,
-            const GLfloat _m2,
-            const GLfloat _m3,
-            const GLfloat _m4,
-            const GLfloat _m5,
-            const GLfloat _m6,
-            const GLfloat _m7,
-            const GLfloat _m8) {
+            GLfloat _m0,
+            GLfloat _m1,
+            GLfloat _m2,
+            GLfloat _m3,
+            GLfloat _m4,
+            GLfloat _m5,
+            GLfloat _m6,
+            GLfloat _m7,
+            GLfloat _m8) {
     static_cast<ValueType*>(cmd)->Init(_image_id, _tmx, _tmy, _m0, _m1, _m2,
                                        _m3, _m4, _m5, _m6, _m7, _m8);
     return NextCmdAddress<ValueType>(cmd);
@@ -17423,15 +17423,15 @@ struct CanvasSetImageShader {
   uint32_t image_id;
   uint32_t tmx;
   uint32_t tmy;
-  uint32_t m0;
-  uint32_t m1;
-  uint32_t m2;
-  uint32_t m3;
-  uint32_t m4;
-  uint32_t m5;
-  uint32_t m6;
-  uint32_t m7;
-  uint32_t m8;
+  float m0;
+  float m1;
+  float m2;
+  float m3;
+  float m4;
+  float m5;
+  float m6;
+  float m7;
+  float m8;
 };
 
 static_assert(sizeof(CanvasSetImageShader) == 52,

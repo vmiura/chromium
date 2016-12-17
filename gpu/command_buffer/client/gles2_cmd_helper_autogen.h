@@ -3508,15 +3508,15 @@ void CanvasSetGradientShader(GLsizeiptr shm_size,
                              uint32_t shm_id,
                              uint32_t shm_offset,
                              GLuint gradient_type,
-                             const GLfloat m0,
-                             const GLfloat m1,
-                             const GLfloat m2,
-                             const GLfloat m3,
-                             const GLfloat m4,
-                             const GLfloat m5,
-                             const GLfloat m6,
-                             const GLfloat m7,
-                             const GLfloat m8) {
+                             GLfloat m0,
+                             GLfloat m1,
+                             GLfloat m2,
+                             GLfloat m3,
+                             GLfloat m4,
+                             GLfloat m5,
+                             GLfloat m6,
+                             GLfloat m7,
+                             GLfloat m8) {
   gles2::cmds::CanvasSetGradientShader* c =
       GetCmdSpace<gles2::cmds::CanvasSetGradientShader>();
   if (c) {
@@ -3528,15 +3528,15 @@ void CanvasSetGradientShader(GLsizeiptr shm_size,
 void CanvasSetImageShader(GLuint image_id,
                           GLuint tmx,
                           GLuint tmy,
-                          const GLfloat m0,
-                          const GLfloat m1,
-                          const GLfloat m2,
-                          const GLfloat m3,
-                          const GLfloat m4,
-                          const GLfloat m5,
-                          const GLfloat m6,
-                          const GLfloat m7,
-                          const GLfloat m8) {
+                          GLfloat m0,
+                          GLfloat m1,
+                          GLfloat m2,
+                          GLfloat m3,
+                          GLfloat m4,
+                          GLfloat m5,
+                          GLfloat m6,
+                          GLfloat m7,
+                          GLfloat m8) {
   gles2::cmds::CanvasSetImageShader* c =
       GetCmdSpace<gles2::cmds::CanvasSetImageShader>();
   if (c) {
