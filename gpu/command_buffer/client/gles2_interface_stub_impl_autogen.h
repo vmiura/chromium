@@ -1230,4 +1230,9 @@ void GLES2InterfaceStub::CanvasSetImageShader(
     GLuint /* tmx */,
     GLuint /* tmy */,
     const SkMatrix* /* local_matrix */) {}
+void GLES2InterfaceStub::CanvasSetBlurFilter(GLfloat /* sigma_x */,
+                                             GLfloat /* sigma_y */,
+                                             GLboolean /* use_input */) {}
+void GLES2InterfaceStub::CanvasSetColorFilter(
+    SkColorFilter* /* color_filter */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

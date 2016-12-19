@@ -1285,4 +1285,10 @@ void CanvasSetImageShader(const SkImage* image,
                           GLuint tmy,
                           const SkMatrix* local_matrix) override;
 
+void CanvasSetBlurFilter(GLfloat sigma_x,
+                         GLfloat sigma_y,
+                         GLboolean use_input) override;
+
+void CanvasSetColorFilter(SkColorFilter* color_filter) override;
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_AUTOGEN_H_

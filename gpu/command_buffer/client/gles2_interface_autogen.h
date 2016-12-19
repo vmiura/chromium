@@ -945,4 +945,8 @@ virtual void CanvasSetImageShader(const SkImage* image,
                                   GLuint tmx,
                                   GLuint tmy,
                                   const SkMatrix* local_matrix) = 0;
+virtual void CanvasSetBlurFilter(GLfloat sigma_x,
+                                 GLfloat sigma_y,
+                                 GLboolean use_input) = 0;
+virtual void CanvasSetColorFilter(SkColorFilter* color_filter) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

@@ -888,6 +888,18 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetImageShader(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetBlurFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetColorFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

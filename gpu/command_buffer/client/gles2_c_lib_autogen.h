@@ -1825,6 +1825,14 @@ void GL_APIENTRY GLES2CanvasSetImageShader(const SkImage* image,
                                            const SkMatrix* local_matrix) {
   gles2::GetGLContext()->CanvasSetImageShader(image, tmx, tmy, local_matrix);
 }
+void GL_APIENTRY GLES2CanvasSetBlurFilter(GLfloat sigma_x,
+                                          GLfloat sigma_y,
+                                          GLboolean use_input) {
+  gles2::GetGLContext()->CanvasSetBlurFilter(sigma_x, sigma_y, use_input);
+}
+void GL_APIENTRY GLES2CanvasSetColorFilter(SkColorFilter* color_filter) {
+  gles2::GetGLContext()->CanvasSetColorFilter(color_filter);
+}
 
 namespace gles2 {
 
@@ -3228,6 +3236,14 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasSetImageShader",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasSetImageShader),
+    },
+    {
+        "glCanvasSetBlurFilter",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetBlurFilter),
+    },
+    {
+        "glCanvasSetColorFilter",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetColorFilter),
     },
     {
         NULL, NULL,

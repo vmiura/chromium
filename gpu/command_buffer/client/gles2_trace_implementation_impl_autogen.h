@@ -2664,4 +2664,17 @@ void GLES2TraceImplementation::CanvasSetImageShader(
   gl_->CanvasSetImageShader(image, tmx, tmy, local_matrix);
 }
 
+void GLES2TraceImplementation::CanvasSetBlurFilter(GLfloat sigma_x,
+                                                   GLfloat sigma_y,
+                                                   GLboolean use_input) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetBlurFilter");
+  gl_->CanvasSetBlurFilter(sigma_x, sigma_y, use_input);
+}
+
+void GLES2TraceImplementation::CanvasSetColorFilter(
+    SkColorFilter* color_filter) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetColorFilter");
+  gl_->CanvasSetColorFilter(color_filter);
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_IMPL_AUTOGEN_H_

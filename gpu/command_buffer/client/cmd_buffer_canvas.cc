@@ -1,8 +1,10 @@
 #include "cmd_buffer_canvas.h"
 
+#include "base/logging.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "third_party/skia/src/core/SkMatrixUtils.h"
@@ -118,6 +120,7 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
 
   SkCanvas::SaveLayerStrategy getSaveLayerStrategy(
       const SaveLayerRec& rec) override {
+    if (rec.fPaint) SetupPaint(*rec.fPaint);
     gl_->CanvasSaveLayer(rec.fBounds, rec.fPaint, rec.fBackdrop,
                          rec.fSaveLayerFlags);
     return SkCanvas::kNoLayer_SaveLayerStrategy;
@@ -223,6 +226,8 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
   void SetupPaint(const SkPaint& paint) {
     if (paint.getShader())
       SetupShader(paint.getShader());
+    if (paint.getImageFilter())
+      SetupImageFilter(paint.getImageFilter(), 0, 0);
   }
 
   void SetupShader(const SkShader* shader) {
@@ -287,6 +292,41 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
                                   &shader_matrix);
       }
     }
+  }
+
+  void SetupImageFilter(const SkImageFilter* filter, int index, int input) {
+    const char* filter_type = "NULL"; 
+    if (filter) {
+      //int num_inputs = filter->countInputs();
+      //for (int i = 0; i < num_inputs; i++) {
+      //  SkImageFilter* input = filter->getInput(i);
+      //  if (input)  
+      //    SetupImageFilter(input, index + 1, i);
+      //}
+
+      if (filter->isColorFilterNode(nullptr)) {
+        filter_type = "COLOR_FILTER";
+        SkColorFilter* color_filter = nullptr;
+        filter->isColorFilterNode(&color_filter);
+        gl_->CanvasSetColorFilter(color_filter);
+      }
+      else if (filter->isBlurFilterNode(nullptr, nullptr)) {
+        filter_type = "BLUR_FILTER";
+        SkScalar sigma_x, sigma_y;
+        filter->isBlurFilterNode(&sigma_x, &sigma_y);
+        gl_->CanvasSetBlurFilter(sigma_x, sigma_y, false);
+      } else if (filter->isImageSourceNode(0, 0, 0)) {
+        filter_type = "IMAGE_SRC";
+      } else if (filter->isPictureFilterNode(0, 0, 0)) {
+        filter_type = "PICTURE_FILTER";
+      } else {
+        filter_type = "????";
+      }
+    }
+
+    //LOG(ERROR) << "filter index " << index
+    //          << " input " << input
+    //          << " " << filter_type;
   }
 
   gpu::gles2::GLES2Interface* gl_;

@@ -3544,4 +3544,24 @@ void CanvasSetImageShader(GLuint image_id,
   }
 }
 
+void CanvasSetBlurFilter(GLfloat sigma_x,
+                         GLfloat sigma_y,
+                         GLboolean use_input) {
+  gles2::cmds::CanvasSetBlurFilter* c =
+      GetCmdSpace<gles2::cmds::CanvasSetBlurFilter>();
+  if (c) {
+    c->Init(sigma_x, sigma_y, use_input);
+  }
+}
+
+void CanvasSetColorFilter(GLsizeiptr shm_size,
+                          uint32_t shm_id,
+                          uint32_t shm_offset) {
+  gles2::cmds::CanvasSetColorFilter* c =
+      GetCmdSpace<gles2::cmds::CanvasSetColorFilter>();
+  if (c) {
+    c->Init(shm_size, shm_id, shm_offset);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

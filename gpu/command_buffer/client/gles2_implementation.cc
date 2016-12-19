@@ -42,6 +42,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/cdl_internals.h"
 #include "skia/ext/texture_handle.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -615,6 +616,17 @@ void GLES2Implementation::CanvasSetImageShader(const SkImage* image,
       local_matrix->get(1), local_matrix->get(2), local_matrix->get(3),
       local_matrix->get(4), local_matrix->get(5), local_matrix->get(6),
       local_matrix->get(7), local_matrix->get(8));
+}
+
+void GLES2Implementation::CanvasSetColorFilter(SkColorFilter* color_filter) {
+  SkBinaryWriteBuffer writer;
+  writer.writeFlattenable(color_filter);
+
+  size_t size = writer.bytesWritten();
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  writer.writeToMemory(buffer.address());
+
+  helper_->CanvasSetColorFilter(buffer.size(), buffer.shm_id(), buffer.offset());
 }
 
 CdlResourceCache* GLES2Implementation::resource_cache() {

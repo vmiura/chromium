@@ -3581,4 +3581,15 @@ void GLES2Implementation::CanvasDeleteImage(int image_id) {
   CheckGLError();
 }
 
+void GLES2Implementation::CanvasSetBlurFilter(GLfloat sigma_x,
+                                              GLfloat sigma_y,
+                                              GLboolean use_input) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSetBlurFilter(" << sigma_x
+                     << ", " << sigma_y << ", "
+                     << GLES2Util::GetStringBool(use_input) << ")");
+  helper_->CanvasSetBlurFilter(sigma_x, sigma_y, use_input);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

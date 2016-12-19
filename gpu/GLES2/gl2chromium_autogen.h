@@ -410,5 +410,7 @@
 #define glCanvasNewTypeface GLES2_GET_FUN(CanvasNewTypeface)
 #define glCanvasSetGradientShader GLES2_GET_FUN(CanvasSetGradientShader)
 #define glCanvasSetImageShader GLES2_GET_FUN(CanvasSetImageShader)
+#define glCanvasSetBlurFilter GLES2_GET_FUN(CanvasSetBlurFilter)
+#define glCanvasSetColorFilter GLES2_GET_FUN(CanvasSetColorFilter)
 
 #endif  // GPU_GLES2_GL2CHROMIUM_AUTOGEN_H_

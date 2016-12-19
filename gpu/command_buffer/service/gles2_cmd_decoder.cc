@@ -68,12 +68,16 @@
 #include "skia/ext/cdl_internals.h"
 #include "skia/ext/texture_handle.h"
 #include "third_party/angle/src/image_util/loadimage.h"
+
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
@@ -1148,6 +1152,11 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
     if (sk_shader_.get()) {
       paint.setShader(sk_shader_);
       sk_shader_.reset();
+    }
+
+    if (sk_image_filter_.get()) {
+      paint.setImageFilter(sk_image_filter_);
+      sk_image_filter_.reset();
     }
   }
 
@@ -2519,6 +2528,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   sk_sp<class GrContext> gr_context_;
   sk_sp<SkSurface> sk_surface_;
   sk_sp<SkShader> sk_shader_;
+  sk_sp<SkImageFilter> sk_image_filter_;
   SkCanvas* canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(GLES2DecoderImpl);
@@ -19245,6 +19255,30 @@ error::Error GLES2DecoderImpl::HandleCanvasSetImageShader(
     sk_shader_ = image->makeShader((SkShader::TileMode)c.tmx,
                                    (SkShader::TileMode)c.tmy, &matrix);
   }
+
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasSetBlurFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasSetBlurFilter& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetBlurFilter*>(cmd_data);
+
+  sk_image_filter_ = SkBlurImageFilter::Make(c.sigma_x, c.sigma_y, 0, 0);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasSetColorFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasSetColorFilter& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetColorFilter*>(cmd_data);
+
+  void* data = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+  SkReadBuffer buffer(data, c.shm_size);
+  sk_sp<SkColorFilter> color_filter = buffer.readColorFilter();
+  sk_image_filter_ = SkColorFilterImageFilter::Make(color_filter, 0, 0);
 
   return error::kNoError;
 }

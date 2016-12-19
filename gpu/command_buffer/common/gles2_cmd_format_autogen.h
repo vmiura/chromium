@@ -17463,4 +17463,92 @@ static_assert(offsetof(CanvasSetImageShader, m7) == 44,
 static_assert(offsetof(CanvasSetImageShader, m8) == 48,
               "offset of CanvasSetImageShader m8 should be 48");
 
+struct CanvasSetBlurFilter {
+  typedef CanvasSetBlurFilter ValueType;
+  static const CommandId kCmdId = kCanvasSetBlurFilter;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _sigma_x, GLfloat _sigma_y, GLboolean _use_input) {
+    SetHeader();
+    sigma_x = _sigma_x;
+    sigma_y = _sigma_y;
+    use_input = _use_input;
+  }
+
+  void* Set(void* cmd,
+            GLfloat _sigma_x,
+            GLfloat _sigma_y,
+            GLboolean _use_input) {
+    static_cast<ValueType*>(cmd)->Init(_sigma_x, _sigma_y, _use_input);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float sigma_x;
+  float sigma_y;
+  uint32_t use_input;
+};
+
+static_assert(sizeof(CanvasSetBlurFilter) == 16,
+              "size of CanvasSetBlurFilter should be 16");
+static_assert(offsetof(CanvasSetBlurFilter, header) == 0,
+              "offset of CanvasSetBlurFilter header should be 0");
+static_assert(offsetof(CanvasSetBlurFilter, sigma_x) == 4,
+              "offset of CanvasSetBlurFilter sigma_x should be 4");
+static_assert(offsetof(CanvasSetBlurFilter, sigma_y) == 8,
+              "offset of CanvasSetBlurFilter sigma_y should be 8");
+static_assert(offsetof(CanvasSetBlurFilter, use_input) == 12,
+              "offset of CanvasSetBlurFilter use_input should be 12");
+
+struct CanvasSetColorFilter {
+  typedef CanvasSetColorFilter ValueType;
+  static const CommandId kCmdId = kCanvasSetColorFilter;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLsizeiptr _shm_size, uint32_t _shm_id, uint32_t _shm_offset) {
+    SetHeader();
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_shm_size, _shm_id, _shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t shm_size;
+  uint32_t shm_id;
+  uint32_t shm_offset;
+};
+
+static_assert(sizeof(CanvasSetColorFilter) == 16,
+              "size of CanvasSetColorFilter should be 16");
+static_assert(offsetof(CanvasSetColorFilter, header) == 0,
+              "offset of CanvasSetColorFilter header should be 0");
+static_assert(offsetof(CanvasSetColorFilter, shm_size) == 4,
+              "offset of CanvasSetColorFilter shm_size should be 4");
+static_assert(offsetof(CanvasSetColorFilter, shm_id) == 8,
+              "offset of CanvasSetColorFilter shm_id should be 8");
+static_assert(offsetof(CanvasSetColorFilter, shm_offset) == 12,
+              "offset of CanvasSetColorFilter shm_offset should be 12");
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_

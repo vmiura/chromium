@@ -401,3 +401,5 @@ GL_APICALL void         GL_APIENTRY glCanvasNewTypeface (SkTypeface* typeface);
 
 GL_APICALL void         GL_APIENTRY glCanvasSetGradientShader (const SkShader* shader);
 GL_APICALL void         GL_APIENTRY glCanvasSetImageShader (const SkImage* image, GLuint tmx, GLuint tmy, const SkMatrix* local_matrix);
+GL_APICALL void         GL_APIENTRY glCanvasSetBlurFilter (GLfloat sigma_x, GLfloat sigma_y, GLboolean use_input);
+GL_APICALL void         GL_APIENTRY glCanvasSetColorFilter (SkColorFilter* color_filter);
