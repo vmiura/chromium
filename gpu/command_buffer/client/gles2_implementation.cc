@@ -56,7 +56,6 @@
 #endif
 
 namespace gpu {
-
 namespace gles2 {
 
 namespace {
@@ -497,7 +496,7 @@ void GLES2Implementation::CanvasSetColorFilter(SkColorFilter* color_filter) {
   helper_->CanvasSetColorFilter(buffer.size(), buffer.shm_id(), buffer.offset());
 }
 
-CdlResourceCache* GLES2Implementation::resource_cache() {
+ResourceCache* GLES2Implementation::resource_cache() {
   return &resource_cache_;
 }
 

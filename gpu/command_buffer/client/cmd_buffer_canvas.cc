@@ -149,7 +149,7 @@ namespace {
 
 static unsigned gPictureImageKeyNamespaceLabel;
 
-struct PictureImageKey : public gpu::CdlResourceCache::Key {
+struct PictureImageKey : public gpu::ResourceCache::Key {
 public:
   PictureImageKey(uint32_t picture_id,
                   const SkRect& tile,
@@ -174,7 +174,7 @@ private:
   SkDEBUGCODE(uint32_t fEndOfStruct;)
 };
 
-struct PictureImageRec : public gpu::CdlResourceCache::Rec {
+struct PictureImageRec : public gpu::ResourceCache::Rec {
   PictureImageRec(const PictureImageKey& key, sk_sp<SkImage> image)
       : key(key)
       , image(image) {}
@@ -189,7 +189,7 @@ struct PictureImageRec : public gpu::CdlResourceCache::Rec {
   }
   const char* getCategory() const override { return "picture-image"; }
 
-  static bool Visitor(const gpu::CdlResourceCache::Rec& baseRec, void* contextShader) {
+  static bool Visitor(const gpu::ResourceCache::Rec& baseRec, void* contextShader) {
       const PictureImageRec& rec = static_cast<const PictureImageRec&>(baseRec);
       SkImage** result = reinterpret_cast<SkImage**>(contextShader);
       *result = rec.image.get();
@@ -396,7 +396,7 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
       SkImage* tile_image = 0;
       PictureImageKey key(picture->uniqueID(), tile, tileSize);
 
-      gpu::CdlResourceCache* resource_cache = context_support_->resource_cache();
+      gpu::ResourceCache* resource_cache = context_support_->resource_cache();
       if (!resource_cache->find(key, PictureImageRec::Visitor, &tile_image)) {
         // Temp: Draw SkPicture to a local SkBitmap.
         SkBitmap bitmap;
@@ -429,12 +429,12 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
   }
 
   void SetupImageFilter(const SkImageFilter* filter, int index, int input) {
-    const char* filter_type = "NULL"; 
+    const char* filter_type = "NULL";
     if (filter) {
       //int num_inputs = filter->countInputs();
       //for (int i = 0; i < num_inputs; i++) {
       //  SkImageFilter* input = filter->getInput(i);
-      //  if (input)  
+      //  if (input)
       //    SetupImageFilter(input, index + 1, i);
       //}
 
