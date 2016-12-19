@@ -47,6 +47,7 @@
 #include "media/blink/webmediaplayer_delegate.h"
 #include "media/blink/webmediaplayer_util.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/cdl_paint.h"
 #include "skia/ext/texture_handle.h"
 #include "third_party/WebKit/public/platform/Platform.h"
 #include "third_party/WebKit/public/platform/URLConversion.h"
@@ -64,7 +65,6 @@
 #include "third_party/WebKit/public/web/WebView.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -508,7 +508,7 @@ bool WebMediaPlayerAndroid::didLoadingProgress() {
 
 void WebMediaPlayerAndroid::paint(blink::WebCanvas* canvas,
                                   const blink::WebRect& rect,
-                                  SkPaint& paint) {
+                                  CdlPaint& paint) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   std::unique_ptr<blink::WebGraphicsContext3DProvider> provider(
       blink::Platform::current()
@@ -556,7 +556,7 @@ void WebMediaPlayerAndroid::paint(blink::WebCanvas* canvas,
   // readbacked to system memory then draw onto the canvas.
   SkRect dest;
   dest.set(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
-  SkPaint video_paint;
+  CdlPaint video_paint;
   video_paint.setAlpha(paint.getAlpha());
   video_paint.setBlendMode(paint.getBlendMode());
   // It is not necessary to pass the dest into the drawBitmap call since all

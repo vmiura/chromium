@@ -383,6 +383,15 @@ void CdlCanvas::drawImageRect(const SkImage* image,
   this->onDrawImageRect(image, &src, dst, paint, constraint);
 }
 
+void CdlCanvas::drawImageRect(const SkImage* image,
+                              const SkRect& dst,
+                              const CdlPaint* paint,
+                              SkCanvas::SrcRectConstraint constraint) {
+  RETURN_ON_NULL(image);
+  this->drawImageRect(image, SkRect::MakeIWH(image->width(), image->height()),
+                      dst, paint, constraint);
+}
+
 void CdlCanvas::drawText(const void* text,
                          size_t byteLength,
                          SkScalar x,

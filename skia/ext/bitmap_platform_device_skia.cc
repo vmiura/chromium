@@ -60,7 +60,7 @@ NativeDrawingContext BitmapPlatformDevice::BeginPlatformPaint(
 
 // PlatformCanvas impl
 
-std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
+std::unique_ptr<CdlCanvas> CreatePlatformCanvas(int width,
                                                int height,
                                                bool is_opaque,
                                                uint8_t* data,
