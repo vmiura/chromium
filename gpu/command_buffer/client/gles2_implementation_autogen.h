@@ -1244,11 +1244,11 @@ void CanvasClipRegion(const SkRegion& r, GLuint clip_op) override;
 
 void CanvasDrawPaint(const SkPaint& paint) override;
 
-void CanvasDrawRect(const SkRect& r, const SkPaint& panint) override;
+void CanvasDrawRect(const SkRect& r, const SkPaint& paint) override;
 
-void CanvasDrawOval(const SkRect& r, const SkPaint& panint) override;
+void CanvasDrawOval(const SkRect& r, const SkPaint& paint) override;
 
-void CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) override;
+void CanvasDrawRRect(const SkRRect& r, const SkPaint& paint) override;
 
 void CanvasDrawPath(const SkPath& path, const SkPaint& paint) override;
 
@@ -1288,6 +1288,13 @@ void CanvasSetImageShader(const SkImage* image,
 void CanvasSetBlurFilter(GLfloat sigma_x,
                          GLfloat sigma_y,
                          GLboolean use_input) override;
+
+void CanvasSetDropShadowFilter(GLfloat dx,
+                               GLfloat dy,
+                               GLfloat sigma_x,
+                               GLfloat sigma_y,
+                               GLuint color,
+                               GLuint mode) override;
 
 void CanvasSetColorFilter(SkColorFilter* color_filter) override;
 

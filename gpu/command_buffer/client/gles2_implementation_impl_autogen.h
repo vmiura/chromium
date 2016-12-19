@@ -3592,4 +3592,18 @@ void GLES2Implementation::CanvasSetBlurFilter(GLfloat sigma_x,
   CheckGLError();
 }
 
+void GLES2Implementation::CanvasSetDropShadowFilter(GLfloat dx,
+                                                    GLfloat dy,
+                                                    GLfloat sigma_x,
+                                                    GLfloat sigma_y,
+                                                    GLuint color,
+                                                    GLuint mode) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCanvasSetDropShadowFilter(" << dx
+                     << ", " << dy << ", " << sigma_x << ", " << sigma_y << ", "
+                     << color << ", " << mode << ")");
+  helper_->CanvasSetDropShadowFilter(dx, dy, sigma_x, sigma_y, color, mode);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

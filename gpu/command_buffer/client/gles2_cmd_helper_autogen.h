@@ -3554,6 +3554,19 @@ void CanvasSetBlurFilter(GLfloat sigma_x,
   }
 }
 
+void CanvasSetDropShadowFilter(GLfloat dx,
+                               GLfloat dy,
+                               GLfloat sigma_x,
+                               GLfloat sigma_y,
+                               GLuint color,
+                               GLuint mode) {
+  gles2::cmds::CanvasSetDropShadowFilter* c =
+      GetCmdSpace<gles2::cmds::CanvasSetDropShadowFilter>();
+  if (c) {
+    c->Init(dx, dy, sigma_x, sigma_y, color, mode);
+  }
+}
+
 void CanvasSetColorFilter(GLsizeiptr shm_size,
                           uint32_t shm_id,
                           uint32_t shm_offset) {

@@ -1770,14 +1770,14 @@ void GL_APIENTRY GLES2CanvasClipRegion(const SkRegion& r, GLuint clip_op) {
 void GL_APIENTRY GLES2CanvasDrawPaint(const SkPaint& paint) {
   gles2::GetGLContext()->CanvasDrawPaint(paint);
 }
-void GL_APIENTRY GLES2CanvasDrawRect(const SkRect& r, const SkPaint& panint) {
-  gles2::GetGLContext()->CanvasDrawRect(r, panint);
+void GL_APIENTRY GLES2CanvasDrawRect(const SkRect& r, const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawRect(r, paint);
 }
-void GL_APIENTRY GLES2CanvasDrawOval(const SkRect& r, const SkPaint& panint) {
-  gles2::GetGLContext()->CanvasDrawOval(r, panint);
+void GL_APIENTRY GLES2CanvasDrawOval(const SkRect& r, const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawOval(r, paint);
 }
-void GL_APIENTRY GLES2CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) {
-  gles2::GetGLContext()->CanvasDrawRRect(r, panint);
+void GL_APIENTRY GLES2CanvasDrawRRect(const SkRRect& r, const SkPaint& paint) {
+  gles2::GetGLContext()->CanvasDrawRRect(r, paint);
 }
 void GL_APIENTRY GLES2CanvasDrawPath(const SkPath& path, const SkPaint& paint) {
   gles2::GetGLContext()->CanvasDrawPath(path, paint);
@@ -1829,6 +1829,15 @@ void GL_APIENTRY GLES2CanvasSetBlurFilter(GLfloat sigma_x,
                                           GLfloat sigma_y,
                                           GLboolean use_input) {
   gles2::GetGLContext()->CanvasSetBlurFilter(sigma_x, sigma_y, use_input);
+}
+void GL_APIENTRY GLES2CanvasSetDropShadowFilter(GLfloat dx,
+                                                GLfloat dy,
+                                                GLfloat sigma_x,
+                                                GLfloat sigma_y,
+                                                GLuint color,
+                                                GLuint mode) {
+  gles2::GetGLContext()->CanvasSetDropShadowFilter(dx, dy, sigma_x, sigma_y,
+                                                   color, mode);
 }
 void GL_APIENTRY GLES2CanvasSetColorFilter(SkColorFilter* color_filter) {
   gles2::GetGLContext()->CanvasSetColorFilter(color_filter);
@@ -3240,6 +3249,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasSetBlurFilter",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasSetBlurFilter),
+    },
+    {
+        "glCanvasSetDropShadowFilter",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasSetDropShadowFilter),
     },
     {
         "glCanvasSetColorFilter",

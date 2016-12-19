@@ -72,6 +72,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
+#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -19266,6 +19267,17 @@ error::Error GLES2DecoderImpl::HandleCanvasSetBlurFilter(
       *static_cast<const volatile gles2::cmds::CanvasSetBlurFilter*>(cmd_data);
 
   sk_image_filter_ = SkBlurImageFilter::Make(c.sigma_x, c.sigma_y, 0, 0);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleCanvasSetDropShadowFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasSetDropShadowFilter& c =
+      *static_cast<const volatile gles2::cmds::CanvasSetDropShadowFilter*>(cmd_data);
+
+  sk_image_filter_ = SkDropShadowImageFilter::Make(c.dx, c.dy,
+      c.sigma_x, c.sigma_y, c.color, (SkDropShadowImageFilter::ShadowMode)c.mode, 0, 0);
   return error::kNoError;
 }
 

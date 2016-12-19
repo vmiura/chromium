@@ -894,6 +894,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetBlurFilter(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetDropShadowFilter(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasSetColorFilter(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

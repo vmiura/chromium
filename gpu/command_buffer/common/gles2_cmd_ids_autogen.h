@@ -357,7 +357,8 @@
   OP(CanvasSetGradientShader)                              /* 598 */ \
   OP(CanvasSetImageShader)                                 /* 599 */ \
   OP(CanvasSetBlurFilter)                                  /* 600 */ \
-  OP(CanvasSetColorFilter)                                 /* 601 */
+  OP(CanvasSetDropShadowFilter)                            /* 601 */ \
+  OP(CanvasSetColorFilter)                                 /* 602 */
 
 enum CommandId {
   kOneBeforeStartPoint =

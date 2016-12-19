@@ -5770,6 +5770,25 @@ TEST_F(GLES2FormatTest, CanvasSetBlurFilter) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasSetDropShadowFilter) {
+  cmds::CanvasSetDropShadowFilter& cmd =
+      *GetBufferAs<cmds::CanvasSetDropShadowFilter>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLfloat>(11), static_cast<GLfloat>(12),
+              static_cast<GLfloat>(13), static_cast<GLfloat>(14),
+              static_cast<GLuint>(15), static_cast<GLuint>(16));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasSetDropShadowFilter::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLfloat>(11), cmd.dx);
+  EXPECT_EQ(static_cast<GLfloat>(12), cmd.dy);
+  EXPECT_EQ(static_cast<GLfloat>(13), cmd.sigma_x);
+  EXPECT_EQ(static_cast<GLfloat>(14), cmd.sigma_y);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.color);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.mode);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasSetColorFilter) {
   cmds::CanvasSetColorFilter& cmd = *GetBufferAs<cmds::CanvasSetColorFilter>();
   void* next_cmd =

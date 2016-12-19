@@ -378,9 +378,9 @@ GL_APICALL void         GL_APIENTRY glCanvasClipPath (const SkPath& p, GLuint cl
 GL_APICALL void         GL_APIENTRY glCanvasClipRegion (const SkRegion& r, GLuint clip_op);
 
 GL_APICALL void         GL_APIENTRY glCanvasDrawPaint (const SkPaint& paint);
-GL_APICALL void         GL_APIENTRY glCanvasDrawRect (const SkRect& r, const SkPaint& panint);
-GL_APICALL void         GL_APIENTRY glCanvasDrawOval (const SkRect& r, const SkPaint& panint);
-GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (const SkRRect& r, const SkPaint& panint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRect (const SkRect& r, const SkPaint& paint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawOval (const SkRect& r, const SkPaint& paint);
+GL_APICALL void         GL_APIENTRY glCanvasDrawRRect (const SkRRect& r, const SkPaint& paint);
 // TODO: DrawDRRect
 GL_APICALL void         GL_APIENTRY glCanvasDrawPath (const SkPath& path, const SkPaint& paint);
 
@@ -402,4 +402,5 @@ GL_APICALL void         GL_APIENTRY glCanvasNewTypeface (SkTypeface* typeface);
 GL_APICALL void         GL_APIENTRY glCanvasSetGradientShader (const SkShader* shader);
 GL_APICALL void         GL_APIENTRY glCanvasSetImageShader (const SkImage* image, GLuint tmx, GLuint tmy, const SkMatrix* local_matrix);
 GL_APICALL void         GL_APIENTRY glCanvasSetBlurFilter (GLfloat sigma_x, GLfloat sigma_y, GLboolean use_input);
+GL_APICALL void         GL_APIENTRY glCanvasSetDropShadowFilter (GLfloat dx, GLfloat dy, GLfloat sigma_x, GLfloat sigma_y, GLuint color, GLuint mode);
 GL_APICALL void         GL_APIENTRY glCanvasSetColorFilter (SkColorFilter* color_filter);

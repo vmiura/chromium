@@ -315,6 +315,15 @@ class CommandBufferCanvas : public SkNoDrawCanvas {
         SkScalar sigma_x, sigma_y;
         filter->isBlurFilterNode(&sigma_x, &sigma_y);
         gl_->CanvasSetBlurFilter(sigma_x, sigma_y, false);
+      } else if (filter->isDropShadowFilterNode(0, 0, 0, 0)) {
+        filter_type = "DROP_SHADOW_FILTER";
+        SkSize delta, sigma;
+        SkColor color;
+        uint32_t shadow_mode;
+        filter->isDropShadowFilterNode(&delta, &sigma, &color, &shadow_mode);
+        gl_->CanvasSetDropShadowFilter(delta.width(), delta.height(),
+                                       sigma.width(), sigma.height(),
+                                       color, shadow_mode);
       } else if (filter->isImageSourceNode(0, 0, 0)) {
         filter_type = "IMAGE_SRC";
       } else if (filter->isPictureFilterNode(0, 0, 0)) {

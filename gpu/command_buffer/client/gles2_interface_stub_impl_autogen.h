@@ -1198,11 +1198,11 @@ void GLES2InterfaceStub::CanvasClipRegion(const SkRegion& /* r */,
                                           GLuint /* clip_op */) {}
 void GLES2InterfaceStub::CanvasDrawPaint(const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawRect(const SkRect& /* r */,
-                                        const SkPaint& /* panint */) {}
+                                        const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawOval(const SkRect& /* r */,
-                                        const SkPaint& /* panint */) {}
+                                        const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawRRect(const SkRRect& /* r */,
-                                         const SkPaint& /* panint */) {}
+                                         const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawPath(const SkPath& /* path */,
                                         const SkPaint& /* paint */) {}
 void GLES2InterfaceStub::CanvasDrawImage(const SkImage* /* image */,
@@ -1233,6 +1233,12 @@ void GLES2InterfaceStub::CanvasSetImageShader(
 void GLES2InterfaceStub::CanvasSetBlurFilter(GLfloat /* sigma_x */,
                                              GLfloat /* sigma_y */,
                                              GLboolean /* use_input */) {}
+void GLES2InterfaceStub::CanvasSetDropShadowFilter(GLfloat /* dx */,
+                                                   GLfloat /* dy */,
+                                                   GLfloat /* sigma_x */,
+                                                   GLfloat /* sigma_y */,
+                                                   GLuint /* color */,
+                                                   GLuint /* mode */) {}
 void GLES2InterfaceStub::CanvasSetColorFilter(
     SkColorFilter* /* color_filter */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

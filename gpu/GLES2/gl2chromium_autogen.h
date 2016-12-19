@@ -411,6 +411,7 @@
 #define glCanvasSetGradientShader GLES2_GET_FUN(CanvasSetGradientShader)
 #define glCanvasSetImageShader GLES2_GET_FUN(CanvasSetImageShader)
 #define glCanvasSetBlurFilter GLES2_GET_FUN(CanvasSetBlurFilter)
+#define glCanvasSetDropShadowFilter GLES2_GET_FUN(CanvasSetDropShadowFilter)
 #define glCanvasSetColorFilter GLES2_GET_FUN(CanvasSetColorFilter)
 
 #endif  // GPU_GLES2_GL2CHROMIUM_AUTOGEN_H_

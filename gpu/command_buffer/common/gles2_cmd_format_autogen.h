@@ -17507,6 +17507,71 @@ static_assert(offsetof(CanvasSetBlurFilter, sigma_y) == 8,
 static_assert(offsetof(CanvasSetBlurFilter, use_input) == 12,
               "offset of CanvasSetBlurFilter use_input should be 12");
 
+struct CanvasSetDropShadowFilter {
+  typedef CanvasSetDropShadowFilter ValueType;
+  static const CommandId kCmdId = kCanvasSetDropShadowFilter;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _dx,
+            GLfloat _dy,
+            GLfloat _sigma_x,
+            GLfloat _sigma_y,
+            GLuint _color,
+            GLuint _mode) {
+    SetHeader();
+    dx = _dx;
+    dy = _dy;
+    sigma_x = _sigma_x;
+    sigma_y = _sigma_y;
+    color = _color;
+    mode = _mode;
+  }
+
+  void* Set(void* cmd,
+            GLfloat _dx,
+            GLfloat _dy,
+            GLfloat _sigma_x,
+            GLfloat _sigma_y,
+            GLuint _color,
+            GLuint _mode) {
+    static_cast<ValueType*>(cmd)->Init(_dx, _dy, _sigma_x, _sigma_y, _color,
+                                       _mode);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float dx;
+  float dy;
+  float sigma_x;
+  float sigma_y;
+  uint32_t color;
+  uint32_t mode;
+};
+
+static_assert(sizeof(CanvasSetDropShadowFilter) == 28,
+              "size of CanvasSetDropShadowFilter should be 28");
+static_assert(offsetof(CanvasSetDropShadowFilter, header) == 0,
+              "offset of CanvasSetDropShadowFilter header should be 0");
+static_assert(offsetof(CanvasSetDropShadowFilter, dx) == 4,
+              "offset of CanvasSetDropShadowFilter dx should be 4");
+static_assert(offsetof(CanvasSetDropShadowFilter, dy) == 8,
+              "offset of CanvasSetDropShadowFilter dy should be 8");
+static_assert(offsetof(CanvasSetDropShadowFilter, sigma_x) == 12,
+              "offset of CanvasSetDropShadowFilter sigma_x should be 12");
+static_assert(offsetof(CanvasSetDropShadowFilter, sigma_y) == 16,
+              "offset of CanvasSetDropShadowFilter sigma_y should be 16");
+static_assert(offsetof(CanvasSetDropShadowFilter, color) == 20,
+              "offset of CanvasSetDropShadowFilter color should be 20");
+static_assert(offsetof(CanvasSetDropShadowFilter, mode) == 24,
+              "offset of CanvasSetDropShadowFilter mode should be 24");
+
 struct CanvasSetColorFilter {
   typedef CanvasSetColorFilter ValueType;
   static const CommandId kCmdId = kCanvasSetColorFilter;

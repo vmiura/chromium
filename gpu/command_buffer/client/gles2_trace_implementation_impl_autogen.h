@@ -2577,21 +2577,21 @@ void GLES2TraceImplementation::CanvasDrawPaint(const SkPaint& paint) {
 }
 
 void GLES2TraceImplementation::CanvasDrawRect(const SkRect& r,
-                                              const SkPaint& panint) {
+                                              const SkPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRect");
-  gl_->CanvasDrawRect(r, panint);
+  gl_->CanvasDrawRect(r, paint);
 }
 
 void GLES2TraceImplementation::CanvasDrawOval(const SkRect& r,
-                                              const SkPaint& panint) {
+                                              const SkPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawOval");
-  gl_->CanvasDrawOval(r, panint);
+  gl_->CanvasDrawOval(r, paint);
 }
 
 void GLES2TraceImplementation::CanvasDrawRRect(const SkRRect& r,
-                                               const SkPaint& panint) {
+                                               const SkPaint& paint) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasDrawRRect");
-  gl_->CanvasDrawRRect(r, panint);
+  gl_->CanvasDrawRRect(r, paint);
 }
 
 void GLES2TraceImplementation::CanvasDrawPath(const SkPath& path,
@@ -2669,6 +2669,16 @@ void GLES2TraceImplementation::CanvasSetBlurFilter(GLfloat sigma_x,
                                                    GLboolean use_input) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetBlurFilter");
   gl_->CanvasSetBlurFilter(sigma_x, sigma_y, use_input);
+}
+
+void GLES2TraceImplementation::CanvasSetDropShadowFilter(GLfloat dx,
+                                                         GLfloat dy,
+                                                         GLfloat sigma_x,
+                                                         GLfloat sigma_y,
+                                                         GLuint color,
+                                                         GLuint mode) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasSetDropShadowFilter");
+  gl_->CanvasSetDropShadowFilter(dx, dy, sigma_x, sigma_y, color, mode);
 }
 
 void GLES2TraceImplementation::CanvasSetColorFilter(

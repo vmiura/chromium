@@ -918,9 +918,9 @@ virtual void CanvasClipPath(const SkPath& p,
                             GLboolean antialias) = 0;
 virtual void CanvasClipRegion(const SkRegion& r, GLuint clip_op) = 0;
 virtual void CanvasDrawPaint(const SkPaint& paint) = 0;
-virtual void CanvasDrawRect(const SkRect& r, const SkPaint& panint) = 0;
-virtual void CanvasDrawOval(const SkRect& r, const SkPaint& panint) = 0;
-virtual void CanvasDrawRRect(const SkRRect& r, const SkPaint& panint) = 0;
+virtual void CanvasDrawRect(const SkRect& r, const SkPaint& paint) = 0;
+virtual void CanvasDrawOval(const SkRect& r, const SkPaint& paint) = 0;
+virtual void CanvasDrawRRect(const SkRRect& r, const SkPaint& paint) = 0;
 virtual void CanvasDrawPath(const SkPath& path, const SkPaint& paint) = 0;
 virtual void CanvasDrawImage(const SkImage* image,
                              GLfloat left,
@@ -948,5 +948,11 @@ virtual void CanvasSetImageShader(const SkImage* image,
 virtual void CanvasSetBlurFilter(GLfloat sigma_x,
                                  GLfloat sigma_y,
                                  GLboolean use_input) = 0;
+virtual void CanvasSetDropShadowFilter(GLfloat dx,
+                                       GLfloat dy,
+                                       GLfloat sigma_x,
+                                       GLfloat sigma_y,
+                                       GLuint color,
+                                       GLuint mode) = 0;
 virtual void CanvasSetColorFilter(SkColorFilter* color_filter) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_
