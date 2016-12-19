@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_CMD_BUFFER_CANVAS_H_
 #define GPU_COMMAND_BUFFER_CLIENT_CMD_BUFFER_CANVAS_H_
 
+#include "gpu/gpu_export.h"
+
 class SkCanvas;
 
 namespace gpu {
@@ -15,7 +17,7 @@ namespace gles2 {
   class GLES2Interface;
 } // namepace gles2
 
-SkCanvas* MakeCommandBufferCanvas(int width, int height,
+GPU_EXPORT SkCanvas* MakeCommandBufferCanvas(int width, int height,
     gpu::gles2::GLES2Interface* gl, gpu::ContextSupport* context_support);
 
 } // namepace gpu

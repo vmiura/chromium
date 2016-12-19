@@ -46,6 +46,8 @@ source_set("client_sources") {
     "gpu_memory_buffer_manager.h",
     "mapped_memory.cc",
     "mapped_memory.h",
+    "resource_cache.cc",
+    "resource_cache.h",
     "ring_buffer.cc",
     "ring_buffer.h",
     "transfer_buffer.cc",

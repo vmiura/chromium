@@ -286,7 +286,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation
   int findOrDefineTextBlob(const SkTextBlob*) override;
   int findOrDefinePath(const SkPath*) override;
 
-  CdlResourceCache* resource_cache() override;
+  ResourceCache* resource_cache() override;
 
   struct CacheRecord {
     CacheRecord(int id, int size)
@@ -296,7 +296,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation
   };
 
  private:
-  CdlResourceCache resource_cache_;
+  ResourceCache resource_cache_;
 
   std::unordered_set<int> images_;
   std::unordered_set<int> paths_;
