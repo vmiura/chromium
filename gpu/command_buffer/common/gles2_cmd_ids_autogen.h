@@ -357,7 +357,9 @@
   OP(CanvasNewPath)                                        /* 598 */ \
   OP(CanvasNewTypeface)                                    /* 599 */ \
   OP(CanvasSetGradientShader)                              /* 600 */ \
-  OP(CanvasSetImageShader)                                 /* 601 */
+  OP(CanvasSetImageShader)                                 /* 601 */ \
+  OP(CanvasSetBlurFilter)                                  /* 602 */ \
+  OP(CanvasSetColorFilter)                                 /* 603 */
 
 enum CommandId {
   kOneBeforeStartPoint =

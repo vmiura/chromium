@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "skia/ext/cdl_internals.h"
 
+class SkColorFilter;
 class SkImage;
 class SkMatrix;
 class SkPaint;
