@@ -23,7 +23,7 @@ class CdlPictureBuffer;
 class CdlPicture;
 class CdlPictureRecordingCanvas;
 
-class CdlPictureRecorder : SkNoncopyable {
+class SK_API CdlPictureRecorder : SkNoncopyable {
  public:
   CdlPictureRecorder();
   ~CdlPictureRecorder();

@@ -18,7 +18,7 @@
 
 class CdlPicture;
 
-class CdlShader : public SkRefCnt {
+class SK_API CdlShader : public SkRefCnt {
  public:
   CdlShader(const SkMatrix* local_matrix = NULL);
   ~CdlShader() override;
@@ -45,11 +45,11 @@ class CdlShader : public SkRefCnt {
   SkMatrix local_matrix_;
 };
 
-inline sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader) {
+inline SK_API sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader) {
   return CdlShader::WrapSkShader(shader);
 }
 
-inline sk_sp<CdlShader> MakeCdlImageShader(sk_sp<SkImage> image,
+inline SK_API sk_sp<CdlShader> MakeCdlImageShader(sk_sp<SkImage> image,
                                            SkShader::TileMode tx,
                                            SkShader::TileMode ty,
                                            const SkMatrix* local_matrix) {
@@ -61,11 +61,11 @@ inline sk_sp<CdlShader> MakeCdlImageShader(sk_sp<SkImage> image,
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkShader.h"
 
-inline sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader) {
+inline SK_API sk_sp<CdlShader> WrapSkShader(sk_sp<SkShader> shader) {
   return shader;
 }
 
-inline sk_sp<CdlShader> MakeCdlImageShader(sk_sp<SkImage> image,
+inline SK_API sk_sp<CdlShader> MakeCdlImageShader(sk_sp<SkImage> image,
                                            SkShader::TileMode tx,
                                            SkShader::TileMode ty,
                                            const SkMatrix* local_matrix) {

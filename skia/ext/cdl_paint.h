@@ -22,7 +22,7 @@
 #include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-class CdlPaint {
+class SK_API CdlPaint {
  public:
   CdlPaint();
   ~CdlPaint();

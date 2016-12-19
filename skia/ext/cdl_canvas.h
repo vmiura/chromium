@@ -24,7 +24,7 @@
 class CdlPaint;
 class CdlPicture;
 
-class CdlCanvas : public SkRefCnt {
+class SK_API CdlCanvas : public SkRefCnt {
  public:
   static sk_sp<CdlCanvas> Make(SkCanvas* canvas);
 
@@ -386,10 +386,10 @@ class SK_API CdlPassThroughCanvas : public CdlCanvas {
   ~CdlPassThroughCanvas() override;
 };
 
-inline const SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
+inline SK_API const SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
   return canvas->skCanvas();
 }
-inline SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
+inline SK_API SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
   return canvas->skCanvas();
 }
 
@@ -406,10 +406,10 @@ class SK_API CdlPassThroughCanvas : public SkNWayCanvas {
   ~CdlPassThroughCanvas() override;
 };
 
-inline const SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
+inline const SK_API SkCanvas* GetSkCanvas(const CdlCanvas* canvas) {
   return canvas;
 }
-inline SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
+inline SK_API SkCanvas* GetSkCanvas(CdlCanvas* canvas) {
   return canvas;
 }
 

@@ -14,7 +14,7 @@
 
 #include "cdl_canvas.h"
 
-class CdlNoDrawCanvas : public CdlCanvas {
+class SK_API CdlNoDrawCanvas : public CdlCanvas {
  public:
   CdlNoDrawCanvas(int width, int height);
   ~CdlNoDrawCanvas() override;

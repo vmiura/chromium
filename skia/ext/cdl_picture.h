@@ -20,7 +20,7 @@
 
 class CdlPictureBuffer;
 
-class CdlPicture : public SkRefCnt {
+class SK_API CdlPicture : public SkRefCnt {
  public:
   CdlPicture(sk_sp<CdlPictureBuffer> dl,
              SkRect cull_bounds,
