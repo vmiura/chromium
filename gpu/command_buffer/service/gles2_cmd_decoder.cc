@@ -19477,7 +19477,9 @@ error::Error GLES2DecoderImpl::HandleCanvasNewTextureImage(
 
   GrGLTextureInfo texture_info;
   texture_info.fTarget = c.target;
-  texture_info.fID = c.texture_id;
+  TextureRef* texture = texture_manager()->GetTexture(c.texture_id);
+  DCHECK(texture);
+  texture_info.fID = texture->service_id();
   GrBackendTextureDesc desc;
   desc.fWidth = c.width;
   desc.fHeight = c.height;
