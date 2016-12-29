@@ -1801,6 +1801,11 @@ void GL_APIENTRY GLES2CanvasDrawTextBlob(const SkTextBlob* blob,
                                          const SkPaint& paint) {
   gles2::GetGLContext()->CanvasDrawTextBlob(blob, x, y, paint);
 }
+void GL_APIENTRY GLES2CanvasNewDeferredTextureImage(GLuint image_id,
+                                                    GLsizeiptr size,
+                                                    const void* data) {
+  gles2::GetGLContext()->CanvasNewDeferredTextureImage(image_id, size, data);
+}
 void GL_APIENTRY GLES2CanvasNewImage(const SkImage* image) {
   gles2::GetGLContext()->CanvasNewImage(image);
 }
@@ -3217,6 +3222,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCanvasDrawTextBlob",
         reinterpret_cast<GLES2FunctionPointer>(glCanvasDrawTextBlob),
+    },
+    {
+        "glCanvasNewDeferredTextureImage",
+        reinterpret_cast<GLES2FunctionPointer>(glCanvasNewDeferredTextureImage),
     },
     {
         "glCanvasNewImage",

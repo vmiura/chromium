@@ -62,13 +62,11 @@ class ContextSupport : public SkDeduper {
   virtual void SetErrorMessageCallback(
       const base::Callback<void(const char*, int32_t)>& callback) = 0;
 
-
   // CDL HACKING ///////////////////////////////////////////////////////////////
   virtual int findOrDefineTextBlob(const SkTextBlob*) = 0;
   virtual int findOrDefinePath(const SkPath*) = 0;
   virtual ResourceCache* resource_cache() = 0;
   //////////////////////////////////////////////////////////////////////////////
-
 
  protected:
   ContextSupport() {}

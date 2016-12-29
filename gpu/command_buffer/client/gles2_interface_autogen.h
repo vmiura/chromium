@@ -935,6 +935,9 @@ virtual void CanvasDrawTextBlob(const SkTextBlob* blob,
                                 GLfloat x,
                                 GLfloat y,
                                 const SkPaint& paint) = 0;
+virtual void CanvasNewDeferredTextureImage(GLuint image_id,
+                                           GLsizeiptr size,
+                                           const void* data) = 0;
 virtual void CanvasNewImage(const SkImage* image) = 0;
 virtual void CanvasDeleteImage(int image_id) = 0;
 virtual void CanvasNewTextBlob(const SkTextBlob* blob) = 0;

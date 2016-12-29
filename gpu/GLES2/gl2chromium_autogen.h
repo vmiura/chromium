@@ -403,6 +403,8 @@
 #define glCanvasDrawImage GLES2_GET_FUN(CanvasDrawImage)
 #define glCanvasDrawImageRect GLES2_GET_FUN(CanvasDrawImageRect)
 #define glCanvasDrawTextBlob GLES2_GET_FUN(CanvasDrawTextBlob)
+#define glCanvasNewDeferredTextureImage \
+  GLES2_GET_FUN(CanvasNewDeferredTextureImage)
 #define glCanvasNewImage GLES2_GET_FUN(CanvasNewImage)
 #define glCanvasDeleteImage GLES2_GET_FUN(CanvasDeleteImage)
 #define glCanvasNewTextBlob GLES2_GET_FUN(CanvasNewTextBlob)

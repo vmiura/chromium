@@ -2625,6 +2625,14 @@ void GLES2TraceImplementation::CanvasDrawTextBlob(const SkTextBlob* blob,
   gl_->CanvasDrawTextBlob(blob, x, y, paint);
 }
 
+void GLES2TraceImplementation::CanvasNewDeferredTextureImage(GLuint image_id,
+                                                             GLsizeiptr size,
+                                                             const void* data) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "GLES2Trace::CanvasNewDeferredTextureImage");
+  gl_->CanvasNewDeferredTextureImage(image_id, size, data);
+}
+
 void GLES2TraceImplementation::CanvasNewImage(const SkImage* image) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::CanvasNewImage");
   gl_->CanvasNewImage(image);

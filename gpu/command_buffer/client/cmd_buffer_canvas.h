@@ -14,12 +14,15 @@ namespace gpu {
 class ContextSupport;
 
 namespace gles2 {
-  class GLES2Interface;
-} // namepace gles2
+class GLES2Interface;
+}  // namepace gles2
 
-GPU_EXPORT SkCanvas* MakeCommandBufferCanvas(int width, int height,
-    gpu::gles2::GLES2Interface* gl, gpu::ContextSupport* context_support);
+GPU_EXPORT SkCanvas* MakeCommandBufferCanvas(
+    int width,
+    int height,
+    gpu::gles2::GLES2Interface* gl,
+    gpu::ContextSupport* context_support);
 
-} // namepace gpu
+}  // namepace gpu
 
-#endif // GPU_COMMAND_BUFFER_CLIENT_CMD_BUFFER_CANVAS_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_CMD_BUFFER_CANVAS_H_

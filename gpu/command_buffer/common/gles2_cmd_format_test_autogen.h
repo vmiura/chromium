@@ -5608,6 +5608,22 @@ TEST_F(GLES2FormatTest, CanvasDrawTextBlob) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, CanvasNewDeferredTextureImage) {
+  cmds::CanvasNewDeferredTextureImage& cmd =
+      *GetBufferAs<cmds::CanvasNewDeferredTextureImage>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLsizeiptr>(12),
+              static_cast<uint32_t>(13), static_cast<uint32_t>(14));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::CanvasNewDeferredTextureImage::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.image_id);
+  EXPECT_EQ(static_cast<GLsizeiptr>(12), cmd.shm_size);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.shm_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, CanvasNewImage) {
   cmds::CanvasNewImage& cmd = *GetBufferAs<cmds::CanvasNewImage>();
   void* next_cmd =

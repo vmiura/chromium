@@ -91,7 +91,7 @@ void RasterSource::PlaybackToCanvas(SkCanvas* raster_canvas,
   if (settings.skip_images) {
     SkipImageCanvas canvas(raster_canvas);
     RasterCommon(&canvas, nullptr);
-  } else if (false && settings.use_image_hijack_canvas) {
+  } else if (settings.use_image_hijack_canvas) {
     const SkImageInfo& info = raster_canvas->imageInfo();
 
     ImageHijackCanvas canvas(info.width(), info.height(), image_decode_cache_);

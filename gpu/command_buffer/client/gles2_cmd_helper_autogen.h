@@ -3438,6 +3438,17 @@ void CanvasDrawTextBlob(GLuint blob_id,
   }
 }
 
+void CanvasNewDeferredTextureImage(GLuint image_id,
+                                   GLsizeiptr shm_size,
+                                   uint32_t shm_id,
+                                   uint32_t shm_offset) {
+  gles2::cmds::CanvasNewDeferredTextureImage* c =
+      GetCmdSpace<gles2::cmds::CanvasNewDeferredTextureImage>();
+  if (c) {
+    c->Init(image_id, shm_size, shm_id, shm_offset);
+  }
+}
+
 void CanvasNewImage(GLuint image_id,
                     GLuint width,
                     GLuint height,

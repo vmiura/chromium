@@ -16931,6 +16931,60 @@ static_assert(offsetof(CanvasDrawTextBlob, blend_mode) == 28,
 static_assert(offsetof(CanvasDrawTextBlob, paint_bits) == 32,
               "offset of CanvasDrawTextBlob paint_bits should be 32");
 
+struct CanvasNewDeferredTextureImage {
+  typedef CanvasNewDeferredTextureImage ValueType;
+  static const CommandId kCmdId = kCanvasNewDeferredTextureImage;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _image_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    SetHeader();
+    image_id = _image_id;
+    shm_size = _shm_size;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLuint _image_id,
+            GLsizeiptr _shm_size,
+            uint32_t _shm_id,
+            uint32_t _shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_image_id, _shm_size, _shm_id,
+                                       _shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t image_id;
+  int32_t shm_size;
+  uint32_t shm_id;
+  uint32_t shm_offset;
+};
+
+static_assert(sizeof(CanvasNewDeferredTextureImage) == 20,
+              "size of CanvasNewDeferredTextureImage should be 20");
+static_assert(offsetof(CanvasNewDeferredTextureImage, header) == 0,
+              "offset of CanvasNewDeferredTextureImage header should be 0");
+static_assert(offsetof(CanvasNewDeferredTextureImage, image_id) == 4,
+              "offset of CanvasNewDeferredTextureImage image_id should be 4");
+static_assert(offsetof(CanvasNewDeferredTextureImage, shm_size) == 8,
+              "offset of CanvasNewDeferredTextureImage shm_size should be 8");
+static_assert(offsetof(CanvasNewDeferredTextureImage, shm_id) == 12,
+              "offset of CanvasNewDeferredTextureImage shm_id should be 12");
+static_assert(
+    offsetof(CanvasNewDeferredTextureImage, shm_offset) == 16,
+    "offset of CanvasNewDeferredTextureImage shm_offset should be 16");
+
 struct CanvasNewImage {
   typedef CanvasNewImage ValueType;
   static const CommandId kCmdId = kCanvasNewImage;

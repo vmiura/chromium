@@ -67,11 +67,9 @@ static void RasterizeSource(
       use_distance_field_text, raster_source->CanUseLCDText(),
       raster_source->HasImpliedColorSpace(), msaa_sample_count);
 
-  std::unique_ptr<SkCanvas> canvas(
-      MakeCommandBufferCanvas(resource_size.width(),
-                              resource_size.height(),
-                              context_provider->ContextGL(),
-                              context_provider->ContextSupport()));
+  std::unique_ptr<SkCanvas> canvas(MakeCommandBufferCanvas(
+      resource_size.width(), resource_size.height(),
+      context_provider->ContextGL(), context_provider->ContextSupport()));
 
   raster_source->PlaybackToCanvas(canvas.get(), raster_full_rect, playback_rect,
                                   scales, playback_settings);
@@ -89,7 +87,7 @@ static void RasterizeSource(
     return;
 
   raster_source->PlaybackToCanvas(sk_surface->getCanvas(), raster_full_rect,
-                                playback_rect, scales, playback_settings);
+                                  playback_rect, scales, playback_settings);
 #endif
 }
 
@@ -199,7 +197,7 @@ bool GpuRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
   // Partial raster doesn't support MSAA, as the MSAA resolve is unaware of clip
   // rects.
   // TODO(crbug.com/629683): See if we can work around this limitation.
-  //return msaa_sample_count_ == 0;
+  // return msaa_sample_count_ == 0;
   return false;
 }
 

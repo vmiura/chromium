@@ -1218,6 +1218,10 @@ void GLES2InterfaceStub::CanvasDrawTextBlob(const SkTextBlob* /* blob */,
                                             GLfloat /* x */,
                                             GLfloat /* y */,
                                             const SkPaint& /* paint */) {}
+void GLES2InterfaceStub::CanvasNewDeferredTextureImage(GLuint /* image_id */,
+                                                       GLsizeiptr /* size */,
+                                                       const void* /* data */) {
+}
 void GLES2InterfaceStub::CanvasNewImage(const SkImage* /* image */) {}
 void GLES2InterfaceStub::CanvasDeleteImage(int /* image_id */) {}
 void GLES2InterfaceStub::CanvasNewTextBlob(const SkTextBlob* /* blob */) {}

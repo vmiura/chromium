@@ -924,6 +924,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleCanvasDrawTextBlob(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewDeferredTextureImage(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCanvasNewImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

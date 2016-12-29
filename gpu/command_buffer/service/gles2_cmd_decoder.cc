@@ -584,9 +584,7 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
       images_.insert({id, std::move(image)});
     }
 
-    void removeImage(int id) {
-      images_.erase(id);
-    }
+    void removeImage(int id) { images_.erase(id); }
 
     void addPath(int id, std::unique_ptr<SkPath> path) {
       paths_[id] = std::move(path);
@@ -3659,7 +3657,8 @@ bool GLES2DecoderImpl::Initialize(
   }
 
   LOG(ERROR) << "Get GrGLInterface";
-  sk_sp<const GrGLInterface> interface(GrGLAssembleInterface(nullptr, get_gl_proc));
+  sk_sp<const GrGLInterface> interface(
+      GrGLAssembleInterface(nullptr, get_gl_proc));
   LOG(ERROR) << " got " << interface.get();
 
   if (interface.get()) {
@@ -19100,7 +19099,7 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
       gr_context_.get(), desc, nullptr, &surface_props);
   if (sk_surface_.get()) {
     canvas_ = sk_surface_->getCanvas();
-    //canvas_->clear(0xffff0000);
+    // canvas_->clear(0xffff0000);
   } else {
     LOG(ERROR) << "Failed to create SkSurface";
   }
@@ -19274,10 +19273,12 @@ error::Error GLES2DecoderImpl::HandleCanvasSetDropShadowFilter(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   const volatile gles2::cmds::CanvasSetDropShadowFilter& c =
-      *static_cast<const volatile gles2::cmds::CanvasSetDropShadowFilter*>(cmd_data);
+      *static_cast<const volatile gles2::cmds::CanvasSetDropShadowFilter*>(
+          cmd_data);
 
-  sk_image_filter_ = SkDropShadowImageFilter::Make(c.dx, c.dy,
-      c.sigma_x, c.sigma_y, c.color, (SkDropShadowImageFilter::ShadowMode)c.mode, 0, 0);
+  sk_image_filter_ = SkDropShadowImageFilter::Make(
+      c.dx, c.dy, c.sigma_x, c.sigma_y, c.color,
+      (SkDropShadowImageFilter::ShadowMode)c.mode, 0, 0);
   return error::kNoError;
 }
 
@@ -19450,6 +19451,22 @@ error::Error GLES2DecoderImpl::HandleCanvasDrawPath(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCanvasNewDeferredTextureImage(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CanvasNewDeferredTextureImage& c =
+      *static_cast<const volatile gles2::cmds::CanvasNewDeferredTextureImage*>(
+          cmd_data);
+
+  void* pixels = GetSharedMemoryAs<void*>(c.shm_id, c.shm_offset, c.shm_size);
+
+  inflator_.addImage(c.image_id,
+                     SkImage::MakeFromDeferredTextureImageData(
+                         gr_context_.get(), pixels, SkBudgeted::kNo));
+
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleCanvasNewImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -19473,7 +19490,8 @@ error::Error GLES2DecoderImpl::HandleCanvasNewTextureImage(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   const volatile gles2::cmds::CanvasNewTextureImage& c =
-      *static_cast<const volatile gles2::cmds::CanvasNewTextureImage*>(cmd_data);
+      *static_cast<const volatile gles2::cmds::CanvasNewTextureImage*>(
+          cmd_data);
 
   GrGLTextureInfo texture_info;
   texture_info.fTarget = c.target;
@@ -19484,8 +19502,7 @@ error::Error GLES2DecoderImpl::HandleCanvasNewTextureImage(
   desc.fWidth = c.width;
   desc.fHeight = c.height;
   desc.fConfig = kSkia8888_GrPixelConfig;
-  desc.fTextureHandle =
-      skia::GrGLTextureInfoToGrBackendObject(texture_info);
+  desc.fTextureHandle = skia::GrGLTextureInfoToGrBackendObject(texture_info);
   desc.fOrigin = kTopLeft_GrSurfaceOrigin;
 
   inflator_.addImage(c.image_id,

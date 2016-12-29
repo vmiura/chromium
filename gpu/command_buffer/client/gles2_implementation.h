@@ -289,8 +289,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation
   ResourceCache* resource_cache() override;
 
   struct CacheRecord {
-    CacheRecord(int id, int size)
-     : id(id), size(size) {}
+    CacheRecord(int id, int size) : id(id), size(size) {}
     int id;
     int size;
   };

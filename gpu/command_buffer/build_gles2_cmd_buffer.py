@@ -2896,6 +2896,15 @@ _FUNCTION_INFO = {
     'no_gl' : True,
     'extension': True,
   },
+  'CanvasNewDeferredTextureImage': {
+    'type': 'Custom',
+    'cmd_args': 'GLuint image_id, GLsizeiptr shm_size, '
+                'uint32_t shm_id, uint32_t shm_offset',
+    'impl_func': False,
+    'client_test': False,
+    'no_gl' : True,
+    'extension': True,
+  },
   'CanvasNewTextureImage': {
     'type': 'Custom',
     'internal': True,

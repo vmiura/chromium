@@ -187,8 +187,8 @@ class CC_EXPORT GpuImageDecodeCache
     UploadedImageData();
     ~UploadedImageData();
 
-    void SetImage(sk_sp<SkImage> image);
-    const sk_sp<SkImage>& image() const { return image_; }
+    void SetImage(sk_sp<const SkImage> image);
+    sk_sp<const SkImage> image() const { return image_; }
 
     void mark_used() { usage_stats_.used = true; }
     void notify_ref_reached_zero() {
@@ -212,7 +212,7 @@ class CC_EXPORT GpuImageDecodeCache
     void ReportUsageStats() const;
 
     // May be null if image not yet uploaded / prepared.
-    sk_sp<SkImage> image_;
+    sk_sp<const SkImage> image_;
     UsageStats usage_stats_;
   };
 
@@ -326,7 +326,7 @@ class CC_EXPORT GpuImageDecodeCache
   // We can't release GPU backed SkImages without holding the context lock,
   // so we add them to this list and defer deletion until the next time the lock
   // is held.
-  std::vector<sk_sp<SkImage>> images_pending_deletion_;
+  std::vector<sk_sp<const SkImage>> images_pending_deletion_;
 };
 
 }  // namespace cc

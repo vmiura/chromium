@@ -909,6 +909,9 @@ void CanvasDrawTextBlob(const SkTextBlob* blob,
                         GLfloat x,
                         GLfloat y,
                         const SkPaint& paint) override;
+void CanvasNewDeferredTextureImage(GLuint image_id,
+                                   GLsizeiptr size,
+                                   const void* data) override;
 void CanvasNewImage(const SkImage* image) override;
 void CanvasDeleteImage(int image_id) override;
 void CanvasNewTextBlob(const SkTextBlob* blob) override;

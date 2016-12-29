@@ -304,7 +304,8 @@ GpuImageDecodeCache::UploadedImageData::~UploadedImageData() {
   SetImage(nullptr);
 }
 
-void GpuImageDecodeCache::UploadedImageData::SetImage(sk_sp<SkImage> image) {
+void GpuImageDecodeCache::UploadedImageData::SetImage(
+    sk_sp<const SkImage> image) {
   DCHECK(!image_ || !image);
   if (image_) {
     ReportUsageStats();
@@ -483,7 +484,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
   // in DrawWithImageFinished.
   UnrefImageDecode(draw_image);
 
-  sk_sp<SkImage> image = image_data->upload.image();
+  sk_sp<const SkImage> image = image_data->upload.image();
   image_data->upload.mark_used();
   DCHECK(image || image_data->decode.decode_failure);
 
@@ -801,7 +802,7 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
 
   // Don't keep around orphaned images.
   if (image_data->is_orphaned && !has_any_refs) {
-    images_pending_deletion_.push_back(std::move(image_data->upload.image()));
+    images_pending_deletion_.push_back(image_data->upload.image());
     image_data->upload.SetImage(nullptr);
   }
 
@@ -1072,7 +1073,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // cleaned up so we don't exceed our memory limit during this upload.
   DeletePendingImages();
 
-  sk_sp<SkImage> uploaded_image;
+  sk_sp<const SkImage> uploaded_image;
   {
     base::AutoUnlock unlock(lock_);
     switch (image_data->mode) {
@@ -1086,9 +1087,11 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
         break;
       }
       case DecodedDataMode::GPU: {
-        uploaded_image = SkImage::MakeFromDeferredTextureImageData(
-            context_->GrContext(), image_data->decode.data()->data(),
-            SkBudgeted::kNo);
+        context_->ContextGL()->CanvasNewDeferredTextureImage(
+            draw_image.image()->uniqueID(), image_data->size,
+            image_data->decode.data()->data());
+        // CDL Hacking - this is just a placeholder to get the ID.
+        uploaded_image = draw_image.image();
         break;
       }
     }
@@ -1132,6 +1135,10 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image) {
 void GpuImageDecodeCache::DeletePendingImages() {
   context_->GetLock()->AssertAcquired();
   lock_.AssertAcquired();
+  // CDL Hacking
+  for (const auto& image : images_pending_deletion_) {
+    context_->ContextGL()->CanvasDeleteImage(image->uniqueID());
+  }
   images_pending_deletion_.clear();
 }
 
