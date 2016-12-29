@@ -134,7 +134,7 @@ int GLES2Implementation::findOrDefineImage(SkImage* image) {
 
     // Delete least recently created images until we're under a budget.
     while (image_total_size_ &&
-           image_total_size_ + image_size > 128 * 1024 * 1024) {
+           image_total_size_ + image_size > 32 * 1024 * 1024) {
       images_.erase(image_records_.front().id);
       image_total_size_ -= image_records_.front().size;
       CanvasDeleteImage(unique_id);
@@ -149,8 +149,7 @@ int GLES2Implementation::findOrDefineImage(SkImage* image) {
   return unique_id;
 }
 
-int GLES2Implementation::findOrDefineTypeface(
-    SkTypeface* typeface) {
+int GLES2Implementation::findOrDefineTypeface(SkTypeface* typeface) {
   int unique_id = typeface->uniqueID();
   auto it = typefaces_.find(unique_id);
   if (it == typefaces_.end()) {
@@ -160,8 +159,7 @@ int GLES2Implementation::findOrDefineTypeface(
   return unique_id;
 }
 
-int GLES2Implementation::findOrDefineTextBlob(
-    const SkTextBlob* text_blob) {
+int GLES2Implementation::findOrDefineTextBlob(const SkTextBlob* text_blob) {
   int unique_id = text_blob->uniqueID();
   auto it = text_blobs_.find(unique_id);
   if (it == text_blobs_.end()) {
@@ -228,8 +226,7 @@ void GLES2Implementation::CanvasClipPath(const SkPath& p,
   helper_->CanvasClipPath(path_id, op, antialias);
 }
 
-void GLES2Implementation::CanvasClipRegion(const SkRegion& region,
-                                           GLuint op) {
+void GLES2Implementation::CanvasClipRegion(const SkRegion& region, GLuint op) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
 
   size_t size = region.writeToMemory(0);
@@ -365,14 +362,26 @@ void GLES2Implementation::CanvasDrawImageRect(const SkImage* image,
       paint_bits);
 }
 
+void GLES2Implementation::CanvasNewDeferredTextureImage(uint32_t image_id,
+                                                        GLsizeiptr size,
+                                                        const void* data) {
+  ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
+  memcpy(buffer.address(), data, size);
+
+  helper_->CanvasNewDeferredTextureImage(image_id, buffer.size(),
+                                         buffer.shm_id(), buffer.offset());
+
+  images_.insert(image_id);
+}
+
 void GLES2Implementation::CanvasNewImage(const SkImage* image) {
   SkImageInfo decoded_info = SkImageInfo::Make(
       image->width(), image->height(), kN32_SkColorType, kPremul_SkAlphaType);
 
   if (!image->isTextureBacked()) {
     ScopedTransferBufferPtr buffer(
-      decoded_info.minRowBytes() * decoded_info.height(), helper_,
-      transfer_buffer_);
+        decoded_info.minRowBytes() * decoded_info.height(), helper_,
+        transfer_buffer_);
 
     bool result = image->readPixels(decoded_info, buffer.address(),
                                     decoded_info.minRowBytes(), 0, 0,
@@ -380,20 +389,17 @@ void GLES2Implementation::CanvasNewImage(const SkImage* image) {
     (void)result;
 
     helper_->CanvasNewImage(image->uniqueID(), decoded_info.width(),
-                          decoded_info.height(), decoded_info.minRowBytes(),
-                          buffer.size(), buffer.shm_id(), buffer.offset());
+                            decoded_info.height(), decoded_info.minRowBytes(),
+                            buffer.size(), buffer.shm_id(), buffer.offset());
   } else {
     // Get backend texture
     const GrGLTextureInfo* texture_info =
         skia::GrBackendObjectToGrGLTextureInfo(image->getTextureHandle(true));
 
-    helper_->CanvasNewTextureImage(image->uniqueID(),
-                                   texture_info->fTarget,
-                                   texture_info->fID,
-                                   image->width(), image->height());
+    helper_->CanvasNewTextureImage(image->uniqueID(), texture_info->fTarget,
+                                   texture_info->fID, image->width(),
+                                   image->height());
   }
-
-
 }
 
 void GLES2Implementation::CanvasNewTextBlob(const SkTextBlob* blob) {
@@ -493,7 +499,8 @@ void GLES2Implementation::CanvasSetColorFilter(SkColorFilter* color_filter) {
   ScopedTransferBufferPtr buffer(size, helper_, transfer_buffer_);
   writer.writeToMemory(buffer.address());
 
-  helper_->CanvasSetColorFilter(buffer.size(), buffer.shm_id(), buffer.offset());
+  helper_->CanvasSetColorFilter(buffer.size(), buffer.shm_id(),
+                                buffer.offset());
 }
 
 ResourceCache* GLES2Implementation::resource_cache() {

@@ -9,19 +9,20 @@ void ResourceCache::Key::init(void* nameSpace, size_t dataSize) {
   SkASSERT(SkAlign4(dataSize) == dataSize);
 
   // fCount32 and fHash are not hashed
-  static const int kUnhashedLocal32s = 2; // fCache32 + fHash
+  static const int kUnhashedLocal32s = 2;  // fCache32 + fHash
   static const int kHashedLocal32s = sizeof(fNamespace) >> 2;
   static const int kLocal32s = kUnhashedLocal32s + kHashedLocal32s;
 
   static_assert(sizeof(Key) == (kLocal32s << 2), "unaccounted_key_locals");
   static_assert(sizeof(Key) == offsetof(Key, fNamespace) + sizeof(fNamespace),
-               "namespace_field_must_be_last");
+                "namespace_field_must_be_last");
 
   fCount32 = SkToS32(kLocal32s + (dataSize >> 2));
   fNamespace = nameSpace;
   // skip unhashed fields when computing the hash
-  fHash = base::Hash(reinterpret_cast<const char*>(this->as32() + kUnhashedLocal32s),
-                     (fCount32 - kUnhashedLocal32s) << 2);
+  fHash = base::Hash(
+      reinterpret_cast<const char*>(this->as32() + kUnhashedLocal32s),
+      (fCount32 - kUnhashedLocal32s) << 2);
 }
 
 ResourceCache::ResourceCache() {
@@ -41,25 +42,23 @@ ResourceCache::~ResourceCache() {
   }
 }
 
-void ResourceCache::purgeAsNeeded(bool) {
-
-}
+void ResourceCache::purgeAsNeeded(bool) {}
 
 void ResourceCache::release(Rec* rec) {
   Rec* prev = rec->fPrev;
   Rec* next = rec->fNext;
 
   if (!prev) {
-      SkASSERT(fHead == rec);
-      fHead = next;
+    SkASSERT(fHead == rec);
+    fHead = next;
   } else {
-      prev->fNext = next;
+    prev->fNext = next;
   }
 
   if (!next) {
-      fTail = prev;
+    fTail = prev;
   } else {
-      next->fPrev = prev;
+    next->fPrev = prev;
   }
 
   rec->fNext = rec->fPrev = nullptr;
@@ -81,17 +80,17 @@ void ResourceCache::moveToHead(Rec* rec) {
 }
 
 void ResourceCache::addToHead(Rec* rec) {
-    rec->fPrev = nullptr;
-    rec->fNext = fHead;
-    if (fHead) {
-        fHead->fPrev = rec;
-    }
-    fHead = rec;
-    if (!fTail) {
-        fTail = rec;
-    }
-    fTotalBytesUsed += rec->bytesUsed();
-    fCount += 1;
+  rec->fPrev = nullptr;
+  rec->fNext = fHead;
+  if (fHead) {
+    fHead->fPrev = rec;
+  }
+  fHead = rec;
+  if (!fTail) {
+    fTail = rec;
+  }
+  fTotalBytesUsed += rec->bytesUsed();
+  fCount += 1;
 }
 
 bool ResourceCache::find(const Key& key, FindVisitor visitor, void* context) {
@@ -137,4 +136,4 @@ void ResourceCache::remove(Rec* rec) {
   delete rec;
 }
 
-} // namespace gpu
+}  // namespace gpu

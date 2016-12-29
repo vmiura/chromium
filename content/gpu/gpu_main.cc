@@ -275,8 +275,8 @@ int GpuMain(const MainFunctionParams& parameters) {
 
 #if defined(OS_LINUX)
   if (init_success) {
-    SkFontConfigInterface::SetGlobal(
-           new FontConfigIPC(GetSandboxFD()))->unref();
+    SkFontConfigInterface::SetGlobal(new FontConfigIPC(GetSandboxFD()))
+        ->unref();
   }
 #endif
 
