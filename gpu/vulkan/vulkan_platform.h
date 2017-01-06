@@ -14,7 +14,9 @@ extern "C" {
 #endif
 
 #if defined(USE_X11)
-#define VK_USE_PLATFORM_XLIB_KHR
+// TODO figure out why XLIB is missing from vulkan loader.
+//#define VK_USE_PLATFORM_XLIB_KHR
+#define VK_USE_PLATFORM_XCB_KHR
 #endif
 
 #if defined(OS_ANDROID)

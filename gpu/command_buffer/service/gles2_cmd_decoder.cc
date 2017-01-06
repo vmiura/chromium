@@ -16,6 +16,8 @@
 #include <memory>
 #include <queue>
 
+#include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -71,6 +73,7 @@
 
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -82,6 +85,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/src/core/SkDeduper.h"
 #include "third_party/skia/src/core/SkReadBuffer.h"
 #include "third_party/smhasher/src/City.h"
@@ -109,16 +113,19 @@
 #include <OpenGL/CGLIOSurface.h>
 #endif
 
+
 namespace gpu {
 namespace gles2 {
 
 namespace {
 
+#if !SK_VULKAN
 static GrGLFuncPtr get_gl_proc(void* ctx, const char name[]) {
   SkASSERT(nullptr == ctx);
   GrGLFuncPtr ptr = (GrGLFuncPtr)gl::GetGLProcAddress(name);
   return ptr;
 }
+#endif
 
 const char kOESDerivativeExtension[] = "GL_OES_standard_derivatives";
 const char kEXTFragDepthExtension[] = "GL_EXT_frag_depth";
@@ -2529,6 +2536,8 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   sk_sp<SkShader> sk_shader_;
   sk_sp<SkImageFilter> sk_image_filter_;
   SkCanvas* canvas_;
+  GLenum canvas_target_;
+  GrGLuint canvas_texture_id_;
 
   DISALLOW_COPY_AND_ASSIGN(GLES2DecoderImpl);
 };
@@ -3656,10 +3665,24 @@ bool GLES2DecoderImpl::Initialize(
     InitializeGLDebugLogging();
   }
 
-  LOG(ERROR) << "Get GrGLInterface";
+#if SK_VULKAN
+  LOG(ERROR) << "Use kVulkan_GrBackend";
+
+  sk_sp<const GrVkBackendContext> backend_context =
+      sk_sp<const GrVkBackendContext>(GrVkBackendContext::Create(0, 0));
+  LOG(ERROR) << " got VK backend " << backend_context.get();
+
+  if (backend_context.get()) {
+    gr_context_ = sk_sp<GrContext>(
+        GrContext::Create(kVulkan_GrBackend,
+                    reinterpret_cast<GrBackendContext>(backend_context.get())));
+  }
+
+#else
+  LOG(ERROR) << "Use kOpenGL_GrBackend";
   sk_sp<const GrGLInterface> interface(
       GrGLAssembleInterface(nullptr, get_gl_proc));
-  LOG(ERROR) << " got " << interface.get();
+  LOG(ERROR) << " got GL interface " << interface.get();
 
   if (interface.get()) {
     gr_context_ = sk_sp<GrContext>(
@@ -3667,6 +3690,7 @@ bool GLES2DecoderImpl::Initialize(
                           // GrContext takes ownership of |interface|.
                           reinterpret_cast<GrBackendContext>(interface.get())));
   }
+#endif
 
   if (gr_context_) {
     // The limit of the number of GPU resources we hold in the GrContext's
@@ -19064,10 +19088,21 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
   // clear it later.
   texture_manager()->SetLevelCleared(texture_ref, c.target, 0, true);
 
-  GLenum target = c.target;
-  GrGLuint texture_id = texture_ref->service_id();
+#if SK_VULKAN
   int width = c.width;
   int height = c.height;
+  canvas_target_ = c.target;
+  canvas_texture_id_ = texture_ref->service_id();
+
+  SkImageInfo dst_info =
+      SkImageInfo::MakeN32Premul(width, height);
+  sk_surface_ = SkSurface::MakeRenderTarget(
+      gr_context_.get(), SkBudgeted::kYes, dst_info);
+#else
+  int width = c.width;
+  int height = c.height;
+  GLenum target = c.target;
+  GrGLuint texture_id = texture_ref->service_id();
   int msaa_sample_count = c.msaa_sample_count;
   bool use_distance_field_text = c.use_dff;
   bool can_use_lcd_text = c.can_use_lcd;
@@ -19097,6 +19132,7 @@ error::Error GLES2DecoderImpl::HandleCanvasBegin(
 
   sk_surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
       gr_context_.get(), desc, nullptr, &surface_props);
+#endif
   if (sk_surface_.get()) {
     canvas_ = sk_surface_->getCanvas();
     // canvas_->clear(0xffff0000);
@@ -19112,6 +19148,34 @@ error::Error GLES2DecoderImpl::HandleCanvasEnd(uint32_t immediate_data_size,
   canvas_->flush();
   if (sk_surface_.get()) {
     sk_surface_->prepareForExternalIO();
+
+#if SK_VULKAN
+  // TEMP: Copy from Vulkan Image to current canvas_texture_id_.
+  typedef void (*DrawVkImageNV)(GLuint64 vkImage, GLuint sampler,
+       GLfloat x0, GLfloat y0,
+       GLfloat x1, GLfloat y1,
+       GLfloat z,
+       GLfloat s0, GLfloat t0,
+       GLfloat s1, GLfloat t1);
+  static DrawVkImageNV glDrawVkImageNV = 0;
+  if (!glDrawVkImageNV)
+    glDrawVkImageNV = (DrawVkImageNV)gl::GetGLProcAddress("glDrawVkImageNV");
+
+  // Make temp framebuffer.
+  GLuint framebuffer = 0;
+  glGenFramebuffersEXT(1, &framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer);
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            canvas_target_, canvas_texture_id_, 0);
+
+  GrVkImageInfo* info = (GrVkImageInfo*)sk_surface_->getTextureHandle(
+                                     SkSurface::kFlushRead_BackendHandleAccess);
+  glDrawVkImageNV((GLuint64)info->fImage, 0, 0, 0, sk_surface_->width(),
+                  sk_surface_->height(), 0, 0, 1, 1,0);
+
+  glDeleteFramebuffersEXT(1, &framebuffer);
+#endif
+
     sk_surface_.reset();
   }
 

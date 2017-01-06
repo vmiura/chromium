@@ -56,6 +56,8 @@ class VulkanWSISurface : public VulkanSurface {
       DLOG(ERROR) << "vkCreateXlibSurfaceKHR() failed: " << result;
       return false;
     }
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+    // TODO stuff
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkAndroidSurfaceCreateInfoKHR surface_create_info = {};
     surface_create_info.sType =

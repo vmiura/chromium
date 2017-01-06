@@ -75,6 +75,8 @@ bool VulkanDeviceQueue::Initialize(uint32_t options) {
                                                            visual_id)) {
           continue;
         }
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+        // foo
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
 // On Android, all physical devices and queue families must be capable of
 // presentation with any native window.
