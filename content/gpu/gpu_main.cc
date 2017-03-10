@@ -273,12 +273,15 @@ int GpuMain(const MainFunctionParams& parameters) {
   const bool init_success = gpu_init.InitializeAndStartSandbox(command_line);
   const bool dead_on_arrival = !init_success;
 
+  // TODO(vmiura): Give font IPC access to GPU sandbox.
+/*
 #if defined(OS_LINUX)
   if (init_success) {
     SkFontConfigInterface::SetGlobal(new FontConfigIPC(GetSandboxFD()))
         ->unref();
   }
 #endif
+*/
 
   logging::SetLogMessageHandler(NULL);
   GetContentClient()->SetGpuInfo(gpu_init.gpu_info());
